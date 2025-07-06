@@ -1,0 +1,1305 @@
+// src/app/students-life/page.tsx
+
+"use client"; // ✅ Needed for useEffect
+
+import { useEffect } from "react";
+
+export default function StudentsLifePage() {
+  useEffect(() => {
+    const preloader = document.getElementById("preloader");
+    if (preloader) {
+      const timer = setTimeout(() => {
+        preloader.style.display = "none";
+      }, 15); // 1.5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  return (
+    <>
+      <div>
+        <meta charSet="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Students Life - LeadersIntCollege</title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        {/* Favicons */}
+        <link href="assets/img/lic_logo.png" rel="icon" />
+        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+        {/* Fonts */}
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link
+          href="https://fonts.gstatic.com"
+          rel="preconnect"
+          crossOrigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet"
+        />
+        {/* Vendor CSS Files */}
+        <link
+          href="assets/vendor/bootstrap/css/bootstrap.min.css"
+          rel="stylesheet"
+        />
+        <link
+          href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
+          rel="stylesheet"
+        />
+        <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
+        <link
+          href="assets/vendor/swiper/swiper-bundle.min.css"
+          rel="stylesheet"
+        />
+        <link
+          href="assets/vendor/glightbox/css/glightbox.min.css"
+          rel="stylesheet"
+        />
+        {/* Main CSS File */}
+        <link href="assets/css/main.css" rel="stylesheet" />
+        {/* =======================================================
+  * Template Name: NiceSchool
+  * Template URL: https://bootstrapmade.com/nice-school-bootstrap-education-template/
+  * Updated: May 10 2025 with Bootstrap v5.3.6
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== */}
+        <header
+          id="header"
+          className="header d-flex align-items-center fixed-top"
+        >
+          <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+            <a href="index.html" className="logo d-flex align-items-center">
+              <img
+                src="assets/img/lic_logo.png"
+                alt="School Logo"
+                style={{ height: "40px", marginRight: "10px" }}
+              />
+              <h1 className="sitename">Leaders International College</h1>
+            </a>
+            <nav id="navmenu" className="navmenu">
+              <ul>
+                <li>
+                  <a href="index.html" className="active">
+                    Home
+                  </a>
+                </li>
+                <li className="dropdown">
+                  <a href="about.html">
+                    <span>About Us</span>{" "}
+                    <i className="bi bi-chevron-down toggle-dropdown" />
+                  </a>
+                  <ul>
+                    <li>
+                      <a href="about.html">About Us</a>
+                    </li>
+                    <li>
+                      <a href="Our-staff.html">Our Staff</a>
+                    </li>
+                    <li>
+                      <a href="campus-facilities.html">
+                        Campus &amp; Facilities
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="admissions.html">Admissions</a>
+                </li>
+                <li>
+                  <a href="curriculum.html">Curriculum</a>
+                </li>
+                <li>
+                  <a href="students-life.html">Students Life</a>
+                </li>
+                <li>
+                  <a href="hiring.html">We Are Hiring</a>
+                </li>
+                <li>
+                  <a href="contact.html">Contact Us</a>
+                </li>
+              </ul>
+              <i className="mobile-nav-toggle d-xl-none bi bi-list" />
+            </nav>
+          </div>
+        </header>
+        <main className="main">
+          {/* Page Title */}
+          <div
+            className="page-title dark-background position-relative"
+            style={{
+              backgroundImage:
+                "url(assets/img/education/Background_school.JPG)",
+            }}
+          >
+            <div className="container position-relative">
+              <h1>Student Life</h1>
+              <p>
+                Student life at LIC is a dynamic blend of academic exploration,
+                creative expression, and meaningful community engagement that
+                empowers learners beyond the classroom.
+              </p>
+              <nav className="breadcrumbs">
+                <ol>
+                  <li>
+                    <a href="index.html">Home</a>
+                  </li>
+                  <li className="current">Students Life</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+          {/* End Page Title */}
+          {/* Students Life Section */}
+          <section id="students-life" className="students-life section">
+            <div className="container" data-aos="fade-up" data-aos-delay={100}>
+              {/* Hero Banner */}
+              <div
+                className="students-life-banner"
+                data-aos="zoom-in"
+                data-aos-delay={200}
+              >
+                <div
+                  className="banner-content"
+                  data-aos="fade-right"
+                  data-aos-delay={300}
+                >
+                  <h2>Experience Campus Life</h2>
+                  <p>
+                    Experience campus life at LIC, where vibrant learning
+                    spaces, diverse activities, and a supportive community come
+                    together to inspire growth, friendship, and discovery.
+                  </p>
+                </div>
+                <img
+                  src="assets/img/education/LIFE.JPG"
+                  alt="Campus Life"
+                  className="img-fluid"
+                />
+              </div>
+              {/* Tabs Section */}
+              <div
+                className="students-life-tabs mt-5 text-center"
+                data-aos="fade-up"
+                data-aos-delay={200}
+              >
+                <ul
+                  className="nav nav-pills mb-4 justify-content-center"
+                  id="studentLifeTabs"
+                  role="tablist"
+                >
+                  {/* Athletics */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link active"
+                      id="athletics-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-athletics"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-athletics"
+                      aria-selected="true"
+                    >
+                      <i className="bi bi-trophy" /> Athletics
+                    </button>
+                  </li>
+                  {/* Extracurricular Activities */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="extracurricular-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-extracurricular"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-extracurricular"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-building" /> Extracurricular
+                      Activities
+                    </button>
+                  </li>
+                  {/* Day In LIC */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="dayinlic-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-dayinlic"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-dayinlic"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-calendar-event" /> Day In LIC
+                    </button>
+                  </li>
+                  {/* Health & Wellness */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="health-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-health"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-health"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-heart-pulse" /> Health &amp; Wellness
+                    </button>
+                  </li>
+                  {/* Clubs */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="clubs-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-clubs"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-clubs"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-people" /> Clubs
+                    </button>
+                  </li>
+                  {/* Trips */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="trips-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-trips"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-trips"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-bus-front" /> Trips
+                    </button>
+                  </li>
+                  {/* Student Council */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="council-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-council"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-council"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-people-fill" /> Student Council
+                    </button>
+                  </li>
+                  {/* Art Programs */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="art-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-art"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-art"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-palette" /> Art Programs
+                    </button>
+                  </li>
+                  {/* School Events */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="events-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-events"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-events"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-calendar-week" /> School Events
+                    </button>
+                  </li>
+                  {/* Dining Services */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="dining-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-dining"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-dining"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-cup-straw" /> Dining Services
+                    </button>
+                  </li>
+                  {/* Transportations */}
+                  <li className="nav-item" role="presentation">
+                    <button
+                      className="nav-link"
+                      id="transport-tab"
+                      data-bs-toggle="pill"
+                      data-bs-target="#students-life-transport"
+                      type="button"
+                      role="tab"
+                      aria-controls="students-life-transport"
+                      aria-selected="false"
+                    >
+                      <i className="bi bi-bus-front-fill" /> Transportations
+                    </button>
+                  </li>
+                </ul>
+                {/* Tab Content */}
+                <div className="tab-content" id="studentLifeTabsContent">
+                  {/* Athletics Tab (ACTIVE BY DEFAULT) */}
+                  <div
+                    className="tab-pane fade show active"
+                    id="students-life-athletics"
+                    role="tabpanel"
+                    aria-labelledby="athletics-tab"
+                  >
+                    <div className="row g-4 mb-4 align-items-center">
+                      <div
+                        className="col-lg-6"
+                        data-aos="fade-right"
+                        data-aos-delay={200}
+                      >
+                        <h3>Athletics &amp; Recreation Programs</h3>
+                        <p>
+                          Explore a wide range of Athletics &amp; Recreation
+                          Programs that promote teamwork, fitness, and school
+                          spirit through competitive and recreational
+                          activities.
+                        </p>
+                      </div>
+                      <div
+                        className="col-lg-6"
+                        data-aos="fade-left"
+                        data-aos-delay={300}
+                      >
+                        <div className="stats-container">
+                          <div className="stat-item">
+                            <span className="number">10+</span>
+                            <span className="label">Sports Teams</span>
+                          </div>
+                          <div className="stat-item">
+                            <span className="number">20+</span>
+                            <span className="label">Championships</span>
+                          </div>
+                          <div className="stat-item">
+                            <span className="number">150+</span>
+                            <span className="label">Athletes</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className="athletic-programs-slider swiper init-swiper"
+                      data-aos="fade-up"
+                      data-aos-delay={400}
+                    >
+                      <div className="sport-cards-grid">
+                        <div className="sport-card">
+                          <img
+                            src="assets/img/education/SWIMMING.JPG"
+                            className="img-fluid"
+                            alt="Swimming"
+                          />
+                          <div className="sport-info">
+                            <h5>Swimming</h5>
+                            <div className="badge">Varsity</div>
+                          </div>
+                        </div>
+
+                        <div className="sport-card">
+                          <img
+                            src="assets/img/education/FOOTBALL.png"
+                            className="img-fluid"
+                            alt="Football"
+                          />
+                          <div className="sport-info">
+                            <h5>Football</h5>
+                            <div className="badge">Varsity</div>
+                          </div>
+                        </div>
+
+                        <div className="sport-card">
+                          <img
+                            src="assets/img/education/BASKETBALL.JPG"
+                            className="img-fluid"
+                            alt="Basketball"
+                          />
+                          <div className="sport-info">
+                            <h5>Basketball</h5>
+                            <div className="badge">Varsity</div>
+                          </div>
+                        </div>
+
+                        <div className="sport-card">
+                          <img
+                            src="assets/img/education/Volleyball.png"
+                            className="img-fluid"
+                            alt="Volleyball"
+                          />
+                          <div className="sport-info">
+                            <h5>Volleyball</h5>
+                            <div className="badge">Varsity</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Facilities Tab */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-extracurricular"
+                    role="tabpanel"
+                    aria-labelledby="extracurricular-tab"
+                  >
+                    <div className="row g-4">
+                      <div
+                        className="col-lg-8"
+                        data-aos="fade-right"
+                        data-aos-delay={50}
+                      >
+                        <div className="facilities-gallery">
+                          <div className="row g-3">
+                            <div className="col-md-8">
+                              <img
+                                src="assets/img/education/campus-4.webp"
+                                alt="Housing"
+                                className="img-fluid rounded"
+                              />
+                            </div>
+                            <div className="col-md-4">
+                              <img
+                                src="assets/img/education/campus-5.webp"
+                                alt="Dining"
+                                className="img-fluid rounded"
+                              />
+                            </div>
+                            <div className="col-md-4">
+                              <img
+                                src="assets/img/education/campus-6.webp"
+                                alt="Library"
+                                className="img-fluid rounded"
+                              />
+                            </div>
+                            <div className="col-md-8">
+                              <img
+                                src="assets/img/education/campus-7.webp"
+                                alt="Recreation"
+                                className="img-fluid rounded"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="col-lg-4"
+                        data-aos="fade-left"
+                        data-aos-delay={300}
+                      >
+                        <div className="facilities-info">
+                          <h3>Modern Campus Facilities</h3>
+                          <p>
+                            Cras mattis consectetur purus sit amet fermentum.
+                            Maecenas faucibus mollis interdum.
+                          </p>
+                          <div className="facilities-list">
+                            <div className="facility-item">
+                              <i className="bi bi-house-door" />
+                              <h5>Residence Halls</h5>
+                              <p>
+                                10 modern residence halls with various room
+                                configurations
+                              </p>
+                            </div>
+                            <div className="facility-item">
+                              <i className="bi bi-cup-hot" />
+                              <h5>Dining Options</h5>
+                              <p>
+                                5 dining locations with diverse meal options
+                              </p>
+                            </div>
+                            <div className="facility-item">
+                              <i className="bi bi-book" />
+                              <h5>Libraries</h5>
+                              <p>
+                                3 libraries with extensive physical and digital
+                                collections
+                              </p>
+                            </div>
+                            <div className="facility-item">
+                              <i className="bi bi-bicycle" />
+                              <h5>Recreation Center</h5>
+                              <p>
+                                State-of-the-art fitness equipment and
+                                facilities
+                              </p>
+                            </div>
+                          </div>
+                          <a href="#" className="btn btn-explore mt-3">
+                            Virtual Campus Tour{" "}
+                            <i className="bi bi-arrow-right" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Day In LIC */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-dayinlic"
+                    role="tabpanel"
+                    aria-labelledby="dayinlic-tab"
+                  >
+                    <section className="dayinlic-content">
+                      <header className="dayinlic-header">
+                        <h1>Day in the Life of an LIC Student</h1>
+                        <p>
+                          At Leaders International College, each day is
+                          thoughtfully planned to balance academics, activities,
+                          and personal growth.
+                        </p>
+                      </header>
+                      <div className="dayinlic-cards">
+                        {/* Morning Arrival */}
+                        <article className="dayinlic-card shift-image-down">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/morning-arrival.png"
+                              alt="Morning Arrival"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Morning Arrival</h4>
+                            <p>
+                              Students arrive early and gather for the morning
+                              line-up at 7:40 AM — announcements and a focused
+                              start.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Academic Sessions */}
+                        <article className="dayinlic-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/Students.jpg"
+                              alt="Academic Sessions"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Academic Sessions</h4>
+                            <p>
+                              By 8:00 AM, classes are in full swing. Students
+                              explore core subjects, using interactive panels
+                              that make learning engaging and dynamic.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Lunch */}
+                        <article className="dayinlic-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/education-8.webp"
+                              alt="Midday Break and Lunch"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Midday Break and Lunch</h4>
+                            <p>
+                              At noon, students enjoy a lunch break. Our dining
+                              services provide nutritious meals for diverse
+                              tastes, with indoor and outdoor seating for
+                              relaxing and socializing.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Afternoon Classes */}
+                        <article className="dayinlic-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/activities-2.webp"
+                              alt="Afternoon Classes"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Afternoon Classes</h4>
+                            <p>
+                              After lunch, students continue with afternoon
+                              sessions — hands-on labs, creative projects, and
+                              group work build practical skills and
+                              collaboration.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Dismissal */}
+                        <article className="dayinlic-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/dismissal.jpg"
+                              alt="Dismissal"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Dismissal</h4>
+                            <p>
+                              The school day ends at 2:55 PM. Students pack up
+                              and head home or stay for additional activities
+                              and homework catch-up.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Clubs & Extracurriculars */}
+                        <article className="dayinlic-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/clubs.jpg"
+                              alt="Clubs and Extracurricular Activities"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Clubs &amp; Extracurricular Activities</h4>
+                            <p>
+                              On special days after dismissal, clubs and
+                              activities help students develop interests in
+                              arts, sports, robotics, debate, and more, building
+                              teamwork and leadership skills.
+                            </p>
+                          </div>
+                        </article>
+                      </div>
+                    </section>
+                  </div>
+                  {/* Health & Wellness */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-health"
+                    role="tabpanel"
+                    aria-labelledby="health-tab"
+                  >
+                    <section className="healthwellness-content">
+                      <header className="healthwellness-header">
+                        <h1>Commitment to Student Well-being</h1>
+                        <p>
+                          At Leaders International College, student well-being
+                          is at the heart of our mission — blending healthcare,
+                          mental support, fitness, nutrition, and wellness
+                          education.
+                        </p>
+                      </header>
+                      <div className="healthwellness-cards">
+                        {/* Health Center */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/health-center.jpg"
+                              alt="Health Center"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Comprehensive Health Services</h4>
+                            <p>
+                              Our well-staffed health center provides medical
+                              services, emergency care, and support for chronic
+                              issues. Regular health education promotes healthy
+                              habits campus-wide.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Counseling Services */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/counseling.jpg"
+                              alt="Counseling Services"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Counseling Services</h4>
+                            <p>
+                              Our dedicated counselor helps students with
+                              academic, social, or personal challenges, ensuring
+                              they navigate school life with confidence and
+                              resilience.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Psychological Support */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/psychology.jpg"
+                              alt="Psychological Support"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Psychological Support</h4>
+                            <p>
+                              A qualified psychologist supports students with
+                              emotional or psychological challenges, providing
+                              them with tools to manage mental well-being
+                              effectively.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Physical Fitness */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/fitness.jpg"
+                              alt="Physical Fitness"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Physical Fitness</h4>
+                            <p>
+                              Physical education is integral to our curriculum.
+                              Students use our gym, courts, and shaded pool to
+                              stay active, build teamwork, and boost leadership
+                              skills.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Nutritional Services */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/nutrition.jpg"
+                              alt="Nutritional Services"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Nutritional Services</h4>
+                            <p>
+                              Our dining team serves balanced meals designed by
+                              nutrition experts. We teach students how to make
+                              healthy food choices every day.
+                            </p>
+                          </div>
+                        </article>
+                        {/* Wellness Programs */}
+                        <article className="healthwellness-card">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/wellness-programs.jpg"
+                              alt="Wellness Programs"
+                            />
+                          </div>
+                          <div className="card-body">
+                            <h4>Wellness Programs</h4>
+                            <p>
+                              Year-round wellness programs cover stress
+                              management, mental resilience, and physical health
+                              — empowering students to build lifelong healthy
+                              habits.
+                            </p>
+                          </div>
+                        </article>
+                      </div>
+                      <footer className="healthwellness-conclusion">
+                        <h4>Conclusion</h4>
+                        <p>
+                          Health and wellness are woven into the fabric of
+                          student life at LIC. With medical care, counseling,
+                          fitness, nutrition, and wellness initiatives, we help
+                          students thrive in all areas of life.
+                        </p>
+                      </footer>
+                    </section>
+                  </div>
+                  {/* Clubs */}
+                  {/* Clubs */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-clubs"
+                    role="tabpanel"
+                    aria-labelledby="clubs-tab"
+                  >
+                    <section className="clubs-content">
+                      {/* Intro */}
+                      <header className="clubs-header">
+                        <h3>Clubs at Leaders International College</h3>
+                        <p>
+                          Clubs play a vital role in the holistic growth of our
+                          students during the PYP stage, helping them develop
+                          skills, passions, and friendships.
+                        </p>
+                      </header>
+                      {/* Dynamic Card (still same style) */}
+                      <section className="clubs-dynamic">
+                        <div className="dynamic-card simple-card">
+                          <div className="dynamic-text">
+                            <h4>Dynamic Club Offerings</h4>
+                            <p>
+                              Our club selection adapts every year based on
+                              students’ interests to stay fresh, fun, and
+                              relevant.
+                            </p>
+                          </div>
+                        </div>
+                      </section>
+                      {/* Stacked Club Cards */}
+                      <div className="clubs-stack">
+                        <div className="club-card visual-card wide">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/art-club.jpg"
+                              alt="Art Club"
+                            />
+                          </div>
+                          <div className="card-text">
+                            <h4>Art Club</h4>
+                            <p>
+                              Encourages creativity through drawing, painting,
+                              and crafts.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="club-card visual-card wide">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/science-club.jpg"
+                              alt="Science Club"
+                            />
+                          </div>
+                          <div className="card-text">
+                            <h4>Science Club</h4>
+                            <p>
+                              Engage in fun experiments and scientific
+                              discovery.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="club-card visual-card wide">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/drama-club.jpg"
+                              alt="Drama Club"
+                            />
+                          </div>
+                          <div className="card-text">
+                            <h4>Drama Club</h4>
+                            <p>
+                              Build confidence through acting and performance.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="club-card visual-card wide">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/eco-club.jpg"
+                              alt="Eco Club"
+                            />
+                          </div>
+                          <div className="card-text">
+                            <h4>Eco Club</h4>
+                            <p>
+                              Focus on sustainability and caring for the
+                              environment.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="club-card visual-card wide">
+                          <div className="card-image">
+                            <img
+                              src="assets/img/education/chess-club.jpg"
+                              alt="Chess Club"
+                            />
+                          </div>
+                          <div className="card-text">
+                            <h4>Chess Club</h4>
+                            <p>Sharpen strategy and problem-solving skills.</p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Benefits */}
+                      <section className="clubs-benefits">
+                        <h4>Benefits of Participation</h4>
+                        <ul>
+                          <li>
+                            Explore personal interests in a fun, structured
+                            setting.
+                          </li>
+                          <li>Make friends and grow social skills.</li>
+                          <li>Gain a sense of belonging and achievement.</li>
+                          <li>Strengthen teamwork and leadership abilities.</li>
+                        </ul>
+                      </section>
+                      {/* Conclusion */}
+                      <footer className="clubs-conclusion">
+                        <h4>Conclusion</h4>
+                        <p>
+                          Clubs at Leaders International College are more than
+                          just activities — they’re a vital part of the PYP
+                          experience. By adapting our offerings each year, we
+                          help students grow in what they love most.
+                        </p>
+                      </footer>
+                    </section>
+                  </div>
+                  {/* Trips */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-trips"
+                    role="tabpanel"
+                    aria-labelledby="trips-tab"
+                  >
+                    <h3>Trips</h3>
+                    <p>
+                      Students enjoy local and international trips that broaden
+                      their learning experiences.
+                    </p>
+                  </div>
+                  {/* Student Council */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-council"
+                    role="tabpanel"
+                    aria-labelledby="council-tab"
+                  >
+                    <h3>Student Council</h3>
+                    <p>
+                      Our student council represents the voice of the student
+                      body and organizes various initiatives.
+                    </p>
+                  </div>
+                  {/* Art Programs */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-art"
+                    role="tabpanel"
+                    aria-labelledby="art-tab"
+                  >
+                    <h3>Art Programs</h3>
+                    <p>
+                      Students can participate in art, music, and drama programs
+                      that develop creativity and talent.
+                    </p>
+                  </div>
+                  {/* School Events */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-events"
+                    role="tabpanel"
+                    aria-labelledby="events-tab"
+                  >
+                    <h3>School Events</h3>
+                    <p>
+                      LIC hosts events throughout the year to celebrate
+                      community, culture, and student achievements.
+                    </p>
+                  </div>
+                  {/* Dining Services */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-dining"
+                    role="tabpanel"
+                    aria-labelledby="dining-tab"
+                  >
+                    <h3>Dining Services</h3>
+                    <p>
+                      Our dining facilities offer healthy and diverse meal
+                      options to fuel students throughout the day.
+                    </p>
+                  </div>
+                  {/* Transportations */}
+                  <div
+                    className="tab-pane fade"
+                    id="students-life-transport"
+                    role="tabpanel"
+                    aria-labelledby="transport-tab"
+                  >
+                    <h3>Transportations</h3>
+                    <p>
+                      Safe and reliable transportation options make commuting to
+                      and from campus convenient for students.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {/* Student Life Gallery */}
+              <div
+                className="students-life-gallery mt-5"
+                data-aos="fade-up"
+                data-aos-delay={50}
+              >
+                <div className="section-header text-center">
+                  <h3>Life on Campus</h3>
+                  <p>Take a glimpse into our vibrant student community</p>
+                </div>
+                <div className="row g-3">
+                  <div
+                    className="col-md-4"
+                    data-aos="zoom-in"
+                    data-aos-delay={50}
+                  >
+                    <a
+                      href="assets/img/education/SL5.JPG"
+                      className="gallery-item glightbox"
+                    >
+                      <img
+                        src="assets/img/education/SL5.JPG"
+                        className="img-fluid"
+                        alt="Student Life"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    className="col-md-4"
+                    data-aos="zoom-in"
+                    data-aos-delay={50}
+                  >
+                    <a href="" className="gallery-item glightbox">
+                      <img
+                        src="assets/img/education/SL1.JPG"
+                        className="img-fluid"
+                        alt="Student Life"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    className="col-md-4"
+                    data-aos="zoom-in"
+                    data-aos-delay={50}
+                  >
+                    <a
+                      href="assets/img/education/SL4.JPG"
+                      className="gallery-item glightbox"
+                    >
+                      <img
+                        src="assets/img/education/SL4.JPG"
+                        className="img-fluid"
+                        alt="Student Life"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    className="col-md-6"
+                    data-aos="zoom-in"
+                    data-aos-delay={50}
+                  >
+                    <a
+                      href="assets/img/education/SL2.JPG"
+                      className="gallery-item glightbox"
+                    >
+                      <img
+                        src="assets/img/education/SL2.JPG"
+                        className="img-fluid"
+                        alt="Student Life"
+                      />
+                    </a>
+                  </div>
+                  <div
+                    className="col-md-6"
+                    data-aos="zoom-in"
+                    data-aos-delay={50}
+                  >
+                    <a
+                      href="assets/img/education/SL3.JPG"
+                      className="gallery-item glightbox"
+                    >
+                      <img
+                        src="assets/img/education/SL3.JPG"
+                        className="img-fluid"
+                        alt="Student Life"
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
+              {/* CTA */}
+              <div
+                className="cta-wrapper mt-5"
+                data-aos="fade-up"
+                data-aos-delay={500}
+              >
+                <div className="cta-content">
+                  <div className="row align-items-center">
+                    <div
+                      className="col-lg-8"
+                      data-aos="fade-right"
+                      data-aos-delay={300}
+                    >
+                      <h3>Ready to Join Our Community?</h3>
+                      <p>
+                        Take the first step toward an inspiring educational
+                        journey—become part of the Leaders International College
+                        family today.
+                      </p>
+                    </div>
+                    <div
+                      className="col-lg-4"
+                      data-aos="fade-left"
+                      data-aos-delay={400}
+                    >
+                      <div className="cta-buttons">
+                        <a href="#" className="btn btn-primary">
+                          Apply Now
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* /Students Life Section */}
+        </main>
+        <footer
+          id="footer"
+          className="footer position-relative dark-background"
+        >
+          <div className="container footer-top">
+            <div className="row gy-4">
+              <div className="col-lg-4 col-md-6 footer-about">
+                <a href="index.html" className="logo d-flex align-items-center">
+                  <span className="sitename">NiceSchool</span>
+                </a>
+                <div className="footer-contact pt-3">
+                  <p>A108 Adam Street</p>
+                  <p>New York, NY 535022</p>
+                  <p className="mt-3">
+                    <strong>Phone:</strong> <span>+1 5589 55488 55</span>
+                  </p>
+                  <p>
+                    <strong>Email:</strong> <span>info@example.com</span>
+                  </p>
+                </div>
+                <div className="social-links d-flex mt-4">
+                  <a href="">
+                    <i className="bi bi-twitter-x" />
+                  </a>
+                  <a href="">
+                    <i className="bi bi-facebook" />
+                  </a>
+                  <a href="">
+                    <i className="bi bi-instagram" />
+                  </a>
+                  <a href="">
+                    <i className="bi bi-linkedin" />
+                  </a>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-3 footer-links">
+                <h4>Useful Links</h4>
+                <ul>
+                  <li>
+                    <a href="#">Home</a>
+                  </li>
+                  <li>
+                    <a href="#">About us</a>
+                  </li>
+                  <li>
+                    <a href="#">Services</a>
+                  </li>
+                  <li>
+                    <a href="#">Terms of service</a>
+                  </li>
+                  <li>
+                    <a href="#">Privacy policy</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-lg-2 col-md-3 footer-links">
+                <h4>Our Services</h4>
+                <ul>
+                  <li>
+                    <a href="#">Web Design</a>
+                  </li>
+                  <li>
+                    <a href="#">Web Development</a>
+                  </li>
+                  <li>
+                    <a href="#">Product Management</a>
+                  </li>
+                  <li>
+                    <a href="#">Marketing</a>
+                  </li>
+                  <li>
+                    <a href="#">Graphic Design</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-lg-2 col-md-3 footer-links">
+                <h4>Hic solutasetp</h4>
+                <ul>
+                  <li>
+                    <a href="#">Molestiae accusamus iure</a>
+                  </li>
+                  <li>
+                    <a href="#">Excepturi dignissimos</a>
+                  </li>
+                  <li>
+                    <a href="#">Suscipit distinctio</a>
+                  </li>
+                  <li>
+                    <a href="#">Dilecta</a>
+                  </li>
+                  <li>
+                    <a href="#">Sit quas consectetur</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-lg-2 col-md-3 footer-links">
+                <h4>Nobis illum</h4>
+                <ul>
+                  <li>
+                    <a href="#">Ipsam</a>
+                  </li>
+                  <li>
+                    <a href="#">Laudantium dolorum</a>
+                  </li>
+                  <li>
+                    <a href="#">Dinera</a>
+                  </li>
+                  <li>
+                    <a href="#">Trodelas</a>
+                  </li>
+                  <li>
+                    <a href="#">Flexo</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="container copyright text-center mt-4">
+            <p>
+              © <span>Copyright</span>{" "}
+              <strong className="px-1 sitename">MyWebsite</strong>{" "}
+              <span>All Rights Reserved</span>
+            </p>
+            <div className="credits">
+              {/* All the links in the footer should remain intact. */}
+              {/* You can delete the links only if you've purchased the pro version. */}
+              {/* Licensing information: https://bootstrapmade.com/license/ */}
+              {/* Purchase the pro version with working PHP/AJAX contact form: [buy-url] */}
+              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+            </div>
+          </div>
+        </footer>
+        {/* Scroll Top */}
+        <a
+          href="#"
+          id="scroll-top"
+          className="scroll-top d-flex align-items-center justify-content-center"
+        >
+          <i className="bi bi-arrow-up-short" />
+        </a>
+        {/* Preloader */}
+        <div id="preloader" />
+        {/* Vendor JS Files */}
+        {/* Main JS File */}
+      </div>
+    </>
+  );
+}
