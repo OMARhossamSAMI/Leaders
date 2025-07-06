@@ -1,0 +1,17 @@
+/* Force header background dark */
+#header {
+  background: rgba(0, 0, 0, 0.8); /* dark with transparency */
+  transition: background 0.3s ease;
+}
+
+#header.scrolled {
+  background: rgba(0, 0, 0, 0.9); /* keep dark when scrolled */
+}
+
+#header .navmenu a {
+  color: #fff; /* force nav links to white */
+}
+
+#header .navmenu a.active {
+  color: #00bfff; /* highlight active link */
+}
