@@ -81,7 +81,7 @@ export default function WeAreHiringPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
@@ -93,9 +93,6 @@ export default function WeAreHiringPage() {
                   <ul>
                     <li>
                       <a href="about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="our-staff">Our Staff</a>
                     </li>
                     <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
@@ -112,7 +109,7 @@ export default function WeAreHiringPage() {
                   <a href="students-life">Students Life</a>
                 </li>
                 <li>
-                  <a href="#">We Are Hiring</a>
+                  <a href="#" className="active">We Are Hiring</a>
                 </li>
                 <li>
                   <a href="contact">Contact Us</a>

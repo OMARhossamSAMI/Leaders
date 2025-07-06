@@ -82,7 +82,7 @@ export default function StudentsLifePage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
@@ -110,7 +110,7 @@ export default function StudentsLifePage() {
                   <a href="curriculum">Curriculum</a>
                 </li>
                 <li>
-                  <a href="#">Students Life</a>
+                  <a href="#" className="active">Students Life</a>
                 </li>
                 <li>
                   <a href="hiring">We Are Hiring</a>

@@ -9396,3 +9396,15 @@ section,
   border-radius: 12px;
   font-size: 0.8rem;
 }
+
+.value-card {
+  border-radius: 8px;
+  background: #fff;
+  transition: transform 0.3s ease;
+}
+.value-card:hover {
+  transform: translateY(-5px);
+}
+.value-icon i {
+  display: inline-block;
+}

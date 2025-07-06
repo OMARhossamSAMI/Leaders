@@ -4,6 +4,7 @@ import React from "react";
 
 export default function ApplyPage() {
   return (
+    
     <main className="container my-5">
       <div className="row align-items-center">
         <div className="col-lg-7">
