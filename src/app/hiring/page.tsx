@@ -514,7 +514,7 @@ export default function WeAreHiringPage() {
                       </div>
                     </div>
                     <div className="event-action">
-                      <a href="#" className="btn-register">
+                      <a href="/hiring/apply" className="btn-register">
                         Apply Now
                       </a>
                     </div>
@@ -538,7 +538,7 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <a href="#" className="btn-register">
+                        <a href="/hiring/apply" className="btn-register">
                           Apply Now
                         </a>
                       </div>
@@ -562,7 +562,7 @@ export default function WeAreHiringPage() {
                           </div>
                         </div>
                         <div className="event-action">
-                          <a href="#" className="btn-register">
+                          <a href="/hiring/apply" className="btn-register">
                             Apply Now
                           </a>
                         </div>
@@ -575,7 +575,7 @@ export default function WeAreHiringPage() {
                   data-aos="fade-up"
                   data-aos-delay={200}
                 >
-                  <div className="row align-items-center">
+                  {/* <div className="row align-items-center">
                     <div className="col-lg-7">
                       <div className="impact-content">
                         <h3>Employment Application</h3>
@@ -907,7 +907,7 @@ export default function WeAreHiringPage() {
                         </form>
                       </div>
                     </div>
-                  </div>
+                  </div>*/}
                 </div>
               </div>
             </div>
