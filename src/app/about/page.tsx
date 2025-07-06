@@ -82,12 +82,12 @@ export default function AboutPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/" >
                     Home
                   </a>
                 </li>
                 <li className="dropdown">
-                  <a href="#">
+                  <a href="#" className="active">
                     <span>About Us</span>{" "}
                     <i className="bi bi-chevron-down toggle-dropdown" />
                   </a>
