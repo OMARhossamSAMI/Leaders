@@ -70,7 +70,7 @@ export default function StudentsLifePage() {
           className="header d-flex align-items-center fixed-top"
         >
           <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-            <a href="index.html" className="logo d-flex align-items-center">
+            <a href="/" className="logo d-flex align-items-center">
               <img
                 src="assets/img/lic_logo.png"
                 alt="School Logo"
@@ -81,43 +81,41 @@ export default function StudentsLifePage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="index.html" className="active">
+                  <a href="/" className="active">
                     Home
                   </a>
                 </li>
                 <li className="dropdown">
-                  <a href="about.html">
+                  <a href="about">
                     <span>About Us</span>{" "}
                     <i className="bi bi-chevron-down toggle-dropdown" />
                   </a>
                   <ul>
                     <li>
-                      <a href="about.html">About Us</a>
+                      <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="Our-staff.html">Our Staff</a>
+                      <a href="our-staff">Our Staff</a>
                     </li>
                     <li>
-                      <a href="campus-facilities.html">
-                        Campus &amp; Facilities
-                      </a>
+                      <a href="campus-facilities">Campus &amp; Facilities</a>
                     </li>
                   </ul>
                 </li>
                 <li>
-                  <a href="admissions.html">Admissions</a>
+                  <a href="admissions">Admissions</a>
                 </li>
                 <li>
-                  <a href="curriculum.html">Curriculum</a>
+                  <a href="curriculum">Curriculum</a>
                 </li>
                 <li>
-                  <a href="students-life.html">Students Life</a>
+                  <a href="#">Students Life</a>
                 </li>
                 <li>
-                  <a href="hiring.html">We Are Hiring</a>
+                  <a href="hiring">We Are Hiring</a>
                 </li>
                 <li>
-                  <a href="contact.html">Contact Us</a>
+                  <a href="contact">Contact Us</a>
                 </li>
               </ul>
               <i className="mobile-nav-toggle d-xl-none bi bi-list" />
@@ -143,7 +141,7 @@ export default function StudentsLifePage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="index.html">Home</a>
+                    <a href="/">Home</a>
                   </li>
                   <li className="current">Students Life</li>
                 </ol>
@@ -1162,7 +1160,7 @@ export default function StudentsLifePage() {
           <div className="container footer-top">
             <div className="row gy-4">
               <div className="col-lg-4 col-md-6 footer-about">
-                <a href="index.html" className="logo d-flex align-items-center">
+                <a href="/" className="logo d-flex align-items-center">
                   <span className="sitename">NiceSchool</span>
                 </a>
                 <div className="footer-contact pt-3">

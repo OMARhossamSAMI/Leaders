@@ -95,7 +95,7 @@ export default function ContactPage() {
                       <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="Our-staff">Our Staff</a>
+                      <a href="our-staff">Our Staff</a>
                     </li>
                     <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>

@@ -64,7 +64,7 @@ export default function Home() {
                     <a href="/about">About Us</a>
                   </li>
                   <li>
-                    <a href="/Our-staff">Our Staff</a>
+                    <a href="/our-staff">Our Staff</a>
                   </li>
                   <li>
                     <a href="/campus-facilities">Campus &amp; Facilities</a>
@@ -78,7 +78,7 @@ export default function Home() {
                 <a href="/curriculum">Curriculum</a>
               </li>
               <li>
-                <a href="/student-life">Students Life</a>
+                <a href="/students-life">Students Life</a>
               </li>
               <li>
                 <a href="/hiring">We Are Hiring</a>
