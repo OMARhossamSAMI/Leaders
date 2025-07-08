@@ -1,7 +1,8 @@
 /* === HEADINGS === */
 /* Overall container */
-.clubs-content {
-  padding: 2rem 1rem;
+.club-content {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
 }
 
 .clubs-header h3,

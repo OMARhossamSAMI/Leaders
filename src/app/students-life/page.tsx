@@ -834,129 +834,112 @@ export default function StudentsLifePage() {
                   </div>
                   {/* Clubs */}
                   <div
-                    className="tab-pane fade"
-                    id="students-life-clubs"
-                    role="tabpanel"
-                    aria-labelledby="clubs-tab"
-                  >
-                    <section className="clubs-content">
-                      <header className="clubs-header text-center mb-4">
-                        <h3>Clubs at Leaders International College</h3>
-                        <p>
-                          At Leaders International College, clubs play a vital
-                          role in the holistic development of our students
-                          during the Primary Years Programme (PYP). Engaging in
-                          clubs helps students develop new skills, discover
-                          passions, and build meaningful friendships.
-                        </p>
-                      </header>
+  className="tab-pane fade"
+  id="students-life-clubs"
+  role="tabpanel"
+  aria-labelledby="clubs-tab"
+>
+  <section
+    className="clubs-content"
+    style={{
+      background: "#fff",
+      borderRadius: "12px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+      padding: "40px",
+    }}
+  >
+    <header className="clubs-header text-center mb-4">
+      <h3>Clubs at Leaders International College</h3>
+      <p>
+        At Leaders International College, clubs play a vital role in the holistic development of our students during the Primary Years Programme (PYP). Engaging in clubs helps students develop new skills, discover passions, and build meaningful friendships.
+      </p>
+    </header>
 
-                      <section className="clubs-dynamic text-center mb-5">
-                        <h4>Dynamic Club Offerings</h4>
-                        <p>
-                          Our selection of clubs is specially designed to cater
-                          to the diverse interests of our young learners in the
-                          PYP stage. Recognizing that interests can vary
-                          significantly from year to year, the range of clubs
-                          offered at Leaders International College is dynamic
-                          and responsive. Each academic year, we assess the
-                          interests and preferences of our students and adapt
-                          our club offerings accordingly. This approach ensures
-                          that our clubs remain engaging, relevant, and exciting
-                          for students.
-                        </p>
-                      </section>
+    <section className="clubs-dynamic text-center mb-5">
+      <h4>Dynamic Club Offerings</h4>
+      <p>
+        Our selection of clubs is specially designed to cater to the diverse interests of our young learners in the PYP stage. Recognizing that interests can vary significantly from year to year, the range of clubs offered at Leaders International College is dynamic and responsive. Each academic year, we assess the interests and preferences of our students and adapt our club offerings accordingly. This approach ensures that our clubs remain engaging, relevant, and exciting for students.
+      </p>
+    </section>
 
-                      <div className="clubs-grid">
-                        <div className="club-card">
-                          <img
-                            src="assets/img/education/art-club.jpg"
-                            alt="Art Club"
-                          />
-                          <h5>Art Club</h5>
-                          <p>
-                            Encourages creativity through drawing, painting, and
-                            crafting.
-                          </p>
-                        </div>
-                        <div className="club-card">
-                          <img
-                            src="assets/img/education/science-club.jpg"
-                            alt="Science Club"
-                          />
-                          <h5>Science Club</h5>
-                          <p>
-                            Engage in fun and educational scientific
-                            experiments.
-                          </p>
-                        </div>
-                        <div className="club-card">
-                          <img
-                            src="assets/img/education/drama-club.jpg"
-                            alt="Drama Club"
-                          />
-                          <h5>Drama Club</h5>
-                          <p>
-                            Gain confidence and express creativity through
-                            performance.
-                          </p>
-                        </div>
+    <div className="clubs-grid">
+      <div className="club-card">
+        <img
+          src="assets/img/education/art-club.jpg"
+          alt="Art Club"
+        />
+        <h5>Art Club</h5>
+        <p>
+          Encourages creativity through drawing, painting, and crafting.
+        </p>
+      </div>
+      <div className="club-card">
+        <img
+          src="assets/img/education/science-club.jpg"
+          alt="Science Club"
+        />
+        <h5>Science Club</h5>
+        <p>
+          Engage in fun and educational scientific experiments.
+        </p>
+      </div>
+      <div className="club-card">
+        <img
+          src="assets/img/education/drama-club.jpg"
+          alt="Drama Club"
+        />
+        <h5>Drama Club</h5>
+        <p>
+          Gain confidence and express creativity through performance.
+        </p>
+      </div>
 
-                        <div className="clubs-bottom">
-                          <div className="club-card">
-                            <img
-                              src="assets/img/education/eco-club.jpg"
-                              alt="Eco Club"
-                            />
-                            <h5>Eco Club</h5>
-                            <p>
-                              Focuses on sustainability and environmental
-                              awareness.
-                            </p>
-                          </div>
-                          <div className="club-card">
-                            <img
-                              src="assets/img/education/chess-club.jpg"
-                              alt="Chess Club"
-                            />
-                            <h5>Chess Club</h5>
-                            <p>
-                              Build strategic thinking and problem-solving
-                              skills.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+      <div className="clubs-bottom">
+        <div className="club-card">
+          <img
+            src="assets/img/education/eco-club.jpg"
+            alt="Eco Club"
+          />
+          <h5>Eco Club</h5>
+          <p>
+            Focuses on sustainability and environmental awareness.
+          </p>
+        </div>
+        <div className="club-card">
+          <img
+            src="assets/img/education/chess-club.jpg"
+            alt="Chess Club"
+          />
+          <h5>Chess Club</h5>
+          <p>
+            Build strategic thinking and problem-solving skills.
+          </p>
+        </div>
+      </div>
+    </div>
 
-                      {/* ✅ Benefits + Conclusion row stays the same */}
-                      <div className="clubs-info-row">
-                        <section className="clubs-benefits">
-                          <h4>Benefits of Participation</h4>
-                          <ul>
-                            <li>
-                              Explore interests in a structured, fun
-                              environment.
-                            </li>
-                            <li>Build social skills by engaging with peers.</li>
-                            <li>Gain a sense of belonging and achievement.</li>
-                            <li>
-                              Strengthen teamwork and leadership abilities.
-                            </li>
-                          </ul>
-                        </section>
+    {/* ✅ Benefits + Conclusion row stays the same */}
+    <div className="clubs-info-row">
+      <section className="clubs-benefits">
+        <h4>Benefits of Participation</h4>
+        <ul>
+          <li>Explore interests in a structured, fun environment.</li>
+          <li>Build social skills by engaging with peers.</li>
+          <li>Gain a sense of belonging and achievement.</li>
+          <li>Strengthen teamwork and leadership abilities.</li>
+        </ul>
+      </section>
 
-                        <section className="clubs-conclusion">
-                          <h4>Conclusion</h4>
-                          <p>
-                            Clubs at Leaders International College are a key
-                            part of our educational mission. By offering
-                            dynamic, interest-based clubs, we help students grow
-                            both personally and academically.
-                          </p>
-                        </section>
-                      </div>
-                    </section>
-                  </div>
+      <section className="clubs-conclusion">
+        <h4>Conclusion</h4>
+        <p>
+          Clubs at Leaders International College are a key part of our educational mission. By offering dynamic, interest-based clubs, we help students grow both personally and academically.
+        </p>
+      </section>
+    </div>
+  </section>
+</div>
+
 
                   {/* Trips */}
                   <div
