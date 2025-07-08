@@ -1258,119 +1258,76 @@ export default function StudentsLifePage() {
                       }}
                     >
                       <header className="events-header text-center mb-5">
-                        <h3>School Events</h3>
+                        <h3>School Clubs</h3>
                         <p>
-                          At Leaders International College, our vibrant school
-                          calendar is filled with a diverse array of events that
-                          cater to specific grades and the whole school
-                          community. These events are designed to foster school
-                          spirit, celebrate achievements, and bring together
-                          students, staff, and families in meaningful ways.
+                          Discover our engaging clubs that foster creativity,
+                          scientific inquiry, strategic thinking, and
+                          environmental awareness.
                         </p>
                       </header>
 
-                      <section className="events-highlights mb-5">
-                        <h4>Highlight Events</h4>
-                        <div className="events-cards">
+                      <div className="event-grid">
+                        {/* Top 3 Cards */}
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/art.jpg"
+                            alt="Art Club"
+                          />
+                          <h5>Art Club</h5>
+                          <p>
+                            Encourages creativity through drawing, painting, and
+                            crafting.
+                          </p>
+                        </div>
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/science.jpg"
+                            alt="Science Club"
+                          />
+                          <h5>Science Club</h5>
+                          <p>
+                            Engage in fun and educational scientific
+                            experiments.
+                          </p>
+                        </div>
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/drama.jpg"
+                            alt="Drama Club"
+                          />
+                          <h5>Drama Club</h5>
+                          <p>
+                            Gain confidence and express creativity through
+                            performance.
+                          </p>
+                        </div>
+
+                        {/* Bottom 2 Cards */}
+                        <div className="event-bottom">
                           <div className="event-card">
                             <img
-                              src="assets/img/education/carnival.jpg"
-                              alt="School Carnival"
+                              src="assets/img/education/eco.jpg"
+                              alt="Eco Club"
                             />
-                            <h5>School Carnival</h5>
+                            <h5>Eco Club</h5>
                             <p>
-                              Our annual school carnival is a highlight,
-                              bringing the entire school community together for
-                              a day of fun, games, and entertainment.
+                              Focuses on sustainability and environmental
+                              awareness.
                             </p>
                           </div>
                           <div className="event-card">
                             <img
-                              src="assets/img/education/sohour.jpg"
-                              alt="School Sohour"
+                              src="assets/img/education/chess.jpg"
+                              alt="Chess Club"
                             />
-                            <h5>School Sohour</h5>
+                            <h5>Chess Club</h5>
                             <p>
-                              During Ramadan, the school sohour event fosters a
-                              sense of community and shared heritage, featuring
-                              good food and cultural performances.
-                            </p>
-                          </div>
-                          <div className="event-card">
-                            <img
-                              src="assets/img/education/cas-exhibition.jpg"
-                              alt="CAS Exhibition"
-                            />
-                            <h5>CAS Exhibition</h5>
-                            <p>
-                              This event showcases the creativity, activity, and
-                              service projects of our Diploma Programme
-                              students.
-                            </p>
-                          </div>
-                          <div className="event-card">
-                            <img
-                              src="assets/img/education/pyp-exhibition.jpg"
-                              alt="PYP Exhibition"
-                            />
-                            <h5>PYP Exhibition</h5>
-                            <p>
-                              PYP 8 students present their year-long projects,
-                              demonstrating their learning outcomes and personal
-                              growth.
-                            </p>
-                          </div>
-                          <div className="event-card">
-                            <img
-                              src="assets/img/education/myp-exhibition.jpg"
-                              alt="MYP Personal Project Exhibition"
-                            />
-                            <h5>MYP Personal Project Exhibition</h5>
-                            <p>
-                              MYP 5 students display their independent projects,
-                              highlighting their creativity and innovation.
+                              Build strategic thinking and problem-solving
+                              skills.
                             </p>
                           </div>
                         </div>
-                      </section>
-
-                      <section className="events-community mb-5">
-                        <h4>Community Engagement</h4>
-                        <p>
-                          We ensure our school calendar is packed with events
-                          that invite and bring together our entire school
-                          community. These occasions enrich the educational
-                          experience and strengthen bonds among students,
-                          teachers, and families.
-                        </p>
-                      </section>
-
-                      <div className="events-tool text-center mb-5">
-                        <h4>Access the School Calendar</h4>
-                        <p>
-                          To keep our community informed and engaged, a detailed
-                          school calendar is available for download. This
-                          calendar outlines all our scheduled events, allowing
-                          students and parents to plan ahead and participate
-                          fully. Check out the upcoming events and mark your
-                          calendars!
-                        </p>
-                        <a href="#" className="events-btn" target="_blank">
-                          Download School Calendar
-                        </a>
                       </div>
-
-                      <footer className="events-conclusion">
-                        <p>
-                          Our school events play a crucial role in creating an
-                          enriching and inclusive atmosphere at Leaders
-                          International College. They are integral to our
-                          educational mission, providing dynamic learning
-                          experiences and fostering a strong, supportive
-                          community. Join us in celebrating and building lasting
-                          memories throughout the school year!
-                        </p>
-                      </footer>
                     </section>
                   </div>
 
