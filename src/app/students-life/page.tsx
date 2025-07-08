@@ -82,9 +82,7 @@ export default function StudentsLifePage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/">
-                    Home
-                  </a>
+                  <a href="/">Home</a>
                 </li>
                 <li className="dropdown">
                   <a href="about">
@@ -110,7 +108,9 @@ export default function StudentsLifePage() {
                   <a href="curriculum">Curriculum</a>
                 </li>
                 <li>
-                  <a href="#" className="active">Students Life</a>
+                  <a href="#" className="active">
+                    Students Life
+                  </a>
                 </li>
                 <li>
                   <a href="hiring">We Are Hiring</a>
@@ -573,8 +573,9 @@ export default function StudentsLifePage() {
                       <header className="dayinlic-header">
                         <h1>Day in the Life of an LIC Student</h1>
                         <p>
-                          At Leaders International College, each day is thoughtfully planned to
-                          balance academics, activities, and personal growth.
+                          At Leaders International College, each day is
+                          thoughtfully planned to balance academics, activities,
+                          and personal growth.
                         </p>
                       </header>
                       <div className="dayinlic-cards">
@@ -589,8 +590,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Morning Arrival</h4>
                             <p>
-                              Students arrive early and gather for the morning line-up at 7:40 AM —
-                              announcements and a focused start.
+                              Students arrive early and gather for the morning
+                              line-up at 7:40 AM — announcements and a focused
+                              start.
                             </p>
                           </div>
                         </article>
@@ -605,9 +607,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Academic Sessions</h4>
                             <p>
-                              By 8:00 AM, classes are in full swing. Students explore core
-                              subjects, using interactive panels that make learning engaging and
-                              dynamic.
+                              By 8:00 AM, classes are in full swing. Students
+                              explore core subjects, using interactive panels
+                              that make learning engaging and dynamic.
                             </p>
                           </div>
                         </article>
@@ -622,9 +624,10 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Midday Break and Lunch</h4>
                             <p>
-                              At noon, students enjoy a lunch break. Our dining services provide
-                              nutritious meals for diverse tastes, with indoor and outdoor seating
-                              for relaxing and socializing.
+                              At noon, students enjoy a lunch break. Our dining
+                              services provide nutritious meals for diverse
+                              tastes, with indoor and outdoor seating for
+                              relaxing and socializing.
                             </p>
                           </div>
                         </article>
@@ -639,8 +642,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Afternoon Classes</h4>
                             <p>
-                              After lunch, students continue with afternoon sessions — hands-on
-                              labs, creative projects, and group work build practical skills and
+                              After lunch, students continue with afternoon
+                              sessions — hands-on labs, creative projects, and
+                              group work build practical skills and
                               collaboration.
                             </p>
                           </div>
@@ -656,8 +660,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Dismissal</h4>
                             <p>
-                              The school day ends at 2:55 PM. Students pack up and head home or
-                              stay for additional activities and homework catch-up.
+                              The school day ends at 2:55 PM. Students pack up
+                              and head home or stay for additional activities
+                              and homework catch-up.
                             </p>
                           </div>
                         </article>
@@ -672,9 +677,10 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Clubs &amp; Extracurricular Activities</h4>
                             <p>
-                              On special days after dismissal, clubs and activities help students
-                              develop interests in arts, sports, robotics, debate, and more,
-                              building teamwork and leadership skills.
+                              On special days after dismissal, clubs and
+                              activities help students develop interests in
+                              arts, sports, robotics, debate, and more, building
+                              teamwork and leadership skills.
                             </p>
                           </div>
                         </article>
@@ -700,9 +706,10 @@ export default function StudentsLifePage() {
                       <header className="healthwellness-header">
                         <h1>Commitment to Student Well-being</h1>
                         <p>
-                          At Leaders International College, student well-being is at the heart of our
-                          mission — blending healthcare, mental support, fitness, nutrition, and
-                          wellness education.
+                          At Leaders International College, student well-being
+                          is at the heart of our mission — blending healthcare,
+                          mental support, fitness, nutrition, and wellness
+                          education.
                         </p>
                       </header>
                       <div className="healthwellness-cards">
@@ -717,8 +724,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Comprehensive Health Services</h4>
                             <p>
-                              Our well-staffed health center provides medical services, emergency care,
-                              and support for chronic issues. Regular health education promotes healthy
+                              Our well-staffed health center provides medical
+                              services, emergency care, and support for chronic
+                              issues. Regular health education promotes healthy
                               habits campus-wide.
                             </p>
                           </div>
@@ -734,8 +742,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Counseling Services</h4>
                             <p>
-                              Our dedicated counselor helps students with academic, social, or personal
-                              challenges, ensuring they navigate school life with confidence and
+                              Our dedicated counselor helps students with
+                              academic, social, or personal challenges, ensuring
+                              they navigate school life with confidence and
                               resilience.
                             </p>
                           </div>
@@ -751,8 +760,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Psychological Support</h4>
                             <p>
-                              A qualified psychologist supports students with emotional or psychological
-                              challenges, providing them with tools to manage mental well-being
+                              A qualified psychologist supports students with
+                              emotional or psychological challenges, providing
+                              them with tools to manage mental well-being
                               effectively.
                             </p>
                           </div>
@@ -768,9 +778,10 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Physical Fitness</h4>
                             <p>
-                              Physical education is integral to our curriculum. Students use our gym,
-                              courts, and shaded pool to stay active, build teamwork, and boost
-                              leadership skills.
+                              Physical education is integral to our curriculum.
+                              Students use our gym, courts, and shaded pool to
+                              stay active, build teamwork, and boost leadership
+                              skills.
                             </p>
                           </div>
                         </article>
@@ -785,8 +796,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Nutritional Services</h4>
                             <p>
-                              Our dining team serves balanced meals designed by nutrition experts. We
-                              teach students how to make healthy food choices every day.
+                              Our dining team serves balanced meals designed by
+                              nutrition experts. We teach students how to make
+                              healthy food choices every day.
                             </p>
                           </div>
                         </article>
@@ -801,8 +813,9 @@ export default function StudentsLifePage() {
                           <div className="card-body">
                             <h4>Wellness Programs</h4>
                             <p>
-                              Year-round wellness programs cover stress management, mental resilience,
-                              and physical health — empowering students to build lifelong healthy
+                              Year-round wellness programs cover stress
+                              management, mental resilience, and physical health
+                              — empowering students to build lifelong healthy
                               habits.
                             </p>
                           </div>
@@ -811,9 +824,10 @@ export default function StudentsLifePage() {
                       <footer className="healthwellness-conclusion">
                         <h4>Conclusion</h4>
                         <p>
-                          Health and wellness are woven into the fabric of student life at LIC. With
-                          medical care, counseling, fitness, nutrition, and wellness initiatives, we
-                          help students thrive in all areas of life.
+                          Health and wellness are woven into the fabric of
+                          student life at LIC. With medical care, counseling,
+                          fitness, nutrition, and wellness initiatives, we help
+                          students thrive in all areas of life.
                         </p>
                       </footer>
                     </section>
@@ -825,105 +839,122 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="clubs-tab"
                   >
-                    <section
-                      className="clubs-content"
-                      style={{
-                        background: "#fff",
-                        borderRadius: "12px",
-                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                        padding: "40px",
-                      }}
-                    >
+                    <section className="clubs-content">
                       <header className="clubs-header text-center mb-4">
                         <h3>Clubs at Leaders International College</h3>
                         <p>
-                          At Leaders International College, clubs play a vital role in the holistic
-                          development of our students during the Primary Years Programme (PYP).
-                          Engaging in clubs helps students develop new skills, discover passions,
-                          and build meaningful friendships.
+                          At Leaders International College, clubs play a vital
+                          role in the holistic development of our students
+                          during the Primary Years Programme (PYP). Engaging in
+                          clubs helps students develop new skills, discover
+                          passions, and build meaningful friendships.
                         </p>
                       </header>
 
                       <section className="clubs-dynamic text-center mb-5">
                         <h4>Dynamic Club Offerings</h4>
                         <p>
-                          Our selection of clubs is specially designed to cater to the diverse
-                          interests of our young learners in the PYP stage. Recognizing that
-                          interests can vary significantly from year to year, the range of clubs
-                          offered at Leaders International College is dynamic and responsive. Each
-                          academic year, we assess the interests and preferences of our students and
-                          adapt our club offerings accordingly. This approach ensures that our clubs
-                          remain engaging, relevant, and exciting for students.
+                          Our selection of clubs is specially designed to cater
+                          to the diverse interests of our young learners in the
+                          PYP stage. Recognizing that interests can vary
+                          significantly from year to year, the range of clubs
+                          offered at Leaders International College is dynamic
+                          and responsive. Each academic year, we assess the
+                          interests and preferences of our students and adapt
+                          our club offerings accordingly. This approach ensures
+                          that our clubs remain engaging, relevant, and exciting
+                          for students.
                         </p>
                       </section>
 
                       <div className="clubs-grid">
                         <div className="club-card">
-                          <img src="assets/img/education/art-club.jpg" alt="Art Club" />
+                          <img
+                            src="assets/img/education/art-club.jpg"
+                            alt="Art Club"
+                          />
                           <h5>Art Club</h5>
                           <p>
-                            Encourages creativity through drawing, painting, and crafting.
+                            Encourages creativity through drawing, painting, and
+                            crafting.
                           </p>
                         </div>
                         <div className="club-card">
-                          <img src="assets/img/education/science-club.jpg" alt="Science Club" />
+                          <img
+                            src="assets/img/education/science-club.jpg"
+                            alt="Science Club"
+                          />
                           <h5>Science Club</h5>
                           <p>
-                            Engage in fun and educational scientific experiments.
+                            Engage in fun and educational scientific
+                            experiments.
                           </p>
                         </div>
                         <div className="club-card">
-                          <img src="assets/img/education/drama-club.jpg" alt="Drama Club" />
+                          <img
+                            src="assets/img/education/drama-club.jpg"
+                            alt="Drama Club"
+                          />
                           <h5>Drama Club</h5>
                           <p>
-                            Gain confidence and express creativity through performance.
+                            Gain confidence and express creativity through
+                            performance.
                           </p>
                         </div>
-                        <div className="club-card">
-                          <img src="assets/img/education/eco-club.jpg" alt="Eco Club" />
-                          <h5>Eco Club</h5>
-                          <p>
-                            Focuses on sustainability and environmental awareness.
-                          </p>
-                        </div>
-                        <div className="club-card">
-                          <img src="assets/img/education/chess-club.jpg" alt="Chess Club" />
-                          <h5>Chess Club</h5>
-                          <p>
-                            Build strategic thinking and problem-solving skills.
-                          </p>
+
+                        <div className="clubs-bottom">
+                          <div className="club-card">
+                            <img
+                              src="assets/img/education/eco-club.jpg"
+                              alt="Eco Club"
+                            />
+                            <h5>Eco Club</h5>
+                            <p>
+                              Focuses on sustainability and environmental
+                              awareness.
+                            </p>
+                          </div>
+                          <div className="club-card">
+                            <img
+                              src="assets/img/education/chess-club.jpg"
+                              alt="Chess Club"
+                            />
+                            <h5>Chess Club</h5>
+                            <p>
+                              Build strategic thinking and problem-solving
+                              skills.
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Benefits wrapped in card */}
-                      <section
-                        className="clubs-benefits mt-5"
-                        style={{
-                          background: "#f9f9f9",
-                          borderRadius: "12px",
-                          boxShadow: "0 5px 20px rgba(0, 0, 0, 0.05)",
-                          padding: "30px",
-                        }}
-                      >
-                        <h4>Benefits of Participation</h4>
-                        <ul>
-                          <li>Explore interests in a structured, fun environment.</li>
-                          <li>Build social skills by engaging with peers.</li>
-                          <li>Gain a sense of belonging and achievement.</li>
-                          <li>Strengthen teamwork and leadership abilities.</li>
-                        </ul>
-                      </section>
+                      {/* ✅ Benefits + Conclusion row stays the same */}
+                      <div className="clubs-info-row">
+                        <section className="clubs-benefits">
+                          <h4>Benefits of Participation</h4>
+                          <ul>
+                            <li>
+                              Explore interests in a structured, fun
+                              environment.
+                            </li>
+                            <li>Build social skills by engaging with peers.</li>
+                            <li>Gain a sense of belonging and achievement.</li>
+                            <li>
+                              Strengthen teamwork and leadership abilities.
+                            </li>
+                          </ul>
+                        </section>
 
-                      {/* Conclusion with line above */}
-                      <footer className="clubs-conclusion mt-4">
-                        <hr style={{ border: "0", borderTop: "2px solid #007BFF", width: "60px", margin: "20px 0" }} />
-                        <h4>Conclusion</h4>
-                        <p>
-                          Clubs at Leaders International College are a key part of our educational
-                          mission. By offering dynamic, interest-based clubs, we help students grow
-                          both personally and academically.
-                        </p>
-                      </footer>
+                        <section className="clubs-conclusion">
+                          <h4>Conclusion</h4>
+                          <p>
+                            Clubs at Leaders International College are a key
+                            part of our educational mission. By offering
+                            dynamic, interest-based clubs, we help students grow
+                            both personally and academically.
+                          </p>
+                        </section>
+                      </div>
                     </section>
                   </div>
 
@@ -955,10 +986,14 @@ export default function StudentsLifePage() {
                           />
                           <h4>Curriculum-Integrated Daily Trips</h4>
                           <p>
-                            Throughout the academic year, we organize daily trips that are directly linked to our curriculum.
-                            These excursions are designed to complement classroom learning, providing students with hands-on
-                            experiences that enrich their understanding of specific subjects. Whether it’s a visit to a local
-                            museum, a scientific center, or a historical site, these trips are tailored to reinforce the curriculum
+                            Throughout the academic year, we organize daily
+                            trips that are directly linked to our curriculum.
+                            These excursions are designed to complement
+                            classroom learning, providing students with hands-on
+                            experiences that enrich their understanding of
+                            specific subjects. Whether it’s a visit to a local
+                            museum, a scientific center, or a historical site,
+                            these trips are tailored to reinforce the curriculum
                             and ignite students' curiosity.
                           </p>
                         </div>
@@ -970,22 +1005,31 @@ export default function StudentsLifePage() {
                           />
                           <h4>Exploring Egypt</h4>
                           <p>
-                            In addition to daily educational trips, we offer travel opportunities within Egypt that allow
-                            students to discover and appreciate the rich cultural heritage and natural beauty of their
-                            country. These trips vary each year, depending on the curriculum and student interests,
-                            ensuring that learning remains dynamic and engaging. By exploring different regions of Egypt,
-                            students gain a deeper understanding of their national identity and the diverse communities
-                            and ecosystems within their country.
+                            In addition to daily educational trips, we offer
+                            travel opportunities within Egypt that allow
+                            students to discover and appreciate the rich
+                            cultural heritage and natural beauty of their
+                            country. These trips vary each year, depending on
+                            the curriculum and student interests, ensuring that
+                            learning remains dynamic and engaging. By exploring
+                            different regions of Egypt, students gain a deeper
+                            understanding of their national identity and the
+                            diverse communities and ecosystems within their
+                            country.
                           </p>
                         </div>
                       </div>
 
                       <footer className="trips-conclusion mt-4">
                         <p>
-                          Trips at Leaders International College are more than just educational outings; they are pivotal
-                          experiences that contribute significantly to the intellectual and personal development of our
-                          students. Each trip is an opportunity for discovery, learning, and growth, reflecting our
-                          commitment to providing a well-rounded education that prepares students for a globalized world.
+                          Trips at Leaders International College are more than
+                          just educational outings; they are pivotal experiences
+                          that contribute significantly to the intellectual and
+                          personal development of our students. Each trip is an
+                          opportunity for discovery, learning, and growth,
+                          reflecting our commitment to providing a well-rounded
+                          education that prepares students for a globalized
+                          world.
                         </p>
                       </footer>
                     </section>
@@ -1010,8 +1054,10 @@ export default function StudentsLifePage() {
                       <header className="council-header text-center mb-5">
                         <h3>Student Council</h3>
                         <p>
-                          The Student Council at Leaders International College plays a crucial role in our school community,
-                          representing the student body and enhancing school life through leadership and initiative.
+                          The Student Council at Leaders International College
+                          plays a crucial role in our school community,
+                          representing the student body and enhancing school
+                          life through leadership and initiative.
                         </p>
                       </header>
 
@@ -1025,8 +1071,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>Voice of the Students</h5>
                             <p>
-                              The council acts as a liaison between the students and the school administration,
-                              ensuring that student opinions and ideas are heard.
+                              The council acts as a liaison between the students
+                              and the school administration, ensuring that
+                              student opinions and ideas are heard.
                             </p>
                           </div>
                           <div className="council-card">
@@ -1036,8 +1083,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>Event Planning</h5>
                             <p>
-                              They organize and manage school events and social activities, which boost engagement
-                              and foster a sense of community.
+                              They organize and manage school events and social
+                              activities, which boost engagement and foster a
+                              sense of community.
                             </p>
                           </div>
                           <div className="council-card">
@@ -1047,8 +1095,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>Community Engagement</h5>
                             <p>
-                              Council members lead community service projects, promoting a culture of giving back
-                              and responsibility among students.
+                              Council members lead community service projects,
+                              promoting a culture of giving back and
+                              responsibility among students.
                             </p>
                           </div>
                         </div>
@@ -1057,9 +1106,11 @@ export default function StudentsLifePage() {
                       <section className="council-participation mb-5">
                         <h4>Participation and Elections</h4>
                         <p>
-                          Participation in the Student Council is open to all students through an annual
-                          democratic election process. This opportunity allows students to develop essential
-                          leadership skills, engage in school governance, and influence key aspects of their
+                          Participation in the Student Council is open to all
+                          students through an annual democratic election
+                          process. This opportunity allows students to develop
+                          essential leadership skills, engage in school
+                          governance, and influence key aspects of their
                           educational environment.
                         </p>
                       </section>
@@ -1067,22 +1118,24 @@ export default function StudentsLifePage() {
                       <section className="council-impact mb-5">
                         <h4>Impact</h4>
                         <p>
-                          Serving on the Student Council helps students develop crucial skills like leadership,
-                          decision-making, and communication, preparing them for active participation in their
-                          communities and future careers.
+                          Serving on the Student Council helps students develop
+                          crucial skills like leadership, decision-making, and
+                          communication, preparing them for active participation
+                          in their communities and future careers.
                         </p>
                         <p>
-                          The Student Council is integral to student life at Leaders International College,
-                          empowering students to take on leadership roles and make a positive impact within
-                          and beyond the school.
+                          The Student Council is integral to student life at
+                          Leaders International College, empowering students to
+                          take on leadership roles and make a positive impact
+                          within and beyond the school.
                         </p>
                       </section>
 
                       <div className="council-tool text-center">
                         <h4>Get Involved!</h4>
                         <p>
-                          Ready to make a difference? Run for a position or vote in the next Student Council
-                          election!
+                          Ready to make a difference? Run for a position or vote
+                          in the next Student Council election!
                         </p>
                         <button className="council-btn">
                           Explore Election Process
@@ -1110,10 +1163,12 @@ export default function StudentsLifePage() {
                       <header className="arts-header text-center mb-5">
                         <h3>Arts Programs</h3>
                         <p>
-                          Our arts programs are dedicated to nurturing creativity and artistic
-                          expression among students. We offer a wide range of opportunities in the
-                          visual and performing arts, allowing students to explore and develop
-                          their talents in music, drama, painting, and more.
+                          Our arts programs are dedicated to nurturing
+                          creativity and artistic expression among students. We
+                          offer a wide range of opportunities in the visual and
+                          performing arts, allowing students to explore and
+                          develop their talents in music, drama, painting, and
+                          more.
                         </p>
                       </header>
 
@@ -1125,11 +1180,12 @@ export default function StudentsLifePage() {
                           />
                           <h4>Comprehensive Arts Education</h4>
                           <p>
-                            Our curriculum includes structured arts education that encourages
-                            students to explore various artistic disciplines. From drawing and
-                            sculpture to music composition and theater production, students receive
-                            comprehensive instruction that enhances their understanding and
-                            appreciation of the arts.
+                            Our curriculum includes structured arts education
+                            that encourages students to explore various artistic
+                            disciplines. From drawing and sculpture to music
+                            composition and theater production, students receive
+                            comprehensive instruction that enhances their
+                            understanding and appreciation of the arts.
                           </p>
                         </div>
 
@@ -1140,11 +1196,13 @@ export default function StudentsLifePage() {
                           />
                           <h4>Annual Art Competition</h4>
                           <p>
-                            A highlight of our arts calendar is the annual art competition, which
-                            invites students from all grades to showcase their artistic talents.
-                            This event is not only a competition but also a celebration of
-                            creativity within our school community. Students get the opportunity to
-                            present their work, receive feedback from experienced judges, and enjoy
+                            A highlight of our arts calendar is the annual art
+                            competition, which invites students from all grades
+                            to showcase their artistic talents. This event is
+                            not only a competition but also a celebration of
+                            creativity within our school community. Students get
+                            the opportunity to present their work, receive
+                            feedback from experienced judges, and enjoy
                             recognition for their artistic endeavors.
                           </p>
                         </div>
@@ -1156,23 +1214,28 @@ export default function StudentsLifePage() {
                           />
                           <h4>Showcasing Talent</h4>
                           <p>
-                            The art competition culminates in an exhibition where the works of our
-                            students are displayed. This event brings together the entire school
-                            community—students, parents, and staff—to appreciate the diverse
-                            artistic talents at Leaders International College. It is a testament to
-                            the vibrancy of our arts programs and the creativity of our students.
+                            The art competition culminates in an exhibition
+                            where the works of our students are displayed. This
+                            event brings together the entire school
+                            community—students, parents, and staff—to appreciate
+                            the diverse artistic talents at Leaders
+                            International College. It is a testament to the
+                            vibrancy of our arts programs and the creativity of
+                            our students.
                           </p>
                         </div>
                       </div>
 
                       <footer className="arts-conclusion">
                         <p>
-                          The arts programs at Leaders International College are a cornerstone of
-                          our educational philosophy, providing students with the tools and
-                          opportunities to express themselves and explore their creativity. Through
-                          events like our annual art competition, we celebrate and cultivate the
-                          artistic potential of every student, preparing them for a future where
-                          they can continue to innovate and inspire.
+                          The arts programs at Leaders International College are
+                          a cornerstone of our educational philosophy, providing
+                          students with the tools and opportunities to express
+                          themselves and explore their creativity. Through
+                          events like our annual art competition, we celebrate
+                          and cultivate the artistic potential of every student,
+                          preparing them for a future where they can continue to
+                          innovate and inspire.
                         </p>
                       </footer>
                     </section>
@@ -1197,11 +1260,12 @@ export default function StudentsLifePage() {
                       <header className="events-header text-center mb-5">
                         <h3>School Events</h3>
                         <p>
-                          At Leaders International College, our vibrant school calendar is filled
-                          with a diverse array of events that cater to specific grades and the
-                          whole school community. These events are designed to foster school
-                          spirit, celebrate achievements, and bring together students, staff, and
-                          families in meaningful ways.
+                          At Leaders International College, our vibrant school
+                          calendar is filled with a diverse array of events that
+                          cater to specific grades and the whole school
+                          community. These events are designed to foster school
+                          spirit, celebrate achievements, and bring together
+                          students, staff, and families in meaningful ways.
                         </p>
                       </header>
 
@@ -1215,9 +1279,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>School Carnival</h5>
                             <p>
-                              Our annual school carnival is a highlight, bringing the entire
-                              school community together for a day of fun, games, and
-                              entertainment.
+                              Our annual school carnival is a highlight,
+                              bringing the entire school community together for
+                              a day of fun, games, and entertainment.
                             </p>
                           </div>
                           <div className="event-card">
@@ -1227,9 +1291,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>School Sohour</h5>
                             <p>
-                              During Ramadan, the school sohour event fosters a sense of
-                              community and shared heritage, featuring good food and cultural
-                              performances.
+                              During Ramadan, the school sohour event fosters a
+                              sense of community and shared heritage, featuring
+                              good food and cultural performances.
                             </p>
                           </div>
                           <div className="event-card">
@@ -1239,8 +1303,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>CAS Exhibition</h5>
                             <p>
-                              This event showcases the creativity, activity, and service
-                              projects of our Diploma Programme students.
+                              This event showcases the creativity, activity, and
+                              service projects of our Diploma Programme
+                              students.
                             </p>
                           </div>
                           <div className="event-card">
@@ -1250,8 +1315,9 @@ export default function StudentsLifePage() {
                             />
                             <h5>PYP Exhibition</h5>
                             <p>
-                              PYP 8 students present their year-long projects, demonstrating
-                              their learning outcomes and personal growth.
+                              PYP 8 students present their year-long projects,
+                              demonstrating their learning outcomes and personal
+                              growth.
                             </p>
                           </div>
                           <div className="event-card">
@@ -1261,8 +1327,8 @@ export default function StudentsLifePage() {
                             />
                             <h5>MYP Personal Project Exhibition</h5>
                             <p>
-                              MYP 5 students display their independent projects, highlighting
-                              their creativity and innovation.
+                              MYP 5 students display their independent projects,
+                              highlighting their creativity and innovation.
                             </p>
                           </div>
                         </div>
@@ -1271,20 +1337,23 @@ export default function StudentsLifePage() {
                       <section className="events-community mb-5">
                         <h4>Community Engagement</h4>
                         <p>
-                          We ensure our school calendar is packed with events that invite and
-                          bring together our entire school community. These occasions enrich the
-                          educational experience and strengthen bonds among students, teachers,
-                          and families.
+                          We ensure our school calendar is packed with events
+                          that invite and bring together our entire school
+                          community. These occasions enrich the educational
+                          experience and strengthen bonds among students,
+                          teachers, and families.
                         </p>
                       </section>
 
                       <div className="events-tool text-center mb-5">
                         <h4>Access the School Calendar</h4>
                         <p>
-                          To keep our community informed and engaged, a detailed school calendar
-                          is available for download. This calendar outlines all our scheduled
-                          events, allowing students and parents to plan ahead and participate
-                          fully. Check out the upcoming events and mark your calendars!
+                          To keep our community informed and engaged, a detailed
+                          school calendar is available for download. This
+                          calendar outlines all our scheduled events, allowing
+                          students and parents to plan ahead and participate
+                          fully. Check out the upcoming events and mark your
+                          calendars!
                         </p>
                         <a href="#" className="events-btn" target="_blank">
                           Download School Calendar
@@ -1293,15 +1362,16 @@ export default function StudentsLifePage() {
 
                       <footer className="events-conclusion">
                         <p>
-                          Our school events play a crucial role in creating an enriching and
-                          inclusive atmosphere at Leaders International College. They are
-                          integral to our educational mission, providing dynamic learning
-                          experiences and fostering a strong, supportive community. Join us in
-                          celebrating and building lasting memories throughout the school year!
+                          Our school events play a crucial role in creating an
+                          enriching and inclusive atmosphere at Leaders
+                          International College. They are integral to our
+                          educational mission, providing dynamic learning
+                          experiences and fostering a strong, supportive
+                          community. Join us in celebrating and building lasting
+                          memories throughout the school year!
                         </p>
                       </footer>
                     </section>
-
                   </div>
 
                   {/* Dining Services */}
@@ -1311,7 +1381,7 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="dining-tab"
                   >
-                   <section
+                    <section
                       className="dining-content"
                       style={{
                         background: "#fff",
@@ -1323,13 +1393,15 @@ export default function StudentsLifePage() {
                       <header className="dining-header text-center mb-5">
                         <h3>On-Campus Dining Services</h3>
                         <p>
-                          At Leaders International College, our on-campus dining services provide
-                          nutritious and delicious meal options for our students and staff. We are
-                          committed to offering a variety of healthy choices that cater to different
-                          dietary needs and preferences. Our dining facilities are designed to be
-                          welcoming spaces where students can enjoy meals and socialize with their
-                          peers, ensuring they have the energy to learn and participate in school
-                          activities effectively.
+                          At Leaders International College, our on-campus dining
+                          services provide nutritious and delicious meal options
+                          for our students and staff. We are committed to
+                          offering a variety of healthy choices that cater to
+                          different dietary needs and preferences. Our dining
+                          facilities are designed to be welcoming spaces where
+                          students can enjoy meals and socialize with their
+                          peers, ensuring they have the energy to learn and
+                          participate in school activities effectively.
                         </p>
                       </header>
 
@@ -1338,7 +1410,11 @@ export default function StudentsLifePage() {
                           src="assets/img/education/dining.jpg"
                           alt="On-Campus Dining"
                           className="img-fluid rounded"
-                          style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
                         />
                       </div>
                     </section>
@@ -1363,7 +1439,15 @@ export default function StudentsLifePage() {
                       <header className="transport-header text-center mb-5">
                         <h3>Transportation</h3>
                         <p>
-                          Leaders International College offers a comprehensive transportation service to ensure safe and convenient travel to and from school for our students. Our fleet of buses is well-maintained and equipped with safety features, and all routes are monitored to adhere to the highest standards of safety and efficiency. We aim to provide a reliable service that contributes to the overall well-being and daily convenience of our students and their families.
+                          Leaders International College offers a comprehensive
+                          transportation service to ensure safe and convenient
+                          travel to and from school for our students. Our fleet
+                          of buses is well-maintained and equipped with safety
+                          features, and all routes are monitored to adhere to
+                          the highest standards of safety and efficiency. We aim
+                          to provide a reliable service that contributes to the
+                          overall well-being and daily convenience of our
+                          students and their families.
                         </p>
                       </header>
 
@@ -1372,7 +1456,11 @@ export default function StudentsLifePage() {
                           src="assets/img/education/transportation.jpg"
                           alt="School Transportation"
                           className="img-fluid rounded"
-                          style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
                         />
                       </div>
                     </section>
@@ -1469,8 +1557,6 @@ export default function StudentsLifePage() {
                   </div>
                 </div>
               </div>
-
-
 
               {/* CTA */}
               <div

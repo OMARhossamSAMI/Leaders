@@ -1,106 +1,108 @@
 /* === HEADINGS === */
-.clubs-header h3 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #002147;
+/* Overall container */
+.clubs-content {
+  padding: 2rem 1rem;
 }
 
-.clubs-header p {
-  font-size: 1.1rem;
-  color: #444;
-  max-width: 750px;
-  margin: 0 auto;
-}
-
+.clubs-header h3,
 .clubs-dynamic h4,
 .clubs-benefits h4,
 .clubs-conclusion h4 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #0056b3;
+  color: #1d1e1f;
 }
 
-.clubs-dynamic p {
-  font-size: 1rem;
+.clubs-header p,
+.clubs-dynamic p,
+.clubs-conclusion p {
   color: #555;
-  max-width: 750px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
-/* === GRID === */
+.clubs-dynamic {
+  margin-bottom: 2rem;
+}
+
+/* ✅ 3 top cards, then nested 2 bottom equal cards */
 .clubs-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-areas:
-    "c1 c2 c3"
-    ". c4 c5";
-  gap: 30px;
-  justify-content: center;
+  gap: 2rem;
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 0 auto 3rem;
 }
 
-.club-card:nth-child(1) { grid-area: c1; }
-.club-card:nth-child(2) { grid-area: c2; }
-.club-card:nth-child(3) { grid-area: c3; }
-.club-card:nth-child(4) { grid-area: c4; }
-.club-card:nth-child(5) { grid-area: c5; }
+.clubs-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column: 1 / -1; /* Span all columns of the main grid */
+  gap: 2rem;
+}
 
-/* === CARD === */
 .club-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .club-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
+
 
 .club-card img {
   width: 100%;
-  height: 180px;
+  height: 140px;
   object-fit: cover;
 }
 
 .club-card h5 {
-  color: #007bff;
-  margin: 15px 0 10px;
-  font-size: 1.2rem;
+  margin: 0.5rem 0;
+  color: #00bff3;
 }
 
 .club-card p {
-  padding: 0 15px 20px;
-  font-size: 0.95rem;
-  color: #555;
-}
-
-/* === BENEFITS === */
-.clubs-benefits ul {
-  list-style: disc inside;
-  padding-left: 0;
-  max-width: 700px;
-  margin: 0 auto;
-  text-align: left;
-}
-
-.clubs-benefits li {
-  margin-bottom: 10px;
-  font-size: 1rem;
+  padding: 0 1rem 1rem;
+  font-size: 0.9rem;
   color: #333;
 }
 
-/* === CONCLUSION === */
-.clubs-conclusion p {
-  max-width: 700px;
-  margin: 20px auto 0;
-  color: #444;
-  text-align: center;
+/* Benefits + Conclusion side by side */
+.clubs-info-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
+
+.clubs-benefits,
+.clubs-conclusion {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.clubs-benefits ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.clubs-benefits li {
+  margin-bottom: 0.5rem;
+}
+
+.clubs-conclusion p {
+  color: #555;
+}
+
+
 
 /* === TRIPS HEADER === */
 
@@ -146,7 +148,7 @@
 .trip-card h4 {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #0056b3;
+  color: #00bff3;
   margin: 20px;
 }
 
@@ -175,7 +177,7 @@
 .council-header h3 {
   font-size: 2rem;
   font-weight: 700;
-  color: #002147;
+  color: #00050a;
 }
 
 .council-header p {
@@ -191,7 +193,7 @@
 .council-tool h4 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #0056b3;
+  color: #00050b;
   margin-bottom: 20px;
 }
 
@@ -224,7 +226,7 @@
 .council-card h5 {
   font-size: 1.2rem;
   margin: 15px 0 10px;
-  color: #007bff;
+  color: #00bff3;
 }
 
 .council-card p {
@@ -320,7 +322,7 @@
 .arts-card h4 {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #0056b3;
+  color: #00bff3;
   margin: 20px 20px 10px;
 }
 
@@ -398,7 +400,7 @@
 .event-card h5 {
   font-size: 1.2rem;
   margin: 15px 0 10px;
-  color: #007bff;
+  color: #00bff3;
 }
 
 .event-card p {
