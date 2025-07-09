@@ -58,13 +58,7 @@ export default function CurriculumPage() {
         />
         {/* Main CSS File */}
         <link href="assets/css/main.css" rel="stylesheet" />
-        {/* =======================================================
-  * Template Name: NiceSchool
-  * Template URL: https://bootstrapmade.com/nice-school-bootstrap-education-template/
-  * Updated: May 10 2025 with Bootstrap v5.3.6
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== */}
+      
         <header
           id="header"
           className="header d-flex align-items-center fixed-top"
@@ -155,99 +149,126 @@ export default function CurriculumPage() {
           {/* Academics Section */}
           <section id="academics" className="academics section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
-              
-              <div
-                className="programs-navigation"
-                data-aos="fade-up"
-                data-aos-delay={100}
+
+  <div
+    className="programs-navigation"
+    data-aos="fade-up"
+    data-aos-delay={100}
+  >
+    <div className="row">
+      <div className="col-12">
+        <div className="program-tabs">
+          <ul className="nav nav-tabs justify-content-center" role="tablist">
+
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link active"
+                id="undergraduate-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-undergraduate"
+                type="button"
+                role="tab"
               >
-                <div className="row">
-                  <div className="col-12">
-                    <div className="program-tabs">
-                    <ul
-                      className="nav nav-tabs justify-content-center"
-                      role="tablist"
-                    >
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link  active"
-                          id="all-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#academics-all"
-                          type="button"
-                          role="tab"
-                        >
-                          <span className="icon">
-                            <i className="bi bi-grid-3x3-gap" />
-                          </span>
-                          <span className="text">
-                            Empowered Futures
-                          </span>
-                        </button>
-                      </li>
-                      
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="undergraduate-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#academics-undergraduate"
-                          type="button"
-                          role="tab"
-                        >
-                          <span className="icon">
-                            <i className="bi bi-book" />
-                          </span>
-                          <span className="text">PYP</span>
-                        </button>
-                      </li>
+                <span className="icon">
+                  <i className="bi bi-book" />
+                </span>
+                <span className="text">PYP</span>
+              </button>
+            </li>
 
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="graduate-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#academics-graduate"
-                          type="button"
-                          role="tab"
-                        >
-                          <span className="icon">
-                            <i className="bi bi-award" />
-                          </span>
-                          <span className="text">MYP</span>
-                        </button>
-                      </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="graduate-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-graduate"
+                type="button"
+                role="tab"
+              >
+                <span className="icon">
+                  <i className="bi bi-award" />
+                </span>
+                <span className="text">MYP</span>
+              </button>
+            </li>
 
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className="nav-link"
-                          id="doctoral-tab"
-                          data-bs-toggle="tab"
-                          data-bs-target="#academics-doctoral"
-                          type="button"
-                          role="tab"
-                        >
-                          <span className="icon">
-                            <i className="bi bi-mortarboard bi bi-award" />
-                          </span>
-                          <span className="text">DP</span>
-                        </button>
-                      </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="doctoral-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-doctoral"
+                type="button"
+                role="tab"
+              >
+                <span className="icon">
+                  <i className="bi bi-mortarboard" />
+                </span>
+                <span className="text">DP</span>
+              </button>
+            </li>
 
-                      
-                    </ul>
-                  </div>
-                  </div>
-                </div>
-              </div>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="american-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-american"
+                type="button"
+                role="tab"
+              >
+                <span className="icon">
+                  <i className="bi bi-globe-americas" />
+                </span>
+                <span className="text">American Diploma</span>
+              </button>
+            </li>
+
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="igcse-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-igcse"
+                type="button"
+                role="tab"
+              >
+                <span className="icon">
+                  <i className="bi bi-journal-bookmark" />
+                </span>
+                <span className="text">IGCSE</span>
+              </button>
+            </li>
+            <li className="nav-item" role="presentation">
+              <button
+                className="nav-link"
+                id="all-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#academics-all"
+                type="button"
+                role="tab"
+              >
+                <span className="icon">
+                  <i className="bi bi-grid-3x3-gap" />
+                </span>
+                <span className="text">Character Building</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
               <div
                 className="tab-content programs-content"
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                {/* All Learners Tab */}
+                {/* CHARACTER BUILDING */}
                 <div
-                  className="tab-pane fade show active"
+                  className="tab-pane fade"
                   id="academics-all"
                   role="tabpanel"
                 >
@@ -260,32 +281,41 @@ export default function CurriculumPage() {
                       <p>
                         LIC places a strong emphasis on character education as a distinct part of our curriculum. This program is designed to foster respect, responsibility, integrity, and empathy, preparing our students to be principled and ethical leaders in whatever fields they choose to pursue.
                       </p>
+
                     </div>
 
                   <div className="row g-4">
                     {/* Program Item 1 */}
+
                     <div className="col-lg-4 col-md-6" data-aos="zoom-in">
                       <div className="program-item graduate">
                         <div className="program-header">
                           <div className="program-icon">
+
                             <i className="bi bi-globe2"></i>
+
                           </div>
                           <span className="program-type">Character</span>
                         </div>
                         <div className="program-body">
+
                           <h3>Integrated Curriculum</h3>
                           <p>
                             Our character-building program is seamlessly integrated into every aspect of school life. From the classroom to extracurricular activities, we incorporate lessons and projects that challenge students to develop personal virtues and social skills. These activities are tailored to reinforce the values of honesty, courage, perseverance, and public service.
+
                           </p>
                         </div>
                       </div>
                     </div>
 
+
                     {/* Program Item 2 */}
+
                     <div className="col-lg-4 col-md-6" data-aos="zoom-in">
                       <div className="program-item graduate">
                         <div className="program-header">
                           <div className="program-icon">
+
                             <i className="bi bi-heart-fill"></i>
                           </div>
                           <span className="program-type">Character</span>
@@ -317,148 +347,14 @@ export default function CurriculumPage() {
                       </div>
                     </div>
                    </div>
-
-                    
-                    <div className="bg-light p-4 rounded shadow-sm my-4">
-                      <div className="section-header text-center">
-                        <h3>Academic Support</h3>
-                        <p>
-                          At Leaders International College, we believe in empowering all students to reach their full potential. Our Learning and Teaching Center (LTC) and Special Educational Needs (SEN) programs are designed to support students who need extra help as well as those who are excelling and require advanced challenges.                    
-                        </p>
-                      </div>
-                      <div className="row g-4">
-                        {/* Card 1: What are LTC and SEN */}
-                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
-                          <div className="program-item undergraduate">
-                            <div className="program-header">
-                              <div className="program-icon">
-                                <i className="bi bi-question-circle-fill"></i>
-                              </div>
-                              <span className="program-type">Academic Support</span>
-                            </div>
-                            <div className="program-body">
-                              <h3>What Are LTC & SEN?</h3>
-                              <p>
-                                <strong>Learning and Teaching Center (LTC):</strong> This center provides support to enhance learning outcomes for all students. It offers personalized academic assistance to students who are struggling and develops special programs for students who excel academically and need advanced challenges.
-                              </p>
-                              <p>
-                                <strong>Special Educational Needs (SEN):</strong> Our SEN program supports students with different learning needs that require specific adjustments and resources — including learning disabilities, physical disabilities, or curriculum modifications.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Card 2: Role of Our Centers */}
-                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
-                          <div className="program-item undergraduate">
-                            <div className="program-header">
-                              <div className="program-icon">
-                                <i className="bi bi-people-fill"></i>
-                              </div>
-                              <span className="program-type">Academic Support</span>
-                            </div>
-                            <div className="program-body">
-                              <h3>Role of Our Centers</h3>
-                              <p>
-                                <strong>Support for Struggling Students:</strong> LTC and SEN identify students facing academic challenges and provide the support needed to improve their learning experience. This includes tutoring, specialized strategies, and environment adjustments.
-                              </p>
-                              <p>
-                                <strong>Enhancements for Advanced Learners:</strong> For students ahead of their peers, these centers offer enrichment programs with complex material and opportunities for deeper exploration of subjects.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Card 3: Our Educational Approach */}
-                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
-                          <div className="program-item undergraduate">
-                            <div className="program-header">
-                              <div className="program-icon">
-                                <i className="bi bi-lightbulb-fill"></i>
-                              </div>
-                              <span className="program-type">Academic Support</span>
-                            </div>
-                            <div className="program-body">
-                              <h3>Pivotal in Our Approach</h3>
-                              <p>
-                                The LTC and SEN at Leaders International College play a pivotal role in our educational approach, supporting a wide range of learning needs and ensuring that all students have the opportunities they need to succeed academically and personally.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  <div className="bg-light p-4 rounded shadow-sm my-4">
-                    <div className="section-header text-center">
-                      <h3>Digital Learning </h3>
-                      <p>
-                       At Leaders International College, we integrate advanced technology into our learning environments to enhance educational outcomes and prepare our students for a digital future.
-                      </p>
-                     <div className="row g-4">
-                      {/* Card 1: Interactive Learning Environments */}
-                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
-                        <div className="program-item doctoral">
-                          <div className="program-header">
-                            <div className="program-icon">
-                              <i className="bi bi-easel2" />
-                            </div>
-                            <span className="program-type">Digital Learning</span>
-                          </div>
-                          <div className="program-body">
-                            <h3>Interactive Learning Environments</h3>
-                            <p>
-                              Our classrooms are equipped with interactive smart screens, which facilitate dynamic and engaging teaching methods. These tools allow teachers to deliver lessons in a visually enriched format that captures students' attention and encourages interactive learning experiences.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card 2: Guided Education System */}
-                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
-                        <div className="program-item doctoral">
-                          <div className="program-header">
-                            <div className="program-icon">
-                              <i className="bi bi-journal-check" />
-                            </div>
-                            <span className="program-type">Digital Learning</span>
-                          </div>
-                          <div className="program-body">
-                            <h3>Guided Education: ManageBac</h3>
-                            <p>
-                              To streamline our educational processes and enhance communication, we utilize ManageBac, a leading learning management system tailored for IB schools. ManageBac supports our teachers and students by providing an organized platform for lesson planning, assignments, and assessments, and it enables parents to keep track of their child’s academic progress and activities in real time.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card 3: Commitment to Digital Learning */}
-                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
-                        <div className="program-item doctoral">
-                          <div className="program-header">
-                            <div className="program-icon">
-                              <i className="bi bi-cpu" />
-                            </div>
-                            <span className="program-type">Digital Learning</span>
-                          </div>
-                          <div className="program-body">
-                            <h3>Commitment to Digital Learning</h3>
-                            <p>
-                              At Leaders International College, our commitment to digital learning extends beyond interactive classrooms and management systems. We employ a variety of digital resources, software, and tools to enhance educational delivery and support personalized learning, ensuring every student is prepared to succeed in a digital-centric world.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    </div>
-                  </div>
                    </div>
                   </div>
+
 
                   
                 {/* PYP Tab */}
                 <div
-                  className="tab-pane fade"
+                  className="tab-pane fade show active"
                   id="academics-undergraduate"
                   role="tabpanel"
                 >
@@ -899,6 +795,164 @@ export default function CurriculumPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* AMERICAN Tab */}
+                                <div
+                  className="tab-pane fade"
+                  id="academics-american"
+                  role="tabpanel"
+                >
+                  <div className="bg-light p-4 rounded shadow-sm my-4">
+                    <div className="section-header text-center">
+                      <h3>American Diploma</h3>
+                      <p>
+                        At Leaders International College, we pride ourselves on offering a distinctive educational pathway through our American Diploma program. Unique among IB schools, our American Diploma is integrated with the IB curriculum, ensuring that all students, regardless of the program they choose, receive a comprehensive, high-quality education grounded in the IB philosophy.
+                      </p>
+                      <p>
+                        The American Diploma program is specifically designed for students in DP1 and DP2 (grades 11 and 12), providing an alternative that is less rigorous than the full Diploma Programme while still maintaining the high standards of an IB education. This program is ideal for students seeking flexibility in their secondary education and for those who may benefit from a curriculum tailored to their individual capabilities and future goals.
+                      </p>
+                    </div>
+
+                    <div className="row g-4">
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item graduate">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-globe-americas"></i>
+                            </div>
+                            <span className="program-type">American Diploma</span>
+                          </div>
+                          <div className="program-body">
+                            <h3>Integrated Pathway</h3>
+                            <p>
+                              Our American Diploma is integrated with the IB curriculum, ensuring that students receive a comprehensive, high-quality education grounded in the IB philosophy while benefiting from the flexibility of the American system.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item graduate">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-award-fill"></i>
+                            </div>
+                            <span className="program-type">American Diploma</span>
+                          </div>
+                          <div className="program-body">
+                            <h3>Tailored for DP1 & DP2</h3>
+                            <p>
+                              The program is designed for students in DP1 and DP2 (grades 11 and 12), offering an alternative that is less rigorous than the full Diploma Programme but upholds IB’s high educational standards.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item graduate">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-person-check-fill"></i>
+                            </div>
+                            <span className="program-type">American Diploma</span>
+                          </div>
+                          <div className="program-body">
+                            <h3>Flexibility & Future Focus</h3>
+                            <p>
+                              This pathway suits students seeking more flexibility and a curriculum tailored to their individual capabilities and future goals, while staying true to our IB philosophy.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* IGCSE Tab */}
+                <div
+                  className="tab-pane fade"
+                  id="academics-igcse"
+                  role="tabpanel"
+                >
+                  <div className="row g-4">
+                    {/* Intro block */}
+                    <div className="bg-light p-4 rounded shadow-sm my-4">
+                      <div className="section-header text-center">
+                        <h3>IGCSE Program</h3>
+                        <p>
+                          Our IGCSE program is offered for students in Years 10 to 12, focusing on providing a broad and flexible curriculum. At Leaders International College, we ensure academic excellence by employing only highly qualified teachers who are committed to nurturing student success in a supportive environment. This approach prepares our students well for higher education and future careers.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Program Item 1 */}
+                    <div
+                      className="col-lg-4 col-md-6"
+                      data-aos="zoom-in"
+                      data-aos-delay={100}
+                    >
+                      <div className="program-item undergraduate">
+                        <div className="program-header">
+                          <div className="program-icon">
+                            <i className="bi bi-journal-bookmark-fill" />
+                          </div>
+                          <span className="program-type">IGCSE</span>
+                        </div>
+                        <div className="program-body">
+                          <h3>Broad & Flexible</h3>
+                          <p>
+                            The IGCSE program provides a broad and flexible curriculum that prepares students for academic success and life-long learning.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Program Item 2 */}
+                    <div
+                      className="col-lg-4 col-md-6"
+                      data-aos="zoom-in"
+                      data-aos-delay={100}
+                    >
+                      <div className="program-item undergraduate">
+                        <div className="program-header">
+                          <div className="program-icon">
+                            <i className="bi bi-people-fill" />
+                          </div>
+                          <span className="program-type">IGCSE</span>
+                        </div>
+                        <div className="program-body">
+                          <h3>Qualified Teachers</h3>
+                          <p>
+                            At Leaders International College, we ensure academic excellence by employing only highly qualified teachers who are committed to nurturing student success in a supportive environment.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Program Item 3 */}
+                    <div
+                      className="col-lg-4 col-md-6"
+                      data-aos="zoom-in"
+                      data-aos-delay={100}
+                    >
+                      <div className="program-item undergraduate">
+                        <div className="program-header">
+                          <div className="program-icon">
+                            <i className="bi bi-mortarboard-fill" />
+                          </div>
+                          <span className="program-type">IGCSE</span>
+                        </div>
+                        <div className="program-body">
+                          <h3>Preparation for the Future</h3>
+                          <p>
+                            This approach prepares our students well for higher education and future careers.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
 
                 {/* MYP Tab */}
                 <div
@@ -1537,16 +1591,7 @@ export default function CurriculumPage() {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="intro-wrapper">
-                <div className="bg-light p-4 rounded shadow-sm my-4">
-                      <div className="section-header text-center">
-                        <h3>Secondary Education Options: American Diploma and IGCSE</h3>
-                      </div>
                     </div>
                 <div className="row align-items-center">
                   <div
@@ -1581,41 +1626,80 @@ export default function CurriculumPage() {
                 </div>
               </div>
 
-              <div className="stats-wrapper" data-aos="fade-up">
-                <div className="row align-items-center">
-                  <div
-                    className="col-lg-5 mb-4 mb-lg-0"
-                    data-aos="fade-right"
-                    data-aos-delay={100}
-                  >
-                    <div className="stats-content">
-                      <span className="subtitle">Empowering High School Success</span>
-                      <h2>IGCSE Program</h2>
-                      <p>
-                        Our IGCSE program is offered for students in Years 10 to 12, focusing on providing a broad and flexible curriculum. At Leaders International College, we ensure academic excellence by employing only highly qualified teachers who are committed to nurturing student success in a supportive environment. This approach prepares our students well for higher education and future careers.
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    className="col-lg-7"
-                    data-aos="fade-left"
-                    data-aos-delay={200}
-                  >
-                    <div className="intro-image text-center">
-                      <img
-                        src="assets/img/education/british.avif"
-                        alt="Academic Programs"
-                        className="img-fluid rounded-lg shadow"
-                        style={{ width: '5000px', height: '300px' }}
-                      />
-                      <div className="accent-shape"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
+              
+             <div className="stats-wrapper" data-aos="fade-up">
+  <div className="row align-items-start">
+    {/* Left Column: Academic Support */}
+    <div
+      className="col-lg-6 mb-4 mb-lg-0"
+      data-aos="fade-right"
+      data-aos-delay={100}
+    >
+      <div className="stats-content">
+        <span className="subtitle">Academic Support</span>
+        <h2>Empowering Every Learner</h2>
+        <p>
+          At Leaders International College, we believe in empowering all students to reach their full potential. Our Learning and Teaching Center (LTC) and Special Educational Needs (SEN) programs are designed to support students who need extra help as well as those who are excelling and require advanced challenges.
+        </p>
+        <h5>What are LTC and SEN?</h5>
+        <ul>
+          <li>
+            <strong>Learning and Teaching Center (LTC):</strong> This center provides support to enhance learning outcomes for all students. It offers personalized academic assistance to students who are struggling with their studies and also develops special programs for students who excel academically and need more advanced coursework to stay engaged and challenged.
+          </li>
+          <li>
+            <strong>Special Educational Needs (SEN):</strong> Our SEN program caters to students who have different learning needs that require specific educational adjustments and resources. This includes students with learning disabilities, physical disabilities, and those who need modifications to access the curriculum effectively.
+          </li>
+        </ul>
+        <h5>Role of Our Centers</h5>
+        <ul>
+          <li>
+            <strong>Support for Struggling Students:</strong> Both LTC and SEN are crucial in identifying students who face academic difficulties and providing them with the necessary support to improve their learning experiences. This includes tutoring, specialized teaching strategies, and modifications to the learning environment.
+          </li>
+          <li>
+            <strong>Enhancements for Advanced Learners:</strong> For students who are ahead of their peers, these centers offer enrichment programs that present more complex material and opportunities for deeper exploration of subjects that interest them.
+          </li>
+        </ul>
+        <p>
+          The LTC and SEN at Leaders International College play a pivotal role in our educational approach, supporting a diverse range of learning needs and ensuring that all students have the opportunities they need to succeed both academically and personally.
+        </p>
+      </div>
+    </div>
+
+    {/* Right Column: Digital Learning */}
+    <div
+      className="col-lg-6"
+      data-aos="fade-left"
+      data-aos-delay={200}
+    >
+      <div className="stats-content">
+        <span className="subtitle">Digital Learning</span>
+        <h2>Innovative & Interactive Education</h2>
+        <p>
+          At Leaders International College, we integrate advanced technology into our learning environments to enhance educational outcomes and prepare our students for a digital future.
+        </p>
+        <h5>Interactive Learning Environments</h5>
+        <p>
+          Our classrooms are equipped with interactive smart screens, which facilitate dynamic and engaging teaching methods. These tools allow teachers to deliver lessons in a visually enriched format that captures students' attention and encourages interactive learning experiences.
+        </p>
+        <h5>Guided Education System: ManageBac</h5>
+        <p>
+          To streamline our educational processes and enhance communication, we utilize ManageBac, a leading learning management system tailored for International Baccalaureate (IB) schools. ManageBac supports our teachers and students by providing an organized platform for lesson planning, assignments, and assessments, and it enables parents to keep track of their child’s academic progress and school activities in real-time.
+        </p>
+        <p>
+          At Leaders International College, our commitment to digital learning extends beyond interactive classrooms and management systems. We employ a variety of digital resources, software, and tools designed to enhance educational delivery and accommodate the diverse learning needs of our students. These technologies support personalized learning experiences, enabling each student to thrive in a nurturing, technologically advanced environment. By integrating these resources, we ensure our students are well-prepared to navigate and succeed in a digital-centric world.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
             </div>
           </section>
           {/* /Academics Section */}
+
         </main>
         <footer
           id="footer"

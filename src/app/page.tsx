@@ -94,7 +94,7 @@ export default function Home() {
           <div className="hero-container">
             <video autoPlay muted loop playsInline className="video-background">
               <source
-                src="/assets/img/education/video-2.mp4"
+                src="assets/img/education/Video.mp4"
                 type="video/mp4"
               />
             </video>
@@ -114,10 +114,10 @@ export default function Home() {
                       and the vibrant community that shapes our future leaders.
                     </p>
                     <div className="cta-buttons">
-                      <a href="#" className="btn-primary">
+                      <a href="/admissions" className="btn-primary">
                         Start Your Journey
                       </a>
-                      <a href="#" className="btn-secondary">
+                      <a href="/curriculum" className="btn-secondary">
                         Discover Programs
                       </a>
                     </div>
@@ -193,13 +193,26 @@ export default function Home() {
                 data-aos-delay={200}
               >
                 <h2 className="display-6 fw-bold mb-4">
-                  Empowering Minds, <span>Shaping Futures</span>
+                  Come & Join Us, <span>Leaders International Schools</span>
                 </h2>
                 <p className="lead mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                  elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus
-                  leo.
+                   Discover how our dedicated academic support and innovative digital learning help every student thrive — start your journey with us today.
                 </p>
+                <a
+                    href="/admissions"
+                    className="btn"
+                    style={{
+                      backgroundColor: "hsl(193, 75%, 54%)",
+                      border: "none",
+                      color: "#fff",
+                      padding: "0.75rem 1.5rem",
+                      borderRadius: "4px",
+                      textDecoration: "none",
+                      display: "inline-block",
+                    }}
+                  >
+                    Apply Now
+                  </a>
                 <div className="d-flex flex-wrap gap-4 mb-4">
                   <div className="stat-box">
                     <span className="stat-number">
@@ -239,15 +252,6 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="d-flex align-items-center mt-4 signature-block">
-                  <img
-                    src="/assets/img/misc/signature-1.webp"
-                    alt="Principal's Signature"
-                    width={120}
-                  />
-                  <div className="ms-3">
-                    <p className="mb-0 fw-bold">Dr. Alaa Ghazy</p>
-                    <p className="mb-0 text-muted">CEO</p>
-                  </div>
                 </div>
               </div>
 
@@ -260,7 +264,7 @@ export default function Home() {
                   <div
                     className="image-stack-item image-stack-item-top"
                     data-aos="zoom-in"
-                    data-aos-delay={400}
+                    data-aos-delay={200}
                   >
                     <img
                       src="/assets/img/education/Wall_Logo.webp"
@@ -282,55 +286,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="row mission-vision-row g-4">
-              <div className="col-md-4" data-aos="fade-up" data-aos-delay={100}>
-                <div className="value-card h-100">
-                  <div className="card-icon">
-                    <i className="bi bi-rocket-takeoff" />
-                  </div>
-                  <h3>Our Mission</h3>
-                  <p>
-                    Leaders International College empowers students through a
-                    distinctive international curriculum that nurtures skills
-                    and character. LIC learners grow as lifelong learners,
-                    grounded in values, open-mindedness, and respect. We ensure
-                    excellence, efficient use of resources, and a safe,
-                    supportive environment for all.
-                  </p>
-                </div>
-              </div>
-              <div className="col-md-4" data-aos="fade-up" data-aos-delay={200}>
-                <div className="value-card h-100">
-                  <div className="card-icon">
-                    <i className="bi bi-eye" />
-                  </div>
-                  <h3>Our Vision</h3>
-                  <p>
-                    Leaders International College strives to be a model
-                    institution in the Middle East, shaping confident, capable
-                    global citizens. We guide future leaders with strong
-                    identity, cultural pride, and the courage to act on their
-                    values. LIC fosters innovation, sustainability, and
-                    continuous growth in teaching, learning, and assessment.
-                  </p>
-                </div>
-              </div>
-              <div className="col-md-4" data-aos="fade-up" data-aos-delay={300}>
-                <div className="value-card h-100">
-                  <div className="card-icon">
-                    <i className="bi bi-star" />
-                  </div>
-                  <h3>Our Strategies</h3>
-                  <p>
-                    LIC selects only the best programs, people, and resources to
-                    ensure top-quality education. We empower high achievers to
-                    excel and drive continuous improvement. Our unique dual
-                    IB–American Diploma offering sets LIC apart in Egypt’s
-                    education sector.
-                  </p>
-                </div>
-              </div>
-            </div>
+            
           </div>
         </section>
         {/* /About Section */}
@@ -340,8 +296,7 @@ export default function Home() {
           <div className="container section-title" data-aos="fade-up">
             <h2>Featured Programs</h2>
             <p>
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
+              Explore our internationally recognized IB, American Diploma, and IGCSE programs designed to empower students through inquiry, innovation, and personalized learning.
             </p>
           </div>
           {/* End Section Title */}
@@ -360,9 +315,6 @@ export default function Home() {
                 <li data-filter="*" className="filter-active">
                   All Programs
                 </li>
-                <li data-filter=".filter-bachelor">Bachelor's</li>
-                <li data-filter=".filter-master">Master's</li>
-                <li data-filter=".filter-certificate">Certificates</li>
               </ul>
               <div className="row g-4 isotope-container">
                 <div
@@ -371,12 +323,12 @@ export default function Home() {
                   data-aos-delay={100}
                 >
                   <div className="program-item">
-                    <div className="program-badge">Bachelor's Degree</div>
+                    <div className="program-badge">PYP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/education-1.webp"
+                            src="assets/img/education/pyp.jpg"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -384,23 +336,9 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Computer Science</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 4 Years
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 120 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Fall &amp;
-                              Spring
-                            </span>
-                          </div>
+                          <h3>Primary Years Programme</h3>
                           <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Ut elit tellus, luctus nec ullamcorper mattis,
-                            pulvinar dapibus leo.
+                            A nurturing, inquiry-based program for ages 3–12 that builds foundational skills, curiosity, and global awareness.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -418,12 +356,12 @@ export default function Home() {
                   data-aos-delay={200}
                 >
                   <div className="program-item">
-                    <div className="program-badge">Bachelor's Degree</div>
+                    <div className="program-badge">MYP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/education-3.webp"
+                            src="assets/img/education/myp.JPG"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -431,23 +369,9 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Business Administration</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 3 Years
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 90 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Fall Only
-                            </span>
-                          </div>
+                          <h3>Middle Years Programme</h3>
                           <p>
-                            Nullam sed augue a turpis bibendum cursus.
-                            Suspendisse potenti. Praesent mi diam, feugiat a
-                            tincidunt at.
-                          </p>
+                            A dynamic framework for students aged 11–16 that connects academic learning with real-world application and personal development.                          </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
@@ -464,12 +388,12 @@ export default function Home() {
                   data-aos-delay={300}
                 >
                   <div className="program-item">
-                    <div className="program-badge">Bachelor's Degree</div>
+                    <div className="program-badge">DP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/education-5.webp"
+                            src="assets/img/education/DP.jpeg"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -477,21 +401,43 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Medical Sciences</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 5 Years
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 150 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Fall Only
-                            </span>
-                          </div>
+                          <h3>Diploma Programme</h3>
                           <p>
-                            Vestibulum ante ipsum primis in faucibus orci luctus
-                            et ultrices posuere cubilia curae.
+                            A rigorous, university-preparatory curriculum for ages 16–19 that fosters critical thinking, research skills, and global citizenship.
+                          </p>
+                          <a href="#" className="program-btn">
+                            <span>Learn More</span>{" "}
+                            <i className="bi bi-arrow-right" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* End Program Item */}
+                <div
+                  className="col-lg-6 isotope-item filter-master"
+                  data-aos="zoom-in"
+                  data-aos-delay={200}
+                >
+                  <div className="program-item">
+                    <div className="program-badge">EF</div>
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <div className="program-image-wrapper">
+                          <img
+                            src="/assets/img/education/EF.png"
+                            className="img-fluid"
+                            alt="Program"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-8">
+                        <div className="program-content">
+                          <h3>Empowered Futures</h3>
+                          <p>
+                            We equip students with the knowledge, skills, and values they need to thrive as confident, compassionate leaders in a rapidly changing world.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -509,12 +455,12 @@ export default function Home() {
                   data-aos-delay={100}
                 >
                   <div className="program-item">
-                    <div className="program-badge">Master's Degree</div>
+                    <div className="program-badge">ADP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/education-7.webp"
+                            src="assets/img/education/Amer.webp"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -522,69 +468,9 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Environmental Studies</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 2 Years
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 60 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Spring Only
-                            </span>
-                          </div>
+                          <h3>American Diploma</h3>
                           <p>
-                            Aenean imperdiet, erat vel consequat mollis, nunc
-                            risus aliquam nunc, eget condimentum urna dui et
-                            metus.
-                          </p>
-                          <a href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* End Program Item */}
-                <div
-                  className="col-lg-6 isotope-item filter-master"
-                  data-aos="zoom-in"
-                  data-aos-delay={200}
-                >
-                  <div className="program-item">
-                    <div className="program-badge">Master's Degree</div>
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <div className="program-image-wrapper">
-                          <img
-                            src="/assets/img/education/education-9.webp"
-                            className="img-fluid"
-                            alt="Program"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-8">
-                        <div className="program-content">
-                          <h3>Mechanical Engineering</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 2 Years
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 64 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Fall &amp;
-                              Spring
-                            </span>
-                          </div>
-                          <p>
-                            Praesent tincidunt, massa et porttitor imperdiet,
-                            lorem ex ultricies ipsum, a tempus metus eros non
-                            tortor.
+                            A flexible, standards-based program for Grades 11–12 offering a well-rounded education tailored to individual student goals.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -602,12 +488,12 @@ export default function Home() {
                   data-aos-delay={100}
                 >
                   <div className="program-item">
-                    <div className="program-badge">Certificate</div>
+                    <div className="program-badge">IGCSE</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/education-2.webp"
+                            src="/assets/img/education/british.avif"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -615,21 +501,9 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Data Science</h3>
-                          <div className="program-highlights">
-                            <span>
-                              <i className="bi bi-clock" /> 6 Months
-                            </span>
-                            <span>
-                              <i className="bi bi-people-fill" /> 24 Credits
-                            </span>
-                            <span>
-                              <i className="bi bi-calendar3" /> Year-round
-                            </span>
-                          </div>
+                          <h3>British Program</h3>
                           <p>
-                            Mauris sed erat in mi vestibulum commodo. Donec a
-                            purus at justo facilisis imperdiet tnteger pell
+                            An internationally respected curriculum for Years 10–12 that emphasizes academic excellence and readiness for higher education worldwide.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -655,8 +529,7 @@ export default function Home() {
           <div className="container section-title" data-aos="fade-up">
             <h2>Students Life</h2>
             <p>
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
+              Student Life at Leaders International College is vibrant, balanced, and designed to help every student thrive academically, socially, and personally.
             </p>
           </div>
           {/* End Section Title */}
@@ -669,7 +542,7 @@ export default function Home() {
               >
                 <div className="students-life-img position-relative">
                   <img
-                    src="/assets/img/education/education-square-11.webp"
+                    src="/assets/img/education/SL3.PNG"
                     className="img-fluid rounded-4 shadow-sm"
                     alt="Students Life"
                   />
@@ -695,12 +568,11 @@ export default function Home() {
                     >
                       <div className="student-activity-item">
                         <div className="icon-box">
-                          <i className="bi bi-people" />
+                          <i className="bi bi-people-fill" />
                         </div>
                         <h4>Student Clubs</h4>
                         <p>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit ut aliquam purus.
+                          Our dynamic club offerings in the PYP stage help students discover new interests, build friendships, and grow holistically.
                         </p>
                       </div>
                     </div>
@@ -711,12 +583,11 @@ export default function Home() {
                     >
                       <div className="student-activity-item">
                         <div className="icon-box">
-                          <i className="bi bi-trophy" />
+                          <i className="bi bi-easel-fill" />
                         </div>
-                        <h4>Sports Events</h4>
+                        <h4>Academic & Learning Environments</h4>
                         <p>
-                          Quis nostrud exercitation ullamco laboris nisi ut
-                          aliquip ex ea commodo consequat.
+                          Our state-of-the-art classrooms and labs provide safe, interactive spaces that foster curiosity, collaboration, and innovation.
                         </p>
                       </div>
                     </div>
@@ -727,12 +598,11 @@ export default function Home() {
                     >
                       <div className="student-activity-item">
                         <div className="icon-box">
-                          <i className="bi bi-music-note-beamed" />
+                          <i className="bi bi-palette-fill" />
                         </div>
-                        <h4>Arts &amp; Culture</h4>
+                        <h4>Arts & Innovation</h4>
                         <p>
-                          Duis aute irure dolor in reprehenderit in voluptate
-                          velit esse cillum dolore.
+                          We empower students to unlock their creative potential through well-equipped arts rooms that encourage artistic exploration and expression.
                         </p>
                       </div>
                     </div>
@@ -743,12 +613,11 @@ export default function Home() {
                     >
                       <div className="student-activity-item">
                         <div className="icon-box">
-                          <i className="bi bi-globe-americas" />
+                          <i className="bi bi-tree-fill" />
                         </div>
-                        <h4>Global Experiences</h4>
+                        <h4>Playgrounds and Green Spaces</h4>
                         <p>
-                          Excepteur sint occaecat cupidatat non proident, sunt
-                          in culpa qui officia.
+                          Safe, age-appropriate playgrounds and lush green areas inspire our youngest learners to explore and grow through play.
                         </p>
                       </div>
                     </div>
@@ -768,6 +637,47 @@ export default function Home() {
           </div>
         </section>
         {/* /Students Life Block Section */}
+        {/* Stats Section */}
+        <section id="stats" className="stats section">
+          <div className="container" data-aos="fade-up" data-aos-delay={100}>
+            <div className="row">
+              <div className="col-lg-6">
+                <div
+                  className="stats-overview"
+                  data-aos="fade-right"
+                  data-aos-delay={200}
+                >
+                  <div className="container section-title" data-aos="fade-up">
+                    <h2>Campus & Facilities</h2>
+                  </div>
+                  <p className="stats-description">
+                   Leaders International College’s New Cairo campus is thoughtfully designed to inspire learning and personal growth within a vibrant community. It features modern classrooms, advanced science and IT labs, a well-stocked library, art and music studios, extensive sports facilities, outdoor learning spaces, and a healthy cafeteria. The campus is easily accessible by road and school bus services, with ample parking for visitors. Safety is ensured through 24/7 security, surveillance systems, and controlled access.
+                  </p>
+                  <div className="stats-cta">
+                    <a href="/campus-facilities" className="btn btn-primary">
+                      Learn More
+                    </a>
+                    <a href="http://vrtour.leadersintcollege.com/" className="btn btn-outline">
+                      Virtual Tour
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-6 d-flex justify-content-center align-items-center">
+                <img
+                  src="/assets/img/education/CampusH.JPG"
+                  alt="Our Campus"
+                  className="img-fluid rounded-circle border shadow"
+                  style={{ width: '500px', height: '500px', objectFit: 'cover' }}
+                  data-aos="zoom-in"
+                  data-aos-delay={200}
+                />
+              </div>
+
+            </div>
+          </div>
+        </section>
+        {/* /Stats Section */}
         {/* Testimonials Section */}
         <section id="testimonials" className="testimonials section">
           {/* Section Title */}
@@ -948,312 +858,6 @@ export default function Home() {
           </div>
         </section>
         {/* /Testimonials Section */}
-        {/* Stats Section */}
-        <section id="stats" className="stats section">
-          <div className="container" data-aos="fade-up" data-aos-delay={100}>
-            <div className="row">
-              <div className="col-lg-6">
-                <div
-                  className="stats-overview"
-                  data-aos="fade-right"
-                  data-aos-delay={200}
-                >
-                  <h2 className="stats-title">
-                    Excellence in Education for Over 50 Years
-                  </h2>
-                  <p className="stats-description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Mauris vel ultricies magna. Maecenas finibus convallis
-                    turpis, non facilisis justo egestas in. Nulla facilisi.
-                    Fusce consectetur, enim eget aliquet volutpat, lacus nulla
-                    semper velit.
-                  </p>
-                  <div className="stats-cta">
-                    <a href="#" className="btn btn-primary">
-                      Learn More
-                    </a>
-                    <a href="#" className="btn btn-outline">
-                      Virtual Tour
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="row g-4">
-                  <div className="col-md-6">
-                    <div
-                      className="stats-card"
-                      data-aos="zoom-in"
-                      data-aos-delay={300}
-                    >
-                      <div className="stats-icon">
-                        <i className="bi bi-people-fill" />
-                      </div>
-                      <div className="stats-number">
-                        <span
-                          data-purecounter-start={0}
-                          data-purecounter-end={94}
-                          data-purecounter-duration={1}
-                          className="purecounter"
-                        />
-                        %
-                      </div>
-                      <div className="stats-label">Graduation Rate</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div
-                      className="stats-card"
-                      data-aos="zoom-in"
-                      data-aos-delay={400}
-                    >
-                      <div className="stats-icon">
-                        <i className="bi bi-person-workspace" />
-                      </div>
-                      <div className="stats-number">
-                        <span
-                          data-purecounter-start={0}
-                          data-purecounter-end={15}
-                          data-purecounter-duration={1}
-                          className="purecounter"
-                        />
-                        :1
-                      </div>
-                      <div className="stats-label">Student-Faculty Ratio</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div
-                      className="stats-card"
-                      data-aos="zoom-in"
-                      data-aos-delay={500}
-                    >
-                      <div className="stats-icon">
-                        <i className="bi bi-award" />
-                      </div>
-                      <div className="stats-number">
-                        <span
-                          data-purecounter-start={0}
-                          data-purecounter-end={125}
-                          data-purecounter-duration={1}
-                          className="purecounter"
-                        />
-                        +
-                      </div>
-                      <div className="stats-label">Academic Programs</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div
-                      className="stats-card"
-                      data-aos="zoom-in"
-                      data-aos-delay={600}
-                    >
-                      <div className="stats-icon">
-                        <i className="bi bi-cash-stack" />
-                      </div>
-                      <div className="stats-number">
-                        $
-                        <span
-                          data-purecounter-start={0}
-                          data-purecounter-end={42}
-                          data-purecounter-duration={1}
-                          className="purecounter"
-                        />
-                        M
-                      </div>
-                      <div className="stats-label">Research Funding</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="row mt-5">
-              <div className="col-lg-12">
-                <div
-                  className="achievements-gallery"
-                  data-aos="fade-up"
-                  data-aos-delay={700}
-                >
-                  <div className="row g-4">
-                    <div className="col-md-4">
-                      <div className="achievement-item">
-                        <img
-                          src="/assets/img/education/education-1.webp"
-                          alt="Achievement"
-                          className="img-fluid"
-                        />
-                        <div className="achievement-content">
-                          <h4>Top-Ranked Programs</h4>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Mauris vel ultricies magna.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="achievement-item">
-                        <img
-                          src="/assets/img/education/education-2.webp"
-                          alt="Achievement"
-                          className="img-fluid"
-                        />
-                        <div className="achievement-content">
-                          <h4>State-of-the-Art Facilities</h4>
-                          <p>
-                            Maecenas finibus convallis turpis, non facilisis
-                            justo egestas in. Nulla facilisi.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="achievement-item">
-                        <img
-                          src="/assets/img/education/education-3.webp"
-                          alt="Achievement"
-                          className="img-fluid"
-                        />
-                        <div className="achievement-content">
-                          <h4>Global Alumni Network</h4>
-                          <p>
-                            Fusce consectetur, enim eget aliquet volutpat, lacus
-                            nulla semper velit, et luctus.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* /Stats Section */}
-        {/* Recent News Section */}
-        <section id="recent-news" className="recent-news section">
-          {/* Section Title */}
-          <div className="container section-title" data-aos="fade-up">
-            <h2>Recent News</h2>
-            <p>
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
-            </p>
-          </div>
-          {/* End Section Title */}
-          <div className="container">
-            <div className="row gy-4">
-              <div
-                className="col-xl-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay={100}
-              >
-                <article>
-                  <div className="post-img">
-                    <img
-                      src="/assets/img/blog/blog-post-1.webp"
-                      alt=""
-                      className="img-fluid"
-                    />
-                  </div>
-                  <p className="post-category">Politics</p>
-                  <h2 className="title">
-                    {/* <a href="blog-details">
-                      Dolorum optio tempore voluptas dignissimos
-                    </a> */}
-                  </h2>
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="/assets/img/person/person-f-12.webp"
-                      alt=""
-                      className="img-fluid post-author-img flex-shrink-0"
-                    />
-                    <div className="post-meta">
-                      <p className="post-author">Maria Doe</p>
-                      <p className="post-date">
-                        <time dateTime="2022-01-01">Jan 1, 2022</time>
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </div>
-              {/* End post list item */}
-              <div
-                className="col-xl-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay={200}
-              >
-                <article>
-                  <div className="post-img">
-                    <img
-                      src="/assets/img/blog/blog-post-2.webp"
-                      alt=""
-                      className="img-fluid"
-                    />
-                  </div>
-                  <p className="post-category">Sports</p>
-                  <h2 className="title">
-                    {/* <a href="blog-details.html">
-                      Nisi magni odit consequatur autem nulla dolorem
-                    </a> */}
-                  </h2>
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="/assets/img/person/person-f-13.webp"
-                      alt=""
-                      className="img-fluid post-author-img flex-shrink-0"
-                    />
-                    <div className="post-meta">
-                      <p className="post-author">Allisa Mayer</p>
-                      <p className="post-date">
-                        <time dateTime="2022-01-01">Jun 5, 2022</time>
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </div>
-              {/* End post list item */}
-              <div
-                className="col-xl-4 col-md-6"
-                data-aos="fade-up"
-                data-aos-delay={300}
-              >
-                <article>
-                  <div className="post-img">
-                    <img
-                      src="/assets/img/blog/blog-post-3.webp"
-                      alt=""
-                      className="img-fluid"
-                    />
-                  </div>
-                  <p className="post-category">Entertainment</p>
-                  <h2 className="title">
-                    {/* <a href="blog-details.html">
-                      Possimus soluta ut id suscipit ea ut in quo quia et soluta
-                    </a> */}
-                  </h2>
-                  <div className="d-flex align-items-center">
-                    <img
-                      src="/assets/img/person/person-m-10.webp"
-                      alt=""
-                      className="img-fluid post-author-img flex-shrink-0"
-                    />
-                    <div className="post-meta">
-                      <p className="post-author">Mark Dower</p>
-                      <p className="post-date">
-                        <time dateTime="2022-01-01">Jun 22, 2022</time>
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </div>
-              {/* End post list item */}
-            </div>
-            {/* End recent posts list */}
-          </div>
-        </section>
-        {/* /Recent News Section */}
         {/* Events Section */}
         <section id="events" className="events section">
           {/* Section Title */}

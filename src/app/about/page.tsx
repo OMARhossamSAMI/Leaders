@@ -84,15 +84,45 @@ export default function AboutPage() {
           <section id="campus-facilities" className="campus-facilities section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
               <div className="facilities-tabs" data-aos="fade-up" data-aos-delay={200}>
-                <ul className="nav nav-tabs" role="tablist">
-                  <li className="nav-item"><button className="nav-link active" data-bs-toggle="tab" data-bs-target="#who"><i className="bi bi-people" /> Who We Are</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#governance"><i className="bi bi-check2-circle" /> Governance</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#accreditation"><i className="bi bi-bullseye" /> Accreditation</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#learner"><i className="bi bi-eye" /> IB Learner Profile</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#mission"><i className="bi bi-flag" /> Mission</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#vision"><i className="bi bi-lightbulb" /> Vision</button></li>
-                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#strategies"><i className="bi bi-diagram-3" /> Strategies</button></li>
-                </ul>
+
+                 <ul className="nav nav-tabs" role="tablist">
+        <li className="nav-item">
+          <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#who">
+            <i className="bi bi-people" /> Who We Are
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#mission">
+            <i className="bi bi-flag" /> Mission & Vision
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#strategies">
+            <i className="bi bi-diagram-3" /> Strategies
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#governance">
+            <i className="bi bi-check2-circle" /> Governance
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#accreditation">
+            <i className="bi bi-bullseye" /> Accreditation
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#learner">
+            <i className="bi bi-eye" /> IB Learner Profile
+          </button>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" data-bs-toggle="tab" data-bs-target="#campus">
+            <i className="bi bi-building" /> Campus
+          </button>
+        </li>
+      </ul>
+
 
                 <div className="tab-content">
                   {/* === Who We Are === */}
@@ -113,10 +143,11 @@ export default function AboutPage() {
                           {/* Image Left */}
                           <div className="col-md-5">
                             <img
-                              src="assets/img/education/BUILDING.JPG"
+
+                              src="assets/img/education/WHO1.JPG"
                               alt="Who We Are"
                               className="img-fluid rounded"
-                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                              style={{ width: "100%", height: "700px", objectFit: "cover" }}
                             />
                           </div>
                           {/* Text Right */}
@@ -132,10 +163,54 @@ export default function AboutPage() {
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                               We stand as a beacon of educational innovation and excellence, with a rich history spanning over a decade.
                               Founded 10 years ago, LIC is among the first schools to be fully accredited for all stages of the International
-                              Baccalaureate (IB) - Primary Years Programme (PYP), Middle Years Programme (MYP), and Diploma Programme (DP).
-                              This prestigious recognition places us at the forefront of international education, as one of the oldest and most
+
+                              Baccalaureate 
+                              <button
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  textDecoration: "underline",
+                                  color: "#007bff",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => window.location.href = "/curriculum"}
+                              >
+                                Primary Years Programme (PYP)
+                              </button>
+                              
+                              <button
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  textDecoration: "underline",
+                                  color: "#007bff",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => window.location.href = "/curriculum"}
+                              >
+                                ,Middle Years Programme (MYP)
+                              </button>
+                              , and 
+                              <button
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  textDecoration: "underline",
+                                  color: "#007bff",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => window.location.href = "/curriculum"}
+                              >
+                                Diploma Programme (DP)
+                              </button>
+                              . This prestigious recognition places us at the forefront of international education, as one of the oldest and most
                               experienced IB World Schools.
                             </p>
+
+
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                               Our commitment to the IB framework is deep-rooted and evident in our approach to education, which emphasizes
                               intellectual, personal, emotional, and social growth across all grade levels. We are dedicated to fostering a
@@ -199,7 +274,6 @@ export default function AboutPage() {
                  </div>
 
 
-
                   {/* === Accreditation === */}
                   <div className="tab-pane fade" id="accreditation" role="tabpanel">
                     <div className="row gy-4 align-items-center">
@@ -215,32 +289,120 @@ export default function AboutPage() {
                         }}
                       >
                         <div className="row align-items-center">
-                          {/* Image Left */}
+
+                          {/* Carousel Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Acre.JPG"
-                              alt="Accreditation"
-                              className="img-fluid rounded"
-                              style={{ width: "100%", height: "500px", objectFit: "cover" }}
-                            />
+                            <div
+                              id="accreditationCarousel"
+                              className="carousel slide rounded"
+                              data-bs-ride="carousel"
+                            >
+                              <div className="carousel-inner">
+                                <div className="carousel-item active">
+                                  <img
+                                    src="assets/img/education/A2.Jpeg"
+                                    alt="Accreditation Slide 1"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "500px", objectFit: "cover" }}
+                                  />
+                                </div>
+                                <div className="carousel-item">
+                                  <img
+                                    src="assets/img/education/A1.Jpeg"
+                                    alt="Accreditation Slide 2"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "500px", objectFit: "cover" }}
+                                  />
+                                </div>
+                                <div className="carousel-item">
+                                  <img
+                                    src="assets/img/education/A5.Jpeg"
+                                    alt="Accreditation Slide 5"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "100px", objectFit: "cover" }}
+                                  />   
+                                </div>
+                                <div className="carousel-item">
+                                  <img
+                                    src="assets/img/education/A3.Jpeg"
+                                    alt="Accreditation Slide 3"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "100px", objectFit: "cover" }}
+                                  />
+                                </div>
+                                <div className="carousel-item">
+                                  <img
+                                    src="assets/img/education/A4.Jpeg"
+                                    alt="Accreditation Slide 4"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "200px", objectFit: "cover" }}
+                                  />
+                                </div>
+                                <div className="carousel-item">
+                                  <img
+                                    src="assets/img/education/A6.Jpeg"
+                                    alt="Accreditation Slide 6"
+                                    className="d-block w-100 img-fluid rounded"
+                                    style={{ height: "100px", objectFit: "cover" }}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Optional Carousel Controls */}
+                              <button
+                                className="carousel-control-prev"
+                                type="button"
+                                data-bs-target="#accreditationCarousel"
+                                data-bs-slide="prev"
+                              >
+                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span className="visually-hidden">Previous</span>
+                              </button>
+                              <button
+                                className="carousel-control-next"
+                                type="button"
+                                data-bs-target="#accreditationCarousel"
+                                data-bs-slide="next"
+                              >
+                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span className="visually-hidden">Next</span>
+                              </button>
+                            </div>
                           </div>
+
+
                           {/* Text Right */}
                           <div className="col-md-7">
                             <h3 className="mb-3">Accreditation</h3>
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              We are proud to be recognized as an IB World School, fully accredited to deliver all stages of the International Baccalaureate (IB) programs: the Primary Years Programme (PYP), Middle Years Programme (MYP), and the Diploma Programme (DP). Our commitment to providing a rigorous and internationally acknowledged education is further demonstrated by our accreditation from Cognia for the American diploma.
+
+                              We are proud to be recognized as an IB World School, fully accredited to deliver all
+                              stages of the International Baccalaureate (IB) programs: the Primary Years Programme
+                              (PYP), Middle Years Programme (MYP), and the Diploma Programme (DP). Our commitment to
+                              providing a rigorous and internationally acknowledged education is further demonstrated
+                              by our accreditation from Cognia for the American diploma.
                             </p>
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              Understanding the diverse educational needs of our students, we have expanded our curriculum offerings to include the International General Certificate of Secondary Education (IGCSE). We are accredited by the British Council and hold certifications from prestigious educational organizations including Cambridge, Pearson, and Oxford for the IGCSE program. This allows us to offer a broad range of curricula, catering to students seeking various academic pathways.
+                              Understanding the diverse educational needs of our students, we have expanded our
+                              curriculum offerings to include the International General Certificate of Secondary
+                              Education (IGCSE). We are accredited by the British Council and hold certifications from
+                              prestigious educational organizations including Cambridge, Pearson, and Oxford for the
+                              IGCSE program. This allows us to offer a broad range of curricula, catering to students
+                              seeking various academic pathways.
                             </p>
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              These accreditations underscore our dedication to excellence in global education standards and affirm our commitment to providing top-tier educational opportunities to our students. At LIC, we ensure that every program we offer meets the highest international standards, preparing our students for success in an interconnected world.
+                              These accreditations underscore our dedication to excellence in global education
+                              standards and affirm our commitment to providing top-tier educational opportunities to
+                              our students. At LIC, we ensure that every program we offer meets the highest
+                              international standards, preparing our students for success in an interconnected world.
+
                             </p>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
 
                   {/* === IB Learner === */}
                   <div className="tab-pane fade" id="learner" role="tabpanel">
@@ -293,87 +455,147 @@ export default function AboutPage() {
                     </div>
                   </div>
 
-                  {/* === Mission === */}
-                  <div className="tab-pane fade" id="mission" role="tabpanel">
-                    <div className="row gy-4 align-items-center">
-                      <div
-                        className="col-lg-12"
-                        data-aos="fade-up"
-                        style={{
-                          background: "#fff",
-                          borderRadius: "12px",
-                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                          overflow: "hidden",
-                          padding: "30px",
-                        }}
-                      >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
-                            <img
-                              src="assets/img/education/ac.JPG"
-                              alt="Mission"
+
+                  {/* === Mission & Vision === */}
+                    <div className="tab-pane fade" id="mission" role="tabpanel">
+                      <div className="row gy-4 align-items-center">
+                        <div
+                          className="col-lg-12"
+                          data-aos="fade-up"
+                          style={{
+                            background: "#fff",
+                            borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                            overflow: "hidden",
+                            padding: "30px",
+                          }}
+                        >
+                          <div className="row align-items-center mb-5">
+                            {/* Mission Image Left */}
+                            <div className="col-md-5">
+                              <img
+                                src="assets/img/education/ac.JPG"
+                                alt="Mission"
+                                className="img-fluid rounded"
+                                style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                              />
+                            </div>
+                            {/* Mission Text Right */}
+                            <div className="col-md-7">
+                              <h3 className="mb-3">Mission</h3>
+                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                                Leaders International College will enable its students to realize their full potential through providing a distinguished and comprehensive educational experience that implements a unique integrated international curriculum allowing students to develop their skills, abilities and attitudes.
+                              </p>
+                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                                LIC students will develop as life-long learners who respect and cherish their core values and beliefs while demonstrating open-mindedness and tolerance. We strive to exhibit high-standard performance and meet expectations of all stakeholders. We will ensure that we utilize LIC resources efficiently and provide a safe nurturing learning environment where all stakeholders are actively involved in students’ learning and embrace LIC prospective goals.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="row align-items-center">
+                            {/* Vision Image Left */}
+                            <div className="col-md-5">
+                              <img
+                                src="assets/img/education/Vis.JPG"
+                                alt="Vision"
+                                className="img-fluid rounded"
+                                style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                              />
+                            </div>
+                            {/* Vision Text Right */}
+                            <div className="col-md-7">
+                              <h3 className="mb-3">Vision</h3>
+                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                                Leaders International College envisions to become an exemplary educational institution in the Middle East through empowering its students to become well-versed, confident and capable global citizens of the 21st century.
+                              </p>
+                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                                LIC guides a new generation of leaders in all paths of life by a strong sense of identity, taking pride in their culture and maintaining the courage to act upon their beliefs. We are dedicated to enable our students to apply their talents to all aspects of life and support sustainable development and innovation.
+                              </p>
+                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                                LIC aims to be a pioneering workplace in which its collaborative community continually develops curriculum, instructional strategies, and approaches of assessment.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+
+               {/* === Campus === */}
+                <div className="tab-pane fade" id="campus" role="tabpanel">
+                  <div className="row gy-4 align-items-center">
+                    <div
+                      className="col-lg-12"
+                      data-aos="fade-up"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        overflow: "hidden",
+                        padding: "30px",
+                      }}
+                    >
+                      <div className="row align-items-center">
+                        {/* Image Left */}
+                        <div className="col-md-5">
+                          <img
+                              src="assets/img/education/Rec.png"
+                              alt="Who We Are"
                               className="img-fluid rounded"
-                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                              style={{ width: "100%", height: "1000px", objectFit: "cover" }}
                             />
-                          </div>
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <h3 className="mb-3">Mission</h3>
-                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              Leaders International College will enable its students to realize their full potential through providing a distinguished and comprehensive educational experience that implements a unique integrated international curriculum allowing students to develop their skills, abilities and attitudes.
-                            </p>
-                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              LIC students will develop as life-long learners who respect and cherish their core values and beliefs while demonstrating open-mindedness and tolerance. We strive to exhibit high-standard performance and meet expectations of all stakeholders. We will ensure that we utilize LIC resources efficiently and provide a safe nurturing learning environment where all stakeholders are actively involved in students’ learning and embrace LIC prospective goals.
-                            </p>
-                          </div>
+                        </div>
+
+                        {/* Text Right */}
+                        <div className="col-md-7">
+                          <h3 className="mb-3">Campus & Location</h3>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            LIC campus is designed to foster an environment of learning and personal growth.
+                            Located in the heart of New Cairo,
+                            our school is situated in a vibrant community that enriches the educational experience
+                            of our students with a mix of cultural, historical, and modern influences.
+                            <a href="https://yourlocationlink.com" target="_blank" rel="noopener noreferrer"> View on Map</a>.
+                          </p>
+
+                          <h4 className="mt-4">Campus Features</h4>
+                          <ul style={{ lineHeight: "1.8", paddingLeft: "0", listStyle: "none" }}>
+                            <li><i className="bi bi-building text-primary me-2"></i><strong>Modern Classrooms:</strong> Equipped with the latest educational technology to enhance learning and engagement.</li>
+                            <li><i className="bi bi-flask text-primary me-2"></i><strong>Science and IT Labs:</strong> Advanced facilities for hands-on experiments and technology integration.</li>
+                            <li><i className="bi bi-book text-primary me-2"></i><strong>Library:</strong> A comprehensive resource center that supports research and learning across all subjects and age groups.</li>
+                            <li><i className="bi bi-brush text-primary me-2"></i><strong>Art Studios and Music Rooms:</strong> Dedicated spaces for students to explore their creative talents in visual and performing arts.</li>
+                            <li><i className="bi bi-trophy text-primary me-2"></i><strong>Sports Facilities:</strong> Including a swimming pool, gymnasium, sports fields, and courts, accommodating a wide range of athletic activities.</li>
+                            <li><i className="bi bi-tree text-primary me-2"></i><strong>Outdoor Learning Areas:</strong> Spaces that encourage ecological learning and outdoor activities.</li>
+                            <li><i className="bi bi-cup-straw text-primary me-2"></i><strong>Cafeteria:</strong> Offering healthy and nutritious meal options in a comfortable dining environment.</li>
+                          </ul>
+
+                          <h4 className="mt-4">Access and Transportation</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Our campus is easily accessible via major roadways and is supported by a network of bus services
+                            that ensure convenient commutes for our students and staff from surrounding areas.
+                            Ample parking is available for families and visitors.
+                          </p>
+
+                          <h4 className="mt-4">Safety and Security</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Safety is paramount at LIC. Our campus is equipped with comprehensive security measures,
+                            including surveillance systems and controlled gate access.
+                            Our dedicated security team is on-site 24/7 to maintain a secure learning environment.
+                          </p>
+
+                          <h4 className="mt-4">Virtual Tour</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            We invite you to experience our campus virtually —
+                            <a href="http://vrtour.leadersintcollege.com/" target="_blank" rel="noopener noreferrer"> Take a Virtual Tour</a> —
+                            to explore the dynamic and supportive environment that makes LIC a unique place to learn and grow.
+                          </p>
+
                         </div>
                       </div>
                     </div>
                   </div>
 
-
-                  {/* === Vision === */}
-                  <div className="tab-pane fade" id="vision" role="tabpanel">
-                    <div className="row gy-4 align-items-center">
-                      <div
-                        className="col-lg-12"
-                        data-aos="fade-up"
-                        style={{
-                          background: "#fff",
-                          borderRadius: "12px",
-                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                          overflow: "hidden",
-                          padding: "30px",
-                        }}
-                      >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Vis.JPG"
-                              alt="Vision"
-                              className="img-fluid rounded"
-                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
-                            />
-                          </div>
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <h3 className="mb-3">Vision</h3>
-                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              Leaders International College envisions to become an exemplary educational institution in the Middle East through empowering its students to become well-versed, confident and capable global citizens of the 21st century.
-                            </p>
-                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              LIC guides a new generation of leaders in all paths of life by a strong sense of identity, taking pride in their culture and maintaining the courage to act upon their beliefs. We are dedicated to enable our students to apply their talents to all aspects of life and support sustainable development and innovation.
-                            </p>
-                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
-                              LIC aims to be a pioneering workplace in which its collaborative community continually develops curriculum, instructional strategies, and approaches of assessment.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                </div>
 
 
                   {/* === Strategies === */}

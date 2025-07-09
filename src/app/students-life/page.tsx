@@ -94,9 +94,6 @@ export default function StudentsLifePage() {
                       <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="our-staff">Our Staff</a>
-                    </li>
-                    <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
                     </li>
                   </ul>
@@ -907,8 +904,17 @@ export default function StudentsLifePage() {
         </div>
         <div className="club-card">
           <img
-            src="assets/img/education/chess-club.jpg"
+
+            src="assets/img/education/CHESS2.png"
             alt="Chess Club"
+            className="img-fluid rounded-top"
+            style={{
+              width: '400px',
+              height: '200px',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+
           />
           <h5>Chess Club</h5>
           <p>
