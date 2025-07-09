@@ -535,4 +535,6 @@ export default function ApplyPage() {
       </footer>
     </>
   );
+
 }
+

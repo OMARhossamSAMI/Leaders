@@ -84,6 +84,7 @@ export default function AboutPage() {
           <section id="campus-facilities" className="campus-facilities section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
               <div className="facilities-tabs" data-aos="fade-up" data-aos-delay={200}>
+
                  <ul className="nav nav-tabs" role="tablist">
         <li className="nav-item">
           <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#who">
@@ -122,6 +123,7 @@ export default function AboutPage() {
         </li>
       </ul>
 
+
                 <div className="tab-content">
                   {/* === Who We Are === */}
                   <div className="tab-pane fade show active" id="who" role="tabpanel">
@@ -141,6 +143,7 @@ export default function AboutPage() {
                           {/* Image Left */}
                           <div className="col-md-5">
                             <img
+
                               src="assets/img/education/WHO1.JPG"
                               alt="Who We Are"
                               className="img-fluid rounded"
@@ -160,6 +163,7 @@ export default function AboutPage() {
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                               We stand as a beacon of educational innovation and excellence, with a rich history spanning over a decade.
                               Founded 10 years ago, LIC is among the first schools to be fully accredited for all stages of the International
+
                               Baccalaureate 
                               <button
                                 style={{
@@ -205,6 +209,7 @@ export default function AboutPage() {
                               . This prestigious recognition places us at the forefront of international education, as one of the oldest and most
                               experienced IB World Schools.
                             </p>
+
 
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                               Our commitment to the IB framework is deep-rooted and evident in our approach to education, which emphasizes
@@ -268,6 +273,7 @@ export default function AboutPage() {
                   </div>
                  </div>
 
+
                   {/* === Accreditation === */}
                   <div className="tab-pane fade" id="accreditation" role="tabpanel">
                     <div className="row gy-4 align-items-center">
@@ -283,6 +289,7 @@ export default function AboutPage() {
                         }}
                       >
                         <div className="row align-items-center">
+
                           {/* Carousel Left */}
                           <div className="col-md-5">
                             <div
@@ -363,10 +370,12 @@ export default function AboutPage() {
                             </div>
                           </div>
 
+
                           {/* Text Right */}
                           <div className="col-md-7">
                             <h3 className="mb-3">Accreditation</h3>
                             <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+
                               We are proud to be recognized as an IB World School, fully accredited to deliver all
                               stages of the International Baccalaureate (IB) programs: the Primary Years Programme
                               (PYP), Middle Years Programme (MYP), and the Diploma Programme (DP). Our commitment to
@@ -386,6 +395,7 @@ export default function AboutPage() {
                               standards and affirm our commitment to providing top-tier educational opportunities to
                               our students. At LIC, we ensure that every program we offer meets the highest
                               international standards, preparing our students for success in an interconnected world.
+
                             </p>
                           </div>
                         </div>
@@ -444,6 +454,7 @@ export default function AboutPage() {
                       </div>
                     </div>
                   </div>
+
 
                   {/* === Mission & Vision === */}
                     <div className="tab-pane fade" id="mission" role="tabpanel">
@@ -578,11 +589,14 @@ export default function AboutPage() {
                             <a href="http://vrtour.leadersintcollege.com/" target="_blank" rel="noopener noreferrer"> Take a Virtual Tour</a> —
                             to explore the dynamic and supportive environment that makes LIC a unique place to learn and grow.
                           </p>
+
                         </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
+
 
                   {/* === Strategies === */}
                   <div className="tab-pane fade" id="strategies" role="tabpanel">

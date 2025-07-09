@@ -81,7 +81,7 @@ export default function AdmissionsPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
@@ -95,15 +95,12 @@ export default function AdmissionsPage() {
                       <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="our-staff">Our Staff</a>
-                    </li>
-                    <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
                     </li>
                   </ul>
                 </li>
                 <li>
-                  <a href="#">Admissions</a>
+                  <a href="#" className="active">Admissions</a>
                 </li>
                 <li>
                   <a href="curriculum">Curriculum</a>

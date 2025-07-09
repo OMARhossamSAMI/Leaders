@@ -75,12 +75,12 @@ export default function CampusFacilitiesPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
                 <li className="dropdown">
-                  <a href="about">
+                  <a href="about" className="active">
                     <span>About Us</span>{" "}
                     <i className="bi bi-chevron-down toggle-dropdown" />
                   </a>
@@ -89,10 +89,7 @@ export default function CampusFacilitiesPage() {
                       <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="Our-staff">Our Staff</a>
-                    </li>
-                    <li>
-                      <a href="#">Campus &amp; Facilities</a>
+                      <a href="#" className="active">Campus &amp; Facilities</a>
                     </li>
                   </ul>
                 </li>

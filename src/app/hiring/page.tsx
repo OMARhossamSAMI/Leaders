@@ -572,6 +572,7 @@ export default function WeAreHiringPage() {
                   data-aos="fade-up"
                   data-aos-delay={200}
                 >
+
                   {/* <div className="row align-items-center">
                     <div className="col-lg-7">
                       <div className="impact-content">
@@ -905,6 +906,7 @@ export default function WeAreHiringPage() {
                       </div>
                     </div>
                   </div>*/}
+
                 </div>
               </div>
             </div>

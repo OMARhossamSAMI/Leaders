@@ -81,7 +81,7 @@ export default function ContactPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
@@ -93,9 +93,6 @@ export default function ContactPage() {
                   <ul>
                     <li>
                       <a href="about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="our-staff">Our Staff</a>
                     </li>
                     <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
@@ -115,7 +112,7 @@ export default function ContactPage() {
                   <a href="hiring">We Are Hiring</a>
                 </li>
                 <li>
-                  <a href="#">Contact Us</a>
+                  <a href="#" className="active">Contact Us</a>
                 </li>
               </ul>
               <i className="mobile-nav-toggle d-xl-none bi bi-list" />

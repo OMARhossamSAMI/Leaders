@@ -58,13 +58,7 @@ export default function CurriculumPage() {
         />
         {/* Main CSS File */}
         <link href="assets/css/main.css" rel="stylesheet" />
-        {/* =======================================================
-  * Template Name: NiceSchool
-  * Template URL: https://bootstrapmade.com/nice-school-bootstrap-education-template/
-  * Updated: May 10 2025 with Bootstrap v5.3.6
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== */}
+      
         <header
           id="header"
           className="header d-flex align-items-center fixed-top"
@@ -155,6 +149,7 @@ export default function CurriculumPage() {
           {/* Academics Section */}
           <section id="academics" className="academics section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
+
   <div
     className="programs-navigation"
     data-aos="fade-up"
@@ -265,6 +260,7 @@ export default function CurriculumPage() {
     </div>
   </div>
 
+
               <div
                 className="tab-content programs-content"
                 data-aos="fade-up"
@@ -285,32 +281,41 @@ export default function CurriculumPage() {
                       <p>
                         LIC places a strong emphasis on character education as a distinct part of our curriculum. This program is designed to foster respect, responsibility, integrity, and empathy, preparing our students to be principled and ethical leaders in whatever fields they choose to pursue.
                       </p>
+
                     </div>
 
                   <div className="row g-4">
                     {/* Program Item 1 */}
+
                     <div className="col-lg-4 col-md-6" data-aos="zoom-in">
                       <div className="program-item graduate">
                         <div className="program-header">
                           <div className="program-icon">
+
                             <i className="bi bi-globe2"></i>
+
                           </div>
                           <span className="program-type">Character</span>
                         </div>
                         <div className="program-body">
+
                           <h3>Integrated Curriculum</h3>
                           <p>
                             Our character-building program is seamlessly integrated into every aspect of school life. From the classroom to extracurricular activities, we incorporate lessons and projects that challenge students to develop personal virtues and social skills. These activities are tailored to reinforce the values of honesty, courage, perseverance, and public service.
+
                           </p>
                         </div>
                       </div>
                     </div>
 
+
                     {/* Program Item 2 */}
+
                     <div className="col-lg-4 col-md-6" data-aos="zoom-in">
                       <div className="program-item graduate">
                         <div className="program-header">
                           <div className="program-icon">
+
                             <i className="bi bi-heart-fill"></i>
                           </div>
                           <span className="program-type">Character</span>
@@ -344,6 +349,7 @@ export default function CurriculumPage() {
                    </div>
                    </div>
                   </div>
+
 
                   
                 {/* PYP Tab */}
@@ -789,6 +795,7 @@ export default function CurriculumPage() {
                     </div>
                   </div>
                 </div>
+
                 {/* AMERICAN Tab */}
                                 <div
                   className="tab-pane fade"
@@ -945,6 +952,7 @@ export default function CurriculumPage() {
                     </div>
                   </div>
                 </div>
+
 
                 {/* MYP Tab */}
                 <div
@@ -1583,10 +1591,41 @@ export default function CurriculumPage() {
                           </div>
                         </div>
                       </div>
+
+                    </div>
+                <div className="row align-items-center">
+                  <div
+                    className="col-lg-6 mb-4 mb-lg-0"
+                    data-aos="fade-right"
+                    data-aos-delay={200}
+                  >
+                    <div className="intro-image">
+                      <img
+                        src="assets/img/education/Amer.webp"
+                        alt="Academic Programs"
+                        className="img-fluid rounded-lg shadow"
+                        style={{ width: '4000px', height: '450px' }}
+                      />
+                      <div className="accent-shape" />
+                    </div>
+                  </div>
+                  <div
+                    className="col-lg-6"
+                    data-aos="fade-left"
+                    data-aos-delay={300}
+                  >
+                    <div className="intro-content">
+                      <span className="subtitle">Empowering High School Success</span>
+                      <h2>American Diploma </h2>
+                      <p className="intro-text">
+                       At Leaders International College, we pride ourselves on offering a distinctive educational pathway through our American Diploma program. Unique among IB schools, our American Diploma is integrated with the IB curriculum, ensuring that all students, regardless of the program they choose, receive a comprehensive, high-quality education grounded in the IB philosophy.
+                      </p>
+                      <p>The American Diploma program is specifically designed for students in DP1 and DP2 (grades 11 and 12), providing an alternative that is less rigorous than the full Diploma Programme while still maintaining the high standards of an IB education. This program is ideal for students seeking flexibility in their secondary education and for those who may benefit from a curriculum tailored to their individual capabilities and future goals.</p>
                     </div>
                   </div>
                 </div>
               </div>
+
 
               
              <div className="stats-wrapper" data-aos="fade-up">
@@ -1654,6 +1693,7 @@ export default function CurriculumPage() {
     </div>
   </div>
 </div>
+
 
 
             </div>

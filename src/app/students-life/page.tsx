@@ -904,6 +904,7 @@ export default function StudentsLifePage() {
         </div>
         <div className="club-card">
           <img
+
             src="assets/img/education/CHESS2.png"
             alt="Chess Club"
             className="img-fluid rounded-top"
@@ -913,6 +914,7 @@ export default function StudentsLifePage() {
               objectFit: 'cover',
               objectPosition: 'center',
             }}
+
           />
           <h5>Chess Club</h5>
           <p>
