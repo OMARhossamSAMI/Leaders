@@ -151,54 +151,7 @@ export default function CurriculumPage() {
           {/* Academics Section */}
           <section id="academics" className="academics section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
-              <div className="intro-wrapper">
-                <div className="row align-items-center">
-                  <div
-                    className="col-lg-6 mb-4 mb-lg-0"
-                    data-aos="fade-right"
-                    data-aos-delay={200}
-                  >
-                    <div className="intro-image">
-                      <img
-                        src="assets/img/education/education-1.webp"
-                        alt="Academic Programs"
-                        className="img-fluid rounded-lg shadow"
-                      />
-                      <div className="accent-shape" />
-                    </div>
-                  </div>
-                  <div
-                    className="col-lg-6"
-                    data-aos="fade-left"
-                    data-aos-delay={300}
-                  >
-                    <div className="intro-content">
-                      <span className="subtitle">Excellence in Education</span>
-                      <h2>Discover Our Academic Programs</h2>
-                      <p className="intro-text">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Ut elit tellus, luctus nec ullamcorper mattis, pulvinar
-                        dapibus leo. Sed non mauris vitae erat consequat auctor
-                        eu in elit.
-                      </p>
-                      <div className="key-highlights">
-                        <div className="highlight-item">
-                          <i className="bi bi-check-circle-fill" />
-                          <span>Experiential learning opportunities</span>
-                        </div>
-                        <div className="highlight-item">
-                          <i className="bi bi-check-circle-fill" />
-                          <span>World-class faculty members</span>
-                        </div>
-                        <div className="highlight-item">
-                          <i className="bi bi-check-circle-fill" />
-                          <span>Cutting-edge research facilities</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
               <div
                 className="programs-navigation"
                 data-aos="fade-up"
@@ -207,74 +160,79 @@ export default function CurriculumPage() {
                 <div className="row">
                   <div className="col-12">
                     <div className="program-tabs">
-                      <ul
-                        className="nav nav-tabs justify-content-center"
-                        role="tablist"
-                      >
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link active"
-                            id="all-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-all"
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-grid-3x3-gap" />
-                            </span>
-                            <span className="text">
-                              Foundations for All Learners
-                            </span>
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="undergraduate-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-undergraduate"
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-book" />
-                            </span>
-                            <span className="text">PYP</span>
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="graduate-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-graduate"
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-award" />
-                            </span>
-                            <span className="text">MYP</span>
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className="nav-link"
-                            id="doctoral-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-doctoral"
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-mortarboard bi bi-award" />
-                            </span>
-                            <span className="text">DP</span>
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
+                    <ul
+                      className="nav nav-tabs justify-content-center"
+                      role="tablist"
+                    >
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link  active"
+                          id="all-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#academics-all"
+                          type="button"
+                          role="tab"
+                        >
+                          <span className="icon">
+                            <i className="bi bi-grid-3x3-gap" />
+                          </span>
+                          <span className="text">
+                            Empowered Futures
+                          </span>
+                        </button>
+                      </li>
+                      
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link"
+                          id="undergraduate-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#academics-undergraduate"
+                          type="button"
+                          role="tab"
+                        >
+                          <span className="icon">
+                            <i className="bi bi-book" />
+                          </span>
+                          <span className="text">PYP</span>
+                        </button>
+                      </li>
+
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link"
+                          id="graduate-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#academics-graduate"
+                          type="button"
+                          role="tab"
+                        >
+                          <span className="icon">
+                            <i className="bi bi-award" />
+                          </span>
+                          <span className="text">MYP</span>
+                        </button>
+                      </li>
+
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className="nav-link"
+                          id="doctoral-tab"
+                          data-bs-toggle="tab"
+                          data-bs-target="#academics-doctoral"
+                          type="button"
+                          role="tab"
+                        >
+                          <span className="icon">
+                            <i className="bi bi-mortarboard bi bi-award" />
+                          </span>
+                          <span className="text">DP</span>
+                        </button>
+                      </li>
+
+                      
+                    </ul>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -283,9 +241,9 @@ export default function CurriculumPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                {/* All Learners Tab */}
+                {/* CHARACTER BUILDING */}
                 <div
-                  className="tab-pane fade show active"
+                  className="tab-pane fade"
                   id="academics-all"
                   role="tabpanel"
                 >
@@ -350,206 +308,154 @@ export default function CurriculumPage() {
                         <div className="program-body">
                           <h3>Curriculum Overview</h3>
                           <p>
-                            Our curriculum is built around six transdisciplinary
-                            themes that encourage students to explore and
-                            understand the world around them:
-                          </p>
-                          <ul className="program-details">
-                            <li>
-                              <i className="bi bi-1-circle" /> Who We Are
-                            </li>
-                            <li>
-                              <i className="bi bi-2-circle" /> Where We Are in
-                              Place and Time
-                            </li>
-                            <li>
-                              <i className="bi bi-3-circle" /> How We Express
-                              Ourselves
-                            </li>
-                            <li>
-                              <i className="bi bi-4-circle" /> How the World
-                              Works
-                            </li>
-                            <li>
-                              <i className="bi bi-5-circle" /> How We Organize
-                              Ourselves
-                            </li>
-                            <li>
-                              <i className="bi bi-6-circle" /> Sharing the
-                              Planet
-                            </li>
-                          </ul>
-                          <p>
-                            These themes challenge students to think critically,
-                            engage locally and globally, and connect learning to
-                            real life.
+                            Character building at Leaders International College represents our dedication to nurturing the whole student. By prioritizing these values, we ensure that our graduates emerge not only as scholars but also as well-rounded individuals who are respected for their character and leadership.
                           </p>
                         </div>
                       </div>
                     </div>
-                    {/* Program Item */}
-                    <div
-                      className="col-lg-4 col-md-6"
-                      data-aos="zoom-in"
-                      data-aos-delay={300}
-                    >
-                      <div className="program-item doctoral">
-                        <div className="program-header">
-                          <div className="program-icon">
-                            <i className="bi bi-diagram-3" />
+                   </div>
+
+                    
+                    <div className="bg-light p-4 rounded shadow-sm my-4">
+                      <div className="section-header text-center">
+                        <h3>Academic Support</h3>
+                        <p>
+                          At Leaders International College, we believe in empowering all students to reach their full potential. Our Learning and Teaching Center (LTC) and Special Educational Needs (SEN) programs are designed to support students who need extra help as well as those who are excelling and require advanced challenges.                    
+                        </p>
+                      </div>
+                      <div className="row g-4">
+                        {/* Card 1: What are LTC and SEN */}
+                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
+                          <div className="program-item undergraduate">
+                            <div className="program-header">
+                              <div className="program-icon">
+                                <i className="bi bi-question-circle-fill"></i>
+                              </div>
+                              <span className="program-type">Academic Support</span>
+                            </div>
+                            <div className="program-body">
+                              <h3>What Are LTC & SEN?</h3>
+                              <p>
+                                <strong>Learning and Teaching Center (LTC):</strong> This center provides support to enhance learning outcomes for all students. It offers personalized academic assistance to students who are struggling and develops special programs for students who excel academically and need advanced challenges.
+                              </p>
+                              <p>
+                                <strong>Special Educational Needs (SEN):</strong> Our SEN program supports students with different learning needs that require specific adjustments and resources — including learning disabilities, physical disabilities, or curriculum modifications.
+                              </p>
+                            </div>
                           </div>
-                          <span className="program-type">Doctoral</span>
                         </div>
-                        <div className="program-body">
-                          <h3>Neuroscience</h3>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Ut elit tellus, luctus nec ullamcorper mattis.
-                          </p>
-                          <ul className="program-details">
-                            <li>
-                              <i className="bi bi-clock" /> 5 years
-                            </li>
-                            <li>
-                              <i className="bi bi-mortarboard-fill" /> Ph.D.
-                              Degree
-                            </li>
-                            <li>
-                              <i className="bi bi-calendar-check" /> Fall Intake
-                            </li>
-                          </ul>
+
+                        {/* Card 2: Role of Our Centers */}
+                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
+                          <div className="program-item undergraduate">
+                            <div className="program-header">
+                              <div className="program-icon">
+                                <i className="bi bi-people-fill"></i>
+                              </div>
+                              <span className="program-type">Academic Support</span>
+                            </div>
+                            <div className="program-body">
+                              <h3>Role of Our Centers</h3>
+                              <p>
+                                <strong>Support for Struggling Students:</strong> LTC and SEN identify students facing academic challenges and provide the support needed to improve their learning experience. This includes tutoring, specialized strategies, and environment adjustments.
+                              </p>
+                              <p>
+                                <strong>Enhancements for Advanced Learners:</strong> For students ahead of their peers, these centers offer enrichment programs with complex material and opportunities for deeper exploration of subjects.
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="program-footer">
-                          <a href="#" className="program-link">
-                            View Program <i className="bi bi-arrow-right" />
-                          </a>
+
+                        {/* Card 3: Our Educational Approach */}
+                        <div className="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay={100}>
+                          <div className="program-item undergraduate">
+                            <div className="program-header">
+                              <div className="program-icon">
+                                <i className="bi bi-lightbulb-fill"></i>
+                              </div>
+                              <span className="program-type">Academic Support</span>
+                            </div>
+                            <div className="program-body">
+                              <h3>Pivotal in Our Approach</h3>
+                              <p>
+                                The LTC and SEN at Leaders International College play a pivotal role in our educational approach, supporting a wide range of learning needs and ensuring that all students have the opportunities they need to succeed academically and personally.
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    {/* Program Item */}
-                    <div
-                      className="col-lg-4 col-md-6"
-                      data-aos="zoom-in"
-                      data-aos-delay={100}
-                    >
-                      <div className="program-item undergraduate">
-                        <div className="program-header">
-                          <div className="program-icon">
-                            <i className="bi bi-tree" />
+
+                  <div className="bg-light p-4 rounded shadow-sm my-4">
+                    <div className="section-header text-center">
+                      <h3>Digital Learning </h3>
+                      <p>
+                       At Leaders International College, we integrate advanced technology into our learning environments to enhance educational outcomes and prepare our students for a digital future.
+                      </p>
+                     <div className="row g-4">
+                      {/* Card 1: Interactive Learning Environments */}
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item doctoral">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-easel2" />
+                            </div>
+                            <span className="program-type">Digital Learning</span>
                           </div>
-                          <span className="program-type">Undergraduate</span>
+                          <div className="program-body">
+                            <h3>Interactive Learning Environments</h3>
+                            <p>
+                              Our classrooms are equipped with interactive smart screens, which facilitate dynamic and engaging teaching methods. These tools allow teachers to deliver lessons in a visually enriched format that captures students' attention and encourages interactive learning experiences.
+                            </p>
+                          </div>
                         </div>
-                        <div className="program-body">
-                          <h3>Environmental Science</h3>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Ut elit tellus, luctus nec ullamcorper mattis.
-                          </p>
-                          <ul className="program-details">
-                            <li>
-                              <i className="bi bi-clock" /> 4 years
-                            </li>
-                            <li>
-                              <i className="bi bi-mortarboard-fill" /> B.Sc.
-                              Degree
-                            </li>
-                            <li>
-                              <i className="bi bi-calendar-check" /> Fall &amp;
-                              Spring
-                            </li>
-                          </ul>
+                      </div>
+
+                      {/* Card 2: Guided Education System */}
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item doctoral">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-journal-check" />
+                            </div>
+                            <span className="program-type">Digital Learning</span>
+                          </div>
+                          <div className="program-body">
+                            <h3>Guided Education: ManageBac</h3>
+                            <p>
+                              To streamline our educational processes and enhance communication, we utilize ManageBac, a leading learning management system tailored for IB schools. ManageBac supports our teachers and students by providing an organized platform for lesson planning, assignments, and assessments, and it enables parents to keep track of their child’s academic progress and activities in real time.
+                            </p>
+                          </div>
                         </div>
-                        <div className="program-footer">
-                          <a href="#" className="program-link">
-                            View Program <i className="bi bi-arrow-right" />
-                          </a>
+                      </div>
+
+                      {/* Card 3: Commitment to Digital Learning */}
+                      <div className="col-lg-4 col-md-6" data-aos="zoom-in">
+                        <div className="program-item doctoral">
+                          <div className="program-header">
+                            <div className="program-icon">
+                              <i className="bi bi-cpu" />
+                            </div>
+                            <span className="program-type">Digital Learning</span>
+                          </div>
+                          <div className="program-body">
+                            <h3>Commitment to Digital Learning</h3>
+                            <p>
+                              At Leaders International College, our commitment to digital learning extends beyond interactive classrooms and management systems. We employ a variety of digital resources, software, and tools to enhance educational delivery and support personalized learning, ensuring every student is prepared to succeed in a digital-centric world.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    {/* Program Item */}
-                    <div
-                      className="col-lg-4 col-md-6"
-                      data-aos="zoom-in"
-                      data-aos-delay={200}
-                    >
-                      <div className="program-item graduate">
-                        <div className="program-header">
-                          <div className="program-icon">
-                            <i className="bi bi-graph-up" />
-                          </div>
-                          <span className="program-type">Graduate</span>
-                        </div>
-                        <div className="program-body">
-                          <h3>Data Science</h3>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Ut elit tellus, luctus nec ullamcorper mattis.
-                          </p>
-                          <ul className="program-details">
-                            <li>
-                              <i className="bi bi-clock" /> 2 years
-                            </li>
-                            <li>
-                              <i className="bi bi-mortarboard-fill" /> M.Sc.
-                              Degree
-                            </li>
-                            <li>
-                              <i className="bi bi-calendar-check" /> Fall &amp;
-                              Spring
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="program-footer">
-                          <a href="#" className="program-link">
-                            View Program <i className="bi bi-arrow-right" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Program Item */}
-                    <div
-                      className="col-lg-4 col-md-6"
-                      data-aos="zoom-in"
-                      data-aos-delay={300}
-                    >
-                      <div className="program-item doctoral">
-                        <div className="program-header">
-                          <div className="program-icon">
-                            <i className="bi bi-people" />
-                          </div>
-                          <span className="program-type">Doctoral</span>
-                        </div>
-                        <div className="program-body">
-                          <h3>Psychology</h3>
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Ut elit tellus, luctus nec ullamcorper mattis.
-                          </p>
-                          <ul className="program-details">
-                            <li>
-                              <i className="bi bi-clock" /> 4 years
-                            </li>
-                            <li>
-                              <i className="bi bi-mortarboard-fill" /> Ph.D.
-                              Degree
-                            </li>
-                            <li>
-                              <i className="bi bi-calendar-check" /> Fall Intake
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="program-footer">
-                          <a href="#" className="program-link">
-                            View Program <i className="bi bi-arrow-right" />
-                          </a>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                </div>
+                   </div>
+                  </div>
+
+                  
                 {/* PYP Tab */}
                 <div
-                  className="tab-pane fade"
+                  className="tab-pane fade show active"
                   id="academics-undergraduate"
                   role="tabpanel"
                 >
@@ -990,6 +896,7 @@ export default function CurriculumPage() {
                     </div>
                   </div>
                 </div>
+
                 {/* MYP Tab */}
                 <div
                   className="tab-pane fade"
@@ -1625,69 +1532,45 @@ export default function CurriculumPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="bg-light p-4 rounded shadow-sm my-4">
-                        <div className="section-header text-center">
-                          <h3>Alternative High School Pathways</h3>
-                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="intro-wrapper">
+                <div className="bg-light p-4 rounded shadow-sm my-4">
+                      <div className="section-header text-center">
+                        <h3>Secondary Education Options: American Diploma and IGCSE</h3>
                       </div>
-                      <div className="col-lg-6 col-md-6" data-aos="zoom-in">
-                        <div className="program-item doctoral">
-                          <div className="program-header">
-                            <div className="program-icon">
-                              <i className="bi bi-award-fill" />
-                            </div>
-                            <span className="program-type">
-                              High School Programme
-                            </span>
-                          </div>
-                          <div className="program-body">
-                            <h3>American Diploma</h3>
-                            <p>
-                              At Leaders International College, our American
-                              Diploma program offers a distinctive pathway.
-                              Integrated with the IB curriculum, it ensures that
-                              all students receive a comprehensive, high-quality
-                              education rooted in the IB philosophy.
-                            </p>
-                            <p>
-                              Designed for DP1 and DP2 students (grades 11 and
-                              12), this program is a less rigorous alternative
-                              to the full IB Diploma Programme. It maintains
-                              high academic standards while offering flexibility
-                              and a personalized approach suited to students’
-                              individual capabilities and goals.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 col-md-6" data-aos="zoom-in">
-                        <div className="program-item doctoral">
-                          <div className="program-header">
-                            <div className="program-icon">
-                              <i className="bi bi-journal-bookmark-fill" />
-                            </div>
-                            <span className="program-type">
-                              High School Programme
-                            </span>
-                          </div>
-                          <div className="program-body">
-                            <h3>IGCSE Programme</h3>
-                            <p>
-                              Our IGCSE program, offered for Years 10 to 12,
-                              provides a broad and flexible curriculum tailored
-                              to prepare students for higher education and
-                              professional success.
-                            </p>
-                            <p>
-                              At Leaders International College, our commitment
-                              to academic excellence is reflected in our team of
-                              highly qualified teachers. They foster a nurturing
-                              environment that supports student achievement and
-                              future readiness.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                    </div>
+                <div className="row align-items-center">
+                  <div
+                    className="col-lg-6 mb-4 mb-lg-0"
+                    data-aos="fade-right"
+                    data-aos-delay={200}
+                  >
+                    <div className="intro-image">
+                      <img
+                        src="assets/img/education/Amer.webp"
+                        alt="Academic Programs"
+                        className="img-fluid rounded-lg shadow"
+                        style={{ width: '4000px', height: '450px' }}
+                      />
+                      <div className="accent-shape" />
+                    </div>
+                  </div>
+                  <div
+                    className="col-lg-6"
+                    data-aos="fade-left"
+                    data-aos-delay={300}
+                  >
+                    <div className="intro-content">
+                      <span className="subtitle">Empowering High School Success</span>
+                      <h2>American Diploma </h2>
+                      <p className="intro-text">
+                       At Leaders International College, we pride ourselves on offering a distinctive educational pathway through our American Diploma program. Unique among IB schools, our American Diploma is integrated with the IB curriculum, ensuring that all students, regardless of the program they choose, receive a comprehensive, high-quality education grounded in the IB philosophy.
+                      </p>
+                      <p>The American Diploma program is specifically designed for students in DP1 and DP2 (grades 11 and 12), providing an alternative that is less rigorous than the full Diploma Programme while still maintaining the high standards of an IB education. This program is ideal for students seeking flexibility in their secondary education and for those who may benefit from a curriculum tailored to their individual capabilities and future goals.</p>
                     </div>
                   </div>
                 </div>
@@ -1701,17 +1584,11 @@ export default function CurriculumPage() {
                     data-aos-delay={100}
                   >
                     <div className="stats-content">
-                      <span className="subtitle">By The Numbers</span>
-                      <h2>Our Academic Excellence</h2>
+                      <span className="subtitle">Empowering High School Success</span>
+                      <h2>IGCSE Program</h2>
                       <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Praesent commodo cursus magna, vel scelerisque nisl
-                        consectetur et. Maecenas sed diam eget risus varius
-                        blandit.
+                        Our IGCSE program is offered for students in Years 10 to 12, focusing on providing a broad and flexible curriculum. At Leaders International College, we ensure academic excellence by employing only highly qualified teachers who are committed to nurturing student success in a supportive environment. This approach prepares our students well for higher education and future careers.
                       </p>
-                      <a href="#" className="btn-about">
-                        About Our Institution
-                      </a>
                     </div>
                   </div>
                   <div
@@ -1719,90 +1596,21 @@ export default function CurriculumPage() {
                     data-aos="fade-left"
                     data-aos-delay={200}
                   >
-                    <div className="stats-grid">
-                      <div
-                        className="stat-card"
-                        data-aos="zoom-in"
-                        data-aos-delay={100}
-                      >
-                        <div className="stat-icon">
-                          <i className="bi bi-people-fill" />
-                        </div>
-                        <div className="stat-number">
-                          <span
-                            data-purecounter-start={0}
-                            data-purecounter-end={92}
-                            data-purecounter-duration={1}
-                            className="purecounter"
-                          />
-                          %
-                        </div>
-                        <div className="stat-title">Student Satisfaction</div>
-                      </div>
-                      <div
-                        className="stat-card"
-                        data-aos="zoom-in"
-                        data-aos-delay={200}
-                      >
-                        <div className="stat-icon">
-                          <i className="bi bi-journal-bookmark-fill" />
-                        </div>
-                        <div className="stat-number">
-                          <span
-                            data-purecounter-start={0}
-                            data-purecounter-end={150}
-                            data-purecounter-duration={1}
-                            className="purecounter"
-                          />
-                          +
-                        </div>
-                        <div className="stat-title">Academic Programs</div>
-                      </div>
-                      <div
-                        className="stat-card"
-                        data-aos="zoom-in"
-                        data-aos-delay={300}
-                      >
-                        <div className="stat-icon">
-                          <i className="bi bi-award-fill" />
-                        </div>
-                        <div className="stat-number">
-                          <span
-                            data-purecounter-start={0}
-                            data-purecounter-end={25}
-                            data-purecounter-duration={1}
-                            className="purecounter"
-                          />
-                          +
-                        </div>
-                        <div className="stat-title">Research Centers</div>
-                      </div>
-                      <div
-                        className="stat-card"
-                        data-aos="zoom-in"
-                        data-aos-delay={400}
-                      >
-                        <div className="stat-icon">
-                          <i className="bi bi-mortarboard-fill" />
-                        </div>
-                        <div className="stat-number">
-                          <span
-                            data-purecounter-start={0}
-                            data-purecounter-end={96}
-                            data-purecounter-duration={1}
-                            className="purecounter"
-                          />
-                          %
-                        </div>
-                        <div className="stat-title">Graduation Rate</div>
-                      </div>
+                    <div className="intro-image text-center">
+                      <img
+                        src="assets/img/education/british.avif"
+                        alt="Academic Programs"
+                        className="img-fluid rounded-lg shadow"
+                        style={{ width: '5000px', height: '300px' }}
+                      />
+                      <div className="accent-shape"></div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
           </section>
           {/* /Academics Section */}
+
         </main>
         <footer
           id="footer"

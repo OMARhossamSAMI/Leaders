@@ -152,92 +152,77 @@ export default function AboutPage() {
           {/* History Section */}
           <section id="history" className="history section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
-              <div className="row align-items-center g-5">
-                <div className="col-lg-6">
-                  <div
-                    className="about-content"
-                    data-aos="fade-up"
-                    data-aos-delay={200}
-                  >
-                    <h3>Our Story</h3>
-                    <h2>Who We Are</h2>
-                    <p>
-                      At Leaders International College, we are a vibrant
-                      community of dedicated educators, enthusiastic learners,
-                      and supportive families, all committed to the pursuit of
-                      educational excellence. As a proud member of Leaders for
-                      Educational Services, our foundation is built on over 15
-                      years of pioneering experience in the educational sector.
-                      Our school is a reflection of a rich tradition of academic
-                      excellence combined with innovative teaching
-                      methodologies. We stand as a beacon of educational
-                      innovation and excellence, with a rich history spanning
-                      over a decade. Founded 10 years ago, LIC is among the
-                      first schools to be fully accredited for all stages of the
-                      International Baccalaureate (IB) - Primary Years Programme
-                      (PYP), Middle Years Programme (MYP), and Diploma Programme
-                      (DP). This prestigious recognition places us at the
-                      forefront of international education, as one of the oldest
-                      and most experienced IB World Schools. Our commitment to
-                      the IB framework is deep-rooted and evident in our
-                      approach to education, which emphasizes intellectual,
-                      personal, emotional, and social growth across all grade
-                      levels. We are dedicated to fostering a culture of
-                      academic rigor combined with a holistic educational
-                      experience that prepares students to thrive in a
-                      globalized world. Our educators are not only experts in
-                      their fields but also advocates of the IB philosophy,
-                      promoting inquiry, reflection, and critical thinking among
-                      our students. As we celebrate over a decade of leadership
-                      in IB education, our school continues to be a place where
-                      tradition meets innovation. We pride ourselves on creating
-                      an inclusive, supportive, and dynamic learning environment
-                      where every student is encouraged to explore their
-                      potential and achieve their best. Through our
-                      comprehensive IB curriculum, we prepare our students not
-                      just for academic success, but for lifelong learning and
-                      responsible citizenship in the global community.
-                    </p>
-                    <h3>Why Leaders</h3>
-                    <h2>Accreditation</h2>
-                    <p>
-                      At Leaders International College, we are a vibrant
-                      community of dedicated educators, enthusiastic learners,
-                      and supportive families, all committed to the pursuit of
-                      educational excellence. As a proud member of Leaders for
-                      Educational Services, our foundation is built on over 15
-                      years of pioneering experience in the educational sector.
-                      Our school is a reflection of a rich tradition of academic
-                      excellence combined with innovative teaching
-                      methodologies. We stand as a beacon of educational
-                      innovation and excellence, with a rich history spanning
-                      over a decade. Founded 10 years ago, LIC is among the
-                      first schools to be fully accredited for all stages of the
-                      International Baccalaureate (IB) - Primary Years Programme
-                      (PYP), Middle Years Programme (MYP), and Diploma Programme
-                      (DP). This prestigious recognition places us at the
-                      forefront of international education, as one of the oldest
-                      and most experienced IB World Schools. Our commitment to
-                      the IB framework is deep-rooted and evident in our
-                      approach to education, which emphasizes intellectual,
-                      personal, emotional, and social growth across all grade
-                      levels. We are dedicated to fostering a culture of
-                      academic rigor combined with a holistic educational
-                      experience that prepares students to thrive in a
-                      globalized world. Our educators are not only experts in
-                      their fields but also advocates of the IB philosophy,
-                      promoting inquiry, reflection, and critical thinking among
-                      our students. As we celebrate over a decade of leadership
-                      in IB education, our school continues to be a place where
-                      tradition meets innovation. We pride ourselves on creating
-                      an inclusive, supportive, and dynamic learning environment
-                      where every student is encouraged to explore their
-                      potential and achieve their best. Through our
-                      comprehensive IB curriculum, we prepare our students not
-                      just for academic success, but for lifelong learning and
-                      responsible citizenship in the global community.
-                    </p>
-                    <div className="timeline"></div>
+              <div className="facilities-tabs" data-aos="fade-up" data-aos-delay={200}>
+                <ul className="nav nav-tabs" role="tablist">
+                  <li className="nav-item"><button className="nav-link active" data-bs-toggle="tab" data-bs-target="#who"><i className="bi bi-people" /> Who We Are</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#governance"><i className="bi bi-check2-circle" /> Governance</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#accreditation"><i className="bi bi-bullseye" /> Accreditation</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#learner"><i className="bi bi-eye" /> IB Learner Profile</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#mission"><i className="bi bi-flag" /> Mission</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#vision"><i className="bi bi-lightbulb" /> Vision</button></li>
+                  <li className="nav-item"><button className="nav-link" data-bs-toggle="tab" data-bs-target="#strategies"><i className="bi bi-diagram-3" /> Strategies</button></li>
+                </ul>
+
+                <div className="tab-content">
+                  {/* === Who We Are === */}
+                  <div className="tab-pane fade show active" id="who" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/BUILDING.JPG"
+                              alt="Who We Are"
+                              className="img-fluid rounded"
+                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                            />
+                          </div>
+                          {/* Text Right */}
+                          <div className="col-md-7">
+                            <h3 className="mb-3">Who We Are</h3>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              At Leaders International College, we are a vibrant community of dedicated educators, enthusiastic learners,
+                              and supportive families, all committed to the pursuit of educational excellence. As a proud member of Leaders
+                              for Educational Services, our foundation is built on over 15 years of pioneering experience in the educational
+                              sector. Our school is a reflection of a rich tradition of academic excellence combined with innovative teaching
+                              methodologies.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              We stand as a beacon of educational innovation and excellence, with a rich history spanning over a decade.
+                              Founded 10 years ago, LIC is among the first schools to be fully accredited for all stages of the International
+                              Baccalaureate (IB) - Primary Years Programme (PYP), Middle Years Programme (MYP), and Diploma Programme (DP).
+                              This prestigious recognition places us at the forefront of international education, as one of the oldest and most
+                              experienced IB World Schools.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Our commitment to the IB framework is deep-rooted and evident in our approach to education, which emphasizes
+                              intellectual, personal, emotional, and social growth across all grade levels. We are dedicated to fostering a
+                              culture of academic rigor combined with a holistic educational experience that prepares students to thrive in a
+                              globalized world. Our educators are not only experts in their fields but also advocates of the IB philosophy,
+                              promoting inquiry, reflection, and critical thinking among our students.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              As we celebrate over a decade of leadership in IB education, our school continues to be a place where tradition
+                              meets innovation. We pride ourselves on creating an inclusive, supportive, and dynamic learning environment
+                              where every student is encouraged to explore their potential and achieve their best. Through our comprehensive IB
+                              curriculum, we prepare our students not just for academic success, but for lifelong learning and responsible
+                              citizenship in the global community.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="col-lg-6">
@@ -297,41 +282,46 @@ export default function AboutPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row mt-5">
-                <div className="col-lg-12">
-                  <div
-                    className="core-values"
-                    data-aos="fade-up"
-                    data-aos-delay={500}
-                  >
-                    <h3 className="text-center mb-4">Strategies</h3>
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                      <div className="col">
-                        <div className="value-card">
-                          <div className="value-icon">
-                            <i className="bi bi-book" />
+                 </div>
+
+
+
+                  {/* === Accreditation === */}
+                  <div className="tab-pane fade" id="accreditation" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/Acre.JPG"
+                              alt="Accreditation"
+                              className="img-fluid rounded"
+                              style={{ width: "100%", height: "500px", objectFit: "cover" }}
+                            />
                           </div>
-                          <h4>Highly Selective Strategy</h4>
-                          <p>
-                            At LIC, our first strategic pillar is the Highly
-                            Selective Strategy. This approach focuses on the
-                            meticulous selection of the finest aspects within
-                            the educational sector. We choose only the best
-                            learning programs and resources, ensuring our school
-                            campus and facilities meet the highest standards.
-                            Similarly, we carefully select our employees, staff,
-                            students, families, vendors, and suppliers to
-                            cultivate an elite educational community that stands
-                            out for its quality and commitment to excellence.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col">
-                        <div className="value-card">
-                          <div className="value-icon">
-                            <i className="bi bi-people" />
+                          {/* Text Right */}
+                          <div className="col-md-7">
+                            <h3 className="mb-3">Accreditation</h3>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              We are proud to be recognized as an IB World School, fully accredited to deliver all stages of the International Baccalaureate (IB) programs: the Primary Years Programme (PYP), Middle Years Programme (MYP), and the Diploma Programme (DP). Our commitment to providing a rigorous and internationally acknowledged education is further demonstrated by our accreditation from Cognia for the American diploma.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Understanding the diverse educational needs of our students, we have expanded our curriculum offerings to include the International General Certificate of Secondary Education (IGCSE). We are accredited by the British Council and hold certifications from prestigious educational organizations including Cambridge, Pearson, and Oxford for the IGCSE program. This allows us to offer a broad range of curricula, catering to students seeking various academic pathways.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              These accreditations underscore our dedication to excellence in global education standards and affirm our commitment to providing top-tier educational opportunities to our students. At LIC, we ensure that every program we offer meets the highest international standards, preparing our students for success in an interconnected world.
+                            </p>
                           </div>
                           <h4>High Achievers Support Strategy</h4>
                           <p>
@@ -348,10 +338,32 @@ export default function AboutPage() {
                           </p>
                         </div>
                       </div>
-                      <div className="col">
-                        <div className="value-card">
-                          <div className="value-icon">
-                            <i className="bi bi-lightbulb" />
+                    </div>
+                  </div>
+
+                  {/* === IB Learner === */}
+                  <div className="tab-pane fade" id="learner" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/LearnerProfile.JPG"
+                              alt="IB Learner Profile"
+                              className="img-fluid rounded"
+                              style={{ width: "10000px", height: "1000px", objectFit: "cover" }}
+                            />
                           </div>
                           <h4>Blue Ocean Strategy</h4>
                           <p>
@@ -371,171 +383,141 @@ export default function AboutPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          {/* /History Section */}
-          {/* Leadership Section */}
-          <section id="leadership" className="leadership section">
-            <div className="container" data-aos="fade-up" data-aos-delay={100}>
-              {/* Governance Block */}
-              <div className="row mb-5">
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-right"
-                  data-aos-delay={200}
-                >
-                  <h3 className="section-subtitle">Why Leaders</h3>
-                  <h2 className="section-heading">Governance</h2>
-                  <p className="section-description">
-                    At LIC, our governance is underpinned by a board of trustees
-                    and shareholders who bring a rich tapestry of experience and
-                    success from various sectors. Our leaders have deep roots in
-                    manufacturing, trading, tourism, hospitality, and real
-                    estate, with their expertise spanning across Egypt and
-                    extending into the dynamic business landscapes of the UAE.
-                    This diverse background enriches our school’s strategic
-                    direction, as our governance body draws upon a broad
-                    spectrum of industries to innovate and excel in educational
-                    practices. The board's collective vision focuses on
-                    expanding our educational endeavors across the MENA region,
-                    driven by a commitment to excellence and innovation.
-                    Together, they are dedicated to shaping the future of
-                    education, ensuring that LIC continues to offer outstanding
-                    educational experiences that prepare our students to thrive
-                    in a vibrant and ever-changing world.
-                  </p>
-                  <div className="stats-container mt-4">
-                    <div className="row">
-                      <div className="col-md-4 col-6">
-                        <div className="stat-item">
-                          <h3>10+</h3>
-                          <p>Years of Excellence</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-6">
-                        <div className="stat-item">
-                          <h3>60+</h3>
-                          <p>Faculty Members</p>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-6">
-                        <div className="stat-item">
-                          <h3>99%</h3>
-                          <p>Student Success</p>
+
+                  {/* === Mission === */}
+                  <div className="tab-pane fade" id="mission" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/ac.JPG"
+                              alt="Mission"
+                              className="img-fluid rounded"
+                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                            />
+                          </div>
+                          {/* Text Right */}
+                          <div className="col-md-7">
+                            <h3 className="mb-3">Mission</h3>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Leaders International College will enable its students to realize their full potential through providing a distinguished and comprehensive educational experience that implements a unique integrated international curriculum allowing students to develop their skills, abilities and attitudes.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              LIC students will develop as life-long learners who respect and cherish their core values and beliefs while demonstrating open-mindedness and tolerance. We strive to exhibit high-standard performance and meet expectations of all stakeholders. We will ensure that we utilize LIC resources efficiently and provide a safe nurturing learning environment where all stakeholders are actively involved in students’ learning and embrace LIC prospective goals.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                {/* Governance Image */}
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-left"
-                  data-aos-delay={300}
-                >
-                  <div className="about-image">
-                    <img
-                      src="assets/img/education/Governance.JPG"
-                      alt="Our Leadership Team"
-                      className="img-fluid rounded"
-                    />
+
+
+                  {/* === Vision === */}
+                  <div className="tab-pane fade" id="vision" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/Vis.JPG"
+                              alt="Vision"
+                              className="img-fluid rounded"
+                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                            />
+                          </div>
+                          {/* Text Right */}
+                          <div className="col-md-7">
+                            <h3 className="mb-3">Vision</h3>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Leaders International College envisions to become an exemplary educational institution in the Middle East through empowering its students to become well-versed, confident and capable global citizens of the 21st century.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              LIC guides a new generation of leaders in all paths of life by a strong sense of identity, taking pride in their culture and maintaining the courage to act upon their beliefs. We are dedicated to enable our students to apply their talents to all aspects of life and support sustainable development and innovation.
+                            </p>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              LIC aims to be a pioneering workplace in which its collaborative community continually develops curriculum, instructional strategies, and approaches of assessment.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  {/* === Strategies === */}
+                  <div className="tab-pane fade" id="strategies" role="tabpanel">
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* Image Left */}
+                          <div className="col-md-5">
+                            <img
+                              src="assets/img/education/Accr.JPG"
+                              alt="Strategies"
+                              className="img-fluid rounded"
+                              style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                            />
+                          </div>
+                          {/* Text Right */}
+                          <div className="col-md-7">
+                            <h3 className="mb-3">Strategies</h3>
+
+                            <h5>Highly Selective Strategy</h5>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              At LIC, our first strategic pillar is the Highly Selective Strategy. This approach focuses on the meticulous selection of the finest aspects within the educational sector. We choose only the best learning programs and resources, ensuring our school campus and facilities meet the highest standards. Similarly, we carefully select our employees, staff, students, families, vendors, and suppliers to cultivate an elite educational community that stands out for its quality and commitment to excellence.
+                            </p>
+
+                            <h5>High Achievers Support Strategy</h5>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Our second strategic initiative is the High Achievers Support Strategy. This strategy is designed to inspire and empower our staff and students, as well as all members of our team, to attain exceptional levels of achievement. By fostering an environment that encourages peak performance, we continuously enhance the quality of our educational offerings and reinforce Leaders International School’s position as a benchmark within the educational services sector.
+                            </p>
+
+                            <h5>Blue Ocean Strategy</h5>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              The third cornerstone of our strategic framework is the Blue Ocean Strategy. This approach positions our schools uniquely, focusing on collaboration over competition within the educational market. By adopting this strategy, Leaders International School distinguishes itself as the sole institution in Egypt to offer students a dual certification—the IB and American Diploma—through a singular, accredited curriculum. This innovative offering not only sets our students apart but also reinforces our school's unique status in the education landscape.
+                            </p>
+                          </div>
+                        </div>
+                    
+                      </div>                 
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* IB Learner Profile Block */}
-              <div className="row align-items-center g-5 mt-5">
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-right"
-                  data-aos-delay={200}
-                >
-                  <h3 className="section-subtitle">Why Leaders</h3>
-                  <h2 className="section-heading">IB Learner Profile</h2>
-                  <p className="section-description">
-                    Our adoption of the International Baccalaureate (IB)
-                    framework is central to our educational philosophy. The IB
-                    Learner Profile represents a broad range of human capacities
-                    and responsibilities that go beyond academic success. These
-                    are the qualities that we nurture in our students to prepare
-                    them for personal and professional success in a global
-                    society.
-                  </p>
-                  <ul className="section-description ps-3">
-                    <li>
-                      <strong>Inquirers:</strong> Curious and enthusiastic about
-                      learning, nurturing a love for discovery and inquiry
-                      skills.
-                    </li>
-                    <li>
-                      <strong>Knowledgeable:</strong> Gaining deep understanding
-                      across important global and interdisciplinary concepts.
-                    </li>
-                    <li>
-                      <strong>Thinkers:</strong> Applying critical and creative
-                      thinking to solve complex problems ethically and
-                      effectively.
-                    </li>
-                    <li>
-                      <strong>Communicators:</strong> Expressing ideas clearly
-                      and listening thoughtfully in multiple languages and
-                      formats.
-                    </li>
-                    <li>
-                      <strong>Principled:</strong> Acting with honesty,
-                      fairness, and respect for individuals and communities.
-                    </li>
-                    <li>
-                      <strong>Open-minded:</strong> Appreciating diverse
-                      cultures, perspectives, and traditions while being open to
-                      growth.
-                    </li>
-                    <li>
-                      <strong>Caring:</strong> Demonstrating empathy,
-                      compassion, and a commitment to service and making a
-                      difference.
-                    </li>
-                    <li>
-                      <strong>Risk-takers:</strong> Embracing new challenges
-                      with confidence and resilience in unfamiliar situations.
-                    </li>
-                    <li>
-                      <strong>Balanced:</strong> Valuing physical, emotional,
-                      and intellectual well-being for a healthy, fulfilling
-                      life.
-                    </li>
-                    <li>
-                      <strong>Reflective:</strong> Thoughtfully considering
-                      personal growth, experiences, strengths, and areas for
-                      improvement.
-                    </li>
-                  </ul>
-                  <p className="section-description">
-                    Through the IB Learner Profile, LIC fosters an educational
-                    environment that emphasizes both academic excellence and
-                    holistic development. Our goal is to shape globally-minded
-                    individuals who contribute to a more peaceful and
-                    sustainable world.
-                  </p>
-                </div>
-                {/* IB Profile Image */}
-                <div
-                  className="col-lg-6"
-                  data-aos="zoom-in"
-                  data-aos-delay={300}
-                >
-                  <div className="about-image">
-                    <img
-                      src="assets/img/education/LearnerProfile.JPG"
-                      alt="IB Learner Profile"
-                      className="img-fluid rounded"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+              </div>            
+           </section>
           {/* /Leadership Section */}
           <footer
             id="footer"
@@ -686,7 +668,8 @@ export default function AboutPage() {
           {/* Vendor JS Files */}
           {/* Main JS File */}
         </main>
-      </div>
+        </div>
+
     </>
   );
 }

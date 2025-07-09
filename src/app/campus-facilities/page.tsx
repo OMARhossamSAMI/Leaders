@@ -193,7 +193,7 @@ export default function CampusFacilitiesPage() {
                         />
                       </div>
                       <div className="tour-button">
-                        <a href="#" className="btn-tour">
+                        <a href="http://vrtour.leadersintcollege.com/" className="btn-tour" target="_blank" rel="noopener noreferrer">
                           <i className="bi bi-play-circle-fill" /> Virtual Tour
                         </a>
                       </div>

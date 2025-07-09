@@ -95,9 +95,6 @@ export default function StudentsLifePage() {
                       <a href="about">About Us</a>
                     </li>
                     <li>
-                      <a href="our-staff">Our Staff</a>
-                    </li>
-                    <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
                     </li>
                   </ul>
@@ -818,133 +815,113 @@ export default function StudentsLifePage() {
                   {/* Clubs */}
                   {/* Clubs */}
                   <div
-                    className="tab-pane fade"
-                    id="students-life-clubs"
-                    role="tabpanel"
-                    aria-labelledby="clubs-tab"
-                  >
-                    <section className="clubs-content">
-                      {/* Intro */}
-                      <header className="clubs-header">
-                        <h3>Clubs at Leaders International College</h3>
-                        <p>
-                          Clubs play a vital role in the holistic growth of our
-                          students during the PYP stage, helping them develop
-                          skills, passions, and friendships.
-                        </p>
-                      </header>
-                      {/* Dynamic Card (still same style) */}
-                      <section className="clubs-dynamic">
-                        <div className="dynamic-card simple-card">
-                          <div className="dynamic-text">
-                            <h4>Dynamic Club Offerings</h4>
-                            <p>
-                              Our club selection adapts every year based on
-                              students’ interests to stay fresh, fun, and
-                              relevant.
-                            </p>
-                          </div>
-                        </div>
-                      </section>
-                      {/* Stacked Club Cards */}
-                      <div className="clubs-stack">
-                        <div className="club-card visual-card wide">
-                          <div className="card-image">
-                            <img
-                              src="assets/img/education/art-club.jpg"
-                              alt="Art Club"
-                            />
-                          </div>
-                          <div className="card-text">
-                            <h4>Art Club</h4>
-                            <p>
-                              Encourages creativity through drawing, painting,
-                              and crafts.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="club-card visual-card wide">
-                          <div className="card-image">
-                            <img
-                              src="assets/img/education/science-club.jpg"
-                              alt="Science Club"
-                            />
-                          </div>
-                          <div className="card-text">
-                            <h4>Science Club</h4>
-                            <p>
-                              Engage in fun experiments and scientific
-                              discovery.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="club-card visual-card wide">
-                          <div className="card-image">
-                            <img
-                              src="assets/img/education/drama-club.jpg"
-                              alt="Drama Club"
-                            />
-                          </div>
-                          <div className="card-text">
-                            <h4>Drama Club</h4>
-                            <p>
-                              Build confidence through acting and performance.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="club-card visual-card wide">
-                          <div className="card-image">
-                            <img
-                              src="assets/img/education/eco-club.jpg"
-                              alt="Eco Club"
-                            />
-                          </div>
-                          <div className="card-text">
-                            <h4>Eco Club</h4>
-                            <p>
-                              Focus on sustainability and caring for the
-                              environment.
-                            </p>
-                          </div>
-                        </div>
-                        <div className="club-card visual-card wide">
-                          <div className="card-image">
-                            <img
-                              src="assets/img/education/chess-club.jpg"
-                              alt="Chess Club"
-                            />
-                          </div>
-                          <div className="card-text">
-                            <h4>Chess Club</h4>
-                            <p>Sharpen strategy and problem-solving skills.</p>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Benefits */}
-                      <section className="clubs-benefits">
-                        <h4>Benefits of Participation</h4>
-                        <ul>
-                          <li>
-                            Explore personal interests in a fun, structured
-                            setting.
-                          </li>
-                          <li>Make friends and grow social skills.</li>
-                          <li>Gain a sense of belonging and achievement.</li>
-                          <li>Strengthen teamwork and leadership abilities.</li>
-                        </ul>
-                      </section>
-                      {/* Conclusion */}
-                      <footer className="clubs-conclusion">
-                        <h4>Conclusion</h4>
-                        <p>
-                          Clubs at Leaders International College are more than
-                          just activities — they’re a vital part of the PYP
-                          experience. By adapting our offerings each year, we
-                          help students grow in what they love most.
-                        </p>
-                      </footer>
-                    </section>
-                  </div>
+  className="tab-pane fade"
+  id="students-life-clubs"
+  role="tabpanel"
+  aria-labelledby="clubs-tab"
+>
+  <section
+    className="clubs-content"
+    style={{
+      background: "#fff",
+      borderRadius: "12px",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+      padding: "40px",
+    }}
+  >
+    <header className="clubs-header text-center mb-4">
+      <h3>Clubs at Leaders International College</h3>
+      <p>
+        At Leaders International College, clubs play a vital role in the holistic development of our students during the Primary Years Programme (PYP). Engaging in clubs helps students develop new skills, discover passions, and build meaningful friendships.
+      </p>
+    </header>
+
+    <section className="clubs-dynamic text-center mb-5">
+      <h4>Dynamic Club Offerings</h4>
+      <p>
+        Our selection of clubs is specially designed to cater to the diverse interests of our young learners in the PYP stage. Recognizing that interests can vary significantly from year to year, the range of clubs offered at Leaders International College is dynamic and responsive. Each academic year, we assess the interests and preferences of our students and adapt our club offerings accordingly. This approach ensures that our clubs remain engaging, relevant, and exciting for students.
+      </p>
+    </section>
+
+    <div className="clubs-grid">
+      <div className="club-card">
+        <img
+          src="assets/img/education/art-club.jpg"
+          alt="Art Club"
+        />
+        <h5>Art Club</h5>
+        <p>
+          Encourages creativity through drawing, painting, and crafting.
+        </p>
+      </div>
+      <div className="club-card">
+        <img
+          src="assets/img/education/science-club.jpg"
+          alt="Science Club"
+        />
+        <h5>Science Club</h5>
+        <p>
+          Engage in fun and educational scientific experiments.
+        </p>
+      </div>
+      <div className="club-card">
+        <img
+          src="assets/img/education/drama-club.jpg"
+          alt="Drama Club"
+        />
+        <h5>Drama Club</h5>
+        <p>
+          Gain confidence and express creativity through performance.
+        </p>
+      </div>
+
+      <div className="clubs-bottom">
+        <div className="club-card">
+          <img
+            src="assets/img/education/eco-club.jpg"
+            alt="Eco Club"
+          />
+          <h5>Eco Club</h5>
+          <p>
+            Focuses on sustainability and environmental awareness.
+          </p>
+        </div>
+        <div className="club-card">
+          <img
+            src="assets/img/education/chess-club.jpg"
+            alt="Chess Club"
+          />
+          <h5>Chess Club</h5>
+          <p>
+            Build strategic thinking and problem-solving skills.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* ✅ Benefits + Conclusion row stays the same */}
+    <div className="clubs-info-row">
+      <section className="clubs-benefits">
+        <h4>Benefits of Participation</h4>
+        <ul>
+          <li>Explore interests in a structured, fun environment.</li>
+          <li>Build social skills by engaging with peers.</li>
+          <li>Gain a sense of belonging and achievement.</li>
+          <li>Strengthen teamwork and leadership abilities.</li>
+        </ul>
+      </section>
+
+      <section className="clubs-conclusion">
+        <h4>Conclusion</h4>
+        <p>
+          Clubs at Leaders International College are a key part of our educational mission. By offering dynamic, interest-based clubs, we help students grow both personally and academically.
+        </p>
+      </section>
+    </div>
+  </section>
+</div>
+
+
                   {/* Trips */}
                   <div
                     className="tab-pane fade"
@@ -965,12 +942,108 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="council-tab"
                   >
-                    <h3>Student Council</h3>
-                    <p>
-                      Our student council represents the voice of the student
-                      body and organizes various initiatives.
-                    </p>
+                    <section
+                      className="council-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="council-header text-center mb-5">
+                        <h3>Student Council</h3>
+                        <p>
+                          The Student Council at Leaders International College
+                          plays a crucial role in our school community,
+                          representing the student body and enhancing school
+                          life through leadership and initiative.
+                        </p>
+                      </header>
+
+                      <section className="council-functions mb-5">
+                        <h4>Key Functions</h4>
+                        <div className="council-cards">
+                          <div className="council-card">
+                            <img
+                              src="assets/img/education/voice.jpg"
+                              alt="Voice of the Students"
+                            />
+                            <h5>Voice of the Students</h5>
+                            <p>
+                              The council acts as a liaison between the students
+                              and the school administration, ensuring that
+                              student opinions and ideas are heard.
+                            </p>
+                          </div>
+                          <div className="council-card">
+                            <img
+                              src="assets/img/education/events.jpg"
+                              alt="Event Planning"
+                            />
+                            <h5>Event Planning</h5>
+                            <p>
+                              They organize and manage school events and social
+                              activities, which boost engagement and foster a
+                              sense of community.
+                            </p>
+                          </div>
+                          <div className="council-card">
+                            <img
+                              src="assets/img/education/community.jpg"
+                              alt="Community Engagement"
+                            />
+                            <h5>Community Engagement</h5>
+                            <p>
+                              Council members lead community service projects,
+                              promoting a culture of giving back and
+                              responsibility among students.
+                            </p>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section className="council-participation mb-5">
+                        <h4>Participation and Elections</h4>
+                        <p>
+                          Participation in the Student Council is open to all
+                          students through an annual democratic election
+                          process. This opportunity allows students to develop
+                          essential leadership skills, engage in school
+                          governance, and influence key aspects of their
+                          educational environment.
+                        </p>
+                      </section>
+
+                      <section className="council-impact mb-5">
+                        <h4>Impact</h4>
+                        <p>
+                          Serving on the Student Council helps students develop
+                          crucial skills like leadership, decision-making, and
+                          communication, preparing them for active participation
+                          in their communities and future careers.
+                        </p>
+                        <p>
+                          The Student Council is integral to student life at
+                          Leaders International College, empowering students to
+                          take on leadership roles and make a positive impact
+                          within and beyond the school.
+                        </p>
+                      </section>
+
+                      <div className="council-tool text-center">
+                        <h4>Get Involved!</h4>
+                        <p>
+                          Ready to make a difference? Run for a position or vote
+                          in the next Student Council election!
+                        </p>
+                        <button className="council-btn">
+                          Explore Election Process
+                        </button>
+                      </div>
+                    </section>
                   </div>
+
                   {/* Art Programs */}
                   <div
                     className="tab-pane fade"
