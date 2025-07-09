@@ -64,9 +64,6 @@ export default function Home() {
                     <a href="/about">About Us</a>
                   </li>
                   <li>
-                    <a href="/our-staff">Our Staff</a>
-                  </li>
-                  <li>
                     <a href="/campus-facilities">Campus &amp; Facilities</a>
                   </li>
                 </ul>
@@ -97,7 +94,7 @@ export default function Home() {
           <div className="hero-container">
             <video autoPlay muted loop playsInline className="video-background">
               <source
-                src="/assets/img/education/video-2.mp4"
+                src="assets/img/education/Video.mp4"
                 type="video/mp4"
               />
             </video>

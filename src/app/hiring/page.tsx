@@ -81,7 +81,7 @@ export default function WeAreHiringPage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
+                  <a href="/">
                     Home
                   </a>
                 </li>
@@ -93,9 +93,6 @@ export default function WeAreHiringPage() {
                   <ul>
                     <li>
                       <a href="about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="our-staff">Our Staff</a>
                     </li>
                     <li>
                       <a href="campus-facilities">Campus &amp; Facilities</a>
@@ -112,7 +109,7 @@ export default function WeAreHiringPage() {
                   <a href="students-life">Students Life</a>
                 </li>
                 <li>
-                  <a href="#">We Are Hiring</a>
+                  <a href="#" className="active">We Are Hiring</a>
                 </li>
                 <li>
                   <a href="contact">Contact Us</a>
@@ -514,7 +511,7 @@ export default function WeAreHiringPage() {
                       </div>
                     </div>
                     <div className="event-action">
-                      <a href="#" className="btn-register">
+                      <a href="/hiring/apply" className="btn-register">
                         Apply Now
                       </a>
                     </div>
@@ -538,7 +535,7 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <a href="#" className="btn-register">
+                        <a href="/hiring/apply" className="btn-register">
                           Apply Now
                         </a>
                       </div>
@@ -562,7 +559,7 @@ export default function WeAreHiringPage() {
                           </div>
                         </div>
                         <div className="event-action">
-                          <a href="#" className="btn-register">
+                          <a href="/hiring/apply" className="btn-register">
                             Apply Now
                           </a>
                         </div>
@@ -575,7 +572,7 @@ export default function WeAreHiringPage() {
                   data-aos="fade-up"
                   data-aos-delay={200}
                 >
-                  <div className="row align-items-center">
+                  {/* <div className="row align-items-center">
                     <div className="col-lg-7">
                       <div className="impact-content">
                         <h3>Employment Application</h3>
@@ -907,7 +904,7 @@ export default function WeAreHiringPage() {
                         </form>
                       </div>
                     </div>
-                  </div>
+                  </div>*/}
                 </div>
               </div>
             </div>

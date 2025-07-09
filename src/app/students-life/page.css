@@ -1,0 +1,531 @@
+
+/* === HEADINGS === */
+/* Overall container */
+.club-content {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.clubs-header h3,
+.clubs-dynamic h4,
+.clubs-benefits h4,
+.clubs-conclusion h4 {
+  color: #1d1e1f;
+}
+
+.clubs-header p,
+.clubs-dynamic p,
+.clubs-conclusion p {
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.clubs-dynamic {
+  margin-bottom: 2rem;
+}
+
+/* ✅ 3 top cards, then nested 2 bottom equal cards */
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto 3rem;
+}
+
+.clubs-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column: 1 / -1; /* Span all columns of the main grid */
+  gap: 2rem;
+}
+
+.club-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.club-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+
+.club-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.club-card h5 {
+  margin: 0.5rem 0;
+  color: #00bff3;
+}
+
+.club-card p {
+  padding: 0 1rem 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Benefits + Conclusion side by side */
+.clubs-info-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.clubs-benefits,
+.clubs-conclusion {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.clubs-benefits ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.clubs-benefits li {
+  margin-bottom: 0.5rem;
+}
+
+.clubs-conclusion p {
+  color: #555;
+}
+
+
+
+/* === TRIPS HEADER === */
+
+.trips-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.6;
+}
+
+.trips-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #002147;
+}
+
+.trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.trip-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trip-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.trip-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.trip-card h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #00bff3;
+  margin: 20px;
+}
+
+.trip-card p {
+  font-size: 1rem;
+  color: #444;
+  padding: 0 20px 20px 20px;
+}
+
+.trips-conclusion p {
+  font-size: 1.1rem;
+  color: #444;
+  text-align: center;
+  max-width: 800px;
+  margin: 40px auto 0;
+}
+
+/* === COUNCIL STYLES === */
+.council-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+}
+
+.council-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00050a;
+}
+
+.council-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.council-functions h4,
+.council-participation h4,
+.council-impact h4,
+.council-tool h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #00050b;
+  margin-bottom: 20px;
+}
+
+.council-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.council-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.council-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.council-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.council-card h5 {
+  font-size: 1.2rem;
+  margin: 15px 0 10px;
+  color: #00bff3;
+}
+
+.council-card p {
+  padding: 0 20px 20px 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.council-participation p,
+.council-impact p {
+  font-size: 1.05rem;
+  color: #444;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+.council-tool {
+  margin-top: 40px;
+  padding: 30px;
+  background: #f0f8ff;
+  border-radius: 10px;
+}
+
+.council-tool p {
+  font-size: 1.05rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.council-btn {
+  background: #007bff;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 12px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.council-btn:hover {
+  background: #0056b3;
+}
+/* === ARTS STYLES === */
+
+.arts-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+}
+
+.arts-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #002147;
+}
+
+.arts-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.arts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  margin: 50px 0;
+}
+
+.arts-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+}
+
+.arts-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.arts-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.arts-card h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #00bff3;
+  margin: 20px 20px 10px;
+}
+
+.arts-card p {
+  font-size: 1rem;
+  color: #444;
+  padding: 0 20px 20px 20px;
+}
+
+.arts-conclusion p {
+  font-size: 1.05rem;
+  color: #444;
+  text-align: center;
+  max-width: 800px;
+  margin: 40px auto 0;
+}
+
+/* === EVENTS STYLES === */
+
+.events-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+}
+
+.events-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00050a;
+}
+
+.events-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.events-highlights h4,
+.events-community h4,
+.events-tool h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #010a14;
+  margin-bottom: 20px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.event-bottom {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column: 1 / -1;
+  gap: 2rem;
+}
+
+.event-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.event-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.event-card h5 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.2rem;
+  color: #00bff3;
+}
+
+.event-card p {
+  padding: 0 1rem 1.5rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+
+.events-community p {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.events-tool {
+  background: #f0f8ff;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.events-tool p {
+  max-width: 800px;
+  margin: 0 auto 20px;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.events-btn {
+  display: inline-block;
+  background: #010b16;
+  color: #fff;
+  font-weight: 600;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.events-btn:hover {
+  background: #00070e;
+}
+
+.events-conclusion p {
+  text-align: center;
+  max-width: 800px;
+  margin: 40px auto 0;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+/* === DINING STYLES === */
+
+.dining-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+}
+
+.dining-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #002147;
+}
+
+.dining-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 20px auto 0;
+}
+
+.dining-card {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.dining-card img {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* === TRANSPORT STYLES === */
+
+.transport-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+}
+
+.transport-header h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #002147;
+}
+
+.transport-header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 800px;
+  margin: 20px auto 0;
+}
+
+.transport-card {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.transport-card img {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}

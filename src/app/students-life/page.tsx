@@ -3,6 +3,7 @@
 "use client"; // ✅ Needed for useEffect
 
 import { useEffect } from "react";
+import "./page.css"; // Import the CSS file for this page
 
 export default function StudentsLifePage() {
   useEffect(() => {
@@ -81,9 +82,7 @@ export default function StudentsLifePage() {
             <nav id="navmenu" className="navmenu">
               <ul>
                 <li>
-                  <a href="/" className="active">
-                    Home
-                  </a>
+                  <a href="/">Home</a>
                 </li>
                 <li className="dropdown">
                   <a href="about">
@@ -106,7 +105,9 @@ export default function StudentsLifePage() {
                   <a href="curriculum">Curriculum</a>
                 </li>
                 <li>
-                  <a href="#">Students Life</a>
+                  <a href="#" className="active">
+                    Students Life
+                  </a>
                 </li>
                 <li>
                   <a href="hiring">We Are Hiring</a>
@@ -557,7 +558,15 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="dayinlic-tab"
                   >
-                    <section className="dayinlic-content">
+                    <section
+                      className="dayinlic-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
                       <header className="dayinlic-header">
                         <h1>Day in the Life of an LIC Student</h1>
                         <p>
@@ -682,7 +691,15 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="health-tab"
                   >
-                    <section className="healthwellness-content">
+                    <section
+                      className="healthwellness-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
                       <header className="healthwellness-header">
                         <h1>Commitment to Student Well-being</h1>
                         <p>
@@ -813,7 +830,6 @@ export default function StudentsLifePage() {
                     </section>
                   </div>
                   {/* Clubs */}
-                  {/* Clubs */}
                   <div
   className="tab-pane fade"
   id="students-life-clubs"
@@ -888,8 +904,15 @@ export default function StudentsLifePage() {
         </div>
         <div className="club-card">
           <img
-            src="assets/img/education/chess-club.jpg"
+            src="assets/img/education/CHESS2.png"
             alt="Chess Club"
+            className="img-fluid rounded-top"
+            style={{
+              width: '400px',
+              height: '200px',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
           />
           <h5>Chess Club</h5>
           <p>
@@ -929,12 +952,76 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="trips-tab"
                   >
-                    <h3>Trips</h3>
-                    <p>
-                      Students enjoy local and international trips that broaden
-                      their learning experiences.
-                    </p>
+                    <section
+                      className="trips-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="trips-header text-center mb-4">
+                        <h3>Trips</h3>
+                      </header>
+
+                      <div className="trips-grid">
+                        <div className="trip-card">
+                          <img
+                            src="assets/img/education/daily-trip.jpg"
+                            alt="Curriculum-Integrated Daily Trips"
+                          />
+                          <h4>Curriculum-Integrated Daily Trips</h4>
+                          <p>
+                            Throughout the academic year, we organize daily
+                            trips that are directly linked to our curriculum.
+                            These excursions are designed to complement
+                            classroom learning, providing students with hands-on
+                            experiences that enrich their understanding of
+                            specific subjects. Whether it’s a visit to a local
+                            museum, a scientific center, or a historical site,
+                            these trips are tailored to reinforce the curriculum
+                            and ignite students' curiosity.
+                          </p>
+                        </div>
+
+                        <div className="trip-card">
+                          <img
+                            src="assets/img/education/exploring-egypt.jpg"
+                            alt="Exploring Egypt"
+                          />
+                          <h4>Exploring Egypt</h4>
+                          <p>
+                            In addition to daily educational trips, we offer
+                            travel opportunities within Egypt that allow
+                            students to discover and appreciate the rich
+                            cultural heritage and natural beauty of their
+                            country. These trips vary each year, depending on
+                            the curriculum and student interests, ensuring that
+                            learning remains dynamic and engaging. By exploring
+                            different regions of Egypt, students gain a deeper
+                            understanding of their national identity and the
+                            diverse communities and ecosystems within their
+                            country.
+                          </p>
+                        </div>
+                      </div>
+
+                      <footer className="trips-conclusion mt-4">
+                        <p>
+                          Trips at Leaders International College are more than
+                          just educational outings; they are pivotal experiences
+                          that contribute significantly to the intellectual and
+                          personal development of our students. Each trip is an
+                          opportunity for discovery, learning, and growth,
+                          reflecting our commitment to providing a well-rounded
+                          education that prepares students for a globalized
+                          world.
+                        </p>
+                      </footer>
+                    </section>
                   </div>
+
                   {/* Student Council */}
                   <div
                     className="tab-pane fade"
@@ -1051,12 +1138,96 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="art-tab"
                   >
-                    <h3>Art Programs</h3>
-                    <p>
-                      Students can participate in art, music, and drama programs
-                      that develop creativity and talent.
-                    </p>
+                    <section
+                      className="arts-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="arts-header text-center mb-5">
+                        <h3>Arts Programs</h3>
+                        <p>
+                          Our arts programs are dedicated to nurturing
+                          creativity and artistic expression among students. We
+                          offer a wide range of opportunities in the visual and
+                          performing arts, allowing students to explore and
+                          develop their talents in music, drama, painting, and
+                          more.
+                        </p>
+                      </header>
+
+                      <div className="arts-grid">
+                        <div className="arts-card">
+                          <img
+                            src="assets/img/education/arts-education.jpg"
+                            alt="Comprehensive Arts Education"
+                          />
+                          <h4>Comprehensive Arts Education</h4>
+                          <p>
+                            Our curriculum includes structured arts education
+                            that encourages students to explore various artistic
+                            disciplines. From drawing and sculpture to music
+                            composition and theater production, students receive
+                            comprehensive instruction that enhances their
+                            understanding and appreciation of the arts.
+                          </p>
+                        </div>
+
+                        <div className="arts-card">
+                          <img
+                            src="assets/img/education/annual-competition.jpg"
+                            alt="Annual Art Competition"
+                          />
+                          <h4>Annual Art Competition</h4>
+                          <p>
+                            A highlight of our arts calendar is the annual art
+                            competition, which invites students from all grades
+                            to showcase their artistic talents. This event is
+                            not only a competition but also a celebration of
+                            creativity within our school community. Students get
+                            the opportunity to present their work, receive
+                            feedback from experienced judges, and enjoy
+                            recognition for their artistic endeavors.
+                          </p>
+                        </div>
+
+                        <div className="arts-card">
+                          <img
+                            src="assets/img/education/showcase.jpg"
+                            alt="Showcasing Talent"
+                          />
+                          <h4>Showcasing Talent</h4>
+                          <p>
+                            The art competition culminates in an exhibition
+                            where the works of our students are displayed. This
+                            event brings together the entire school
+                            community—students, parents, and staff—to appreciate
+                            the diverse artistic talents at Leaders
+                            International College. It is a testament to the
+                            vibrancy of our arts programs and the creativity of
+                            our students.
+                          </p>
+                        </div>
+                      </div>
+
+                      <footer className="arts-conclusion">
+                        <p>
+                          The arts programs at Leaders International College are
+                          a cornerstone of our educational philosophy, providing
+                          students with the tools and opportunities to express
+                          themselves and explore their creativity. Through
+                          events like our annual art competition, we celebrate
+                          and cultivate the artistic potential of every student,
+                          preparing them for a future where they can continue to
+                          innovate and inspire.
+                        </p>
+                      </footer>
+                    </section>
                   </div>
+
                   {/* School Events */}
                   <div
                     className="tab-pane fade"
@@ -1064,12 +1235,89 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="events-tab"
                   >
-                    <h3>School Events</h3>
-                    <p>
-                      LIC hosts events throughout the year to celebrate
-                      community, culture, and student achievements.
-                    </p>
+                    <section
+                      className="events-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="events-header text-center mb-5">
+                        <h3>School Clubs</h3>
+                        <p>
+                          Discover our engaging clubs that foster creativity,
+                          scientific inquiry, strategic thinking, and
+                          environmental awareness.
+                        </p>
+                      </header>
+
+                      <div className="event-grid">
+                        {/* Top 3 Cards */}
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/art.jpg"
+                            alt="Art Club"
+                          />
+                          <h5>Art Club</h5>
+                          <p>
+                            Encourages creativity through drawing, painting, and
+                            crafting.
+                          </p>
+                        </div>
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/science.jpg"
+                            alt="Science Club"
+                          />
+                          <h5>Science Club</h5>
+                          <p>
+                            Engage in fun and educational scientific
+                            experiments.
+                          </p>
+                        </div>
+                        <div className="event-card">
+                          <img
+                            src="assets/img/education/drama.jpg"
+                            alt="Drama Club"
+                          />
+                          <h5>Drama Club</h5>
+                          <p>
+                            Gain confidence and express creativity through
+                            performance.
+                          </p>
+                        </div>
+
+                        {/* Bottom 2 Cards */}
+                        <div className="event-bottom">
+                          <div className="event-card">
+                            <img
+                              src="assets/img/education/eco.jpg"
+                              alt="Eco Club"
+                            />
+                            <h5>Eco Club</h5>
+                            <p>
+                              Focuses on sustainability and environmental
+                              awareness.
+                            </p>
+                          </div>
+                          <div className="event-card">
+                            <img
+                              src="assets/img/education/chess.jpg"
+                              alt="Chess Club"
+                            />
+                            <h5>Chess Club</h5>
+                            <p>
+                              Build strategic thinking and problem-solving
+                              skills.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
                   </div>
+
                   {/* Dining Services */}
                   <div
                     className="tab-pane fade"
@@ -1077,12 +1325,45 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="dining-tab"
                   >
-                    <h3>Dining Services</h3>
-                    <p>
-                      Our dining facilities offer healthy and diverse meal
-                      options to fuel students throughout the day.
-                    </p>
+                    <section
+                      className="dining-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="dining-header text-center mb-5">
+                        <h3>On-Campus Dining Services</h3>
+                        <p>
+                          At Leaders International College, our on-campus dining
+                          services provide nutritious and delicious meal options
+                          for our students and staff. We are committed to
+                          offering a variety of healthy choices that cater to
+                          different dietary needs and preferences. Our dining
+                          facilities are designed to be welcoming spaces where
+                          students can enjoy meals and socialize with their
+                          peers, ensuring they have the energy to learn and
+                          participate in school activities effectively.
+                        </p>
+                      </header>
+
+                      <div className="dining-card">
+                        <img
+                          src="assets/img/education/dining.jpg"
+                          alt="On-Campus Dining"
+                          className="img-fluid rounded"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
+                        />
+                      </div>
+                    </section>
                   </div>
+
                   {/* Transportations */}
                   <div
                     className="tab-pane fade"
@@ -1090,11 +1371,43 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="transport-tab"
                   >
-                    <h3>Transportations</h3>
-                    <p>
-                      Safe and reliable transportation options make commuting to
-                      and from campus convenient for students.
-                    </p>
+                    <section
+                      className="transport-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <header className="transport-header text-center mb-5">
+                        <h3>Transportation</h3>
+                        <p>
+                          Leaders International College offers a comprehensive
+                          transportation service to ensure safe and convenient
+                          travel to and from school for our students. Our fleet
+                          of buses is well-maintained and equipped with safety
+                          features, and all routes are monitored to adhere to
+                          the highest standards of safety and efficiency. We aim
+                          to provide a reliable service that contributes to the
+                          overall well-being and daily convenience of our
+                          students and their families.
+                        </p>
+                      </header>
+
+                      <div className="transport-card">
+                        <img
+                          src="assets/img/education/transportation.jpg"
+                          alt="School Transportation"
+                          className="img-fluid rounded"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                          }}
+                        />
+                      </div>
+                    </section>
                   </div>
                 </div>
               </div>
@@ -1188,6 +1501,7 @@ export default function StudentsLifePage() {
                   </div>
                 </div>
               </div>
+
               {/* CTA */}
               <div
                 className="cta-wrapper mt-5"
