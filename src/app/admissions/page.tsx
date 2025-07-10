@@ -1,17 +1,16 @@
-// src/app/admissions/page.tsx
+"use client";
 
-"use client"; // ✅ Required for useEffect
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function AdmissionsPage() {
+  const [activeSection, setActiveSection] = useState("apply");
+
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
       const timer = setTimeout(() => {
         preloader.style.display = "none";
-      }, 15); // 1.5 seconds
-
+      }, 15);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -119,124 +118,173 @@ export default function AdmissionsPage() {
             </nav>
           </div>
         </header>
+
         <main className="main">
           {/* Page Title */}
           <div
             className="page-title dark-background"
-            style={{
-              backgroundImage:
-                "url(assets/img/education/Background_school.JPG)",
-            }}
+            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
           >
             <div className="container position-relative">
               <h1>Admissions</h1>
-              <p>
-                Start your journey at LIC—apply now to join a community that
-                nurtures excellence, character, and global citizenship.
-              </p>
+              <p>Start your journey at LIC—apply now to join a community that nurtures excellence, character, and global citizenship.</p>
               <nav className="breadcrumbs">
                 <ol>
-                  <li>
-                    <a href="/">Home</a>
-                  </li>
+                  <li><a href="/">Home</a></li>
                   <li className="current">Admissions</li>
                 </ol>
               </nav>
             </div>
           </div>
-          {/* End Page Title */}
-          {/* Admissions Section */}
+
+          {/* Buttons Styled Like Example */}
+          <div className="container mt-5 text-center">
+            <div className="btn-group">
+              <button
+                className={`btn custom-tab ${activeSection === "apply" ? "active" : ""}`}
+                onClick={() => setActiveSection("apply")}
+              >
+                <i className="bi bi-pencil-square me-2"></i> How to Apply
+              </button>
+              <button
+                className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""}`}
+                onClick={() => setActiveSection("requirements")}
+              >
+                <i className="bi bi-journal-check me-2"></i> Admission Requirements
+              </button>
+              <button
+                className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""}`}
+                onClick={() => setActiveSection("deadlines")}
+              >
+                <i className="bi bi-calendar-event me-2"></i> Key Admission Deadlines
+              </button>
+              <button
+                className={`btn custom-tab ${activeSection === "form" ? "active" : ""}`}
+                onClick={() => setActiveSection("form")}
+              >
+                <i className="bi bi-file-earmark-text me-2"></i> Application Form
+              </button>
+            </div>
+          </div>
+
           <section id="admissions" className="admissions section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
               <div className="row gy-5 g-lg-5">
-                <div className="col-lg-6">
-                  <div className="admissions-info" data-aos="fade-up">
-                    <h2>Begin Your Academic Journey Today</h2>
-                    <p>
-                      Please carefully provide the information requested below.
+                {activeSection === "apply" && (
+                  <div className="col-lg-12">
+                    <div className="admissions-info">
+                      <h2>Begin Your Academic Journey Today</h2>
+                      <p>
+Please carefully provide the information requested below.
                       Once submitted, our admissions team will review your
                       application and contact you to arrange interviews for both
                       the student and parents. We are here to answer all your
                       questions and guide you through each step of the
                       admissions process. We look forward to getting to know
                       your family and exploring how LIC can support your child's
-                      educational journey.
-                    </p>
-                    <div className="admissions-steps mt-5">
-                      <h3>How to Apply</h3>
-                      <p>
-                        Applying at LIC is an exciting journey for your family,
+                      educational journey.                      </p>
+                      <div className="admissions-steps mt-5">
+                        <h3>How to Apply</h3>
+                        <p>Applying at LIC is an exciting journey for your family,
                         and we strive to make the admissions process as smooth
                         as possible. Here are the steps you’ll need to follow to
-                        apply to our school:
-                      </p>
-                      <div className="steps-wrapper mt-4">
-                        <div
-                          className="step-item"
-                          data-aos="fade-up"
-                          data-aos-delay={100}
-                        >
-                          <div className="step-number">1</div>
-                          <div className="step-content">
-                            <h4>Online Application</h4>
-                            <p>
-                              Start your application by clicking the Apply Now
+                        apply to our school:</p>
+                        <div className="steps-wrapper mt-4">
+                          <div className="step-item">
+                            <div className="step-number">1</div>
+                            <div className="step-content">
+                              <h4>Online Application</h4>
+                              <p>Start your application by clicking the Apply Now
                               button. You will need to fill out the application
                               form. This is your first step toward becoming a
-                              part of our vibrant learning community.
-                            </p>
+                              part of our vibrant learning community.</p>
+                            </div>
                           </div>
-                        </div>
-                        <div
-                          className="step-item"
-                          data-aos="fade-up"
-                          data-aos-delay={200}
-                        >
-                          <div className="step-number">2</div>
-                          <div className="step-content">
-                            <h4>Child Assessment</h4>
-                            <p>
-                              Once your application is received, the admission
+                          <div className="step-item">
+                            <div className="step-number">2</div>
+                            <div className="step-content">
+                              <h4>Child Assessment</h4>
+                              <p>Once your application is received, the admission
                               team will schedule an assessment for your child to
                               better understand their educational needs and
                               abilities. This is a great opportunity for us to
                               get to know each other and ensure that our school
                               is a good fit for your child's learning style and
-                              goals.
-                            </p>
-                            <h6>Parents’ Interview</h6>
-                            <p>
-                              On the day of the assessment or at a time
+                              goals.</p>
+                              <h6>Parents’ Interview</h6>
+                              <p> On the day of the assessment or at a time
                               convenient for you, we will conduct a parents'
                               interview. This discussion is crucial as it allows
                               us to learn more about your expectations and how
                               we can best support your child’s educational
-                              journey.
-                            </p>
+                              journey.</p>
+                            </div>
                           </div>
-                        </div>
-                        <div
-                          className="step-item"
-                          data-aos="fade-up"
-                          data-aos-delay={300}
-                        >
-                          <div className="step-number">3</div>
-                          <div className="step-content">
-                            <h4>Enrollment</h4>
-                            <p>
-                              Upon acceptance, you will receive an offer for
+                          <div className="step-item">
+                            <div className="step-number">3</div>
+                            <div className="step-content">
+                              <h4>Enrollment</h4>
+                              <p>Upon acceptance, you will receive an offer for
                               your child to join LIC. To finalize the
                               enrollment, you will need to complete the
                               registration process and fulfill any necessary
                               conditions or paperwork. We will guide you through
                               every step to ensure your child is ready to start
-                              their educational journey with us.
-                            </p>
+                              their educational journey with us.</p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="deadlines mt-5" data-aos="fade-up">
+                  </div>
+                )}
+
+                {activeSection === "requirements" && (
+                  <div className="col-lg-12">
+                    <div className="admissions-requirements">
+                      <h3>Admission Requirements</h3>
+                      <div className="requirements-list mt-4">
+                        <div className="requirement-item">
+                          <div className="icon-box"><i className="bi bi-mortarboard-fill" /></div>
+                          <div>
+                            <h4>Personal Statement</h4>
+                            <p>Tell us about your goals, values, and what makes you
+                            a great fit for our community.</p>
+                          </div>
+                        </div>
+                        <div className="requirement-item">
+                          <div className="icon-box"><i className="bi bi-file-earmark-text" /></div>
+                          <div>
+                            <h4>Age &amp; Grade Eligibility</h4>
+                            <p>Students must meet age and grade placement criteria
+                            based on our academic framework.</p>
+                          </div>
+                        </div>
+                        <div className="requirement-item">
+                          <div className="icon-box"><i className="bi bi-journal-richtext" /></div>
+                          <div>
+                            <h4>Health &amp; Immunization Records</h4>
+                            <p>Submit up-to-date health documents to ensure student
+                            safety and well-being.</p>
+                          </div>
+                        </div>
+                        <div className="requirement-item">
+                          <div className="icon-box"><i className="bi bi-graph-up" /></div>
+                          <div>
+                            <h4>Standardized Tests</h4>
+                            <p>Include results from any relevant standardized
+                            assessments, if applicable to your program of
+                            interest.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === "deadlines" && (
+                  <div className="col-lg-12">
+                    <div className="deadlines">
                       <h3>Key Admission Deadlines</h3>
                       <div className="deadline-grid mt-4">
                         <div className="deadline-item">
@@ -257,117 +305,37 @@ export default function AdmissionsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="cta-wrapper mt-5" data-aos="fade-up">
-                      <div className="cta-wrapper mt-5" data-aos="fade-up">
-                        <div className="row g-4">
-                          <div className="col-12">
-                            <div className="cta-item tour p-4 border rounded shadow-sm bg-light">
-                              <i className="bi bi-building" />
-                              <h3>Visit Our Campus</h3>
-                              <p>
-                                Experience the vibrant atmosphere of LIC
-                                firsthand—schedule your personalized campus tour
-                                today.
-                              </p>
-                            </div>
+                  </div>
+                )}
+
+                {activeSection === "form" && (
+                  <div className="col-lg-12">
+                    <div className="cta-wrapper mt-5">
+                      <div className="row g-4">
+                        <div className="col-12">
+                          <div className="cta-item tour p-4 border rounded shadow-sm bg-light">
+                            <i className="bi bi-building" />
+                            <h3>Visit Our Campus</h3>
+                            <p>Schedule your personalized campus tour today.</p>
                           </div>
-                          <div className="col-12">
-                            <div className="cta-item apply p-4 border rounded shadow-sm bg-light">
-                              <i className="bi bi-file-earmark-check" />
-                              <h3>Ready to Apply?</h3>
-                              <p>
-                                Take the next step toward an exceptional
-                                education—start your application now.
-                              </p>
-                            </div>
+                        </div>
+                        <div className="col-12">
+                          <div className="cta-item apply p-4 border rounded shadow-sm bg-light">
+                            <i className="bi bi-file-earmark-check" />
+                            <h3>Ready to Apply?</h3>
+                            <p>Start your application now.</p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div className="col-lg-6">
-                  <div className="admissions-requirements" data-aos="fade-up">
-                    <h3>Admission Requirements</h3>
-                    <div className="requirements-list mt-4">
-                      <div
-                        className="requirement-item"
-                        data-aos="fade-up"
-                        data-aos-delay={100}
-                      >
-                        <div className="icon-box">
-                          <i className="bi bi-mortarboard-fill" />
-                        </div>
-                        <div>
-                          <h4>Personal Statement</h4>
-                          <p>
-                            Tell us about your goals, values, and what makes you
-                            a great fit for our community.
-                          </p>
-                        </div>
-                      </div>
-                      <div
-                        className="requirement-item"
-                        data-aos="fade-up"
-                        data-aos-delay={200}
-                      >
-                        <div className="icon-box">
-                          <i className="bi bi-file-earmark-text" />
-                        </div>
-                        <div>
-                          <h4>Age &amp; Grade Eligibility</h4>
-                          <p>
-                            Students must meet age and grade placement criteria
-                            based on our academic framework.
-                          </p>
-                        </div>
-                      </div>
-                      <div
-                        className="requirement-item"
-                        data-aos="fade-up"
-                        data-aos-delay={300}
-                      >
-                        <div className="icon-box">
-                          <i className="bi bi-journal-richtext" />
-                        </div>
-                        <div>
-                          <h4>Health &amp; Immunization Records</h4>
-                          <p>
-                            Submit up-to-date health documents to ensure student
-                            safety and well-being.
-                          </p>
-                        </div>
-                      </div>
-                      <div
-                        className="requirement-item"
-                        data-aos="fade-up"
-                        data-aos-delay={400}
-                      >
-                        <div className="icon-box">
-                          <i className="bi bi-graph-up" />
-                        </div>
-                        <div>
-                          <h4>Standardized Tests</h4>
-                          <p>
-                            Include results from any relevant standardized
-                            assessments, if applicable to your program of
-                            interest.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="request-info mt-5" data-aos="fade-up">
-                    <div className="card">
-                      <div className="card-body">
-                        <h3 className="card-title">
-                          Admission Application Form
-                        </h3>
-                        <p>
-                          Please complete the form below to apply for admission
-                          at Leaders International College.
-                        </p>
-                        <form
+
+                    <div className="request-info mt-5">
+                      <div className="card">
+                        <div className="card-body">
+                          <h3 className="card-title">Admission Application Form</h3>
+                          <p>Please complete the form below to apply for admission at Leaders International College.</p>
+                          {/* KEEP your full form here unchanged */}
+                           <form
                           className="php-email-form mt-4"
                           action="forms/contact.php"
                         >
@@ -596,15 +564,16 @@ export default function AdmissionsPage() {
                             </button>
                           </div>
                         </form>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </section>
-          {/* /Admissions Section */}
         </main>
+
         <footer
           id="footer"
           className="footer position-relative dark-background"
@@ -740,19 +709,23 @@ export default function AdmissionsPage() {
             </div>
           </div>
         </footer>
-        {/* Scroll Top */}
-        <a
-          href="#"
-          id="scroll-top"
-          className="scroll-top d-flex align-items-center justify-content-center"
-        >
-          <i className="bi bi-arrow-up-short" />
-        </a>
-        {/* Preloader */}
-        <div id="preloader" />
-        {/* Vendor JS Files */}
-        {/* Main JS File */}
       </div>
+
+      <style jsx>{`
+        .custom-tab {
+          border-radius: 50px;
+          padding: 10px 20px;
+          margin: 5px;
+          background: #fff;
+          border: 1px solid #ddd;
+          font-weight: 600;
+        }
+        .custom-tab.active {
+          background: #00b4e6;
+          color: #fff;
+          border: 1px solid #00b4e6;
+        }
+      `}</style>
     </>
   );
 }

@@ -769,7 +769,7 @@ export default function CampusFacilitiesPage() {
                   </div>
                 </div>
               </div>
-              {/* Campus Map */}
+             {/* Campus Map */}
               <div
                 className="campus-map-section"
                 data-aos="fade-up"
@@ -791,27 +791,58 @@ export default function CampusFacilitiesPage() {
                       <div className="map-legend">
                         <div className="legend-item">
                           <span className="marker academic" />
-                          <span>Academic Buildings</span>
-                        </div>
-                        <div className="legend-item">
-                          <span className="marker residential" />
-                          <span>Residence Halls</span>
+                          <span>
+                            Main School Building – “teachers take perfect care
+                            of students”
+                          </span>
                         </div>
                         <div className="legend-item">
                           <span className="marker athletic" />
-                          <span>Athletic Facilities</span>
+                          <span>
+                            Playgrounds & Sports Areas – “great atmosphere”
+                          </span>
                         </div>
                         <div className="legend-item">
                           <span className="marker dining" />
-                          <span>Dining Facilities</span>
+                          <span>
+                            Cafeteria & Dining – facilities praised for growth
+                            and learning
+                          </span>
                         </div>
                         <div className="legend-item">
                           <span className="marker parking" />
-                          <span>Parking Areas</span>
+                          <span>
+                            Visitor Parking – convenient access for parents
+                          </span>
                         </div>
                       </div>
-                      <a href="#" className="btn-map">
-                        <i className="bi bi-download" /> Download PDF Map
+
+                      <div className="map-highlights">
+                        <p>
+                          🌟{" "}
+                          <em>
+                            “This school is so nice … teachers take perfect care
+                            of student – I totally recommend putting your child
+                            in this school.”
+                          </em>
+                        </p>
+                        <p>
+                          🌟{" "}
+                          <em>
+                            “I love the facilities in the school! … there is a
+                            lot of room to learn and grow in a great
+                            atmosphere.”
+                          </em>
+                        </p>
+                      </div>
+
+                      <a
+                        href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
+                        className="btn-map"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="bi bi-geo-alt" /> Get Directions
                       </a>
                     </div>
                   </div>
@@ -823,9 +854,13 @@ export default function CampusFacilitiesPage() {
                     <div className="map-container">
                       <div className="ratio ratio-16x9">
                         <iframe
-                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.142047033408!2d-73.96257908469264!3d40.8026564793159!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2f7a00e3ea009%3A0x4e63c3c3d93908b5!2sColumbia%20University!5e0!3m2!1sen!2sus!4v1625598195750!5m2!1sen!2sus"
-                          allowFullScreen
+                          src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2508.1373530784062!2d31.462300996830244!3d30.016339563956866!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145822df2dd8f289%3A0xffe559c98f96503e!2sLeaders%20International%20College!5e0!3m2!1sen!2seg!4v1752150399611!5m2!1sen!2seg"
+                          width={600}
+                          height={450}
+                          style={{ border: 0 }}
+                          allowFullScreen={true}
                           loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
                         />
                       </div>
                     </div>

@@ -639,44 +639,208 @@ export default function Home() {
         {/* /Students Life Block Section */}
         {/* Stats Section */}
         <section id="stats" className="stats section">
-          <div className="container" data-aos="fade-up" data-aos-delay={100}>
-            <div className="row">
-              <div className="col-lg-6">
-                <div
-                  className="stats-overview"
-                  data-aos="fade-right"
-                  data-aos-delay={200}
-                >
-                  <div className="container section-title" data-aos="fade-up">
-                    <h2>Campus & Facilities</h2>
-                  </div>
-                  <p className="stats-description">
-                   Leaders International College’s New Cairo campus is thoughtfully designed to inspire learning and personal growth within a vibrant community. It features modern classrooms, advanced science and IT labs, a well-stocked library, art and music studios, extensive sports facilities, outdoor learning spaces, and a healthy cafeteria. The campus is easily accessible by road and school bus services, with ample parking for visitors. Safety is ensured through 24/7 security, surveillance systems, and controlled access.
-                  </p>
-                  <div className="stats-cta">
-                    <a href="/campus-facilities" className="btn btn-primary">
-                      Learn More
-                    </a>
-                    <a href="http://vrtour.leadersintcollege.com/" className="btn btn-outline">
-                      Virtual Tour
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6 d-flex justify-content-center align-items-center">
-                <img
-                  src="/assets/img/education/CampusH.JPG"
-                  alt="Our Campus"
-                  className="img-fluid rounded-circle border shadow"
-                  style={{ width: '500px', height: '500px', objectFit: 'cover' }}
-                  data-aos="zoom-in"
-                  data-aos-delay={200}
-                />
-              </div>
-
-            </div>
+  <div className="container" data-aos="fade-up" data-aos-delay={100}>
+    <div className="row">
+      <div className="col-lg-6">
+        <div
+          className="stats-overview"
+          data-aos="fade-right"
+          data-aos-delay={200}
+        >
+          <div className="container section-title" data-aos="fade-up">
+            <h2>Campus & Facilities</h2>
           </div>
-        </section>
+          <p className="stats-description">
+            Leaders International College’s New Cairo campus is thoughtfully
+            designed to inspire learning and personal growth within a vibrant
+            community. It features modern classrooms, advanced science and IT
+            labs, a well-stocked library, art and music studios, extensive
+            sports facilities, outdoor learning spaces, and a healthy cafeteria.
+            The campus is easily accessible by road and school bus services,
+            with ample parking for visitors. Safety is ensured through 24/7
+            security, surveillance systems, and controlled access.
+          </p>
+          <div className="stats-cta">
+            <a href="/campus-facilities" className="btn btn-primary">
+              Learn More
+            </a>
+            <a
+              href="http://vrtour.leadersintcollege.com/"
+              className="btn btn-outline"
+            >
+              Virtual Tour
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="col-lg-6 d-flex justify-content-center align-items-center">
+        <img
+          src="/assets/img/education/CampusH.JPG"
+          alt="Our Campus"
+          className="img-fluid rounded-circle border shadow"
+          style={{
+            width: "500px",
+            height: "500px",
+            objectFit: "cover",
+          }}
+          data-aos="zoom-in"
+          data-aos-delay={200}
+        />
+      </div>
+    </div>
+
+    {/* ✅ Campus Map directly after main row */}
+    
+    <div
+  className="campus-map-section mt-5"
+  data-aos="fade-up"
+  data-aos-delay={200}
+>
+  <div className="row align-items-center">
+    <div className="col-lg-5" data-aos="fade-right" data-aos-delay={100}>
+      <div className="map-info">
+        <h2 className="campus-map-title">
+          Campus Map
+          <span className="title-underline"></span>
+        </h2>
+        <p>
+          Navigate our expansive campus with ease using our interactive map.
+          Locate buildings, facilities, and services to find your way around.
+        </p>
+
+        <div className="map-legend">
+          <div className="legend-item">
+            <span className="marker-square blue"></span>
+            <span>
+              Main School Building – “teachers take perfect care of students”
+            </span>
+          </div>
+          <div className="legend-item">
+            <span className="marker-square green"></span>
+            <span>
+              Playgrounds & Sports Areas – “great atmosphere”
+            </span>
+          </div>
+          <div className="legend-item">
+            <span className="marker-square orange"></span>
+            <span>
+              Cafeteria & Dining – facilities praised for growth and learning
+            </span>
+          </div>
+          <div className="legend-item">
+            <span className="marker-square purple"></span>
+            <span>
+              Visitor Parking – convenient access for parents
+            </span>
+          </div>
+        </div>
+
+        
+
+        <a
+          href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
+          className="btn btn-map"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i className="bi bi-geo-alt me-2"></i> Get Directions
+        </a>
+      </div>
+    </div>
+
+    <div className="col-lg-7" data-aos="fade-left" data-aos-delay={200}>
+      <div className="map-container">
+        <div className="ratio ratio-16x9">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2508.1373530784062!2d31.462300996830244!3d30.016339563956866!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145822df2dd8f289%3A0xffe559c98f96503e!2sLeaders%20International%20College!5e0!3m2!1sen!2seg!4v1752150399611!5m2!1sen!2seg"
+            width="600"
+            height="450"
+            style={{ border: 0 }}
+            allowFullScreen={true}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style jsx>{`
+    .campus-map-title {
+      position: relative;
+      font-weight: 700;
+    }
+
+    .title-underline {
+      display: block;
+      width: 40px;
+      height: 3px;
+      background: #00b4e6;
+      margin-top: 5px;
+    }
+
+    .map-legend {
+      margin-top: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .marker-square {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+      margin-right: 10px;
+    }
+
+    .marker-square.blue {
+      background: #4285f4;
+    }
+    .marker-square.green {
+      background: #34a853;
+    }
+    .marker-square.orange {
+      background: #fbbc05;
+    }
+    .marker-square.purple {
+      background: #673ab7;
+    }
+
+    .btn-map {
+      display: inline-flex;
+      align-items: center;
+      background: #00b4e6;
+      color: #fff;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-map:hover {
+      background: #019ac4;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .map-highlights p {
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+  `}</style>
+</div>
+  </div>
+</section>
+
+        
         {/* /Stats Section */}
         {/* Testimonials Section */}
         <section id="testimonials" className="testimonials section">
