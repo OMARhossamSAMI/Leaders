@@ -460,97 +460,144 @@ export default function StudentsLifePage() {
                     role="tabpanel"
                     aria-labelledby="extracurricular-tab"
                   >
-                    <div className="row g-4">
+                    <div className="row justify-content-center g-4">
+                      {/* LEFT: Text Content */}
                       <div
-                        className="col-lg-8"
-                        data-aos="fade-right"
+                        className="col-lg-7"
+                        data-aos="fade-left"
                         data-aos-delay={50}
                       >
-                        <div className="facilities-gallery">
-                          <div className="row g-3">
-                            <div className="col-md-8">
-                              <img
-                                src="assets/img/education/campus-4.webp"
-                                alt="Housing"
-                                className="img-fluid rounded"
-                              />
-                            </div>
-                            <div className="col-md-4">
-                              <img
-                                src="assets/img/education/campus-5.webp"
-                                alt="Dining"
-                                className="img-fluid rounded"
-                              />
-                            </div>
-                            <div className="col-md-4">
-                              <img
-                                src="assets/img/education/campus-6.webp"
-                                alt="Library"
-                                className="img-fluid rounded"
-                              />
-                            </div>
-                            <div className="col-md-8">
-                              <img
-                                src="assets/img/education/campus-7.webp"
-                                alt="Recreation"
-                                className="img-fluid rounded"
-                              />
-                            </div>
-                          </div>
+                        <div
+                          className="extracurricular-content"
+                          style={{
+                            background: "#fff",
+                            borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                            padding: "40px",
+                            height: "100%",
+                            textAlign: "left",
+                          }}
+                        >
+                          <h4>Introduction</h4>
+                          <p>
+                            We believe in the power of extracurricular activities to enhance student life
+                            and foster holistic development. Our diverse range of activities is designed
+                            to complement academic learning by promoting social, cultural, and physical
+                            development.
+                          </p>
+
+                          <h4>Leadership and Skills Development</h4>
+                          <p>
+                            Extracurricular activities at Leaders International College are more than just
+                            hobbies; they are a critical part of our educational approach. Participating in
+                            these activities helps students develop leadership skills, build resilience, and
+                            learn the value of teamwork and cooperation.
+                          </p>
+
+                          <h4>Engaging Environment</h4>
+                          <p>
+                            Our school fosters an environment where students are encouraged to try new
+                            things and explore their interests. This dynamic setting enhances their
+                            educational experience and contributes to a well-rounded personality.
+                            The extracurricular programs at Leaders International College are designed to
+                            challenge and inspire our students. By engaging in these activities, students
+                            gain confidence and abilities that support their academic achievements and
+                            prepare them for a variety of life’s challenges.
+                          </p>
+
+                          {/* Image below Engaging Environment */}
+                          <img
+                            src="assets/img/education/Engage.png"
+                            alt="Engaging Environment"
+                            className="img-fluid rounded mt-3"
+                          />
                         </div>
                       </div>
+
+                      {/* RIGHT: Facilities Info */}
                       <div
-                        className="col-lg-4"
+                        className="col-lg-5"
                         data-aos="fade-left"
                         data-aos-delay={300}
                       >
-                        <div className="facilities-info">
-                          <h3>Modern Campus Facilities</h3>
+                        <div
+                          className="facilities-info"
+                          style={{
+                            background: "#fff",
+                            borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                            padding: "40px",
+                          }}
+                        >
+                          <h3>Wide Range of Options</h3>
                           <p>
-                            Cras mattis consectetur purus sit amet fermentum.
-                            Maecenas faucibus mollis interdum.
+                            Students at Leaders International College can choose from a wide array of extracurricular options, including:
                           </p>
                           <div className="facilities-list">
-                            <div className="facility-item">
-                              <i className="bi bi-house-door" />
-                              <h5>Residence Halls</h5>
+                            <div className="facility-item mb-3">
+                              <i
+                                className="bi bi-trophy me-2"
+                                style={{ color: "hsl(193, 75%, 54%)" }}
+                              />
+                              <h5>Sports</h5>
                               <p>
-                                10 modern residence halls with various room
-                                configurations
+                                Team sports such as soccer, basketball, and volleyball, providing opportunities for students to develop teamwork and physical fitness.
                               </p>
                             </div>
-                            <div className="facility-item">
-                              <i className="bi bi-cup-hot" />
-                              <h5>Dining Options</h5>
+                            <div className="facility-item mb-3">
+                              <i
+                                className="bi bi-brush me-2"
+                                style={{ color: "hsl(193, 75%, 54%)" }}
+                              />
+                              <h5>Arts</h5>
                               <p>
-                                5 dining locations with diverse meal options
+                                Music, drama, and visual arts programs that encourage creative expression and cultural appreciation.
                               </p>
                             </div>
-                            <div className="facility-item">
-                              <i className="bi bi-book" />
-                              <h5>Libraries</h5>
+                            <div className="facility-item mb-3">
+                              <i
+                                className="bi bi-people me-2"
+                                style={{ color: "hsl(193, 75%, 54%)" }}
+                              />
+                              <h5>Clubs and Societies</h5>
                               <p>
-                                3 libraries with extensive physical and digital
-                                collections
+                                Engage in a variety of clubs such as the Science Club, Reading Club, Model United Nations (MUN), and more, each offering unique opportunities to pursue interests and develop new skills.
                               </p>
                             </div>
-                            <div className="facility-item">
-                              <i className="bi bi-bicycle" />
-                              <h5>Recreation Center</h5>
+                            <div className="facility-item mb-3">
+                              <i
+                                className="bi bi-globe me-2"
+                                style={{ color: "hsl(193, 75%, 54%)" }}
+                              />
+                              <h5>Community Service</h5>
                               <p>
-                                State-of-the-art fitness equipment and
-                                facilities
+                                Opportunities that instill a sense of responsibility and a commitment to making a positive impact in the community.
                               </p>
                             </div>
                           </div>
-                          <a href="#" className="btn btn-explore mt-3">
+                          <a
+                            href="#"
+                            className="btn btn-explore mt-3"
+                            style={{
+                              display: "inline-block",
+                              backgroundColor: "hsl(193, 75%, 54%)",
+                              color: "#fff",
+                              padding: "12px 24px",
+                              borderRadius: "6px",
+                              textDecoration: "none",
+                              fontWeight: 600,
+                            }}
+                          >
                             Virtual Campus Tour{" "}
-                            <i className="bi bi-arrow-right" />
+                            <i className="bi bi-arrow-right ms-1" />
                           </a>
                         </div>
                       </div>
                     </div>
                   </div>
+
+
+
                   {/* Day In LIC */}
                   <div
                     className="tab-pane fade"
@@ -614,7 +661,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <img
-                              src="assets/img/education/education-8.webp"
+                              src="assets/img/education/Break.jpeg"
                               alt="Midday Break and Lunch"
                             />
                           </div>
@@ -632,7 +679,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <img
-                              src="assets/img/education/activities-2.webp"
+                              src="assets/img/education/dismissal.jpg"
                               alt="Afternoon Classes"
                             />
                           </div>
@@ -650,7 +697,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <img
-                              src="assets/img/education/dismissal.jpg"
+                              src="assets/img/education/Dimiss.JPG"
                               alt="Dismissal"
                             />
                           </div>
@@ -667,7 +714,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <img
-                              src="assets/img/education/clubs.jpg"
+                              src="assets/img/education/EXTR.png"
                               alt="Clubs and Extracurricular Activities"
                             />
                           </div>
@@ -714,7 +761,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <img
-                              src="assets/img/education/health-center.jpg"
+                              src="assets/img/education/aaaaaa.JPG"
                               alt="Health Center"
                             />
                           </div>
@@ -831,121 +878,174 @@ export default function StudentsLifePage() {
                   </div>
                   {/* Clubs */}
                   <div
-  className="tab-pane fade"
-  id="students-life-clubs"
-  role="tabpanel"
-  aria-labelledby="clubs-tab"
->
-  <section
-    className="clubs-content"
-    style={{
-      background: "#fff",
-      borderRadius: "12px",
-      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-      padding: "40px",
-    }}
-  >
-    <header className="clubs-header text-center mb-4">
-      <h3>Clubs at Leaders International College</h3>
-      <p>
-        At Leaders International College, clubs play a vital role in the holistic development of our students during the Primary Years Programme (PYP). Engaging in clubs helps students develop new skills, discover passions, and build meaningful friendships.
-      </p>
-    </header>
+                    className="tab-pane fade"
+                    id="students-life-clubs"
+                    role="tabpanel"
+                    aria-labelledby="clubs-tab"
+                  >
+                    <section
+                      className="clubs-content"
+                      style={{
+                        background: "#fff",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                        padding: "40px",
+                      }}
+                    >
+                      <div className="row justify-content-center align-items-start">
+                        {/* COLUMN 1 */}
+                        <div className="col-lg-5 mb-4 mb-lg-0">
+                          <header
+                            className="clubs-header text-center"
+                            style={{ background: "#f5f8f7", padding: "50px", borderRadius: "8px" }}
+                          >
+                            <h3>Clubs at Leaders International College</h3>
+                            <p>
+                              At Leaders International College, clubs play a vital role in the holistic development of our students during the Primary Years Programme (PYP). Engaging in clubs helps students develop new skills, discover passions, and build meaningful friendships. Through a variety of club activities, our students explore their interests, work together, and enjoy learning beyond the classroom, helping them grow in confidence and creativity.                            </p>
+                          </header>
+                        </div>
 
-    <section className="clubs-dynamic text-center mb-5">
-      <h4>Dynamic Club Offerings</h4>
-      <p>
-        Our selection of clubs is specially designed to cater to the diverse interests of our young learners in the PYP stage. Recognizing that interests can vary significantly from year to year, the range of clubs offered at Leaders International College is dynamic and responsive. Each academic year, we assess the interests and preferences of our students and adapt our club offerings accordingly. This approach ensures that our clubs remain engaging, relevant, and exciting for students.
-      </p>
-    </section>
+                        {/* COLUMN 2 */}
+                        <div className="col-lg-5">
+                          <section
+                            className="clubs-dynamic text-center"
+                            style={{ background: "#f5f8f7", padding: "50px", borderRadius: "8px" }}
+                          >
+                            <h4>Dynamic Club Offerings</h4>
+                            <p>
+                              Our selection of clubs is specially designed to cater to the diverse interests
+                              of our young learners in the PYP stage. Recognizing that interests can vary
+                              significantly from year to year, the range of clubs offered at Leaders International
+                              College is dynamic and responsive. Each academic year, we assess the interests and
+                              preferences of our students and adapt our club offerings accordingly. This approach
+                              ensures that our clubs remain engaging, relevant, and exciting for students.
+                            </p>
+                          </section>
+                        </div>
+                      </div>
 
-    <div className="clubs-grid">
-      <div className="club-card">
-        <img
-          src="assets/img/education/art-club.jpg"
-          alt="Art Club"
-        />
-        <h5>Art Club</h5>
-        <p>
-          Encourages creativity through drawing, painting, and crafting.
-        </p>
-      </div>
-      <div className="club-card">
-        <img
-          src="assets/img/education/science-club.jpg"
-          alt="Science Club"
-        />
-        <h5>Science Club</h5>
-        <p>
-          Engage in fun and educational scientific experiments.
-        </p>
-      </div>
-      <div className="club-card">
-        <img
-          src="assets/img/education/drama-club.jpg"
-          alt="Drama Club"
-        />
-        <h5>Drama Club</h5>
-        <p>
-          Gain confidence and express creativity through performance.
-        </p>
-      </div>
 
-      <div className="clubs-bottom">
-        <div className="club-card">
-          <img
-            src="assets/img/education/eco-club.jpg"
-            alt="Eco Club"
-          />
-          <h5>Eco Club</h5>
-          <p>
-            Focuses on sustainability and environmental awareness.
-          </p>
-        </div>
-        <div className="club-card">
-          <img
+                      <div className="clubs-grid">
+                        <div className="club-card">
+                          <img
+                            src="assets/img/education/art-club.jpg"
+                            alt="Art Club"
+                          />
+                          <h5>Art Club</h5>
+                          <p>
+                            Encourages creativity through drawing, painting, and crafting.
+                          </p>
+                        </div>
+                        <div className="club-card">
+                          <img
+                            src="assets/img/education/science-club.jpg"
+                            alt="Science Club"
+                          />
+                          <h5>Science Club</h5>
+                          <p>
+                            Engage in fun and educational scientific experiments.
+                          </p>
+                        </div>
+                        <div className="club-card">
+                          <img
+                            src="assets/img/education/drama-club.jpg"
+                            alt="Drama Club"
+                          />
+                          <h5>Drama Club</h5>
+                          <p>
+                            Gain confidence and express creativity through performance.
+                          </p>
+                        </div>
 
-            src="assets/img/education/CHESS2.png"
-            alt="Chess Club"
-            className="img-fluid rounded-top"
-            style={{
-              width: '400px',
-              height: '200px',
-              objectFit: 'cover',
-              objectPosition: 'center',
-            }}
+                        <div className="clubs-bottom">
+                          <div className="club-card">
+                            <img
+                              src="assets/img/education/shagarha.png"
+                              alt="Eco Club"
+                               className="img-fluid rounded-top"
+                              style={{
+                                width: '400px',
+                                height: '200px',
+                                objectFit: 'cover',
+                                objectPosition: 'center',
+                              }}
+                            />
+                            <h5>Eco Club</h5>
+                            <p>
+                              Focuses on sustainability and environmental awareness.
+                            </p>
+                          </div>
+                          <div className="club-card">
+                            <img
 
-          />
-          <h5>Chess Club</h5>
-          <p>
-            Build strategic thinking and problem-solving skills.
-          </p>
-        </div>
-      </div>
-    </div>
+                              src="assets/img/education/CHESS2.png"
+                              alt="Chess Club"
+                              className="img-fluid rounded-top"
+                              style={{
+                                width: '400px',
+                                height: '200px',
+                                objectFit: 'cover',
+                                objectPosition: 'center',
+                              }}
 
-    {/* ✅ Benefits + Conclusion row stays the same */}
-    <div className="clubs-info-row">
-      <section className="clubs-benefits">
-        <h4>Benefits of Participation</h4>
-        <ul>
-          <li>Explore interests in a structured, fun environment.</li>
-          <li>Build social skills by engaging with peers.</li>
-          <li>Gain a sense of belonging and achievement.</li>
-          <li>Strengthen teamwork and leadership abilities.</li>
-        </ul>
-      </section>
+                            />
+                            <h5>Chess Club</h5>
+                            <p>
+                              Build strategic thinking and problem-solving skills.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
 
-      <section className="clubs-conclusion">
-        <h4>Conclusion</h4>
-        <p>
-          Clubs at Leaders International College are a key part of our educational mission. By offering dynamic, interest-based clubs, we help students grow both personally and academically.
-        </p>
-      </section>
-    </div>
-  </section>
-</div>
+                      {/* ✅ Benefits + Conclusion row stays the same */}
+                      <div className="clubs-info-row">
+                        <section className="clubs-benefits">
+                          <h4>Benefits of Participation</h4>
+                            <div className="text-start">
+                              <ul style={{ listStyle: "none", padding: 0 }}>
+                                <li className="mb-2">
+                                  <i
+                                    className="bi bi-check-circle-fill me-2"
+                                    style={{ color: "hsl(193, 75%, 54%)" }}
+                                  ></i>
+                                  Explore interests in a structured, fun environment.
+                                </li>
+                                <li className="mb-2">
+                                  <i
+                                    className="bi bi-people-fill me-2"
+                                    style={{ color: "hsl(193, 75%, 54%)" }}
+                                  ></i>
+                                  Build social skills by engaging with peers.
+                                </li>
+                                <li className="mb-2">
+                                  <i
+                                    className="bi bi-award-fill me-2"
+                                    style={{ color: "hsl(193, 75%, 54%)" }}
+                                  ></i>
+                                  Gain a sense of belonging and achievement.
+                                </li>
+                                <li className="mb-2">
+                                  <i
+                                    className="bi bi-person-check-fill me-2"
+                                    style={{ color: "hsl(193, 75%, 54%)" }}
+                                  ></i>
+                                  Strengthen teamwork and leadership abilities.
+                                </li>
+                              </ul>
+                            </div>
 
+
+                        </section>
+
+                        <section className="clubs-conclusion">
+                          <h4>Conclusion</h4>
+                          <p>
+                            Clubs at Leaders International College are a key part of our educational mission. By offering dynamic, interest-based clubs, we help students grow both personally and academically.
+                          </p>
+                        </section>
+                      </div>
+                    </section>
+                  </div>
 
                   {/* Trips */}
                   <div
@@ -970,7 +1070,7 @@ export default function StudentsLifePage() {
                       <div className="trips-grid">
                         <div className="trip-card">
                           <img
-                            src="assets/img/education/daily-trip.jpg"
+                            src="assets/img/education/Trip1.jpeg"
                             alt="Curriculum-Integrated Daily Trips"
                           />
                           <h4>Curriculum-Integrated Daily Trips</h4>
@@ -989,7 +1089,7 @@ export default function StudentsLifePage() {
 
                         <div className="trip-card">
                           <img
-                            src="assets/img/education/exploring-egypt.jpg"
+                            src="assets/img/education/Egypt.png"
                             alt="Exploring Egypt"
                           />
                           <h4>Exploring Egypt</h4>
@@ -1050,47 +1150,76 @@ export default function StudentsLifePage() {
                         </p>
                       </header>
 
-                      <section className="council-functions mb-5">
-                        <h4>Key Functions</h4>
-                        <div className="council-cards">
-                          <div className="council-card">
-                            <img
-                              src="assets/img/education/voice.jpg"
-                              alt="Voice of the Students"
-                            />
-                            <h5>Voice of the Students</h5>
-                            <p>
-                              The council acts as a liaison between the students
-                              and the school administration, ensuring that
-                              student opinions and ideas are heard.
-                            </p>
-                          </div>
-                          <div className="council-card">
-                            <img
-                              src="assets/img/education/events.jpg"
-                              alt="Event Planning"
-                            />
-                            <h5>Event Planning</h5>
-                            <p>
-                              They organize and manage school events and social
-                              activities, which boost engagement and foster a
-                              sense of community.
-                            </p>
-                          </div>
-                          <div className="council-card">
-                            <img
-                              src="assets/img/education/community.jpg"
-                              alt="Community Engagement"
-                            />
-                            <h5>Community Engagement</h5>
-                            <p>
-                              Council members lead community service projects,
-                              promoting a culture of giving back and
-                              responsibility among students.
-                            </p>
-                          </div>
+                     <section className="council-functions mb-5">
+                      <h4>Key Functions</h4>
+                      <div
+                        className="council-cards"
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                          gap: "30px",
+                        }}
+                      >
+                        <div
+                          className="council-card"
+                          style={{
+                            maxWidth: "300px",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          <img
+                            src="assets/img/education/Voice.png"
+                            alt="Voice of the Students"
+                          />
+                          <h5>Voice of the Students</h5>
+                          <p>
+                            The council acts as a liaison between the students and the school
+                            administration, ensuring that student opinions and ideas are heard.
+                          </p>
                         </div>
-                      </section>
+
+                        <div
+                          className="council-card"
+                          style={{
+                            maxWidth: "300px",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          <img
+                            src="assets/img/education/EventP.png"
+                            alt="Event Planning"
+                          />
+                          <h5>Event Planning</h5>
+                          <p>
+                            They organize and manage school events and social activities, which
+                            boost engagement and foster a sense of community.
+                          </p>
+                        </div>
+
+                        <div
+                          className="council-card"
+                          style={{
+                            maxWidth: "300px",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          <img
+                            src="assets/img/education/Comm.jpeg"
+                            alt="Community Engagement"
+                          />
+                          <h5>Community Engagement</h5>
+                          <p>
+                            Council members lead community service projects, promoting a culture
+                            of giving back and responsibility among students.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
 
                       <section className="council-participation mb-5">
                         <h4>Participation and Elections</h4>
@@ -1119,17 +1248,6 @@ export default function StudentsLifePage() {
                           within and beyond the school.
                         </p>
                       </section>
-
-                      <div className="council-tool text-center">
-                        <h4>Get Involved!</h4>
-                        <p>
-                          Ready to make a difference? Run for a position or vote
-                          in the next Student Council election!
-                        </p>
-                        <button className="council-btn">
-                          Explore Election Process
-                        </button>
-                      </div>
                     </section>
                   </div>
 
@@ -1164,7 +1282,7 @@ export default function StudentsLifePage() {
                       <div className="arts-grid">
                         <div className="arts-card">
                           <img
-                            src="assets/img/education/arts-education.jpg"
+                            src="assets/img/education/annual.jpeg"
                             alt="Comprehensive Arts Education"
                           />
                           <h4>Comprehensive Arts Education</h4>
@@ -1180,7 +1298,7 @@ export default function StudentsLifePage() {
 
                         <div className="arts-card">
                           <img
-                            src="assets/img/education/annual-competition.jpg"
+                            src="assets/img/education/EX2.png"
                             alt="Annual Art Competition"
                           />
                           <h4>Annual Art Competition</h4>
@@ -1198,7 +1316,7 @@ export default function StudentsLifePage() {
 
                         <div className="arts-card">
                           <img
-                            src="assets/img/education/showcase.jpg"
+                            src="assets/img/education/show.jpeg"
                             alt="Showcasing Talent"
                           />
                           <h4>Showcasing Talent</h4>
@@ -1246,79 +1364,210 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
+                      {/* Header */}
                       <header className="events-header text-center mb-5">
-                        <h3>School Clubs</h3>
+                        <h3>School Events</h3>
                         <p>
-                          Discover our engaging clubs that foster creativity,
-                          scientific inquiry, strategic thinking, and
-                          environmental awareness.
+                          At Leaders International College, our vibrant school calendar is filled
+                          with a diverse array of events that cater to specific grades and the whole
+                          school community. These events are designed to foster school spirit,
+                          celebrate achievements, and bring together students, staff, and families
+                          in meaningful ways.
                         </p>
                       </header>
 
-                      <div className="event-grid">
-                        {/* Top 3 Cards */}
-                        <div className="event-card">
-                          <img
-                            src="assets/img/education/art.jpg"
-                            alt="Art Club"
-                          />
-                          <h5>Art Club</h5>
-                          <p>
-                            Encourages creativity through drawing, painting, and
-                            crafting.
-                          </p>
+                      {/* Highlight Events: Top 3 (PYP, MYP, DP) */}
+                      <section className="events-highlights mb-5">
+                        <h4 className="text-center mb-4">Highlight Events</h4>
+                        <div
+                          className="event-grid"
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                            gap: "30px",
+                          }}
+                        >
+                          {/* PYP Exhibition */}
+                          <div
+                            className="event-card"
+                            style={{
+                              maxWidth: "300px",
+                              width: "100%",
+                              textAlign: "center",
+                              background: "#f5f8f7",
+                              padding: "20px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <img
+                              src="assets/img/education/pypex.jpeg"
+                              alt="PYP Exhibition"
+                              className="img-fluid rounded mb-3"
+                            />
+                            <h5>PYP Exhibition</h5>
+                            <p>
+                              PYP 8 students present their year-long projects, demonstrating their
+                              learning outcomes and personal growth.
+                            </p>
+                          </div>
+
+                          {/* MYP Personal Project Exhibition */}
+                          <div
+                            className="event-card"
+                            style={{
+                              maxWidth: "300px",
+                              width: "100%",
+                              textAlign: "center",
+                              background: "#f5f8f7",
+                              padding: "20px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <img
+                              src="assets/img/education/MYPEX.jpeg"
+                              alt="MYP Personal Project Exhibition"
+                              className="img-fluid rounded mb-3"
+                            />
+                            <h5>MYP Personal Project Exhibition</h5>
+                            <p>
+                              MYP 5 students display their independent projects, highlighting their
+                              creativity and innovation.
+                            </p>
+                          </div>
+
+                          {/* CAS Exhibition */}
+                          <div
+                            className="event-card"
+                            style={{
+                              maxWidth: "300px",
+                              width: "100%",
+                              textAlign: "center",
+                              background: "#f5f8f7",
+                              padding: "20px",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <img
+                              src="assets/img/education/CAS.png"
+                              alt="CAS Exhibition"
+                              className="img-fluid rounded mb-3"
+                            />
+                            <h5>CAS Exhibition</h5>
+                            <p>
+                              This event showcases the creativity, activity, and service projects
+                              of our Diploma Programme students.
+                            </p>
+                          </div>
                         </div>
-                        <div className="event-card">
+                      </section>
+
+                      {/* Bottom 2 Cards: Other Events */}
+                      <div
+                        className="event-bottom"
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                          gap: "30px",
+                        }}
+                      >
+                        {/* School Carnival */}
+                        <div
+                          className="event-card"
+                          style={{
+                            maxWidth: "300px",
+                            width: "100%",
+                            textAlign: "center",
+                            background: "#f5f8f7",
+                            padding: "20px",
+                            borderRadius: "8px",
+                          }}
+                        >
                           <img
-                            src="assets/img/education/science.jpg"
-                            alt="Science Club"
+                            src="assets/img/education/CARN.jpeg"
+                            alt="School Carnival"
+                            className="img-fluid rounded mb-3"
                           />
-                          <h5>Science Club</h5>
+                          <h5>School Carnival</h5>
                           <p>
-                            Engage in fun and educational scientific
-                            experiments.
-                          </p>
-                        </div>
-                        <div className="event-card">
-                          <img
-                            src="assets/img/education/drama.jpg"
-                            alt="Drama Club"
-                          />
-                          <h5>Drama Club</h5>
-                          <p>
-                            Gain confidence and express creativity through
-                            performance.
+                            Our annual school carnival is a highlight, bringing the entire
+                            school community together for a day of fun, games, and entertainment.
                           </p>
                         </div>
 
-                        {/* Bottom 2 Cards */}
-                        <div className="event-bottom">
-                          <div className="event-card">
-                            <img
-                              src="assets/img/education/eco.jpg"
-                              alt="Eco Club"
-                            />
-                            <h5>Eco Club</h5>
-                            <p>
-                              Focuses on sustainability and environmental
-                              awareness.
-                            </p>
-                          </div>
-                          <div className="event-card">
-                            <img
-                              src="assets/img/education/chess.jpg"
-                              alt="Chess Club"
-                            />
-                            <h5>Chess Club</h5>
-                            <p>
-                              Build strategic thinking and problem-solving
-                              skills.
-                            </p>
-                          </div>
+                        {/* School Sohour */}
+                        <div
+                          className="event-card"
+                          style={{
+                            maxWidth: "300px",
+                            width: "100%",
+                            textAlign: "center",
+                            background: "#f5f8f7",
+                            padding: "20px",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          <img
+                            src="assets/img/education/sehour.jpeg"
+                            alt="School Sohour"
+                            className="img-fluid rounded mb-3"
+                          />
+                          <h5>School Sohour</h5>
+                          <p>
+                            During Ramadan, the school sohour event fosters a sense of community
+                            and shared heritage, featuring good food and cultural performances.
+                          </p>
                         </div>
                       </div>
+
+                      {/* Community Engagement */}
+                      <section className="events-community my-5">
+                        <h4>Community Engagement</h4>
+                        <p>
+                          We ensure our school calendar is packed with events that invite and bring
+                          together our entire school community. These occasions enrich the educational
+                          experience and strengthen bonds among students, teachers, and families.
+                        </p>
+                      </section>
+
+                      {/* Access Calendar */}
+                      <section className="events-community my-5">
+                        <h4>Access the School Calendar</h4>
+                        <p>
+                          To keep our community informed and engaged, a detailed school calendar is
+                          available for download. This calendar outlines all our scheduled events,
+                          allowing students and parents to plan ahead and participate fully. Check out
+                          the upcoming events and mark your calendars!
+                        </p>
+                        <p className="mt-4">
+                        Our school events play a crucial role in creating an enriching and inclusive
+                        atmosphere at Leaders International College. They are integral to our educational
+                        mission, providing dynamic learning experiences and fostering a strong, supportive
+                        community. Join us in celebrating and building lasting memories throughout the
+                        school year!
+                      </p>
+                      <a
+                        href="#"
+                        className="btn-school-calendar"
+                        style={{
+                          display: "inline-block",
+                          backgroundColor: "hsl(193, 75%, 54%)",
+                          color: "#fff",
+                          padding: "12px 24px",
+                          borderRadius: "6px",
+                          textDecoration: "none",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Download School Calendar
+                      </a>
+                      </section>
                     </section>
                   </div>
+
+
+
 
                   {/* Dining Services */}
                   <div
@@ -1353,12 +1602,12 @@ export default function StudentsLifePage() {
 
                       <div className="dining-card">
                         <img
-                          src="assets/img/education/dining.jpg"
+                          src="assets/img/education/Dining.png"
                           alt="On-Campus Dining"
                           className="img-fluid rounded"
                           style={{
                             width: "100%",
-                            height: "auto",
+                            height: "600px",
                             borderRadius: "8px",
                           }}
                         />
@@ -1399,7 +1648,7 @@ export default function StudentsLifePage() {
 
                       <div className="transport-card">
                         <img
-                          src="assets/img/education/transportation.jpg"
+                          src="assets/img/education/Trans.png"
                           alt="School Transportation"
                           className="img-fluid rounded"
                           style={{
