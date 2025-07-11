@@ -9409,7 +9409,6 @@ section,
   display: inline-block;
 }
 
-
 .program-item.character {
   border-top: 4px solid #6f42c1; /* Bootstrap purple */
 }
@@ -9421,4 +9420,3 @@ section,
 .program-item.character .program-type {
   color: #6f42c1;
 }
-

@@ -1,19 +1,25 @@
-/* Force header background dark */
-#header {
-  background: rgba(0, 0, 0, 0.8); /* dark with transparency */
-  transition: background 0.3s ease;
+/* === HEADER NAV DROPDOWN === */
+
+/* Keep the dropdown background white */
+#header .navmenu .dropdown ul {
+  background: #fff; /* keep menu background white */
 }
 
-#header.scrolled {
-  background: rgba(0, 0, 0, 0.9); /* keep dark when scrolled */
+/* Make dropdown links dark so they are visible on white */
+#header .navmenu .dropdown ul li a {
+  color: #333 !important; /* dark text for contrast */
+  transition: color 0.3s ease;
 }
 
-#header .navmenu a {
-  color: #fff; /* force nav links to white */
+/* Keep link color the same on hover and active */
+#header .navmenu .dropdown ul li a:hover,
+#header .navmenu .dropdown ul li a:active,
+#header .navmenu .dropdown ul li a.active {
+  color: #333 !important; /* no color change */
+  background: none !important; /* no background on hover */
 }
 
-#header .navmenu a.active {
-  color: #00bfff; /* highlight active link */
-
+/* OPTIONAL: If you want subtle hover background */
+#header .navmenu .dropdown ul li a:hover {
+  background: rgba(0, 0, 0, 0.05) !important; /* very light hover */
 }
-
