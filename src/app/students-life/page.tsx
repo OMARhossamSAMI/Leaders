@@ -169,7 +169,7 @@ export default function StudentsLifePage() {
                   </p>
                 </div>
                 <img
-                  src="assets/img/education/LIFE.JPG"
+                  src="assets/img/education/Statuslife.jpeg"
                   alt="Campus Life"
                   className="img-fluid"
                 />
