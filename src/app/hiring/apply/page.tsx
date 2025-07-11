@@ -347,7 +347,19 @@ export default function ApplyPage() {
                   </div>
 
                   <div className="event-action">
-                    <button type="submit" className="btn-register">
+                    <button
+                      type="submit"
+                      className="btn-register"
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "#fff",
+                        border: "none",
+                        padding: "0.75rem 1.5rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        transition: "background 0.3s ease"
+                      }}
+                    >
                       Submit Application
                     </button>
                   </div>

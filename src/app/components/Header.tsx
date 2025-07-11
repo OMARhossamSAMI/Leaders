@@ -366,6 +366,11 @@ export default function Header() {
                     Current Vacancies
                   </a>
                 </li>
+                <li>
+                  <a href="#" onClick={() => handleHiringTab("apply")}>
+                    Apply Without Vacancies
+                  </a>
+                </li>
               </ul>
             </li>
 
