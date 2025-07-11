@@ -5,6 +5,10 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { TabsProvider } from "./components/TabsContext";
 import { CurriculumProvider } from "./components/CurriculumContext";
+import { HiringTabsProvider } from "./components/HiringTabsContext";
+import { StudentsLifeTabsProvider } from "./components/StudentsLifeTabsContext";
+import { AboutTabsProvider } from "./components/AboutTabsContext";
+import { CampusTabsProvider } from "./components/CampusTabsContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,12 +77,19 @@ export default function RootLayout({
       >
         <TabsProvider>
           <CurriculumProvider>
-            <Header />
-            {children}
-            <Footer />
+            <HiringTabsProvider>
+              <StudentsLifeTabsProvider>
+                <AboutTabsProvider>
+                  <CampusTabsProvider>
+                    <Header />
+                    {children}
+                    <Footer />
+                  </CampusTabsProvider>
+                </AboutTabsProvider>
+              </StudentsLifeTabsProvider>
+            </HiringTabsProvider>
           </CurriculumProvider>
         </TabsProvider>
-
         {/* ✅ Scripts */}
         <Script
           src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"

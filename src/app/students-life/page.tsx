@@ -3,9 +3,15 @@
 "use client"; // ✅ Needed for useEffect
 
 import { useEffect } from "react";
-import "./page.css"; // Import the CSS file for this page
+import "./page.css";
+import { useStudentsLifeTabs } from "../components/StudentsLifeTabsContext";
+// Import the CSS file for this page
+import { useSearchParams } from "next/navigation";
 
 export default function StudentsLifePage() {
+  const { studentsLifeSection, setStudentsLifeSection } = useStudentsLifeTabs();
+  const searchParams = useSearchParams();
+
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
@@ -14,6 +20,13 @@ export default function StudentsLifePage() {
       }, 15); // 1.5 seconds
 
       return () => clearTimeout(timer);
+    }
+  }, []);
+  useEffect(() => {
+    // ✅ When page loads, check hash
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      setStudentsLifeSection(hash);
     }
   }, []);
 
@@ -135,14 +148,11 @@ export default function StudentsLifePage() {
                   {/* Athletics */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link active"
-                      id="athletics-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-athletics"
+                      className={`nav-link ${
+                        studentsLifeSection === "athletics" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-athletics"
-                      aria-selected="true"
+                      onClick={() => setStudentsLifeSection("athletics")}
                     >
                       <i className="bi bi-trophy" /> Athletics
                     </button>
@@ -150,14 +160,13 @@ export default function StudentsLifePage() {
                   {/* Extracurricular Activities */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="extracurricular-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-extracurricular"
+                      className={`nav-link ${
+                        studentsLifeSection === "extracurricular"
+                          ? "active"
+                          : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-extracurricular"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("extracurricular")}
                     >
                       <i className="bi bi-building" /> Extracurricular
                       Activities
@@ -166,14 +175,11 @@ export default function StudentsLifePage() {
                   {/* Day In LIC */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="dayinlic-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-dayinlic"
+                      className={`nav-link ${
+                        studentsLifeSection === "dayinlic" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-dayinlic"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("dayinlic")}
                     >
                       <i className="bi bi-calendar-event" /> Day In LIC
                     </button>
@@ -181,14 +187,11 @@ export default function StudentsLifePage() {
                   {/* Health & Wellness */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="health-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-health"
+                      className={`nav-link ${
+                        studentsLifeSection === "health" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-health"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("health")}
                     >
                       <i className="bi bi-heart-pulse" /> Health &amp; Wellness
                     </button>
@@ -196,14 +199,11 @@ export default function StudentsLifePage() {
                   {/* Clubs */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="clubs-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-clubs"
+                      className={`nav-link ${
+                        studentsLifeSection === "clubs" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-clubs"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("clubs")}
                     >
                       <i className="bi bi-people" /> Clubs
                     </button>
@@ -211,14 +211,11 @@ export default function StudentsLifePage() {
                   {/* Trips */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="trips-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-trips"
+                      className={`nav-link ${
+                        studentsLifeSection === "trips" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-trips"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("trips")}
                     >
                       <i className="bi bi-bus-front" /> Trips
                     </button>
@@ -226,14 +223,11 @@ export default function StudentsLifePage() {
                   {/* Student Council */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="council-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-council"
+                      className={`nav-link ${
+                        studentsLifeSection === "council" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-council"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("council")}
                     >
                       <i className="bi bi-people-fill" /> Student Council
                     </button>
@@ -241,14 +235,11 @@ export default function StudentsLifePage() {
                   {/* Art Programs */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="art-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-art"
+                      className={`nav-link ${
+                        studentsLifeSection === "art" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-art"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("art")}
                     >
                       <i className="bi bi-palette" /> Art Programs
                     </button>
@@ -256,14 +247,11 @@ export default function StudentsLifePage() {
                   {/* School Events */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="events-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-events"
+                      className={`nav-link ${
+                        studentsLifeSection === "events" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-events"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("events")}
                     >
                       <i className="bi bi-calendar-week" /> School Events
                     </button>
@@ -271,14 +259,11 @@ export default function StudentsLifePage() {
                   {/* Dining Services */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="dining-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-dining"
+                      className={`nav-link ${
+                        studentsLifeSection === "dining" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-dining"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("dining")}
                     >
                       <i className="bi bi-cup-straw" /> Dining Services
                     </button>
@@ -286,14 +271,11 @@ export default function StudentsLifePage() {
                   {/* Transportations */}
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="transport-tab"
-                      data-bs-toggle="pill"
-                      data-bs-target="#students-life-transport"
+                      className={`nav-link ${
+                        studentsLifeSection === "transport" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
-                      aria-controls="students-life-transport"
-                      aria-selected="false"
+                      onClick={() => setStudentsLifeSection("transport")}
                     >
                       <i className="bi bi-bus-front-fill" /> Transportations
                     </button>
@@ -303,10 +285,11 @@ export default function StudentsLifePage() {
                 <div className="tab-content" id="studentLifeTabsContent">
                   {/* Athletics Tab (ACTIVE BY DEFAULT) */}
                   <div
-                    className="tab-pane fade show active"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "athletics" ? "show active" : ""
+                    }`}
                     id="students-life-athletics"
                     role="tabpanel"
-                    aria-labelledby="athletics-tab"
                   >
                     <div className="row g-4 mb-4 align-items-center">
                       <div
@@ -402,10 +385,13 @@ export default function StudentsLifePage() {
 
                   {/* Facilities Tab */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "extracurricular"
+                        ? "show active"
+                        : ""
+                    }`}
                     id="students-life-extracurricular"
                     role="tabpanel"
-                    aria-labelledby="extracurricular-tab"
                   >
                     <div className="row justify-content-center g-4">
                       {/* LEFT: Text Content */}
@@ -564,10 +550,11 @@ export default function StudentsLifePage() {
 
                   {/* Day In LIC */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "dayinlic" ? "show active" : ""
+                    }`}
                     id="students-life-dayinlic"
                     role="tabpanel"
-                    aria-labelledby="dayinlic-tab"
                   >
                     <section
                       className="dayinlic-content"
@@ -697,10 +684,11 @@ export default function StudentsLifePage() {
                   </div>
                   {/* Health & Wellness */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "health" ? "show active" : ""
+                    }`}
                     id="students-life-health"
                     role="tabpanel"
-                    aria-labelledby="health-tab"
                   >
                     <section
                       className="healthwellness-content"
@@ -842,10 +830,11 @@ export default function StudentsLifePage() {
                   </div>
                   {/* Clubs */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "clubs" ? "show active" : ""
+                    }`}
                     id="students-life-clubs"
                     role="tabpanel"
-                    aria-labelledby="clubs-tab"
                   >
                     <section
                       className="clubs-content"
@@ -1039,10 +1028,11 @@ export default function StudentsLifePage() {
 
                   {/* Trips */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "trips" ? "show active" : ""
+                    }`}
                     id="students-life-trips"
                     role="tabpanel"
-                    aria-labelledby="trips-tab"
                   >
                     <section
                       className="trips-content"
@@ -1116,10 +1106,11 @@ export default function StudentsLifePage() {
 
                   {/* Student Council */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "council" ? "show active" : ""
+                    }`}
                     id="students-life-council"
                     role="tabpanel"
-                    aria-labelledby="council-tab"
                   >
                     <section
                       className="council-content"
@@ -1245,10 +1236,11 @@ export default function StudentsLifePage() {
 
                   {/* Art Programs */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "art" ? "show active" : ""
+                    }`}
                     id="students-life-art"
                     role="tabpanel"
-                    aria-labelledby="art-tab"
                   >
                     <section
                       className="arts-content"
@@ -1342,10 +1334,11 @@ export default function StudentsLifePage() {
 
                   {/* School Events */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "events" ? "show active" : ""
+                    }`}
                     id="students-life-events"
                     role="tabpanel"
-                    aria-labelledby="events-tab"
                   >
                     <section
                       className="events-content"
@@ -1571,10 +1564,11 @@ export default function StudentsLifePage() {
 
                   {/* Dining Services */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "dining" ? "show active" : ""
+                    }`}
                     id="students-life-dining"
                     role="tabpanel"
-                    aria-labelledby="dining-tab"
                   >
                     <section
                       className="dining-content"
@@ -1617,10 +1611,11 @@ export default function StudentsLifePage() {
 
                   {/* Transportations */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      studentsLifeSection === "transport" ? "show active" : ""
+                    }`}
                     id="students-life-transport"
                     role="tabpanel"
-                    aria-labelledby="transport-tab"
                   >
                     <section
                       className="transport-content"
