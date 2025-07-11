@@ -6,9 +6,11 @@ import { useEffect } from "react";
 import "./page.css";
 import { useStudentsLifeTabs } from "../components/StudentsLifeTabsContext";
 // Import the CSS file for this page
+import { useSearchParams } from "next/navigation";
 
 export default function StudentsLifePage() {
   const { studentsLifeSection, setStudentsLifeSection } = useStudentsLifeTabs();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -18,6 +20,13 @@ export default function StudentsLifePage() {
       }, 15); // 1.5 seconds
 
       return () => clearTimeout(timer);
+    }
+  }, []);
+  useEffect(() => {
+    // ✅ When page loads, check hash
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      setStudentsLifeSection(hash);
     }
   }, []);
 
