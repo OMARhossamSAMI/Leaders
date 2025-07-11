@@ -393,7 +393,7 @@ export default function Home() {
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="assets/img/education/DP.jpeg"
+                            src="assets/img/education/dp.jpg"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -422,12 +422,12 @@ export default function Home() {
                   data-aos-delay={200}
                 >
                   <div className="program-item">
-                    <div className="program-badge">EF</div>
+                    <div className="program-badge">CB</div>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/EF.png"
+                            src="/assets/img/education/CB.png"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -435,10 +435,9 @@ export default function Home() {
                       </div>
                       <div className="col-md-8">
                         <div className="program-content">
-                          <h3>Empowered Futures</h3>
+                          <h3>Character Building</h3>
                           <p>
-                            We equip students with the knowledge, skills, and values they need to thrive as confident, compassionate leaders in a rapidly changing world.
-                          </p>
+                            A dedicated character education program that builds moral integrity, respect, responsibility, and empathy to shape principled, ethical future leaders.                          </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
@@ -460,7 +459,7 @@ export default function Home() {
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="assets/img/education/Amer.webp"
+                            src="assets/img/education/A1.jpeg"
                             className="img-fluid"
                             alt="Program"
                           />
@@ -493,7 +492,7 @@ export default function Home() {
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <img
-                            src="/assets/img/education/british.avif"
+                            src="assets/img/education/british.jpg"
                             className="img-fluid"
                             alt="Program"
                           />
