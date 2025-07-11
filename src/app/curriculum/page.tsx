@@ -3,8 +3,10 @@
 "use client"; // ✅ Needed for useEffect in App Router
 
 import { useEffect } from "react";
+import { useCurriculum } from "../components/CurriculumContext";
 
 export default function CurriculumPage() {
+  const { curriculumTab, setCurriculumTab } = useCurriculum();
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
@@ -65,68 +67,7 @@ export default function CurriculumPage() {
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== */}
-        <header
-          id="header"
-          className="header d-flex align-items-center fixed-top"
-        >
-          <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-            <a href="/" className="logo d-flex align-items-center">
-              <img
-                src="assets/img/lic_logo.png"
-                alt="School Logo"
-                style={{ height: "40px", marginRight: "10px" }}
-              />
-              <h1 className="sitename">Leaders International College</h1>
-            </a>
-            <nav id="navmenu" className="navmenu">
-              <ul>
-                <li>
-                  <a href="/">Home</a>
-                </li>
-                <li className="dropdown">
-                  <a href="about">
-                    <span>About Us</span>{" "}
-                    <i className="bi bi-chevron-down toggle-dropdown" />
-                  </a>
-                  <ul>
-                    <li>
-                      <a href="about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="campus-facilities">Campus &amp; Facilities</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <a href="admissions">Admissions</a>
-                </li>
-                <li className="dropdown">
-                  <a href="#" className="active">
-                    <span>Curriculum</span>{" "}
-                    <i className="bi bi-chevron-down toggle-dropdown" />
-                  </a>
-                  <ul>
-                    <li>
-                      <a href="#academics-all" className="tab-link">
-                        PYP
-                      </a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <a href="students-life">Students Life</a>
-                </li>
-                <li>
-                  <a href="hiring">We Are Hiring</a>
-                </li>
-                <li>
-                  <a href="contact">Contact Us</a>
-                </li>
-              </ul>
-              <i className="mobile-nav-toggle d-xl-none bi bi-list" />
-            </nav>
-          </div>
-        </header>
+
         <main className="main">
           {/* Page Title */}
           <div
@@ -170,10 +111,10 @@ export default function CurriculumPage() {
                       >
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link active"
-                            id="undergraduate-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-undergraduate"
+                            className={`nav-link ${
+                              curriculumTab === "pyp" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("pyp")}
                             type="button"
                             role="tab"
                           >
@@ -186,10 +127,10 @@ export default function CurriculumPage() {
 
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link"
-                            id="graduate-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-graduate"
+                            className={`nav-link ${
+                              curriculumTab === "myp" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("myp")}
                             type="button"
                             role="tab"
                           >
@@ -202,10 +143,10 @@ export default function CurriculumPage() {
 
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link"
-                            id="doctoral-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-doctoral"
+                            className={`nav-link ${
+                              curriculumTab === "dp" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("dp")}
                             type="button"
                             role="tab"
                           >
@@ -218,10 +159,10 @@ export default function CurriculumPage() {
 
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link"
-                            id="american-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-american"
+                            className={`nav-link ${
+                              curriculumTab === "american" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("american")}
                             type="button"
                             role="tab"
                           >
@@ -234,10 +175,10 @@ export default function CurriculumPage() {
 
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link"
-                            id="igcse-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-igcse"
+                            className={`nav-link ${
+                              curriculumTab === "igcse" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("igcse")}
                             type="button"
                             role="tab"
                           >
@@ -247,12 +188,13 @@ export default function CurriculumPage() {
                             <span className="text">IGCSE</span>
                           </button>
                         </li>
+
                         <li className="nav-item" role="presentation">
                           <button
-                            className="nav-link"
-                            id="all-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#academics-all"
+                            className={`nav-link ${
+                              curriculumTab === "character" ? "active" : ""
+                            }`}
+                            onClick={() => setCurriculumTab("character")}
                             type="button"
                             role="tab"
                           >
@@ -275,7 +217,9 @@ export default function CurriculumPage() {
               >
                 {/* CHARACTER BUILDING */}
                 <div
-                  className="tab-pane fade"
+                  className={`tab-pane fade ${
+                    curriculumTab === "character" ? "show active" : ""
+                  }`}
                   id="academics-all"
                   role="tabpanel"
                 >
@@ -380,7 +324,9 @@ export default function CurriculumPage() {
 
                 {/* PYP Tab */}
                 <div
-                  className="tab-pane fade show active"
+                  className={`tab-pane fade ${
+                    curriculumTab === "pyp" ? "show active" : ""
+                  }`}
                   id="academics-undergraduate"
                   role="tabpanel"
                 >
@@ -823,7 +769,9 @@ export default function CurriculumPage() {
                 </div>
                 {/* AMERICAN Tab */}
                 <div
-                  className="tab-pane fade"
+                  className={`tab-pane fade ${
+                    curriculumTab === "american" ? "show active" : ""
+                  }`}
                   id="academics-american"
                   role="tabpanel"
                 >
@@ -926,7 +874,9 @@ export default function CurriculumPage() {
 
                 {/* IGCSE Tab */}
                 <div
-                  className="tab-pane fade"
+                  className={`tab-pane fade ${
+                    curriculumTab === "igcse" ? "show active" : ""
+                  }`}
                   id="academics-igcse"
                   role="tabpanel"
                 >
@@ -1024,7 +974,9 @@ export default function CurriculumPage() {
 
                 {/* MYP Tab */}
                 <div
-                  className="tab-pane fade"
+                  className={`tab-pane fade ${
+                    curriculumTab === "myp" ? "show active" : ""
+                  }`}
                   id="academics-graduate"
                   role="tabpanel"
                 >
@@ -1373,7 +1325,9 @@ export default function CurriculumPage() {
 
                 {/* DP Tab */}
                 <div
-                  className="tab-pane fade"
+                  className={`tab-pane fade ${
+                    curriculumTab === "dp" ? "show active" : ""
+                  }`}
                   id="academics-doctoral"
                   role="tabpanel"
                 >
@@ -1788,139 +1742,7 @@ export default function CurriculumPage() {
           </section>
           {/* /Academics Section */}
         </main>
-        <footer
-          id="footer"
-          className="footer position-relative dark-background"
-        >
-          <div className="container footer-top">
-            <div className="row gy-4">
-              <div className="col-lg-4 col-md-6 footer-about">
-                <a href="/" className="logo d-flex align-items-center">
-                  <span className="sitename">NiceSchool</span>
-                </a>
-                <div className="footer-contact pt-3">
-                  <p>A108 Adam Street</p>
-                  <p>New York, NY 535022</p>
-                  <p className="mt-3">
-                    <strong>Phone:</strong> <span>+1 5589 55488 55</span>
-                  </p>
-                  <p>
-                    <strong>Email:</strong> <span>info@example.com</span>
-                  </p>
-                </div>
-                <div className="social-links d-flex mt-4">
-                  <a href="">
-                    <i className="bi bi-twitter-x" />
-                  </a>
-                  <a href="">
-                    <i className="bi bi-facebook" />
-                  </a>
-                  <a href="">
-                    <i className="bi bi-instagram" />
-                  </a>
-                  <a href="">
-                    <i className="bi bi-linkedin" />
-                  </a>
-                </div>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Useful Links</h4>
-                <ul>
-                  <li>
-                    <a href="/">Home</a>
-                  </li>
-                  <li>
-                    <a href="/about">About us</a>
-                  </li>
-                  <li>
-                    <a href="/our-staff">Our Staff</a>
-                  </li>
-                  <li>
-                    <a href="/campus-facilities">Campus and Facilities</a>
-                  </li>
-                  <li>
-                    <a href="#">Privacy policy</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Our Services</h4>
-                <ul>
-                  <li>
-                    <a href="#">Web Design</a>
-                  </li>
-                  <li>
-                    <a href="#">Web Development</a>
-                  </li>
-                  <li>
-                    <a href="#">Product Management</a>
-                  </li>
-                  <li>
-                    <a href="#">Marketing</a>
-                  </li>
-                  <li>
-                    <a href="#">Graphic Design</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Hic solutasetp</h4>
-                <ul>
-                  <li>
-                    <a href="#">Molestiae accusamus iure</a>
-                  </li>
-                  <li>
-                    <a href="#">Excepturi dignissimos</a>
-                  </li>
-                  <li>
-                    <a href="#">Suscipit distinctio</a>
-                  </li>
-                  <li>
-                    <a href="#">Dilecta</a>
-                  </li>
-                  <li>
-                    <a href="#">Sit quas consectetur</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Nobis illum</h4>
-                <ul>
-                  <li>
-                    <a href="#">Ipsam</a>
-                  </li>
-                  <li>
-                    <a href="#">Laudantium dolorum</a>
-                  </li>
-                  <li>
-                    <a href="#">Dinera</a>
-                  </li>
-                  <li>
-                    <a href="#">Trodelas</a>
-                  </li>
-                  <li>
-                    <a href="#">Flexo</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="container copyright text-center mt-4">
-            <p>
-              © <span>Copyright</span>{" "}
-              <strong className="px-1 sitename">MyWebsite</strong>{" "}
-              <span>All Rights Reserved</span>
-            </p>
-            <div className="credits">
-              {/* All the links in the footer should remain intact. */}
-              {/* You can delete the links only if you've purchased the pro version. */}
-              {/* Licensing information: https://bootstrapmade.com/license/ */}
-              {/* Purchase the pro version with working PHP/AJAX contact form: [buy-url] */}
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-            </div>
-          </div>
-        </footer>
-        {/* Scroll Top */}
+
         <a
           href="#"
           id="scroll-top"

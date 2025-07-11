@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { TabsProvider } from "./components/TabsContext";
+import { CurriculumProvider } from "./components/CurriculumContext";
 
-// ✅ Google Fonts: Geist for base + mono
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -68,9 +71,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <TabsProvider>
+          <CurriculumProvider>
+            <Header />
+            {children}
+            <Footer />
+          </CurriculumProvider>
+        </TabsProvider>
 
-        {/* ✅ Core vendor JS: must load BEFORE your main.js */}
+        {/* ✅ Scripts */}
         <Script
           src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"
           strategy="beforeInteractive"
@@ -84,8 +93,6 @@ export default function RootLayout({
           src="/assets/vendor/glightbox/js/glightbox.min.js"
           strategy="beforeInteractive"
         />
-
-        {/* ✅ Other helpers */}
         <Script
           src="/assets/vendor/php-email-form/validate.js"
           strategy="beforeInteractive"
@@ -103,10 +110,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
 
-        {/* ✅ Main site JS: depends on all vendor scripts */}
         <Script src="/assets/js/main.js" strategy="afterInteractive" />
-
-        {/* ✅ AOS.init() guarantee */}
         <Script id="aos-init" strategy="afterInteractive">
           {`
             AOS.init({

@@ -65,60 +65,7 @@ export default function WeAreHiringPage() {
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== */}
-        <header
-          id="header"
-          className="header d-flex align-items-center fixed-top"
-        >
-          <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-            <a href="/" className="logo d-flex align-items-center">
-              <img
-                src="assets/img/lic_logo.png"
-                alt="School Logo"
-                style={{ height: "40px", marginRight: "10px" }}
-              />
-              <h1 className="sitename">Leaders International College</h1>
-            </a>
-            <nav id="navmenu" className="navmenu">
-              <ul>
-                <li>
-                  <a href="/">
-                    Home
-                  </a>
-                </li>
-                <li className="dropdown">
-                  <a href="about">
-                    <span>About Us</span>{" "}
-                    <i className="bi bi-chevron-down toggle-dropdown" />
-                  </a>
-                  <ul>
-                    <li>
-                      <a href="about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="campus-facilities">Campus &amp; Facilities</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <a href="admissions">Admissions</a>
-                </li>
-                <li>
-                  <a href="curriculum">Curriculum</a>
-                </li>
-                <li>
-                  <a href="students-life">Students Life</a>
-                </li>
-                <li>
-                  <a href="#" className="active">We Are Hiring</a>
-                </li>
-                <li>
-                  <a href="contact">Contact Us</a>
-                </li>
-              </ul>
-              <i className="mobile-nav-toggle d-xl-none bi bi-list" />
-            </nav>
-          </div>
-        </header>
+
         <main className="main">
           {/* Page Title */}
           <div
@@ -572,7 +519,6 @@ export default function WeAreHiringPage() {
                   data-aos="fade-up"
                   data-aos-delay={200}
                 >
-
                   {/* <div className="row align-items-center">
                     <div className="col-lg-7">
                       <div className="impact-content">
@@ -906,145 +852,13 @@ export default function WeAreHiringPage() {
                       </div>
                     </div>
                   </div>*/}
-
                 </div>
               </div>
             </div>
           </section>
           {/* /Alumni Section */}
         </main>
-        <footer
-          id="footer"
-          className="footer position-relative dark-background"
-        >
-          <div className="container footer-top">
-            <div className="row gy-4">
-              <div className="col-lg-4 col-md-6 footer-about">
-                <a href="/" className="logo d-flex align-items-center">
-                  <span className="sitename">NiceSchool</span>
-                </a>
-                <div className="footer-contact pt-3">
-                  <p>A108 Adam Street</p>
-                  <p>New York, NY 535022</p>
-                  <p className="mt-3">
-                    <strong>Phone:</strong> <span>+1 5589 55488 55</span>
-                  </p>
-                  <p>
-                    <strong>Email:</strong> <span>info@example.com</span>
-                  </p>
-                </div>
-                <div className="social-links d-flex mt-4">
-                  <a href="#">
-                    <i className="bi bi-twitter-x" />
-                  </a>
-                  <a href="#">
-                    <i className="bi bi-facebook" />
-                  </a>
-                  <a href="#">
-                    <i className="bi bi-instagram" />
-                  </a>
-                  <a href="#">
-                    <i className="bi bi-linkedin" />
-                  </a>
-                </div>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Useful Links</h4>
-                <ul>
-                  <li>
-                    <a href="/">Home</a>
-                  </li>
-                  <li>
-                    <a href="/about">About us</a>
-                  </li>
-                  <li>
-                    <a href="/our-staff">Our Staff</a>
-                  </li>
-                  <li>
-                    <a href="/campus-facilities">Campus and Facilities</a>
-                  </li>
-                  <li>
-                    <a href="#">Privacy policy</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Our Services</h4>
-                <ul>
-                  <li>
-                    <a href="#">Web Design</a>
-                  </li>
-                  <li>
-                    <a href="#">Web Development</a>
-                  </li>
-                  <li>
-                    <a href="#">Product Management</a>
-                  </li>
-                  <li>
-                    <a href="#">Marketing</a>
-                  </li>
-                  <li>
-                    <a href="#">Graphic Design</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Hic solutasetp</h4>
-                <ul>
-                  <li>
-                    <a href="#">Molestiae accusamus iure</a>
-                  </li>
-                  <li>
-                    <a href="#">Excepturi dignissimos</a>
-                  </li>
-                  <li>
-                    <a href="#">Suscipit distinctio</a>
-                  </li>
-                  <li>
-                    <a href="#">Dilecta</a>
-                  </li>
-                  <li>
-                    <a href="#">Sit quas consectetur</a>
-                  </li>
-                </ul>
-              </div>
-              <div className="col-lg-2 col-md-3 footer-links">
-                <h4>Nobis illum</h4>
-                <ul>
-                  <li>
-                    <a href="#">Ipsam</a>
-                  </li>
-                  <li>
-                    <a href="#">Laudantium dolorum</a>
-                  </li>
-                  <li>
-                    <a href="#">Dinera</a>
-                  </li>
-                  <li>
-                    <a href="#">Trodelas</a>
-                  </li>
-                  <li>
-                    <a href="#">Flexo</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="container copyright text-center mt-4">
-            <p>
-              © <span>Copyright</span>{" "}
-              <strong className="px-1 sitename">MyWebsite</strong>{" "}
-              <span>All Rights Reserved</span>
-            </p>
-            <div className="credits">
-              {/* All the links in the footer should remain intact. */}
-              {/* You can delete the links only if you've purchased the pro version. */}
-              {/* Licensing information: https://bootstrapmade.com/license/ */}
-              {/* Purchase the pro version with working PHP/AJAX contact form: [buy-url] */}
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-            </div>
-          </div>
-        </footer>
+
         {/* Scroll Top */}
         <a
           href="#"
