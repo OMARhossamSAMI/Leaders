@@ -34,69 +34,13 @@ export default function Home() {
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== */}
-      <header
-        id="header"
-        className="header d-flex align-items-center fixed-top"
-      >
-        <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-          <a href="index.html" className="logo d-flex align-items-center">
-            <img
-              src="/assets/img/lic_logo.png"
-              alt="School Logo"
-              style={{ height: 40, marginRight: 10 }}
-            />
-            <h1 className="sitename">Leaders International College</h1>
-          </a>
-          <nav id="navmenu" className="navmenu">
-            <ul>
-              <li>
-                <a href="#" className="active">
-                  Home
-                </a>
-              </li>
-              <li className="dropdown">
-                <a href="/about">
-                  <span>About Us</span>{" "}
-                  <i className="bi bi-chevron-down toggle-dropdown" />
-                </a>
-                <ul>
-                  <li>
-                    <a href="/about">About Us</a>
-                  </li>
-                  <li>
-                    <a href="/campus-facilities">Campus &amp; Facilities</a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a href="/admissions">Admissions</a>
-              </li>
-              <li>
-                <a href="/curriculum">Curriculum</a>
-              </li>
-              <li>
-                <a href="/students-life">Students Life</a>
-              </li>
-              <li>
-                <a href="/hiring">We Are Hiring</a>
-              </li>
-              <li>
-                <a href="/contact">Contact Us</a>
-              </li>
-            </ul>
-            <i className="mobile-nav-toggle d-xl-none bi bi-list" />
-          </nav>
-        </div>
-      </header>
+
       <main className="main">
         {/* Hero Section */}
         <section id="hero" className="hero section dark-background">
           <div className="hero-container">
             <video autoPlay muted loop playsInline className="video-background">
-              <source
-                src="assets/img/education/Video.mp4"
-                type="video/mp4"
-              />
+              <source src="assets/img/education/Video.mp4" type="video/mp4" />
             </video>
             <div className="overlay" />
             <div className="container">
@@ -196,23 +140,25 @@ export default function Home() {
                   Come & Join Us, <span>Leaders International Schools</span>
                 </h2>
                 <p className="lead mb-4">
-                   Discover how our dedicated academic support and innovative digital learning help every student thrive — start your journey with us today.
+                  Discover how our dedicated academic support and innovative
+                  digital learning help every student thrive — start your
+                  journey with us today.
                 </p>
                 <a
-                    href="/admissions"
-                    className="btn"
-                    style={{
-                      backgroundColor: "hsl(193, 75%, 54%)",
-                      border: "none",
-                      color: "#fff",
-                      padding: "0.75rem 1.5rem",
-                      borderRadius: "4px",
-                      textDecoration: "none",
-                      display: "inline-block",
-                    }}
-                  >
-                    Apply Now
-                  </a>
+                  href="/admissions"
+                  className="btn"
+                  style={{
+                    backgroundColor: "hsl(193, 75%, 54%)",
+                    border: "none",
+                    color: "#fff",
+                    padding: "0.75rem 1.5rem",
+                    borderRadius: "4px",
+                    textDecoration: "none",
+                    display: "inline-block",
+                  }}
+                >
+                  Apply Now
+                </a>
                 <div className="d-flex flex-wrap gap-4 mb-4">
                   <div className="stat-box">
                     <span className="stat-number">
@@ -251,8 +197,7 @@ export default function Home() {
                     <span className="stat-label">GRADUATES</span>
                   </div>
                 </div>
-                <div className="d-flex align-items-center mt-4 signature-block">
-                </div>
+                <div className="d-flex align-items-center mt-4 signature-block"></div>
               </div>
 
               <div
@@ -286,7 +231,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            
           </div>
         </section>
         {/* /About Section */}
@@ -296,7 +240,9 @@ export default function Home() {
           <div className="container section-title" data-aos="fade-up">
             <h2>Featured Programs</h2>
             <p>
-              Explore our internationally recognized IB, American Diploma, and IGCSE programs designed to empower students through inquiry, innovation, and personalized learning.
+              Explore our internationally recognized IB, American Diploma, and
+              IGCSE programs designed to empower students through inquiry,
+              innovation, and personalized learning.
             </p>
           </div>
           {/* End Section Title */}
@@ -338,7 +284,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Primary Years Programme</h3>
                           <p>
-                            A nurturing, inquiry-based program for ages 3–12 that builds foundational skills, curiosity, and global awareness.
+                            A nurturing, inquiry-based program for ages 3–12
+                            that builds foundational skills, curiosity, and
+                            global awareness.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -371,7 +319,10 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Middle Years Programme</h3>
                           <p>
-                            A dynamic framework for students aged 11–16 that connects academic learning with real-world application and personal development.                          </p>
+                            A dynamic framework for students aged 11–16 that
+                            connects academic learning with real-world
+                            application and personal development.{" "}
+                          </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
@@ -403,7 +354,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Diploma Programme</h3>
                           <p>
-                            A rigorous, university-preparatory curriculum for ages 16–19 that fosters critical thinking, research skills, and global citizenship.
+                            A rigorous, university-preparatory curriculum for
+                            ages 16–19 that fosters critical thinking, research
+                            skills, and global citizenship.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -414,7 +367,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* End Program Item */}
                 <div
                   className="col-lg-6 isotope-item filter-master"
@@ -437,7 +390,10 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Character Building</h3>
                           <p>
-                            A dedicated character education program that builds moral integrity, respect, responsibility, and empathy to shape principled, ethical future leaders.                          </p>
+                            A dedicated character education program that builds
+                            moral integrity, respect, responsibility, and
+                            empathy to shape principled, ethical future leaders.{" "}
+                          </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
@@ -469,7 +425,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>American Diploma</h3>
                           <p>
-                            A flexible, standards-based program for Grades 11–12 offering a well-rounded education tailored to individual student goals.
+                            A flexible, standards-based program for Grades 11–12
+                            offering a well-rounded education tailored to
+                            individual student goals.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -502,7 +460,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>British Program</h3>
                           <p>
-                            An internationally respected curriculum for Years 10–12 that emphasizes academic excellence and readiness for higher education worldwide.
+                            An internationally respected curriculum for Years
+                            10–12 that emphasizes academic excellence and
+                            readiness for higher education worldwide.
                           </p>
                           <a href="#" className="program-btn">
                             <span>Learn More</span>{" "}
@@ -528,7 +488,9 @@ export default function Home() {
           <div className="container section-title" data-aos="fade-up">
             <h2>Students Life</h2>
             <p>
-              Student Life at Leaders International College is vibrant, balanced, and designed to help every student thrive academically, socially, and personally.
+              Student Life at Leaders International College is vibrant,
+              balanced, and designed to help every student thrive academically,
+              socially, and personally.
             </p>
           </div>
           {/* End Section Title */}
@@ -571,7 +533,9 @@ export default function Home() {
                         </div>
                         <h4>Student Clubs</h4>
                         <p>
-                          Our dynamic club offerings in the PYP stage help students discover new interests, build friendships, and grow holistically.
+                          Our dynamic club offerings in the PYP stage help
+                          students discover new interests, build friendships,
+                          and grow holistically.
                         </p>
                       </div>
                     </div>
@@ -586,7 +550,9 @@ export default function Home() {
                         </div>
                         <h4>Academic & Learning Environments</h4>
                         <p>
-                          Our state-of-the-art classrooms and labs provide safe, interactive spaces that foster curiosity, collaboration, and innovation.
+                          Our state-of-the-art classrooms and labs provide safe,
+                          interactive spaces that foster curiosity,
+                          collaboration, and innovation.
                         </p>
                       </div>
                     </div>
@@ -601,7 +567,9 @@ export default function Home() {
                         </div>
                         <h4>Arts & Innovation</h4>
                         <p>
-                          We empower students to unlock their creative potential through well-equipped arts rooms that encourage artistic exploration and expression.
+                          We empower students to unlock their creative potential
+                          through well-equipped arts rooms that encourage
+                          artistic exploration and expression.
                         </p>
                       </div>
                     </div>
@@ -616,7 +584,9 @@ export default function Home() {
                         </div>
                         <h4>Playgrounds and Green Spaces</h4>
                         <p>
-                          Safe, age-appropriate playgrounds and lush green areas inspire our youngest learners to explore and grow through play.
+                          Safe, age-appropriate playgrounds and lush green areas
+                          inspire our youngest learners to explore and grow
+                          through play.
                         </p>
                       </div>
                     </div>
@@ -638,208 +608,217 @@ export default function Home() {
         {/* /Students Life Block Section */}
         {/* Stats Section */}
         <section id="stats" className="stats section">
-  <div className="container" data-aos="fade-up" data-aos-delay={100}>
-    <div className="row">
-      <div className="col-lg-6">
-        <div
-          className="stats-overview"
-          data-aos="fade-right"
-          data-aos-delay={200}
-        >
-          <div className="container section-title" data-aos="fade-up">
-            <h2>Campus & Facilities</h2>
-          </div>
-          <p className="stats-description">
-            Leaders International College’s New Cairo campus is thoughtfully
-            designed to inspire learning and personal growth within a vibrant
-            community. It features modern classrooms, advanced science and IT
-            labs, a well-stocked library, art and music studios, extensive
-            sports facilities, outdoor learning spaces, and a healthy cafeteria.
-            The campus is easily accessible by road and school bus services,
-            with ample parking for visitors. Safety is ensured through 24/7
-            security, surveillance systems, and controlled access.
-          </p>
-          <div className="stats-cta">
-            <a href="/campus-facilities" className="btn btn-primary">
-              Learn More
-            </a>
-            <a
-              href="http://vrtour.leadersintcollege.com/"
-              className="btn btn-outline"
+          <div className="container" data-aos="fade-up" data-aos-delay={100}>
+            <div className="row">
+              <div className="col-lg-6">
+                <div
+                  className="stats-overview"
+                  data-aos="fade-right"
+                  data-aos-delay={200}
+                >
+                  <div className="container section-title" data-aos="fade-up">
+                    <h2>Campus & Facilities</h2>
+                  </div>
+                  <p className="stats-description">
+                    Leaders International College’s New Cairo campus is
+                    thoughtfully designed to inspire learning and personal
+                    growth within a vibrant community. It features modern
+                    classrooms, advanced science and IT labs, a well-stocked
+                    library, art and music studios, extensive sports facilities,
+                    outdoor learning spaces, and a healthy cafeteria. The campus
+                    is easily accessible by road and school bus services, with
+                    ample parking for visitors. Safety is ensured through 24/7
+                    security, surveillance systems, and controlled access.
+                  </p>
+                  <div className="stats-cta">
+                    <a href="/campus-facilities" className="btn btn-primary">
+                      Learn More
+                    </a>
+                    <a
+                      href="http://vrtour.leadersintcollege.com/"
+                      className="btn btn-outline"
+                    >
+                      Virtual Tour
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-6 d-flex justify-content-center align-items-center">
+                <img
+                  src="/assets/img/education/CampusH.JPG"
+                  alt="Our Campus"
+                  className="img-fluid rounded-circle border shadow"
+                  style={{
+                    width: "500px",
+                    height: "500px",
+                    objectFit: "cover",
+                  }}
+                  data-aos="zoom-in"
+                  data-aos-delay={200}
+                />
+              </div>
+            </div>
+
+            {/* ✅ Campus Map directly after main row */}
+
+            <div
+              className="campus-map-section mt-5"
+              data-aos="fade-up"
+              data-aos-delay={200}
             >
-              Virtual Tour
-            </a>
+              <div className="row align-items-center">
+                <div
+                  className="col-lg-5"
+                  data-aos="fade-right"
+                  data-aos-delay={100}
+                >
+                  <div className="map-info">
+                    <h2 className="campus-map-title">
+                      Campus Map
+                      <span className="title-underline"></span>
+                    </h2>
+                    <p>
+                      Navigate our expansive campus with ease using our
+                      interactive map. Locate buildings, facilities, and
+                      services to find your way around.
+                    </p>
+
+                    <div className="map-legend">
+                      <div className="legend-item">
+                        <span className="marker-square blue"></span>
+                        <span>
+                          Main School Building – “teachers take perfect care of
+                          students”
+                        </span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="marker-square green"></span>
+                        <span>
+                          Playgrounds & Sports Areas – “great atmosphere”
+                        </span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="marker-square orange"></span>
+                        <span>
+                          Cafeteria & Dining – facilities praised for growth and
+                          learning
+                        </span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="marker-square purple"></span>
+                        <span>
+                          Visitor Parking – convenient access for parents
+                        </span>
+                      </div>
+                    </div>
+
+                    <a
+                      href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
+                      className="btn btn-map"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="bi bi-geo-alt me-2"></i> Get Directions
+                    </a>
+                  </div>
+                </div>
+
+                <div
+                  className="col-lg-7"
+                  data-aos="fade-left"
+                  data-aos-delay={200}
+                >
+                  <div className="map-container">
+                    <div className="ratio ratio-16x9">
+                      <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2508.1373530784062!2d31.462300996830244!3d30.016339563956866!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145822df2dd8f289%3A0xffe559c98f96503e!2sLeaders%20International%20College!5e0!3m2!1sen!2seg!4v1752150399611!5m2!1sen!2seg"
+                        width="600"
+                        height="450"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      ></iframe>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <style jsx>{`
+                .campus-map-title {
+                  position: relative;
+                  font-weight: 700;
+                }
+
+                .title-underline {
+                  display: block;
+                  width: 40px;
+                  height: 3px;
+                  background: #00b4e6;
+                  margin-top: 5px;
+                }
+
+                .map-legend {
+                  margin-top: 20px;
+                }
+
+                .legend-item {
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: 10px;
+                  font-size: 16px;
+                }
+
+                .marker-square {
+                  display: inline-block;
+                  width: 15px;
+                  height: 15px;
+                  border-radius: 3px;
+                  margin-right: 10px;
+                }
+
+                .marker-square.blue {
+                  background: #4285f4;
+                }
+                .marker-square.green {
+                  background: #34a853;
+                }
+                .marker-square.orange {
+                  background: #fbbc05;
+                }
+                .marker-square.purple {
+                  background: #673ab7;
+                }
+
+                .btn-map {
+                  display: inline-flex;
+                  align-items: center;
+                  background: #00b4e6;
+                  color: #fff;
+                  border: none;
+                  padding: 10px 25px;
+                  border-radius: 50px;
+                  text-decoration: none;
+                  font-weight: 600;
+                  margin-top: 20px;
+                  transition: background 0.3s ease;
+                }
+
+                .btn-map:hover {
+                  background: #019ac4;
+                  text-decoration: none;
+                  color: #fff;
+                }
+
+                .map-highlights p {
+                  margin-bottom: 10px;
+                  font-size: 15px;
+                }
+              `}</style>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="col-lg-6 d-flex justify-content-center align-items-center">
-        <img
-          src="/assets/img/education/CampusH.JPG"
-          alt="Our Campus"
-          className="img-fluid rounded-circle border shadow"
-          style={{
-            width: "500px",
-            height: "500px",
-            objectFit: "cover",
-          }}
-          data-aos="zoom-in"
-          data-aos-delay={200}
-        />
-      </div>
-    </div>
+        </section>
 
-    {/* ✅ Campus Map directly after main row */}
-    
-    <div
-  className="campus-map-section mt-5"
-  data-aos="fade-up"
-  data-aos-delay={200}
->
-  <div className="row align-items-center">
-    <div className="col-lg-5" data-aos="fade-right" data-aos-delay={100}>
-      <div className="map-info">
-        <h2 className="campus-map-title">
-          Campus Map
-          <span className="title-underline"></span>
-        </h2>
-        <p>
-          Navigate our expansive campus with ease using our interactive map.
-          Locate buildings, facilities, and services to find your way around.
-        </p>
-
-        <div className="map-legend">
-          <div className="legend-item">
-            <span className="marker-square blue"></span>
-            <span>
-              Main School Building – “teachers take perfect care of students”
-            </span>
-          </div>
-          <div className="legend-item">
-            <span className="marker-square green"></span>
-            <span>
-              Playgrounds & Sports Areas – “great atmosphere”
-            </span>
-          </div>
-          <div className="legend-item">
-            <span className="marker-square orange"></span>
-            <span>
-              Cafeteria & Dining – facilities praised for growth and learning
-            </span>
-          </div>
-          <div className="legend-item">
-            <span className="marker-square purple"></span>
-            <span>
-              Visitor Parking – convenient access for parents
-            </span>
-          </div>
-        </div>
-
-        
-
-        <a
-          href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
-          className="btn btn-map"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="bi bi-geo-alt me-2"></i> Get Directions
-        </a>
-      </div>
-    </div>
-
-    <div className="col-lg-7" data-aos="fade-left" data-aos-delay={200}>
-      <div className="map-container">
-        <div className="ratio ratio-16x9">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d2508.1373530784062!2d31.462300996830244!3d30.016339563956866!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145822df2dd8f289%3A0xffe559c98f96503e!2sLeaders%20International%20College!5e0!3m2!1sen!2seg!4v1752150399611!5m2!1sen!2seg"
-            width="600"
-            height="450"
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <style jsx>{`
-    .campus-map-title {
-      position: relative;
-      font-weight: 700;
-    }
-
-    .title-underline {
-      display: block;
-      width: 40px;
-      height: 3px;
-      background: #00b4e6;
-      margin-top: 5px;
-    }
-
-    .map-legend {
-      margin-top: 20px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .marker-square {
-      display: inline-block;
-      width: 15px;
-      height: 15px;
-      border-radius: 3px;
-      margin-right: 10px;
-    }
-
-    .marker-square.blue {
-      background: #4285f4;
-    }
-    .marker-square.green {
-      background: #34a853;
-    }
-    .marker-square.orange {
-      background: #fbbc05;
-    }
-    .marker-square.purple {
-      background: #673ab7;
-    }
-
-    .btn-map {
-      display: inline-flex;
-      align-items: center;
-      background: #00b4e6;
-      color: #fff;
-      border: none;
-      padding: 10px 25px;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background 0.3s ease;
-    }
-
-    .btn-map:hover {
-      background: #019ac4;
-      text-decoration: none;
-      color: #fff;
-    }
-
-    .map-highlights p {
-      margin-bottom: 10px;
-      font-size: 15px;
-    }
-  `}</style>
-</div>
-  </div>
-</section>
-
-        
         {/* /Stats Section */}
         {/* Testimonials Section */}
         <section id="testimonials" className="testimonials section">
@@ -1218,136 +1197,7 @@ export default function Home() {
         </section>
         {/* /Events Section */}
       </main>
-      <footer id="footer" className="footer position-relative dark-background">
-        <div className="container footer-top">
-          <div className="row gy-4">
-            <div className="col-lg-4 col-md-6 footer-about">
-              <a href="#" className="logo d-flex align-items-center">
-                <span className="sitename">Leaders International College</span>
-              </a>
-              <div className="footer-contact pt-3">
-                <p>off 90th road</p>
-                <p>fifth settlement</p>
-                <p className="mt-3">
-                  <strong>Phone:</strong> <span>012 7292 4777 </span>
-                </p>
-                <p>
-                  <strong>Email:</strong>{" "}
-                  <span>admission@leadersintcollege.com</span>
-                </p>
-              </div>
-              <div className="social-links d-flex mt-4">
-                <a href="">
-                  <i className="bi bi-twitter-x" />
-                </a>
-                <a href="">
-                  <i className="bi bi-facebook" />
-                </a>
-                <a href="">
-                  <i className="bi bi-instagram" />
-                </a>
-                <a href="">
-                  <i className="bi bi-linkedin" />
-                </a>
-              </div>
-            </div>
-            <div className="col-lg-2 col-md-3 footer-links">
-              <h4>Useful Links</h4>
-              <ul>
-                <li>
-                  <a href="#">Home</a>
-                </li>
-                <li>
-                  <a href="/about">About us</a>
-                </li>
-                <li>
-                  <a href="/our-staff">Our Staff</a>
-                </li>
-                <li>
-                  <a href="/campus-facilities">Campus and facilities</a>
-                </li>
-                <li>
-                  <a href="/admission">Admission</a>
-                </li>
-              </ul>
-            </div>
-            <div className="col-lg-2 col-md-3 footer-links">
-              <h4>Our Services</h4>
-              <ul>
-                <li>
-                  <a href="#">Web Design</a>
-                </li>
-                <li>
-                  <a href="#">Web Development</a>
-                </li>
-                <li>
-                  <a href="#">Product Management</a>
-                </li>
-                <li>
-                  <a href="#">Marketing</a>
-                </li>
-                <li>
-                  <a href="#">Graphic Design</a>
-                </li>
-              </ul>
-            </div>
-            <div className="col-lg-2 col-md-3 footer-links">
-              <h4>Hic solutasetp</h4>
-              <ul>
-                <li>
-                  <a href="#">Molestiae accusamus iure</a>
-                </li>
-                <li>
-                  <a href="#">Excepturi dignissimos</a>
-                </li>
-                <li>
-                  <a href="#">Suscipit distinctio</a>
-                </li>
-                <li>
-                  <a href="#">Dilecta</a>
-                </li>
-                <li>
-                  <a href="#">Sit quas consectetur</a>
-                </li>
-              </ul>
-            </div>
-            <div className="col-lg-2 col-md-3 footer-links">
-              <h4>Nobis illum</h4>
-              <ul>
-                <li>
-                  <a href="#">Ipsam</a>
-                </li>
-                <li>
-                  <a href="#">Laudantium dolorum</a>
-                </li>
-                <li>
-                  <a href="#">Dinera</a>
-                </li>
-                <li>
-                  <a href="#">Trodelas</a>
-                </li>
-                <li>
-                  <a href="#">Flexo</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className="container copyright text-center mt-4">
-          <p>
-            © <span>Copyright</span>{" "}
-            <strong className="px-1 sitename">MyWebsite</strong>{" "}
-            <span>All Rights Reserved</span>
-          </p>
-          <div className="credits">
-            {/* All the links in the footer should remain intact. */}
-            {/* You can delete the links only if you've purchased the pro version. */}
-            {/* Licensing information: https://bootstrapmade.com/license/ */}
-            {/* Purchase the pro version with working PHP/AJAX contact form: [buy-url] */}
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-          </div>
-        </div>
-      </footer>
+
       {/* Scroll Top */}
       <a
         href="#"

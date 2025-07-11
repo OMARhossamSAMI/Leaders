@@ -22,6 +22,7 @@ export default function WeAreHiringPage() {
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <title>We Are Hiring - LeadersIntCollege</title>
 
+
         <header
           id="header"
           className="header d-flex align-items-center fixed-top"
@@ -49,6 +50,7 @@ export default function WeAreHiringPage() {
             </nav>
           </div>
         </header>
+
 
         <main className="main">
           <div
@@ -141,6 +143,7 @@ export default function WeAreHiringPage() {
                   className="img-fluid"
                 />
               </div>
+
             </div>
           </div>
         </div>
@@ -504,6 +507,7 @@ export default function WeAreHiringPage() {
         </footer>
 
         <a href="#" id="scroll-top" className="scroll-top d-flex align-items-center justify-content-center">
+
           <i className="bi bi-arrow-up-short" />
         </a>
 
