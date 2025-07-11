@@ -1,128 +1,156 @@
+import "./Footer.css";
 export default function Footer() {
   return (
-    <footer id="footer" className="footer position-relative dark-background">
+    <footer
+      id="footer"
+      className="footer position-relative dark-background text-white"
+    >
       <div className="container footer-top">
         <div className="row gy-4">
-          <div className="col-lg-4 col-md-6 footer-about">
-            <a href="#" className="logo d-flex align-items-center">
-              <span className="sitename">Leaders International College</span>
-            </a>
-            <div className="footer-contact pt-3">
-              <p>off 90th road</p>
-              <p>fifth settlement</p>
-              <p className="mt-3">
-                <strong>Phone:</strong> <span>012 7292 4777 </span>
-              </p>
-              <p>
-                <strong>Email:</strong>{" "}
-                <span>admission@leadersintcollege.com</span>
-              </p>
+          {/* === Left: College Info & Socials === */}
+          <div className="col-lg-4 col-md-12 mb-4">
+            <h4 className="sitename mb-3">Leaders International College</h4>
+
+            <p>
+              <i className="bi bi-geo-alt-fill me-2"></i>Campus: off 90th road,
+              Fifth Settlement
+            </p>
+            <p>
+              <i className="bi bi-clock-fill me-2"></i>Hours: Sunday–Thursday, 8
+              AM – 3 PM
+            </p>
+
+            <div className="social-links d-flex gap-3 mt-3">
+              <a
+                href="https://www.facebook.com/share/1RSZBCVMbK/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="bi bi-facebook"></i>
+              </a>
+              <a
+                href="https://www.instagram.com/leadersintcollege?igsh=MXB1cDR1ZW8wOGo3bA=="
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="bi bi-instagram"></i>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/leaders-int-college/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="bi bi-linkedin"></i>
+              </a>
             </div>
-            <div className="social-links d-flex mt-4">
-              <a href="">
-                <i className="bi bi-twitter-x" />
-              </a>
-              <a href="">
-                <i className="bi bi-facebook" />
-              </a>
-              <a href="">
-                <i className="bi bi-instagram" />
-              </a>
-              <a href="">
-                <i className="bi bi-linkedin" />
+
+            <div className="mt-4">
+              <a href="/contact" className="social-icon-button with-text">
+                <i className="bi bi-envelope-fill"></i>
+                <span>Contact Us</span>
               </a>
             </div>
           </div>
-          <div className="col-lg-2 col-md-3 footer-links">
-            <h4>Useful Links</h4>
-            <ul>
-              <li>
-                <a href="#">Home</a>
-              </li>
-              <li>
-                <a href="/about">About us</a>
-              </li>
-              <li>
-                <a href="/our-staff">Our Staff</a>
-              </li>
-              <li>
-                <a href="/campus-facilities">Campus and facilities</a>
-              </li>
-              <li>
-                <a href="/admission">Admission</a>
-              </li>
-            </ul>
-          </div>
-          <div className="col-lg-2 col-md-3 footer-links">
-            <h4>Our Services</h4>
-            <ul>
-              <li>
-                <a href="#">Web Design</a>
-              </li>
-              <li>
-                <a href="#">Web Development</a>
-              </li>
-              <li>
-                <a href="#">Product Management</a>
-              </li>
-              <li>
-                <a href="#">Marketing</a>
-              </li>
-              <li>
-                <a href="#">Graphic Design</a>
-              </li>
-            </ul>
-          </div>
-          <div className="col-lg-2 col-md-3 footer-links">
-            <h4>Hic solutasetp</h4>
-            <ul>
-              <li>
-                <a href="#">Molestiae accusamus iure</a>
-              </li>
-              <li>
-                <a href="#">Excepturi dignissimos</a>
-              </li>
-              <li>
-                <a href="#">Suscipit distinctio</a>
-              </li>
-              <li>
-                <a href="#">Dilecta</a>
-              </li>
-              <li>
-                <a href="#">Sit quas consectetur</a>
-              </li>
-            </ul>
-          </div>
-          <div className="col-lg-2 col-md-3 footer-links">
-            <h4>Nobis illum</h4>
-            <ul>
-              <li>
-                <a href="#">Ipsam</a>
-              </li>
-              <li>
-                <a href="#">Laudantium dolorum</a>
-              </li>
-              <li>
-                <a href="#">Dinera</a>
-              </li>
-              <li>
-                <a href="#">Trodelas</a>
-              </li>
-              <li>
-                <a href="#">Flexo</a>
-              </li>
-            </ul>
+
+          {/* === Right: Departments === */}
+          <div className="col-lg-8 col-md-12">
+            <div className="row gy-3">
+              <div className="col-md-6">
+                <h5 className="mb-2">HR Department</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  careers@leadersintcollege.com
+                </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i> 02 26410050
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <h5 className="mb-2">Admission Department</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  admission@leadersintcollege.com
+                </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i> 02 26410641
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <h5 className="mb-2">School Counselor</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  schoolcounselorpyp1_pyp@leadersintcollege.com
+                </p>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  cshoolcounselormyp_dp@leadersintcollege.com
+                </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i> 02 26410003
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <h5 className="mb-2">Principal</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  Principal@leadersintcollege.com
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <h5 className="mb-2">Accounting & Finance</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  accountingOffice@leadersintcollege.com
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <h5 className="mb-2">Other Departments</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  info@leadersintcollege.com
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="container copyright text-center mt-4">
-        <p>
-          © <span>Copyright</span>{" "}
-          <strong className="px-1 sitename">MyWebsite</strong>{" "}
-          <span>All Rights Reserved</span>
-        </p>
-        <div className="credits">
-          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+
+        {/* === Bottom Navigation Links === */}
+        <div className="footer-nav text-center mt-5">
+          <a href="/" className="footer-link">
+            Home
+          </a>
+          <span className="divider">|</span>
+          <a href="/about" className="footer-link">
+            About Us
+          </a>
+          <span className="divider">|</span>
+          <a href="/admissions" className="footer-link">
+            Admissions
+          </a>
+          <span className="divider">|</span>
+          <a href="/curriculum" className="footer-link">
+            Curriculum
+          </a>
+          <span className="divider">|</span>
+          <a href="/students-life" className="footer-link">
+            Students Life
+          </a>
+          <span className="divider">|</span>
+          <a href="/hiring" className="footer-link">
+            We Are Hiring
+          </a>
+        </div>
+
+        <div className="text-center mt-3">
+          <p>
+            © Copyright <strong>Leaders International College</strong> All
+            Rights Reserved
+          </p>
         </div>
       </div>
     </footer>
