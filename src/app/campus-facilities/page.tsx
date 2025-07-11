@@ -788,7 +788,7 @@ export default function CampusFacilitiesPage() {
                       </div>
 
                       <a
-                        href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
+                        href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
                         className="btn-map"
                         target="_blank"
                         rel="noopener noreferrer"
