@@ -948,7 +948,7 @@ export default function StudentsLifePage() {
                         </div>
                         <div className="club-card">
                           <img
-                            src="assets/img/education/drama-club.jpg"
+                            src="assets/img/education/Drama.jpeg"
                             alt="Drama Club"
                           />
                           <h5>Drama Club</h5>

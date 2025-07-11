@@ -156,7 +156,7 @@ export default function AdmissionsPage() {
                 className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""}`}
                 onClick={() => setActiveSection("requirements")}
               >
-                <i className="bi bi-people me-2"></i> Age acceptance Guide
+                <i className="bi bi-people me-2"></i> Age Acceptance Guide
               </button>
               <button
                 className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""}`}
