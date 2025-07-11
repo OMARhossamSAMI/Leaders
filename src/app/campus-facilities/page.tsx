@@ -3,8 +3,10 @@
 "use client"; // ✅ Required for useEffect in App Router
 
 import { useEffect } from "react";
+import { useCampusTabs } from "../components/CampusTabsContext";
 
 export default function CampusFacilitiesPage() {
+  const { campusTab, setCampusTab } = useCampusTabs();
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
@@ -158,57 +160,56 @@ export default function CampusFacilitiesPage() {
                 <ul className="nav nav-tabs" role="tablist">
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link active"
-                      id="academic-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#campus-facilities-academic"
+                      className={`nav-link ${
+                        campusTab === "academic" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
+                      onClick={() => setCampusTab("academic")}
                     >
                       <i className="bi bi-book" /> Academic Environments
                     </button>
                   </li>
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="athletic-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#campus-facilities-athletic"
+                      className={`nav-link ${
+                        campusTab === "athletic" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
+                      onClick={() => setCampusTab("athletic")}
                     >
                       <i className="bi bi-trophy" /> Sports Facilities
                     </button>
                   </li>
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="residential-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#campus-facilities-residential"
+                      className={`nav-link ${
+                        campusTab === "technology" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
+                      onClick={() => setCampusTab("technology")}
                     >
                       <i className="bi bi-laptop" /> Technology Integration
                     </button>
                   </li>
                   <li className="nav-item" role="presentation">
                     <button
-                      className="nav-link"
-                      id="community-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#campus-facilities-community"
+                      className={`nav-link ${
+                        campusTab === "arts" ? "active" : ""
+                      }`}
                       type="button"
-                      role="tab"
+                      onClick={() => setCampusTab("arts")}
                     >
                       <i className="bi bi-people" /> Arts and Innovation
                     </button>
                   </li>
                 </ul>
+
                 <div className="tab-content">
                   {/* Academic Facilities Tab */}
                   <div
-                    className="tab-pane fade show active"
+                    className={`tab-pane fade ${
+                      campusTab === "academic" ? "show active" : ""
+                    }`}
                     id="campus-facilities-academic"
                     role="tabpanel"
                   >
@@ -308,7 +309,9 @@ export default function CampusFacilitiesPage() {
                   </div>
                   {/* Playground Facilities Tab */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      campusTab === "athletic" ? "show active" : ""
+                    }`}
                     id="campus-facilities-athletic"
                     role="tabpanel"
                   >
@@ -433,7 +436,9 @@ export default function CampusFacilitiesPage() {
                   </div>
                   {/* Techology Facilities Tab */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      campusTab === "technology" ? "show active" : ""
+                    }`}
                     id="campus-facilities-residential"
                     role="tabpanel"
                   >
@@ -533,7 +538,9 @@ export default function CampusFacilitiesPage() {
                   </div>
                   {/* Art Inovation Facilities Tab */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      campusTab === "arts" ? "show active" : ""
+                    }`}
                     id="campus-facilities-community"
                     role="tabpanel"
                   >

@@ -1,7 +1,9 @@
 "use client";
 import { useEffect } from "react";
+import { useAboutTabs } from "../components/AboutTabsContext";
 
 export default function AboutPage() {
+  const { aboutTab, setAboutTab } = useAboutTabs();
   useEffect(() => {
     const timer = setTimeout(() => {
       const preloader = document.getElementById("preloader");
@@ -88,63 +90,70 @@ export default function AboutPage() {
                 <ul className="nav nav-tabs" role="tablist">
                   <li className="nav-item">
                     <button
-                      className="nav-link active"
-                      data-bs-toggle="tab"
-                      data-bs-target="#who"
+                      className={`nav-link ${
+                        aboutTab === "who" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("who")}
                     >
                       <i className="bi bi-people" /> Who We Are
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#mission"
+                      className={`nav-link ${
+                        aboutTab === "mission" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("mission")}
                     >
                       <i className="bi bi-flag" /> Mission & Vision
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#strategies"
+                      className={`nav-link ${
+                        aboutTab === "strategies" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("strategies")}
                     >
                       <i className="bi bi-diagram-3" /> Strategies
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#governance"
+                      className={`nav-link ${
+                        aboutTab === "governance" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("governance")}
                     >
                       <i className="bi bi-check2-circle" /> Governance
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#accreditation"
+                      className={`nav-link ${
+                        aboutTab === "accreditation" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("accreditation")}
                     >
                       <i className="bi bi-bullseye" /> Accreditation
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#learner"
+                      className={`nav-link ${
+                        aboutTab === "learner" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("learner")}
                     >
                       <i className="bi bi-eye" /> IB Learner Profile
                     </button>
                   </li>
                   <li className="nav-item">
                     <button
-                      className="nav-link"
-                      data-bs-toggle="tab"
-                      data-bs-target="#campus"
+                      className={`nav-link ${
+                        aboutTab === "campus" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("campus")}
                     >
                       <i className="bi bi-building" /> Campus
                     </button>
@@ -154,7 +163,9 @@ export default function AboutPage() {
                 <div className="tab-content">
                   {/* === Who We Are === */}
                   <div
-                    className="tab-pane fade show active"
+                    className={`tab-pane fade ${
+                      aboutTab === "who" ? "show active" : ""
+                    }`}
                     id="who"
                     role="tabpanel"
                   >
@@ -310,7 +321,9 @@ export default function AboutPage() {
 
                   {/* === Governance === */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      aboutTab === "governance" ? "show active" : ""
+                    }`}
                     id="governance"
                     role="tabpanel"
                   >
@@ -393,7 +406,9 @@ export default function AboutPage() {
 
                   {/* === Accreditation === */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      aboutTab === "accreditation" ? "show active" : ""
+                    }`}
                     id="accreditation"
                     role="tabpanel"
                   >
@@ -573,7 +588,13 @@ export default function AboutPage() {
                   </div>
 
                   {/* === IB Learner === */}
-                  <div className="tab-pane fade" id="learner" role="tabpanel">
+                  <div
+                    className={`tab-pane fade ${
+                      aboutTab === "learner" ? "show active" : ""
+                    }`}
+                    id="learner"
+                    role="tabpanel"
+                  >
                     <div className="row gy-4 align-items-center">
                       <div
                         className="col-lg-12"
@@ -711,7 +732,13 @@ export default function AboutPage() {
                   </div>
 
                   {/* === Mission & Vision === */}
-                  <div className="tab-pane fade" id="mission" role="tabpanel">
+                  <div
+                    className={`tab-pane fade ${
+                      aboutTab === "mission" ? "show active" : ""
+                    }`}
+                    id="mission"
+                    role="tabpanel"
+                  >
                     <div className="row gy-4 align-items-center">
                       <div
                         className="col-lg-12"
@@ -836,7 +863,13 @@ export default function AboutPage() {
                   </div>
 
                   {/* === Campus === */}
-                  <div className="tab-pane fade" id="campus" role="tabpanel">
+                  <div
+                    className={`tab-pane fade ${
+                      aboutTab === "campus" ? "show active" : ""
+                    }`}
+                    id="campus"
+                    role="tabpanel"
+                  >
                     <div className="row gy-4 align-items-center">
                       <div
                         className="col-lg-12"
@@ -999,7 +1032,9 @@ export default function AboutPage() {
 
                   {/* === Strategies === */}
                   <div
-                    className="tab-pane fade"
+                    className={`tab-pane fade ${
+                      aboutTab === "strategies" ? "show active" : ""
+                    }`}
                     id="strategies"
                     role="tabpanel"
                   >
