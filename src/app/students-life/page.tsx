@@ -528,8 +528,10 @@ export default function StudentsLifePage() {
                             </div>
                           </div>
                           <a
-                            href="#"
+                            href="http://vrtour.leadersintcollege.com/"
                             className="btn btn-explore mt-3"
+                            target="_blank"
+                            rel="noopener noreferrer"
                             style={{
                               display: "inline-block",
                               backgroundColor: "hsl(193, 75%, 54%)",
@@ -1744,41 +1746,6 @@ export default function StudentsLifePage() {
                         alt="Student Life"
                       />
                     </a>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA */}
-              <div
-                className="cta-wrapper mt-5"
-                data-aos="fade-up"
-                data-aos-delay={500}
-              >
-                <div className="cta-content">
-                  <div className="row align-items-center">
-                    <div
-                      className="col-lg-8"
-                      data-aos="fade-right"
-                      data-aos-delay={300}
-                    >
-                      <h3>Ready to Join Our Community?</h3>
-                      <p>
-                        Take the first step toward an inspiring educational
-                        journey—become part of the Leaders International College
-                        family today.
-                      </p>
-                    </div>
-                    <div
-                      className="col-lg-4"
-                      data-aos="fade-left"
-                      data-aos-delay={400}
-                    >
-                      <div className="cta-buttons">
-                        <a href="#" className="btn btn-primary">
-                          Apply Now
-                        </a>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

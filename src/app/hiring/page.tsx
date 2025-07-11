@@ -53,7 +53,7 @@ export default function WeAreHiringPage() {
                 { id: "working", label: "Working at LIC", icon: "bi-people-fill" },
                 { id: "internship", label: "Internship Program", icon: "bi-briefcase" },
                 { id: "vacancies", label: "Current Vacancies", icon: "bi-clipboard-check" },
-                { id: "apply", label: "Apply Without Vacancies", icon: "bi-send" }, // ✅ New tab
+                { id: "apply", label: "Other Careers", icon: "bi-send" }, // ✅ New tab
               ].map((tab) => (
                 <button
                   key={tab.id}
