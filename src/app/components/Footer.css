@@ -1,65 +1,48 @@
 .footer-card {
-  background: transparent; /* no background */
-  border: 1px solid rgba(255,255,255,0.1); /* subtle border if needed */
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   color: #fff;
 }
 
 .footer-card p {
-  margin: 0.3rem 0;
+  margin: 0.1rem 0;
 }
 
 .footer-card h5 {
   color: #fff;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
 }
 
 .footer-box {
   color: #fff;
+  border: none;
 }
 
-
-html, body {
-  background: #000;   /* Or your dark background color */
+html,
+body {
+  background: #000;
   margin: 0;
   padding: 0;
 }
 
 #footer {
-  background: #000;   /* Ensure footer background matches */
+  background: #000;
+  padding-top: 0.5rem;    /* very tight top padding */
+  padding-bottom: 0.3rem; /* very tight bottom padding */
 }
 
-.footer {
-  background: #000;   /* If you use a footer class */
-}
-
-/* Make sure footer text is white */
 .footer {
   background: #000;
   color: #fff;
-}
-
-.footer-card {
-  background: transparent;
-  /* Removed border */
-}
-
-.footer-card h5 {
-  font-weight: 600;
-}
-
-.footer-card p {
-  margin: 0.3rem 0;
-}
-
-.footer-box {
-  border: none; /* Remove if you want no border on address box too */
 }
 
 .footer-contact-btn {
   background: #007bff;
   border: none;
   color: #fff;
-  padding: 8px 20px;
+  padding: 5px 14px;
   border-radius: 5px;
   transition: background 0.3s;
   text-decoration: none;
@@ -67,6 +50,11 @@ html, body {
 
 .footer-contact-btn:hover {
   background: #0056b3;
+}
+
+.social-links {
+  margin-top: 0.2rem; /* minimum top margin */
+  flex-wrap: wrap;
 }
 
 .social-links a {
@@ -78,39 +66,52 @@ html, body {
   color: #fff;
   text-decoration: none;
   transition: background 0.3s, color 0.3s;
+  margin: 2px;
 }
 
-/* Default icon-only buttons */
 .social-links a:not(.with-text) {
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  font-size: 0.95rem;
 }
 
-/* Special style for Contact Us with text */
 .social-icon-button.with-text {
-  border-radius: 50px; /* pill shape */
-  padding: 0 15px;
-  height: 40px;
-  gap: 8px; /* spacing between icon & text */
-  font-size: 0.9rem;
+  border-radius: 50px;
+  padding: 5px 12px; /* tighter button padding */
+  height: auto;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: #fff;
+  border: 2px solid #fff;
+  text-decoration: none;
+  transition: background 0.3s, color 0.3s;
+  display: inline-flex;
+  align-items: center;
 }
 
-.social-icon-button.with-text i {
-  font-size: 1rem;
-}
-
-.social-links a:hover {
+.social-icon-button.with-text:hover {
   background: #007bff;
   color: #fff;
 }
 
+.social-icon-button.with-text:active {
+  color: #fff;
+  background: #007bff;
+}
+
+.footer-nav {
+  margin-top: 0.3rem; /* very tight nav spacing */
+  text-align: center;
+  flex-wrap: wrap;
+}
 
 .footer-nav a {
   color: #fff;
-  margin: 0 5px;
+  margin: 2px 4px;
   text-decoration: none;
   font-weight: 500;
+  display: inline-block;
+  font-size: 0.8rem;
 }
 
 .footer-nav a:hover {
@@ -118,10 +119,67 @@ html, body {
 }
 
 .divider {
-  margin: 0 4px;
+  margin: 0 2px;
   color: #555;
 }
 
+.footer p {
+  margin: 0.1rem 0; /* minimal line spacing */
+  font-size: 0.85rem;
+}
+
+.footer h5 {
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+.footer .text-center {
+  margin-top: 0.3rem; /* minimum margin */
+  font-size: 0.7rem;
+}
+
+/* Force department content to wrap nicely */
+.footer .row > [class*="col-"] p {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.2; /* tighter line height */
+  margin: 0.1rem 0; /* tight spacing */
+  font-size: 0.85rem;
+}
+
+.footer .row > [class*="col-"] h5 {
+  white-space: nowrap; /* headings stay on one line */
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+
+/* Remove hidden button rule */
 .footer-contact-btn {
-  display: none; /* Remove the old Contact Us block */
+  display: none;
+}
+
+/* === MOBILE STYLES === */
+@media (max-width: 768px) {
+  #footer {
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .footer p {
+    font-size: 0.8rem;
+  }
+
+  .footer h5 {
+    font-size: 0.9rem;
+  }
+
+  .footer-nav {
+    font-size: 0.75rem;
+  }
+
+  .social-icon-button.with-text {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+  }
 }

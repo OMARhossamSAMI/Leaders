@@ -1,4 +1,5 @@
 import "./Footer.css";
+
 export default function Footer() {
   return (
     <footer
@@ -55,7 +56,7 @@ export default function Footer() {
           {/* === Right: Departments === */}
           <div className="col-lg-8 col-md-12">
             <div className="row gy-3">
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">HR Department</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -66,7 +67,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">Admission Department</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -77,7 +78,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">School Counselor</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -92,7 +93,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">Principal</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -100,7 +101,7 @@ export default function Footer() {
                 </p>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">Accounting & Finance</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -108,11 +109,27 @@ export default function Footer() {
                 </p>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-6 col-md-3 col-lg-3">
                 <h5 className="mb-2">Other Departments</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
                   info@leadersintcollege.com
+                </p>
+              </div>
+
+              <div className="col-6 col-md-3 col-lg-3">
+                <h5 className="mb-2">Student Affairs</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  studentaffairs@leadersintcollege.com
+                </p>
+              </div>
+
+              <div className="col-6 col-md-3 col-lg-3">
+                <h5 className="mb-2">IT Support</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  itsupport@leadersintcollege.com
                 </p>
               </div>
             </div>
