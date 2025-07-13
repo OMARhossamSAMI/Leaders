@@ -5,12 +5,11 @@
 import { useEffect } from "react";
 import "./page.css";
 import { useStudentsLifeTabs } from "../components/StudentsLifeTabsContext";
+import Link from "next/link";
 // Import the CSS file for this page
-import { useSearchParams } from "next/navigation";
 
 export default function StudentsLifePage() {
   const { studentsLifeSection, setStudentsLifeSection } = useStudentsLifeTabs();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -99,7 +98,7 @@ export default function StudentsLifePage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="/">Home</a>
+                    <Link href="/">Home</Link>
                   </li>
                   <li className="current">Students Life</li>
                 </ol>
@@ -527,7 +526,7 @@ export default function StudentsLifePage() {
                               </p>
                             </div>
                           </div>
-                          <a
+                          <Link
                             href="#"
                             className="btn btn-explore mt-3"
                             style={{
@@ -542,7 +541,7 @@ export default function StudentsLifePage() {
                           >
                             Virtual Campus Tour{" "}
                             <i className="bi bi-arrow-right ms-1" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -1060,10 +1059,10 @@ export default function StudentsLifePage() {
                             These excursions are designed to complement
                             classroom learning, providing students with hands-on
                             experiences that enrich their understanding of
-                            specific subjects. Whether it’s a visit to a local
-                            museum, a scientific center, or a historical site,
-                            these trips are tailored to reinforce the curriculum
-                            and ignite students' curiosity.
+                            specific subjects. Whether it&apos;s a visit to a
+                            local museum, a scientific center, or a historical
+                            site, these trips are tailored to reinforce the
+                            curriculum and ignite students&apos; curiosity.
                           </p>
                         </div>
 
@@ -1543,7 +1542,7 @@ export default function StudentsLifePage() {
                           community. Join us in celebrating and building lasting
                           memories throughout the school year!
                         </p>
-                        <a
+                        <Link
                           href="#"
                           className="btn-school-calendar"
                           style={{
@@ -1557,7 +1556,7 @@ export default function StudentsLifePage() {
                           }}
                         >
                           Download School Calendar
-                        </a>
+                        </Link>
                       </section>
                     </section>
                   </div>
@@ -1673,7 +1672,7 @@ export default function StudentsLifePage() {
                     data-aos="zoom-in"
                     data-aos-delay={50}
                   >
-                    <a
+                    <Link
                       href="assets/img/education/SL5.JPG"
                       className="gallery-item glightbox"
                     >
@@ -1682,27 +1681,27 @@ export default function StudentsLifePage() {
                         className="img-fluid"
                         alt="Student Life"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <div
                     className="col-md-4"
                     data-aos="zoom-in"
                     data-aos-delay={50}
                   >
-                    <a href="" className="gallery-item glightbox">
+                    <Link href="" className="gallery-item glightbox">
                       <img
                         src="assets/img/education/SL1.JPG"
                         className="img-fluid"
                         alt="Student Life"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <div
                     className="col-md-4"
                     data-aos="zoom-in"
                     data-aos-delay={50}
                   >
-                    <a
+                    <Link
                       href="assets/img/education/SL4.JPG"
                       className="gallery-item glightbox"
                     >
@@ -1711,14 +1710,14 @@ export default function StudentsLifePage() {
                         className="img-fluid"
                         alt="Student Life"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <div
                     className="col-md-6"
                     data-aos="zoom-in"
                     data-aos-delay={50}
                   >
-                    <a
+                    <Link
                       href="assets/img/education/SL2.JPG"
                       className="gallery-item glightbox"
                     >
@@ -1727,14 +1726,14 @@ export default function StudentsLifePage() {
                         className="img-fluid"
                         alt="Student Life"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <div
                     className="col-md-6"
                     data-aos="zoom-in"
                     data-aos-delay={50}
                   >
-                    <a
+                    <Link
                       href="assets/img/education/SL3.JPG"
                       className="gallery-item glightbox"
                     >
@@ -1743,7 +1742,7 @@ export default function StudentsLifePage() {
                         className="img-fluid"
                         alt="Student Life"
                       />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -1774,9 +1773,9 @@ export default function StudentsLifePage() {
                       data-aos-delay={400}
                     >
                       <div className="cta-buttons">
-                        <a href="#" className="btn btn-primary">
+                        <Link href="#" className="btn btn-primary">
                           Apply Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -1788,13 +1787,13 @@ export default function StudentsLifePage() {
         </main>
 
         {/* Scroll Top */}
-        <a
+        <Link
           href="#"
           id="scroll-top"
           className="scroll-top d-flex align-items-center justify-content-center"
         >
           <i className="bi bi-arrow-up-short" />
-        </a>
+        </Link>
         {/* Preloader */}
         <div id="preloader" />
         {/* Vendor JS Files */}

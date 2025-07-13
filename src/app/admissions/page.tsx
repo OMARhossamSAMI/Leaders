@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTabs } from "../components/TabsContext";
+import Link from "next/link";
 
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
@@ -84,7 +85,7 @@ export default function AdmissionsPage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="/">Home</a>
+                    <Link href="/">Home</Link>
                   </li>
                   <li className="current">Admissions</li>
                 </ol>
@@ -146,15 +147,15 @@ export default function AdmissionsPage() {
                           answer all your questions and guide you through each
                           step of the admissions process. We look forward to
                           getting to know your family and exploring how LIC can
-                          support your child's educational journey.
+                          support your child&apos;s educational journey.
                         </p>
                         <div className="admissions-steps mt-5">
                           <h3>How to Apply</h3>
                           <p>
                             Applying at LIC is an exciting journey for your
                             family, and we strive to make the admissions process
-                            as smooth as possible. Here are the steps you’ll
-                            need to follow to apply to our school:
+                            as smooth as possible. Here are the steps
+                            you&apos;ll need to follow to apply to our school:
                           </p>
                           <div className="steps-wrapper mt-4">
                             <div className="step-item">
@@ -181,16 +182,17 @@ export default function AdmissionsPage() {
                                   educational needs and abilities. This is a
                                   great opportunity for us to get to know each
                                   other and ensure that our school is a good fit
-                                  for your child's learning style and goals.
+                                  for your child&apos;s learning style and
+                                  goals.
                                 </p>
-                                <h6>Parents’ Interview</h6>
+                                <h6>Parents&apos; Interview</h6>
                                 <p>
                                   On the day of the assessment or at a time
-                                  convenient for you, we will conduct a parents'
-                                  interview. This discussion is crucial as it
-                                  allows us to learn more about your
-                                  expectations and how we can best support your
-                                  child’s educational journey.
+                                  convenient for you, we will conduct a
+                                  parents&apos; interview. This discussion is
+                                  crucial as it allows us to learn more about
+                                  your expectations and how we can best support
+                                  your child&apos;s educational journey.
                                 </p>
                               </div>
                             </div>
@@ -326,7 +328,7 @@ export default function AdmissionsPage() {
                             <div className="intro-image-container">
                               <div className="intro-image main-image">
                                 <h4>Press And Visit</h4>
-                                <a
+                                <Link
                                   href="http://vrtour.leadersintcollege.com/"
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -337,7 +339,7 @@ export default function AdmissionsPage() {
                                     className="img-fluid rounded"
                                     style={{ width: "600px", height: "580px" }}
                                   />
-                                </a>
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -363,7 +365,7 @@ export default function AdmissionsPage() {
                               are here to answer all your questions and guide
                               you through each step of the admissions process.
                               We look forward to getting to know your family and
-                              exploring how LIC can support your child's
+                              exploring how LIC can support your child&apos;s
                               educational journey.
                             </p>
                           </div>
@@ -505,7 +507,7 @@ export default function AdmissionsPage() {
                                 <label className="form-check-label">No</label>
                               </div>
                             </div>
-                            <h5 className="mt-4">Father’s Data</h5>
+                            <h5 className="mt-4">Father&apos;s Data</h5>
                             <div className="mb-3">
                               <input
                                 type="text"
@@ -519,7 +521,7 @@ export default function AdmissionsPage() {
                                 type="tel"
                                 name="father_phone"
                                 className="form-control"
-                                placeholder="Father’s Mobile Number"
+                                placeholder="Father's Mobile Number"
                               />
                             </div>
                             <div className="mb-3">
@@ -527,7 +529,7 @@ export default function AdmissionsPage() {
                                 type="email"
                                 name="father_email"
                                 className="form-control"
-                                placeholder="Father’s Email"
+                                placeholder="Father's Email"
                               />
                             </div>
                             <div className="mb-3">
@@ -535,16 +537,16 @@ export default function AdmissionsPage() {
                                 type="text"
                                 name="father_occupation"
                                 className="form-control"
-                                placeholder="Father’s Occupation"
+                                placeholder="Father's Occupation"
                               />
                             </div>
-                            <h5 className="mt-4">Mother’s Data</h5>
+                            <h5 className="mt-4">Mother&apos;s Data</h5>
                             <div className="mb-3">
                               <input
                                 type="text"
                                 name="mother_name"
                                 className="form-control"
-                                placeholder="Mother’s Name"
+                                placeholder="Mother's Name"
                               />
                             </div>
                             <div className="mb-3">
@@ -552,7 +554,7 @@ export default function AdmissionsPage() {
                                 type="tel"
                                 name="mother_phone"
                                 className="form-control"
-                                placeholder="Mother’s Mobile Number"
+                                placeholder="Mother's Mobile Number"
                               />
                             </div>
                             <div className="mb-3">
@@ -560,7 +562,7 @@ export default function AdmissionsPage() {
                                 type="email"
                                 name="mother_email"
                                 className="form-control"
-                                placeholder="Mother’s Email"
+                                placeholder="Mother's Email"
                               />
                             </div>
                             <div className="mb-3">
@@ -568,7 +570,7 @@ export default function AdmissionsPage() {
                                 type="text"
                                 name="mother_occupation"
                                 className="form-control"
-                                placeholder="Mother’s Occupation"
+                                placeholder="Mother's Occupation"
                               />
                             </div>
                             <div className="mb-3">

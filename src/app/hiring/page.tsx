@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useHiringTabs } from "../components/HiringTabsContext";
+import Link from "next/link";
 
 export default function WeAreHiringPage() {
   const { hiringSection, setHiringSection } = useHiringTabs();
@@ -36,7 +37,7 @@ export default function WeAreHiringPage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="/">Home</a>
+                    <Link href="/">Home</Link>
                   </li>
                   <li className="current">We Are Hiring</li>
                 </ol>
@@ -238,10 +239,10 @@ export default function WeAreHiringPage() {
                             We encourage our faculty to continually advance
                             their expertise and skills. Leaders International
                             College supports educators in pursuing higher
-                            degrees such as master's and PhDs. It's part of our
-                            school policy to actively encourage and provide
-                            subjective support for teachers seeking to expand
-                            their qualifications. This commitment to
+                            degrees such as master&apos;s and PhDs. It&apos;s
+                            part of our school policy to actively encourage and
+                            provide subjective support for teachers seeking to
+                            expand their qualifications. This commitment to
                             professional growth not only enhances our teaching
                             capabilities but also enriches the learning
                             environment for our students.
@@ -338,9 +339,9 @@ export default function WeAreHiringPage() {
                             aspirations might align with the goals of our school
                             community.
                           </p>
-                          <a href="#" className="card-link">
+                          <Link href="#" className="card-link">
                             Current Openings page
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -412,9 +413,9 @@ export default function WeAreHiringPage() {
                           align with the goals of our school community.
                         </p>
                         <div className="impact-buttons">
-                          <a href="#" className="btn-donate">
+                          <Link href="#" className="btn-donate">
                             Apply Now
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -466,9 +467,9 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <a href="/hiring/apply" className="btn-register">
+                        <Link href="/hiring/apply" className="btn-register">
                           Apply Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
 
@@ -490,9 +491,9 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <a href="/hiring/apply" className="btn-register">
+                        <Link href="/hiring/apply" className="btn-register">
                           Apply Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
 
@@ -514,9 +515,9 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <a href="/hiring/apply" className="btn-register">
+                        <Link href="/hiring/apply" className="btn-register">
                           Apply Now
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -527,13 +528,13 @@ export default function WeAreHiringPage() {
           </section>
         </main>
 
-        <a
+        <Link
           href="#"
           id="scroll-top"
           className="scroll-top d-flex align-items-center justify-content-center"
         >
           <i className="bi bi-arrow-up-short" />
-        </a>
+        </Link>
 
         <div id="preloader" />
 

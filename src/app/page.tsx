@@ -1,6 +1,5 @@
 "use client";
-import Image from "next/image";
-import Script from "next/script";
+
 import Head from "next/head";
 
 import { useEffect } from "react";
@@ -979,8 +978,8 @@ export default function Home() {
                   </div>
                   <p>
                     Innovative approach to user experience design has
-                    significantly enhanced our platform's engagement metrics and
-                    customer retention rates.
+                    significantly enhanced our platform&apos;s engagement
+                    metrics and customer retention rates.
                   </p>
                   <div className="client-info">
                     <div className="client-image">
