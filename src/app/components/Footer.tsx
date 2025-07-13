@@ -1,3 +1,4 @@
+import Link from "next/link";
 import "./Footer.css";
 
 export default function Footer() {
@@ -22,34 +23,34 @@ export default function Footer() {
             </p>
 
             <div className="social-links d-flex gap-3 mt-3">
-              <a
+              <Link
                 href="https://www.facebook.com/share/1RSZBCVMbK/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <i className="bi bi-facebook"></i>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="https://www.instagram.com/leadersintcollege?igsh=MXB1cDR1ZW8wOGo3bA=="
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <i className="bi bi-instagram"></i>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="https://www.linkedin.com/company/leaders-int-college/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <i className="bi bi-linkedin"></i>
-              </a>
+              </Link>
             </div>
 
             <div className="mt-4">
-              <a href="/contact" className="social-icon-button with-text">
+              <Link href="/contact" className="social-icon-button with-text">
                 <i className="bi bi-envelope-fill"></i>
                 <span>Contact Us</span>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -138,29 +139,29 @@ export default function Footer() {
 
         {/* === Bottom Navigation Links === */}
         <div className="footer-nav text-center mt-5">
-          <a href="/" className="footer-link">
+          <Link href="/" className="footer-link">
             Home
-          </a>
+          </Link>
           <span className="divider">|</span>
-          <a href="/about" className="footer-link">
+          <Link href="/about" className="footer-link">
             About Us
-          </a>
+          </Link>
           <span className="divider">|</span>
-          <a href="/admissions" className="footer-link">
+          <Link href="/admissions" className="footer-link">
             Admissions
-          </a>
+          </Link>
           <span className="divider">|</span>
-          <a href="/curriculum" className="footer-link">
+          <Link href="/curriculum" className="footer-link">
             Curriculum
-          </a>
+          </Link>
           <span className="divider">|</span>
-          <a href="/students-life" className="footer-link">
+          <Link href="/students-life" className="footer-link">
             Students Life
-          </a>
+          </Link>
           <span className="divider">|</span>
-          <a href="/hiring" className="footer-link">
+          <Link href="/hiring" className="footer-link">
             We Are Hiring
-          </a>
+          </Link>
         </div>
 
         <div className="text-center mt-3">

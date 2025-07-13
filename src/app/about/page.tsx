@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import Link from "next/link";
 
@@ -383,11 +383,11 @@ export default function AboutPage() {
                               This diverse background enriches our school’s
                               strategic direction, as our governance body draws
                               upon a broad spectrum of industries to innovate
-                              and excel in educational practices. The board's
-                              collective vision focuses on expanding our
-                              educational endeavors across the MENA region,
-                              driven by a commitment to excellence and
-                              innovation.
+                              and excel in educational practices. The
+                              board&apos;s collective vision focuses on
+                              expanding our educational endeavors across the
+                              MENA region, driven by a commitment to excellence
+                              and innovation.
                             </p>
                             <p
                               style={{
@@ -1109,8 +1109,8 @@ export default function AboutPage() {
                               fostering an environment that encourages peak
                               performance, we continuously enhance the quality
                               of our educational offerings and reinforce Leaders
-                              International School’s position as a benchmark
-                              within the educational services sector.
+                              International School&apos;s position as a
+                              benchmark within the education'al services sector.
                             </p>
 
                             <h5>Blue Ocean Strategy</h5>
@@ -1130,8 +1130,9 @@ export default function AboutPage() {
                               a dual certification—the IB and American
                               Diploma—through a singular, accredited curriculum.
                               This innovative offering not only sets our
-                              students apart but also reinforces our school's
-                              unique status in the education landscape.
+                              students apart but also reinforces our
+                              school&apos;s unique status in the education
+                              landscape.
                             </p>
                           </div>
                         </div>

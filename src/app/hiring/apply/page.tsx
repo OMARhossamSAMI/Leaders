@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import "./page.css"; // Import the CSS file for styling
 import React from "react";
 
@@ -23,10 +24,10 @@ export default function ApplyPage() {
           <nav className="breadcrumbs">
             <ol>
               <li>
-                <a href="/">Home</a>
+                <Link href="/">Home</Link>
               </li>
               <li>
-                <a href="/we-are-hiring">We Are Hiring</a>
+                <Link href="/we-are-hiring">We Are Hiring</Link>
               </li>
               <li className="current">Apply</li>
             </ol>

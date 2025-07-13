@@ -4,6 +4,7 @@
 
 import { useEffect } from "react";
 import { useCampusTabs } from "../components/CampusTabsContext";
+import Link from "next/link";
 
 export default function CampusFacilitiesPage() {
   const { campusTab, setCampusTab } = useCampusTabs();
@@ -79,7 +80,7 @@ export default function CampusFacilitiesPage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="/">Home</a>
+                    <Link href="/">Home</Link>
                   </li>
                   <li className="current">Campus Facilities</li>
                 </ol>
@@ -138,14 +139,14 @@ export default function CampusFacilitiesPage() {
                         />
                       </div>
                       <div className="tour-button">
-                        <a
+                        <Link
                           href="http://vrtour.leadersintcollege.com/"
                           className="btn-tour"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           <i className="bi bi-play-circle-fill" /> Virtual Tour
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -465,7 +466,7 @@ export default function CampusFacilitiesPage() {
                               Technology integration is central to our
                               educational approach. We operate multiple computer
                               labs that are integral to our curriculum,
-                              enhancing students' learning experiences with
+                              enhancing students&apos; learning experiences with
                               up-to-date software and hardware. Our open-source
                               software policy ensures that students can access
                               essential learning tools both on and off campus,
@@ -794,14 +795,14 @@ export default function CampusFacilitiesPage() {
                         </p>
                       </div>
 
-                      <a
+                      <Link
                         href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
                         className="btn-map"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <i className="bi bi-geo-alt" /> Get Directions
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div
@@ -831,13 +832,13 @@ export default function CampusFacilitiesPage() {
         </main>
 
         {/* Scroll Top */}
-        <a
+        <Link
           href="#"
           id="scroll-top"
           className="scroll-top d-flex align-items-center justify-content-center"
         >
           <i className="bi bi-arrow-up-short" />
-        </a>
+        </Link>
         {/* Preloader */}
         <div id="preloader" />
         {/* Vendor JS Files */}
