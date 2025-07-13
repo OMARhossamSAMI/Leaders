@@ -1110,7 +1110,8 @@ export default function AboutPage() {
                               performance, we continuously enhance the quality
                               of our educational offerings and reinforce Leaders
                               International School&apos;s position as a
-                              benchmark within the education'al services sector.
+                              benchmark within the education&apos;al services
+                              sector.
                             </p>
 
                             <h5>Blue Ocean Strategy</h5>
