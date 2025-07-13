@@ -7,6 +7,7 @@ import { useHiringTabs } from "./HiringTabsContext";
 import { useStudentsLifeTabs } from "./StudentsLifeTabsContext";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import { useCampusTabs } from "../components/CampusTabsContext";
+import Link from "next/link";
 
 export default function Header() {
   const pathname = usePathname();
@@ -61,133 +62,139 @@ export default function Header() {
   return (
     <header id="header" className="header d-flex align-items-center fixed-top">
       <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-        <a href="/" className="logo d-flex align-items-center">
+        <Link href="/" className="logo d-flex align-items-center">
           <img
             src="/assets/img/lic_logo.png"
             alt="School Logo"
             style={{ height: 40, marginRight: 10 }}
           />
           <h1 className="sitename">Leaders International College</h1>
-        </a>
+        </Link>
         <nav id="navmenu" className="navmenu">
           <ul>
             <li>
-              <a href="/" className={pathname === "/" ? "active" : ""}>
+              <Link href="/" className={pathname === "/" ? "active" : ""}>
                 Home
-              </a>
+              </Link>
             </li>
             <li className="dropdown">
-              <a href="/about">
+              <Link href="/about">
                 <span>About Us</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("who")}>
+                  <Link href="#" onClick={() => handleAboutTab("who")}>
                     Who We Are
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("mission")}>
+                  <Link href="#" onClick={() => handleAboutTab("mission")}>
                     Mission & Vision
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("strategies")}>
+                  <Link href="#" onClick={() => handleAboutTab("strategies")}>
                     Strategies
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("governance")}>
+                  <Link href="#" onClick={() => handleAboutTab("governance")}>
                     Governance
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("accreditation")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleAboutTab("accreditation")}
+                  >
                     Accreditation
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("learner")}>
+                  <Link href="#" onClick={() => handleAboutTab("learner")}>
                     IB Learner Profile
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAboutTab("campus")}>
+                  <Link href="#" onClick={() => handleAboutTab("campus")}>
                     Campus
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
 
             <li className="dropdown">
-              <a href="/campus-facilities">
+              <Link href="/campus-facilities">
                 <span>Campus</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a href="#" onClick={() => handleCampusTab("academic")}>
+                  <Link href="#" onClick={() => handleCampusTab("academic")}>
                     Academic Environments
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleCampusTab("athletic")}>
+                  <Link href="#" onClick={() => handleCampusTab("athletic")}>
                     Sports Facilities
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleCampusTab("technology")}>
+                  <Link href="#" onClick={() => handleCampusTab("technology")}>
                     Technology Integration
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleCampusTab("arts")}>
+                  <Link href="#" onClick={() => handleCampusTab("arts")}>
                     Arts & Innovation
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
 
             <li className="dropdown">
-              <a href="/admissions">
+              <Link href="/admissions">
                 <span>Admissions</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a href="#" onClick={() => handleAdmissionTab("apply")}>
+                  <Link href="#" onClick={() => handleAdmissionTab("apply")}>
                     How to Apply
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAdmissionTab("form")}>
+                  <Link href="#" onClick={() => handleAdmissionTab("form")}>
                     Apply Now
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={() => handleAdmissionTab("requirements")}
                   >
                     Age Acceptance Guide
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleAdmissionTab("deadlines")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleAdmissionTab("deadlines")}
+                  >
                     Virtual Tour
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
             <li className="dropdown">
-              <a href="/curriculum">
+              <Link href="/curriculum">
                 <span>Curriculum</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -196,10 +203,10 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     PYP
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -208,10 +215,10 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     MYP
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -220,10 +227,10 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     DP
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -232,10 +239,10 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     American Diploma
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -244,10 +251,10 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     IGCSE
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -256,126 +263,141 @@ export default function Header() {
                     style={{ cursor: "pointer" }}
                   >
                     Character Building
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
             <li className="dropdown">
-              <a href="/students-life">
+              <Link href="/students-life">
                 <span>Students Life</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={() => handleStudentsLifeTab("athletics")}
                   >
                     Athletics
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={() => handleStudentsLifeTab("extracurricular")}
                   >
                     Extracurricular Activities
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("dayinlic")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleStudentsLifeTab("dayinlic")}
+                  >
                     Day In LIC
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("health")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleStudentsLifeTab("health")}
+                  >
                     Health &amp; Wellness
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("clubs")}>
+                  <Link href="#" onClick={() => handleStudentsLifeTab("clubs")}>
                     Clubs
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("trips")}>
+                  <Link href="#" onClick={() => handleStudentsLifeTab("trips")}>
                     Trips
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("council")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleStudentsLifeTab("council")}
+                  >
                     Student Council
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("art")}>
+                  <Link href="#" onClick={() => handleStudentsLifeTab("art")}>
                     Art Programs
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("events")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleStudentsLifeTab("events")}
+                  >
                     School Events
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleStudentsLifeTab("dining")}>
+                  <Link
+                    href="#"
+                    onClick={() => handleStudentsLifeTab("dining")}
+                  >
                     Dining Services
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="#"
                     onClick={() => handleStudentsLifeTab("transport")}
                   >
                     Transportations
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
             <li className="dropdown">
-              <a
+              <Link
                 href="/hiring"
                 className={pathname.startsWith("/hiring") ? "active" : ""}
               >
                 <span>We Are Hiring</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
-              </a>
+              </Link>
               <ul>
                 <li>
-                  <a href="#" onClick={() => handleHiringTab("opening")}>
+                  <Link href="#" onClick={() => handleHiringTab("opening")}>
                     Opening
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleHiringTab("development")}>
+                  <Link href="#" onClick={() => handleHiringTab("development")}>
                     Professional Development
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleHiringTab("working")}>
+                  <Link href="#" onClick={() => handleHiringTab("working")}>
                     Working at LIC
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleHiringTab("internship")}>
+                  <Link href="#" onClick={() => handleHiringTab("internship")}>
                     Internship Program
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" onClick={() => handleHiringTab("vacancies")}>
+                  <Link href="#" onClick={() => handleHiringTab("vacancies")}>
                     Current Vacancies
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
 
             {/* <li>
-              <a
+              <Link
                 href="/contact"
                 className={pathname.startsWith("/contact") ? "active" : ""}
               >
                 Contact Us
-              </a>
+              </Link>
             </li> */}
           </ul>
           <i className="mobile-nav-toggle d-xl-none bi bi-list" />
