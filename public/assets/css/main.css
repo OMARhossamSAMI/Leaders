@@ -13,6 +13,11 @@
 # Help: https://bootstrapmade.com/color-system/
 --------------------------------------------------------------*/
 /* Fonts */
+.admin-root * {
+  all: unset;
+  all: revert-layer;
+  box-sizing: border-box;
+}
 :root {
   --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
