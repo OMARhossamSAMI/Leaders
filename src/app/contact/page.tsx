@@ -2,6 +2,7 @@
 
 "use client"; // ✅ Required to run useEffect in App Router
 
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function ContactPage() {
@@ -85,7 +86,7 @@ export default function ContactPage() {
               <nav className="breadcrumbs">
                 <ol>
                   <li>
-                    <a href="/">Home</a>
+                    <Link href="/">Home</Link>
                   </li>
                   <li className="current">Contact Us</li>
                 </ol>
@@ -342,13 +343,13 @@ export default function ContactPage() {
         </main>
 
         {/* Scroll Top */}
-        <a
+        <Link
           href="#"
           id="scroll-top"
           className="scroll-top d-flex align-items-center justify-content-center"
         >
           <i className="bi bi-arrow-up-short" />
-        </a>
+        </Link>
         {/* Preloader */}
         <div id="preloader" />
         {/* Vendor JS Files */}

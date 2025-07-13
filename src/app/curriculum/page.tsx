@@ -229,10 +229,10 @@ export default function CurriculumPage() {
                       <p>
                         At Leaders International College, character building is
                         not just an element of education—it is central to our
-                        mission and a fundamental part of our school's values.
-                        We believe that true education extends beyond academic
-                        excellence to include the development of moral integrity
-                        and strong character.
+                        mission and a fundamental part of our school&apos;s
+                        values. We believe that true education extends beyond
+                        academic excellence to include the development of moral
+                        integrity and strong character.
                       </p>
                       <p>
                         LIC places a strong emphasis on character education as a
@@ -1606,8 +1606,8 @@ export default function CurriculumPage() {
                               activities to real-world outcomes. It promotes the
                               core IB values—holistic growth, social
                               responsibility, and global
-                              citizenship—highlighting our students' readiness
-                              for the future.
+                              citizenship—highlighting our students&apos;
+                              readiness for the future.
                             </p>
                           </div>
                         </div>
@@ -1706,9 +1706,9 @@ export default function CurriculumPage() {
                         Our classrooms are equipped with interactive smart
                         screens, which facilitate dynamic and engaging teaching
                         methods. These tools allow teachers to deliver lessons
-                        in a visually enriched format that captures students'
-                        attention and encourages interactive learning
-                        experiences.
+                        in a visually enriched format that captures
+                        students&apos; attention and encourages interactive
+                        learning experiences.
                       </p>
                       <h5>Guided Education System: ManageBac</h5>
                       <p>
