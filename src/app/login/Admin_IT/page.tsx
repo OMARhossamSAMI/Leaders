@@ -1,7 +1,6 @@
 "use client";
 
 import AdminHeader from "../../components/admin_header";
-import Footer from "../../components/Footer";
 import Link from "next/link";
 import "./page.css"; // Styling for the cards
 
