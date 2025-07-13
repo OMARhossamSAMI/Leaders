@@ -76,7 +76,10 @@ export default function Header() {
         <nav id="navmenu" className="navmenu">
           <ul>
             <li>
-              <a href="/login/Admin_IT" className={pathname === "/login/Admin_IT" ? "active" : ""}>
+              <a
+                href="/login/Admin_IT"
+                className={pathname === "/login/Admin_IT" ? "active" : ""}
+              >
                 Home
               </a>
             </li>

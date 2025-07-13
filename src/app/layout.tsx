@@ -9,6 +9,7 @@ import { HiringTabsProvider } from "./components/HiringTabsContext";
 import { StudentsLifeTabsProvider } from "./components/StudentsLifeTabsContext";
 import { AboutTabsProvider } from "./components/AboutTabsContext";
 import { CampusTabsProvider } from "./components/CampusTabsContext";
+import ClientLayoutWrapper from "./components/ClientLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -81,9 +82,7 @@ export default function RootLayout({
               <StudentsLifeTabsProvider>
                 <AboutTabsProvider>
                   <CampusTabsProvider>
-                    <Header />
-                    {children}
-                    <Footer />
+                    <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
                   </CampusTabsProvider>
                 </AboutTabsProvider>
               </StudentsLifeTabsProvider>
