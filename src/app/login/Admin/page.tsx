@@ -91,9 +91,18 @@ export default function AdminPage() {
         <div id="preloader"></div>
       </main>
 
-      <style jsx>{`
+      <style jsx global>{`
+        /* Ensure the background spans the whole page */
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          background: #c2c8ebff !important; /* forcefully override layout */
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !importan;
+        }
+
         .admin-dashboard {
-          background: linear-gradient(to right, #f0f2f5, #e3effd);
           min-height: 100vh;
         }
 
@@ -108,9 +117,9 @@ export default function AdminPage() {
         }
 
         .admin-card {
-          background: white;
+          background: #ffffff; /* PURE white */
           border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* softer shadow */
           padding: 2rem;
           transition: all 0.3s ease-in-out;
           height: 100%;
