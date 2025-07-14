@@ -4,11 +4,13 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
 import { TestimonialsService } from './testimonials.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
+import { Testimonial } from 'src/Schemas/testimonials.schema';
 
 @Controller('testimonials')
 export class TestimonialsController {
@@ -24,6 +26,12 @@ export class TestimonialsController {
     return this.testimonialsService.findAllSortedByDate();
   }
 
+  @Get('active')
+async getActiveTestimonials(): Promise<Testimonial[]> {
+  return this.testimonialsService.findAllActiveSortedByDate();
+}
+
+
   @Get(':name')
   findOne(@Param('name') name: string) {
     return this.testimonialsService.findByName(name);
@@ -38,4 +46,13 @@ export class TestimonialsController {
   delete(@Param('name') name: string) {
     return this.testimonialsService.deleteByName(name);
   }
+
+  @Patch('name/:name/toggle')
+async toggleByName(
+  @Param('name') name: string,
+  @Body('on') on: boolean,
+): Promise<Testimonial> {
+  return this.testimonialsService.updateVisibilityByName(name, on);
+}
+
 }

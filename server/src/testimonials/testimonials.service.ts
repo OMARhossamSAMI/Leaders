@@ -23,6 +23,13 @@ export class TestimonialsService {
     return this.testimonialModel.find().sort({ dateCreated: -1 }).exec();
   }
 
+  async findAllActiveSortedByDate(): Promise<Testimonial[]> {
+    return this.testimonialModel
+      .find({ on: true })
+      .sort({ dateCreated: -1 })
+      .exec();
+  }
+
   async findByName(name: string): Promise<Testimonial> {
     const testimonial = await this.testimonialModel.findOne({ name }).exec();
     if (!testimonial) throw new NotFoundException('Testimonial not found');
@@ -48,4 +55,17 @@ export class TestimonialsService {
     if (!result) throw new NotFoundException('Testimonial not found');
     return { message: 'Testimonial deleted successfully' };
   }
+
+
+
+  async updateVisibilityByName(name: string, on: boolean): Promise<Testimonial> {
+  const updated = await this.testimonialModel.findOneAndUpdate(
+    { name },
+    { on },
+    { new: true }
+  );
+  if (!updated) throw new NotFoundException('Testimonial not found');
+  return updated;
+}
+
 }

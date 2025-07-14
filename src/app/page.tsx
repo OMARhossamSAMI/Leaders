@@ -2,18 +2,40 @@
 
 import Head from "next/head";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+import axios from "axios";
+
+interface Testimonial {
+  _id: string;
+  name: string;
+  role: string;
+  description: string;
+  profilePhoto: string;
+  dateCreated: string;
+}
 
 export default function Home() {
+   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+ // First useEffect: Preloader
   useEffect(() => {
     const timer = setTimeout(() => {
       const preloader = document.getElementById("preloader");
       if (preloader) {
         preloader.style.display = "none";
       }
-    }, 150); // 1.5 seconds
+    }, 150);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  // Second useEffect: Fetch testimonials
+  useEffect(() => {
+    axios
+      .get<Testimonial[]>('http://localhost:3000/testimonials/active')
+      .then((res) => setTestimonials(res.data))
+      .catch((err) => console.error(err));
   }, []);
   return (
     <>
@@ -819,186 +841,50 @@ export default function Home() {
         </section>
 
         {/* /Stats Section */}
-        {/* Testimonials Section */}
         <section id="testimonials" className="testimonials section">
-          {/* Section Title */}
-          <div className="container section-title" data-aos="fade-up">
-            <h2>Testimonials</h2>
-            <p>
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
-            </p>
-          </div>
-          {/* End Section Title */}
-          <div className="container">
-            <div className="testimonial-masonry">
-              <div className="testimonial-item" data-aos="fade-up">
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Implementing innovative strategies has revolutionized our
-                    approach to market challenges and competitive positioning.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-f-7.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Rachel Bennett</h3>
-                      <span className="position">Strategy Director</span>
-                    </div>
-                  </div>
-                </div>
+  {/* Section Title */}
+  <div className="container section-title" data-aos="fade-up">
+    <h2>Testimonials</h2>
+    <p>
+      Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
+      consectetur velit
+    </p>
+  </div>
+  {/* End Section Title */}
+
+  <div className="container">
+    <div className="testimonial-masonry">
+      {testimonials.map((t, index) => (
+        <div
+          className={`testimonial-item ${index % 2 === 1 ? "highlight" : ""}`}
+          data-aos="fade-up"
+          data-aos-delay={index * 100}
+          key={t._id}
+        >
+          <div className="testimonial-content">
+            <div className="quote-pattern">
+              <i className="bi bi-quote" />
+            </div>
+            <p>{t.description}</p>
+            <div className="client-info">
+              <div className="client-image">
+                <img
+                  src={t.profilePhoto}
+                  alt="Client"
+                />
               </div>
-              <div
-                className="testimonial-item highlight"
-                data-aos="fade-up"
-                data-aos-delay={100}
-              >
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Exceptional service delivery and innovative solutions have
-                    transformed our business operations, leading to remarkable
-                    growth and enhanced customer satisfaction across all
-                    touchpoints.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-m-7.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Daniel Morgan</h3>
-                      <span className="position">Chief Innovation Officer</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="testimonial-item"
-                data-aos="fade-up"
-                data-aos-delay={200}
-              >
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Strategic partnership has enabled seamless digital
-                    transformation and operational excellence.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-f-8.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Emma Thompson</h3>
-                      <span className="position">Digital Lead</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="testimonial-item"
-                data-aos="fade-up"
-                data-aos-delay={300}
-              >
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Professional expertise and dedication have significantly
-                    improved our project delivery timelines and quality metrics.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-m-8.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Christopher Lee</h3>
-                      <span className="position">Technical Director</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="testimonial-item highlight"
-                data-aos="fade-up"
-                data-aos-delay={400}
-              >
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Collaborative approach and industry expertise have
-                    revolutionized our product development cycle, resulting in
-                    faster time-to-market and increased customer engagement
-                    levels.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-f-9.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Olivia Carter</h3>
-                      <span className="position">Product Manager</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="testimonial-item"
-                data-aos="fade-up"
-                data-aos-delay={500}
-              >
-                <div className="testimonial-content">
-                  <div className="quote-pattern">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p>
-                    Innovative approach to user experience design has
-                    significantly enhanced our platform&apos;s engagement
-                    metrics and customer retention rates.
-                  </p>
-                  <div className="client-info">
-                    <div className="client-image">
-                      <img
-                        src="/assets/img/person/person-m-13.webp"
-                        alt="Client"
-                      />
-                    </div>
-                    <div className="client-details">
-                      <h3>Nathan Brooks</h3>
-                      <span className="position">UX Director</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="client-details">
+                <h3>{t.name}</h3>
+                <span className="position">{t.role}</span>
               </div>
             </div>
           </div>
-        </section>
-        {/* /Testimonials Section */}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
         {/* Events Section */}
         <section id="events" className="events section">
           {/* Section Title */}

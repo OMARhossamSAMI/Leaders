@@ -61,7 +61,7 @@ export default function AdminPage() {
                 title: "Testimonials",
                 description:
                   "Manage testimonials from students, parents, and staff.",
-                href: "#",
+                href: "/login/testimonials",
                 color: "#6f42c1",
               },
             ].map((card, index) => (
