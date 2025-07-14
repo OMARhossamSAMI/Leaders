@@ -21,6 +21,12 @@ export class Testimonial {
 
   @Prop()
   dateCreated: Date;
+
+  @Prop({ default: false })
+  on: boolean;
+
+  @Prop({ default: false })
+  off: boolean;
 }
 
 export const TestimonialSchema = SchemaFactory.createForClass(Testimonial);
