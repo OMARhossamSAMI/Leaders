@@ -968,12 +968,8 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="event-actions">
-                              <a href="#" className="btn-learn-more">
+                              <a href="/events" className="btn-learn-more">
                                 Learn More
-                              </a>
-                              <a href="#" className="btn-calendar">
-                                <i className="bi bi-calendar-plus" /> Add to
-                                Calendar
                               </a>
                             </div>
                           </div>
@@ -983,7 +979,7 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-center mt-5">
-                  <a href="#" className="btn-view-all">
+                  <a href="/events" className="btn-view-all">
                     View All Events
                   </a>
                 </div>
