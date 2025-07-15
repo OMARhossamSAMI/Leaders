@@ -53,7 +53,7 @@ export default function AdminPage() {
                 title: "Events",
                 description:
                   "Add, update, or delete school events and activities.",
-                href: "#",
+                href: "/login/Admin/events",
                 color: "#28a745",
               },
               {
