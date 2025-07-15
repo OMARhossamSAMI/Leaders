@@ -1,4 +1,10 @@
-import { IsString, IsEnum, IsDateString, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsOptional,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
@@ -7,7 +13,8 @@ export class CreateEventDto {
   @IsString()
   description: string;
 
-  @IsEnum(['ACADEMIC', 'SPORTS', 'OTHER'])
+  @IsString()
+  @IsNotEmpty()
   category: string;
 
   @IsDateString()

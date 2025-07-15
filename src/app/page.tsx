@@ -48,11 +48,28 @@ export default function Home() {
       .catch((err) => console.error(err));
   }, []);
   useEffect(() => {
-    axios
-      .get<EventType[]>("http://localhost:3000/events/visible")
-      .then((res) => setEvents(res.data))
-      .catch((err) => console.error("Failed to fetch events:", err));
+    const fetchData = async () => {
+      try {
+        const [eventsRes, settingsRes] = await Promise.all([
+          axios.get<EventType[]>("http://localhost:3000/events/visible"),
+          axios.get<{ showEvents: boolean }>(
+            "http://localhost:3000/settings/show-events"
+          ),
+        ]);
+
+        if (settingsRes.data.showEvents) {
+          setEvents(eventsRes.data);
+        } else {
+          setEvents([]); // Don't show any events if global setting is off
+        }
+      } catch (err) {
+        console.error("Failed to fetch events or settings:", err);
+      }
+    };
+
+    fetchData();
   }, []);
+
   return (
     <>
       <Head>
@@ -913,66 +930,74 @@ export default function Home() {
           </div>
 
           <div className="container" data-aos="fade-up" data-aos-delay={100}>
-            <div className="row g-4">
-              {events.map((event, index) => {
-                const start = new Date(event.date);
-                return (
-                  <div className="col-lg-6" key={index}>
-                    <div className="event-card">
-                      <div className="event-date">
-                        <span className="month">
-                          {start
-                            .toLocaleString("en-US", { month: "short" })
-                            .toUpperCase()}
-                        </span>
-                        <span className="day">{start.getDate()}</span>
-                        <span className="year">{start.getFullYear()}</span>
-                      </div>
-                      <div className="event-content">
-                        <div
-                          className={`event-tag ${event.category.toLowerCase()}`}
-                        >
-                          {event.category}
-                        </div>
-                        <h3>{event.title}</h3>
-                        <p>{event.description}</p>
-                        <div className="event-meta">
-                          <div className="meta-item">
-                            <i className="bi bi-clock" />
-                            <span>
-                              {event.startTime} - {event.endTime}
+            {events.length > 0 ? (
+              <>
+                <div className="row g-4">
+                  {events.map((event, index) => {
+                    const start = new Date(event.date);
+                    return (
+                      <div className="col-lg-6" key={index}>
+                        <div className="event-card">
+                          <div className="event-date">
+                            <span className="month">
+                              {start
+                                .toLocaleString("en-US", { month: "short" })
+                                .toUpperCase()}
                             </span>
+                            <span className="day">{start.getDate()}</span>
+                            <span className="year">{start.getFullYear()}</span>
                           </div>
-                          <div className="meta-item">
-                            <i className="bi bi-geo-alt" />
-                            <span>{event.location}</span>
+                          <div className="event-content">
+                            <div
+                              className={`event-tag ${event.category.toLowerCase()}`}
+                            >
+                              {event.category}
+                            </div>
+                            <h3>{event.title}</h3>
+                            <p>{event.description}</p>
+                            <div className="event-meta">
+                              <div className="meta-item">
+                                <i className="bi bi-clock" />
+                                <span>
+                                  {event.startTime} - {event.endTime}
+                                </span>
+                              </div>
+                              <div className="meta-item">
+                                <i className="bi bi-geo-alt" />
+                                <span>{event.location}</span>
+                              </div>
+                            </div>
+                            <div className="event-actions">
+                              <a href="#" className="btn-learn-more">
+                                Learn More
+                              </a>
+                              <a href="#" className="btn-calendar">
+                                <i className="bi bi-calendar-plus" /> Add to
+                                Calendar
+                              </a>
+                            </div>
                           </div>
-                        </div>
-                        <div className="event-actions">
-                          <a href="#" className="btn-learn-more">
-                            Learn More
-                          </a>
-                          <a href="#" className="btn-calendar">
-                            <i className="bi bi-calendar-plus" /> Add to
-                            Calendar
-                          </a>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {events.length > 0 && (
+                    );
+                  })}
+                </div>
+                <div className="text-center mt-5">
+                  <a href="#" className="btn-view-all">
+                    View All Events
+                  </a>
+                </div>
+              </>
+            ) : (
               <div className="text-center mt-5">
-                <a href="#" className="btn-view-all">
-                  View All Events
-                </a>
+                <p style={{ fontSize: "1.2rem", color: "#999" }}>
+                  No upcoming events at the moment.
+                </p>
               </div>
             )}
           </div>
         </section>
+
         {/* /Events Section */}
       </main>
 

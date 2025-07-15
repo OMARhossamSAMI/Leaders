@@ -16,6 +16,10 @@ export default function CreateEventPage() {
     location: "",
   });
 
+  const [showCustomCategory, setShowCustomCategory] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -25,18 +29,47 @@ export default function CreateEventPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
+
     try {
       await axios.post("http://localhost:3000/events", form);
       router.push("/login/Admin/events");
-    } catch (err) {
-      alert("Failed to create event.");
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to create event.";
+      setError(typeof message === "string" ? message : message.join(", "));
+    } finally {
+      setLoading(false);
     }
   };
+
+  // 🔁 Generate 12-hour formatted time slots with AM/PM (e.g., 09:00 AM)
+  const generateTimeSlots = () => {
+    const slots: string[] = [];
+    for (let hour = 7; hour <= 24; hour++) {
+      for (let min of [0, 30]) {
+        const date = new Date();
+        date.setHours(hour, min);
+        const options: Intl.DateTimeFormatOptions = {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        };
+        const formatted = date.toLocaleTimeString("en-US", options);
+        slots.push(formatted);
+      }
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
 
   return (
     <div className="create-form-wrapper">
       <form className="create-form" onSubmit={handleSubmit}>
         <h2>Create New Event</h2>
+
+        {error && <div className="error-message">{error}</div>}
 
         <input
           name="title"
@@ -52,16 +85,43 @@ export default function CreateEventPage() {
           onChange={handleChange}
           required
         />
+
         <select
           name="category"
           value={form.category}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = e.target.value;
+            setShowCustomCategory(value === "OTHER");
+            handleChange(e);
+          }}
           required
         >
+          <option value="">Select Category</option>
           <option value="ACADEMIC">Academic</option>
           <option value="SPORTS">Sports</option>
+          <option value="ARTS">Arts</option>
+          <option value="MUSIC">Music</option>
+          <option value="COMMUNITY">Community</option>
+          <option value="SCIENCE">Science</option>
+          <option value="FIELD_TRIP">Field Trip</option>
+          <option value="WORKSHOP">Workshop</option>
           <option value="OTHER">Other</option>
         </select>
+
+        {showCustomCategory && (
+          <input
+            type="text"
+            name="category"
+            placeholder="Enter your custom category"
+            className="custom-category-input"
+            value={form.category !== "OTHER" ? form.category : ""}
+            onChange={(e) =>
+              setForm({ ...form, category: e.target.value.toUpperCase() })
+            }
+            required
+          />
+        )}
+
         <input
           type="date"
           name="date"
@@ -69,20 +129,37 @@ export default function CreateEventPage() {
           onChange={handleChange}
           required
         />
-        <input
+
+        <label htmlFor="startTime">Start Time:</label>
+        <select
           name="startTime"
-          placeholder="Start Time (e.g. 09:00 AM)"
           value={form.startTime}
           onChange={handleChange}
           required
-        />
-        <input
+        >
+          <option value="">Select Start Time</option>
+          {timeSlots.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
+
+        <label htmlFor="endTime">End Time:</label>
+        <select
           name="endTime"
-          placeholder="End Time (e.g. 03:00 PM)"
           value={form.endTime}
           onChange={handleChange}
           required
-        />
+        >
+          <option value="">Select End Time</option>
+          {timeSlots.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </select>
+
         <input
           name="location"
           placeholder="Location"
@@ -91,7 +168,9 @@ export default function CreateEventPage() {
           required
         />
 
-        <button type="submit">Create Event</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Event"}
+        </button>
       </form>
     </div>
   );

@@ -10,8 +10,7 @@ export class Event {
 
   @Prop({ required: true })
   description: string;
-
-  @Prop({ required: true, enum: ['ACADEMIC', 'SPORTS', 'OTHER'] })
+  @Prop({ required: true }) // Removed enum constraint
   category: string;
 
   @Prop({ required: true })

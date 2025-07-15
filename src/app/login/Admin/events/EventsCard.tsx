@@ -1,3 +1,5 @@
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 export default function EventsCard({ event, onEdit, onDelete }: any) {
   const start = new Date(event.date);
   const now = new Date();
@@ -6,13 +8,10 @@ export default function EventsCard({ event, onEdit, onDelete }: any) {
   const days = Math.floor(timeUntilStart / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeUntilStart / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((timeUntilStart / (1000 * 60)) % 60);
-  const startCountdown = `${days}d ${hours}h ${minutes}m`;
 
-  // Logic to check when it shows on the website
   const websiteVisibilityCountdown = (() => {
     const visibilityTime = start.getTime() - 4 * 24 * 60 * 60 * 1000;
     const timeUntilVisible = visibilityTime - now.getTime();
-
     if (timeUntilVisible <= 0) {
       return "✅ Already visible on the website";
     }
@@ -40,24 +39,34 @@ export default function EventsCard({ event, onEdit, onDelete }: any) {
         </span>
         <h3>{event.title}</h3>
         <p>{event.description}</p>
+
         <div className="meta">
           <span>
-            🕒 {event.startTime} - {event.endTime}
+            <i className="bi bi-clock"></i> {event.startTime} - {event.endTime}
           </span>
-          <span>📍 {event.location}</span>
+          <span>
+            <i className="bi bi-geo-alt"></i> {event.location}
+          </span>
         </div>
 
         <div className="actions">
-          <button onClick={() => onEdit(event.title)}>✏️ Edit</button>
-          <button onClick={() => onDelete(event.title)}>🗑️ Delete</button>
+          <button className="btn-edit" onClick={() => onEdit(event.title)}>
+            <i className="bi bi-pencil-square"></i> Edit
+          </button>
+          <button className="btn-delete" onClick={() => onDelete(event.title)}>
+            <i className="bi bi-trash3"></i> Delete
+          </button>
         </div>
-
-        {/* <p className="countdown-label">Event starts in:</p>
-        <div className="countdown-value">{startCountdown}</div> */}
 
         {websiteVisibilityCountdown && (
           <>
-            <p className="countdown-label">Website visibility:</p>
+            <p className="countdown-label">
+              <i
+                className="bi bi-globe2"
+                style={{ marginRight: "6px", color: "#007acc" }}
+              ></i>
+              Website visibility:
+            </p>
             <div className="countdown-value">{websiteVisibilityCountdown}</div>
           </>
         )}
