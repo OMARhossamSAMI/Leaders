@@ -14,11 +14,21 @@ interface Testimonial {
   profilePhoto: string;
   dateCreated: string;
 }
+type EventType = {
+  title: string;
+  description: string;
+  category: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+};
 
 export default function Home() {
-   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [events, setEvents] = useState<EventType[]>([]);
 
- // First useEffect: Preloader
+  // First useEffect: Preloader
   useEffect(() => {
     const timer = setTimeout(() => {
       const preloader = document.getElementById("preloader");
@@ -33,9 +43,15 @@ export default function Home() {
   // Second useEffect: Fetch testimonials
   useEffect(() => {
     axios
-      .get<Testimonial[]>('http://localhost:3000/testimonials/active')
+      .get<Testimonial[]>("http://localhost:3000/testimonials/active")
       .then((res) => setTestimonials(res.data))
       .catch((err) => console.error(err));
+  }, []);
+  useEffect(() => {
+    axios
+      .get<EventType[]>("http://localhost:3000/events/visible")
+      .then((res) => setEvents(res.data))
+      .catch((err) => console.error("Failed to fetch events:", err));
   }, []);
   return (
     <>
@@ -842,242 +858,119 @@ export default function Home() {
 
         {/* /Stats Section */}
         <section id="testimonials" className="testimonials section">
-  {/* Section Title */}
-  <div className="container section-title" data-aos="fade-up">
-    <h2>Testimonials</h2>
-    <p>
-      Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-      consectetur velit
-    </p>
-  </div>
-  {/* End Section Title */}
-
-  <div className="container">
-    <div className="testimonial-masonry">
-      {testimonials.map((t, index) => (
-        <div
-          className={`testimonial-item ${index % 2 === 1 ? "highlight" : ""}`}
-          data-aos="fade-up"
-          data-aos-delay={index * 100}
-          key={t._id}
-        >
-          <div className="testimonial-content">
-            <div className="quote-pattern">
-              <i className="bi bi-quote" />
-            </div>
-            <p>{t.description}</p>
-            <div className="client-info">
-              <div className="client-image">
-                <img
-                  src={t.profilePhoto}
-                  alt="Client"
-                />
-              </div>
-              <div className="client-details">
-                <h3>{t.name}</h3>
-                <span className="position">{t.role}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-        {/* Events Section */}
-        <section id="events" className="events section">
           {/* Section Title */}
           <div className="container section-title" data-aos="fade-up">
-            <h2>Events</h2>
+            <h2>Testimonials</h2>
             <p>
               Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
               consectetur velit
             </p>
           </div>
           {/* End Section Title */}
+
+          <div className="container">
+            <div className="testimonial-masonry">
+              {testimonials.map((t, index) => (
+                <div
+                  className={`testimonial-item ${
+                    index % 2 === 1 ? "highlight" : ""
+                  }`}
+                  data-aos="fade-up"
+                  data-aos-delay={index * 100}
+                  key={t._id}
+                >
+                  <div className="testimonial-content">
+                    <div className="quote-pattern">
+                      <i className="bi bi-quote" />
+                    </div>
+                    <p>{t.description}</p>
+                    <div className="client-info">
+                      <div className="client-image">
+                        <img src={t.profilePhoto} alt="Client" />
+                      </div>
+                      <div className="client-details">
+                        <h3>{t.name}</h3>
+                        <span className="position">{t.role}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Events Section */}
+        <section id="events" className="events section">
+          <div className="container section-title" data-aos="fade-up">
+            <h2 className="events-type-title" style={{ color: "#007acc" }}>
+              Upcoming School Events
+            </h2>
+            <p>
+              Stay updated on the latest academic, sports, and community events
+              happening soon!
+            </p>
+          </div>
+
           <div className="container" data-aos="fade-up" data-aos-delay={100}>
-            <div className="event-filters mb-4">
-              <div className="row justify-content-center g-3">
-                <div className="col-md-4">
-                  <select className="form-select">
-                    <option value="all">All Months</option>
-                    <option value="january">January</option>
-                    <option value="february">February</option>
-                    <option value="march">March</option>
-                    <option value="april">April</option>
-                    <option value="may">May</option>
-                    <option value="june">June</option>
-                    <option value="july">July</option>
-                    <option value="august">August</option>
-                    <option value="september">September</option>
-                    <option value="october">October</option>
-                    <option value="november">November</option>
-                    <option value="december">December</option>
-                  </select>
-                </div>
-                <div className="col-md-4">
-                  <select className="form-select">
-                    <option value="all">All Categories</option>
-                    <option value="academic">Academic</option>
-                    <option value="arts">Arts</option>
-                    <option value="sports">Sports</option>
-                    <option value="community">Community</option>
-                  </select>
-                </div>
-              </div>
-            </div>
             <div className="row g-4">
-              <div className="col-lg-6">
-                <div className="event-card">
-                  <div className="event-date">
-                    <span className="month">FEB</span>
-                    <span className="day">15</span>
-                    <span className="year">2025</span>
-                  </div>
-                  <div className="event-content">
-                    <div className="event-tag academic">Academic</div>
-                    <h3>Science Fair Exhibition</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
-                    </p>
-                    <div className="event-meta">
-                      <div className="meta-item">
-                        <i className="bi bi-clock" />
-                        <span>09:00 AM - 03:00 PM</span>
+              {events.map((event, index) => {
+                const start = new Date(event.date);
+                return (
+                  <div className="col-lg-6" key={index}>
+                    <div className="event-card">
+                      <div className="event-date">
+                        <span className="month">
+                          {start
+                            .toLocaleString("en-US", { month: "short" })
+                            .toUpperCase()}
+                        </span>
+                        <span className="day">{start.getDate()}</span>
+                        <span className="year">{start.getFullYear()}</span>
                       </div>
-                      <div className="meta-item">
-                        <i className="bi bi-geo-alt" />
-                        <span>Main Auditorium</span>
-                      </div>
-                    </div>
-                    <div className="event-actions">
-                      <a href="#" className="btn-learn-more">
-                        Learn More
-                      </a>
-                      <a href="#" className="btn-calendar">
-                        <i className="bi bi-calendar-plus" /> Add to Calendar
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="event-card">
-                  <div className="event-date">
-                    <span className="month">MAR</span>
-                    <span className="day">10</span>
-                    <span className="year">2025</span>
-                  </div>
-                  <div className="event-content">
-                    <div className="event-tag sports">Sports</div>
-                    <h3>Annual Sports Day</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                      laboris nisi.
-                    </p>
-                    <div className="event-meta">
-                      <div className="meta-item">
-                        <i className="bi bi-clock" />
-                        <span>08:30 AM - 05:00 PM</span>
-                      </div>
-                      <div className="meta-item">
-                        <i className="bi bi-geo-alt" />
-                        <span>School Playground</span>
+                      <div className="event-content">
+                        <div
+                          className={`event-tag ${event.category.toLowerCase()}`}
+                        >
+                          {event.category}
+                        </div>
+                        <h3>{event.title}</h3>
+                        <p>{event.description}</p>
+                        <div className="event-meta">
+                          <div className="meta-item">
+                            <i className="bi bi-clock" />
+                            <span>
+                              {event.startTime} - {event.endTime}
+                            </span>
+                          </div>
+                          <div className="meta-item">
+                            <i className="bi bi-geo-alt" />
+                            <span>{event.location}</span>
+                          </div>
+                        </div>
+                        <div className="event-actions">
+                          <a href="#" className="btn-learn-more">
+                            Learn More
+                          </a>
+                          <a href="#" className="btn-calendar">
+                            <i className="bi bi-calendar-plus" /> Add to
+                            Calendar
+                          </a>
+                        </div>
                       </div>
                     </div>
-                    <div className="event-actions">
-                      <a href="#" className="btn-learn-more">
-                        Learn More
-                      </a>
-                      <a href="#" className="btn-calendar">
-                        <i className="bi bi-calendar-plus" /> Add to Calendar
-                      </a>
-                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="event-card">
-                  <div className="event-date">
-                    <span className="month">APR</span>
-                    <span className="day">22</span>
-                    <span className="year">2025</span>
-                  </div>
-                  <div className="event-content">
-                    <div className="event-tag arts">Arts</div>
-                    <h3>Spring Music Concert</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Excepteur sint occaecat cupidatat non proident, sunt in
-                      culpa qui officia deserunt mollit.
-                    </p>
-                    <div className="event-meta">
-                      <div className="meta-item">
-                        <i className="bi bi-clock" />
-                        <span>06:30 PM - 08:30 PM</span>
-                      </div>
-                      <div className="meta-item">
-                        <i className="bi bi-geo-alt" />
-                        <span>Performing Arts Center</span>
-                      </div>
-                    </div>
-                    <div className="event-actions">
-                      <a href="#" className="btn-learn-more">
-                        Learn More
-                      </a>
-                      <a href="#" className="btn-calendar">
-                        <i className="bi bi-calendar-plus" /> Add to Calendar
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="event-card">
-                  <div className="event-date">
-                    <span className="month">MAY</span>
-                    <span className="day">8</span>
-                    <span className="year">2025</span>
-                  </div>
-                  <div className="event-content">
-                    <div className="event-tag community">Community</div>
-                    <h3>Parent-Teacher Conference</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla.
-                    </p>
-                    <div className="event-meta">
-                      <div className="meta-item">
-                        <i className="bi bi-clock" />
-                        <span>01:00 PM - 07:00 PM</span>
-                      </div>
-                      <div className="meta-item">
-                        <i className="bi bi-geo-alt" />
-                        <span>Various Classrooms</span>
-                      </div>
-                    </div>
-                    <div className="event-actions">
-                      <a href="#" className="btn-learn-more">
-                        Learn More
-                      </a>
-                      <a href="#" className="btn-calendar">
-                        <i className="bi bi-calendar-plus" /> Add to Calendar
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
-            <div className="text-center mt-5">
-              <a href="#" className="btn-view-all">
-                View All Events
-              </a>
-            </div>
+
+            {events.length > 0 && (
+              <div className="text-center mt-5">
+                <a href="#" className="btn-view-all">
+                  View All Events
+                </a>
+              </div>
+            )}
           </div>
         </section>
         {/* /Events Section */}

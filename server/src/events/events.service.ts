@@ -55,7 +55,6 @@ export class EventsService {
 
     return this.model
       .find({
-        status: 'on',
         date: { $lte: fourDaysLater, $gte: today },
       })
       .sort({ date: 1 })
