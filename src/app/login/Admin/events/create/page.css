@@ -97,3 +97,28 @@ body {
     opacity: 1;
   }
 }
+.custom-category-input {
+  background-color: #f0f9ff !important; /* light blue background */
+  color: #007acc !important; /* blue text */
+  border: 1px dashed #007acc !important;
+  font-size: 14px !important;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  margin-top: 10px !important;
+  width: 100% !important;
+  transition: box-shadow 0.3s ease !important;
+}
+
+.custom-category-input:focus {
+  box-shadow: 0 0 5px rgba(0, 191, 255, 0.4) !important;
+  background-color: #ffffff !important;
+}
+.error-message {
+  color: #d32f2f !important;
+  background-color: #fdecea;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #f5c6cb;
+  font-size: 14px;
+}

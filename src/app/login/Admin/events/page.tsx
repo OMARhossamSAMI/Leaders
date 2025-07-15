@@ -18,11 +18,35 @@ type EventType = {
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<EventType[]>([]);
+  const [showEvents, setShowEvents] = useState(true);
   const router = useRouter();
 
   const fetchEvents = async () => {
     const res = await axios.get<EventType[]>("http://localhost:3000/events");
     setEvents(res.data);
+  };
+
+  const fetchShowEventsSetting = async () => {
+    try {
+      const res = await axios.get<{ showEvents: boolean }>(
+        "http://localhost:3000/settings/show-events"
+      );
+      setShowEvents(res.data.showEvents);
+    } catch (error) {
+      console.error("Failed to fetch showEvents setting:", error);
+    }
+  };
+
+  const handleToggleShowEvents = async () => {
+    try {
+      const updated = !showEvents;
+      setShowEvents(updated);
+      await axios.put("http://localhost:3000/settings/show-events", {
+        showEvents: updated,
+      });
+    } catch (error) {
+      console.error("Failed to update showEvents setting:", error);
+    }
   };
 
   const handleDelete = async (title: string) => {
@@ -40,12 +64,26 @@ export default function AdminEventsPage() {
 
   useEffect(() => {
     fetchEvents();
+    fetchShowEventsSetting();
   }, []);
 
   return (
     <div className="admin-events">
       <div className="header">
-        <h1 className="page-title">Manage Events</h1>
+        <div className="title-and-switch">
+          <h1 className="page-title">Manage Events</h1>
+          <label className="styled-switch">
+            <input
+              type="checkbox"
+              checked={showEvents}
+              onChange={handleToggleShowEvents}
+            />
+            <span className="slider" />
+            <span className="switch-label">
+              {showEvents ? "Showing on Website" : "Hidden from Website"}
+            </span>
+          </label>
+        </div>
 
         <button className="add-btn" onClick={handleCreate}>
           + Create Event

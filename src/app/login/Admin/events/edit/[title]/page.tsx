@@ -4,6 +4,7 @@ import "./page.css";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+
 type EventType = {
   title: string;
   description: string;
@@ -18,8 +19,8 @@ type EventType = {
 export default function EditEventPage() {
   const { title } = useParams();
   const router = useRouter();
-
-  const [form, setForm] = useState({
+  const [showCustomCategory, setShowCustomCategory] = useState(false);
+  const [form, setForm] = useState<EventType>({
     title: "",
     description: "",
     category: "ACADEMIC",
@@ -29,6 +30,8 @@ export default function EditEventPage() {
     location: "",
     status: "off",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     axios
@@ -45,6 +48,19 @@ export default function EditEventPage() {
           location: fetched.location,
           status: fetched.status,
         });
+        setShowCustomCategory(
+          ![
+            "ACADEMIC",
+            "SPORTS",
+            "ARTS",
+            "MUSIC",
+            "COMMUNITY",
+            "SCIENCE",
+            "FIELD_TRIP",
+            "WORKSHOP",
+            "OTHER",
+          ].includes(fetched.category)
+        );
       });
   }, [title]);
 
@@ -56,10 +72,37 @@ export default function EditEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const generateTimeSlots = () => {
+    const slots: string[] = [];
+    const start = new Date();
+    start.setHours(7, 0, 0);
+    for (let i = 0; i <= 17 * 2; i++) {
+      const hour = new Date(start.getTime() + i * 30 * 60000);
+      const time = hour.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+      slots.push(time);
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await axios.put(`http://localhost:3000/events/${title}`, form);
-    router.push("/login/Admin/events");
+    setLoading(true);
+    setError(null);
+    try {
+      await axios.put(`http://localhost:3000/events/${title}`, form);
+      router.push("/login/Admin/events");
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || "Failed to update event.";
+      setError(typeof msg === "string" ? msg : msg.join(" \n "));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,11 +127,41 @@ export default function EditEventPage() {
           />
 
           <label>Category</label>
-          <select name="category" value={form.category} onChange={handleChange}>
+          <select
+            name="category"
+            value={form.category}
+            onChange={(e) => {
+              const value = e.target.value;
+              setShowCustomCategory(value === "OTHER");
+              handleChange(e);
+            }}
+            required
+          >
+            <option value="">Select Category</option>
             <option value="ACADEMIC">Academic</option>
             <option value="SPORTS">Sports</option>
             <option value="ARTS">Arts</option>
+            <option value="MUSIC">Music</option>
+            <option value="COMMUNITY">Community</option>
+            <option value="SCIENCE">Science</option>
+            <option value="FIELD_TRIP">Field Trip</option>
+            <option value="WORKSHOP">Workshop</option>
+            <option value="OTHER">Other</option>
           </select>
+
+          {showCustomCategory && (
+            <input
+              type="text"
+              name="category"
+              placeholder="Enter your custom category"
+              className="custom-category-input"
+              value={form.category !== "OTHER" ? form.category : ""}
+              onChange={(e) =>
+                setForm({ ...form, category: e.target.value.toUpperCase() })
+              }
+              required
+            />
+          )}
 
           <label>Date</label>
           <input
@@ -100,20 +173,34 @@ export default function EditEventPage() {
           />
 
           <label>Start Time</label>
-          <input
-            type="text"
+          <select
             name="startTime"
             value={form.startTime}
             onChange={handleChange}
-          />
+            required
+          >
+            <option value="">Select Start Time</option>
+            {timeSlots.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
 
           <label>End Time</label>
-          <input
-            type="text"
+          <select
             name="endTime"
             value={form.endTime}
             onChange={handleChange}
-          />
+            required
+          >
+            <option value="">Select End Time</option>
+            {timeSlots.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
 
           <label>Location</label>
           <input
@@ -121,8 +208,12 @@ export default function EditEventPage() {
             value={form.location}
             onChange={handleChange}
           />
+          {error && <p className="error-message">{error}</p>}
+          {loading && <p className="loading-message">Updating event...</p>}
 
-          <button type="submit">Update Event</button>
+          <button type="submit" disabled={loading}>
+            Update Event
+          </button>
         </form>
       </div>
     </div>
