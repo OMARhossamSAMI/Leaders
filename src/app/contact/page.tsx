@@ -1,22 +1,62 @@
 // src/app/contact/page.tsx
 
-"use client"; // ✅ Required to run useEffect in App Router
+"use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface ContactUsForm {
+  fullName: string;
+  email: string;
+  phone: string;
+  role: string;
+  grade?: string;
+  subject: string;
+  contactMethod: string;
+  bestTime?: string;
+  message: string;
+}
 
 export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
       const timer = setTimeout(() => {
         preloader.style.display = "none";
-      }, 1500); // 1.5 seconds
-
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, []);
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const data: ContactUsForm = {
+      fullName: formData.get("fullName") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      role: formData.get("role") as string,
+      grade: formData.get("grade") as string,
+      subject: formData.get("subject") as string,
+      contactMethod: formData.get("contactMethod") as string,
+      bestTime: formData.get("bestTime") as string,
+      message: formData.get("message") as string,
+    };
+
+    try {
+      await axios.post("http://localhost:3000/contactus", data);
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("Something went wrong. Please try again later.");
+    }
+  };
   return (
     <>
       <div>
@@ -253,76 +293,170 @@ export default function ContactPage() {
                   <div className="col-lg-10">
                     <div className="contact-form-wrapper">
                       <h2 className="text-center mb-4">Get in Touch</h2>
+
                       <form
+                        onSubmit={handleSubmit}
                         action="forms/contact.php"
                         method="post"
                         className="php-email-form"
                       >
                         <div className="row g-3">
                           <div className="col-md-6">
-                            <div className="form-group">
-                              <div className="input-with-icon">
-                                <i className="bi bi-person" />
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-person" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="fullName"
+                                placeholder="Full Name"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-envelope" />
+                              <input
+                                type="email"
+                                className="form-control"
+                                name="email"
+                                placeholder="Email Address"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-telephone" />
+                              <input
+                                type="tel"
+                                className="form-control"
+                                name="phone"
+                                placeholder="Phone Number"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-person-badge" />
+                              <select
+                                className="form-control"
+                                name="role"
+                                required
+                              >
+                                <option value="">Are you a...</option>
+                                <option value="student">
+                                  Prospective Student
+                                </option>
+                                <option value="parent">Parent</option>
+                                <option value="alumni">Alumni</option>
+                                <option value="staff">Teacher/Staff</option>
+                                <option value="other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-book" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="grade"
+                                placeholder="Grade of Interest (optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-tag" />
+                              <select
+                                className="form-control"
+                                name="subject"
+                                required
+                              >
+                                <option value="">Select Subject</option>
+                                <option value="inquiry">General Inquiry</option>
+                                <option value="admissions">Admissions</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-check-circle" />
+                              <label className="form-label d-block">
+                                Preferred Contact Method
+                              </label>
+                              <div className="form-check form-check-inline">
                                 <input
-                                  type="text"
-                                  className="form-control"
-                                  name="name"
-                                  placeholder="First Name"
-                                  required
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="contactMethod"
+                                  value="email"
+                                  defaultChecked
                                 />
+                                <label className="form-check-label">
+                                  Email
+                                </label>
+                              </div>
+                              <div className="form-check form-check-inline">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="contactMethod"
+                                  value="phone"
+                                />
+                                <label className="form-check-label">
+                                  Phone
+                                </label>
+                              </div>
+                              <div className="form-check form-check-inline">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="contactMethod"
+                                  value="whatsapp"
+                                />
+                                <label className="form-check-label">
+                                  WhatsApp
+                                </label>
                               </div>
                             </div>
                           </div>
                           <div className="col-md-6">
-                            <div className="form-group">
-                              <div className="input-with-icon">
-                                <i className="bi bi-envelope" />
-                                <input
-                                  type="email"
-                                  className="form-control"
-                                  name="email"
-                                  placeholder="Email Address"
-                                  required
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div className="form-group">
-                              <div className="input-with-icon">
-                                <i className="bi bi-text-left" />
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  name="sbject"
-                                  placeholder="Subject"
-                                  required
-                                />
-                              </div>
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-clock" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="bestTime"
+                                placeholder="Best Time to Contact You"
+                              />
                             </div>
                           </div>
                           <div className="col-12">
-                            <div className="form-group">
-                              <div className="input-with-icon">
-                                <i className="bi bi-chat-dots message-icon" />
-                                <textarea
-                                  className="form-control"
-                                  name="message"
-                                  placeholder="Write Message..."
-                                  style={{ height: "180px" }}
-                                  required
-                                  defaultValue={""}
-                                />
-                              </div>
+                            <div className="form-group input-with-icon">
+                              <i className="bi bi-chat-dots message-icon" />
+                              <textarea
+                                className="form-control"
+                                name="message"
+                                placeholder="Write Message..."
+                                style={{ height: "180px" }}
+                                required
+                              />
                             </div>
                           </div>
-                          <div className="col-12">
-                            <div className="loading">Loading</div>
-                            <div className="error-message" />
-                            <div className="sent-message">
-                              Your message has been sent. Thank you!
+                          {submitted && (
+                            <div
+                              className="alert alert-success text-center"
+                              role="alert"
+                            >
+                              ✅ Your message has been sent successfully!
                             </div>
-                          </div>
+                          )}
                           <div className="col-12 text-center">
                             <button
                               type="submit"

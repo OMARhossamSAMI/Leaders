@@ -72,6 +72,14 @@ export default function AdminPage() {
                 href: "/login/Admin/popup",
                 color: "#fd7e14",
               },
+              {
+                icon: "bi-envelope-paper-fill",
+                title: "Contact Messages",
+                description:
+                  "View and respond to messages submitted via the Contact Us form.",
+                href: "/login/Admin/contactus",
+                color: "#dc3545",
+              },
             ].map((card, index) => (
               <div
                 key={index}
