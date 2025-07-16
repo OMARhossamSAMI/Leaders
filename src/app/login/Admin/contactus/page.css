@@ -1,0 +1,265 @@
+/* Override base styles for the entire contact page */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f8fb !important;
+  font-family: "Poppins", sans-serif;
+}
+
+.contactus-page-wrapper {
+  padding: 2rem;
+}
+
+.contactus-page-container {
+  padding: 1rem 2rem;
+  background-color: #f6f9fc;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 2.2rem !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  margin-bottom: 2rem !important;
+  color: #444 !important;
+  background: linear-gradient(to right, #2c7be5, #66b3ff) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  position: relative !important;
+  padding: 8px 0 8px 0 !important;
+  line-height: 1.2 !important;
+}
+
+.page-title::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: none !important;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 2rem;
+}
+
+.contact-card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(44, 123, 229, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border-left: 5px solid #2c7be5;
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(44, 123, 229, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  font-size: 1.2rem;
+  color: #2c7be5;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.role-tag {
+  background: #2c7be5;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #777;
+  white-space: nowrap;
+}
+
+.card-content p {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0.4rem 0;
+}
+
+.card-content strong {
+  color: #2c7be5;
+  margin-right: 0.25rem;
+}
+
+.message {
+  background-color: #f0f4ff;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid #2c7be5;
+  border-radius: 6px;
+  font-style: italic;
+  color: #444;
+  margin-top: 0.6rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.status-badge {
+  background: #2c7be5;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Highlighted visibility styles */
+.email-highlight {
+  color: #0d6efd;
+  font-weight: bold;
+}
+
+.phone-highlight {
+  color: #198754;
+  font-weight: bold;
+}
+
+.subject-label {
+  color: #d63384;
+  font-weight: 600;
+}
+
+.contact-method-label {
+  color: #fd7e14;
+  font-weight: 600;
+}
+
+.best-time-label {
+  color: #20c997;
+  font-weight: 600;
+}
+
+.message-box {
+  background-color: #f8f9fa;
+  padding: 10px 14px;
+  border-left: 4px solid #2c7be5;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.label-icon {
+  color: #2c7be5;
+  margin-right: 6px;
+}
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  padding-left: 28px;
+  color: #198754 !important; /* Bootstrap green */
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-label .checkmark {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  height: 18px;
+  width: 18px;
+  background-color: #f2f2f2;
+  border: 2px solid #198754;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+  background-color: #198754;
+}
+
+.checkbox-label .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-label .checkmark:after {
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.review-status-container {
+  margin-top: 10px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.checkbox-input {
+  appearance: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  visibility: hidden;
+}
+
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.status-badge.reviewed {
+  background-color: #d1f4dc;
+  color: #198754;
+  border: 1px solid #198754;
+}
+
+.status-badge.not-reviewed {
+  background-color: #ffe5e5;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}

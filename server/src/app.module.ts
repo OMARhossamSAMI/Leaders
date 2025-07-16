@@ -9,6 +9,7 @@ import { StudentApplicationModule } from './student-application/student-applicat
 import { FormFieldModule } from './form-field/form-field.module';
 
 import { PopupModule } from './popup/popup.module';
+import { ContactUsModule } from './contactus/contactus.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PopupModule } from './popup/popup.module';
     StudentApplicationModule,
     FormFieldModule,
     PopupModule,
+    ContactUsModule,
   ],
 })
 export class AppModule {}
