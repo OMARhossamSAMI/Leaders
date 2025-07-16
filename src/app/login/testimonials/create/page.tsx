@@ -2,7 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import '../update/[name]/form.css';
+import '../update/[id]/form.css';
 
 export default function CreateTestimonial() {
   const router = useRouter();
