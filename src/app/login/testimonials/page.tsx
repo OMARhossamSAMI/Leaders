@@ -24,31 +24,29 @@ export default function TestimonialsPage() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleToggle = async (name: string, newState: boolean) => {
+  const handleToggle = async (id: string, newState: boolean) => {
     try {
-      await axios.patch(
-        `http://localhost:3000/testimonials/name/${encodeURIComponent(
-          name
-        )}/toggle`,
-        { on: newState }
-      );
+      await axios.patch(`http://localhost:3000/testimonials/id/${id}/toggle`, {
+        on: newState,
+      });
       setTestimonials((prev) =>
-        prev.map((t) => (t.name === name ? { ...t, on: newState } : t))
+        prev.map((t) => (t._id === id ? { ...t, on: newState } : t))
       );
     } catch (error) {
       console.error("Toggle failed", error);
     }
   };
 
-  const handleDelete = async (name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+  const handleDelete = async (id: string) => {
+    if (!confirm(`Are you sure you want to delete this testimonial?`)) return;
+
     try {
-      await axios.delete(
-        `http://localhost:3000/testimonials/${encodeURIComponent(name)}`
-      );
-      setTestimonials((prev) => prev.filter((t) => t.name !== name));
+      await axios.delete(`http://localhost:3000/testimonials/${id}`);
+      setTestimonials((prev) => prev.filter((t) => t._id !== id));
+      alert("Testimonial deleted successfully.");
     } catch (error) {
       console.error("Delete failed", error);
+      alert("Failed to delete testimonial.");
     }
   };
 
@@ -69,10 +67,7 @@ export default function TestimonialsPage() {
 
       <div className="container testimonial-grid">
         {testimonials.map((t) => (
-          <div
-            key={t._id}
-            className={`testimonial-card ${t.on ? "active" : ""}`}
-          >
+          <div key={t._id} className={`testimonial-card ${t.on ? "active" : ""}`}>
             <div className="quote-icon">
               <i className="bi bi-quote" />
             </div>
@@ -93,18 +88,19 @@ export default function TestimonialsPage() {
                   <input
                     type="checkbox"
                     checked={t.on}
-                    onChange={(e) => handleToggle(t.name, e.target.checked)}
+                    onChange={(e) => handleToggle(t._id, e.target.checked)} // ✅ fixed here
                   />
                   <span className="slider round"></span>
                 </label>
               </div>
             </div>
+
             <div className="testimonial-actions d-flex gap-2 mt-2">
               <button
                 className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
                 onClick={() =>
                   router.push(
-                    `/login/testimonials/update/${encodeURIComponent(t.name)}`
+                    `/login/testimonials/update/${encodeURIComponent(t._id)}`
                   )
                 }
               >
@@ -112,7 +108,7 @@ export default function TestimonialsPage() {
               </button>
               <button
                 className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                onClick={() => handleDelete(t.name)}
+                onClick={() => handleDelete(t._id)}
               >
                 <i className="bi bi-trash"></i> Delete
               </button>

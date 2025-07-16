@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 
-
 interface FormField {
   name: string;
   label?: string;
@@ -14,35 +13,33 @@ interface FormField {
   placeholder?: string;
 }
 
-
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const [fields, setFields] = useState<FormField[]>([]);
 
-
-useEffect(() => {
-  // Hide preloader
-  const preloader = document.getElementById("preloader");
-  if (preloader) {
-    const timer = setTimeout(() => {
-      preloader.style.display = "none";
-    }, 15);
-    return () => clearTimeout(timer);
-  }
-
-  // Fetch dynamic form fields
-  const fetchFields = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/form-fields");
-      const data = await res.json();
-      setFields(data);
-    } catch (error) {
-      console.error("Failed to fetch form fields", error);
+  useEffect(() => {
+    // Hide preloader
+    const preloader = document.getElementById("preloader");
+    if (preloader) {
+      const timer = setTimeout(() => {
+        preloader.style.display = "none";
+      }, 15);
+      return () => clearTimeout(timer);
     }
-  };
 
-  fetchFields();
-}, []);
+    // Fetch dynamic form fields
+    const fetchFields = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/form-fields");
+        const data = await res.json();
+        setFields(data);
+      } catch (error) {
+        console.error("Failed to fetch form fields", error);
+      }
+    };
+
+    fetchFields();
+  }, []);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -423,131 +420,113 @@ useEffect(() => {
                 )}
 
                 {activeSection === "form" && (
-                  <div className="col-lg-12">
-                    <div className="cta-wrapper mt-5">
-                      <div className="row g-4">
-                        <div className="col-12">
-                          <div className="cta-item apply p-4 border rounded shadow-sm bg-light">
-                            <i className="bi bi-file-earmark-check" />
-                            <h3>Ready to Apply?</h3>
-                            <p>
-                              Please carefully provide the information requested
-                              below. Once submitted, our admissions team will
-                              review your application and contact you to arrange
-                              interviews for both the student and parents. We
-                              are here to answer all your questions and guide
-                              you through each step of the admissions process.
-                              We look forward to getting to know your family and
-                              exploring how LIC can support your child&apos;s
-                              educational journey.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="request-info mt-5">
-                      <div className="card">
-                        <div className="card-body">
-                          <h3 className="card-title">
-                            Admission Application Form
-                          </h3>
-                          <p>
-                            Please complete the form below to apply for
-                            admission at Leaders International College.
-                          </p>
-                          {/* KEEP your full form here unchanged */}
-                          <form
-  id="applicationForm"
-  className="php-email-form mt-4"
-  onSubmit={handleSubmit}
->
-  <h5>Applicant Details</h5>
-
-  {fields.map((field, index) => {
-    const label = field.label || field.name.replace(/_/g, " ");
-    const required = field.required ?? false;
-
-    // Render radio group
-    if (field.type === "radio" && field.options?.length) {
-      return (
-        <div className="mb-3" key={index}>
-          <label className="form-label d-block">{label}</label>
-          {field.options.map((opt, i) => (
-            <div className="form-check form-check-inline" key={i}>
-              <input
-                className="form-check-input"
-                type="radio"
-                name={field.name}
-                value={opt}
-                required={required}
-              />
-              <label className="form-check-label">{opt}</label>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    // Render select
-    if (field.type === "select" && field.options?.length) {
-      return (
-        <div className="mb-3" key={index}>
-          <select
-            name={field.name}
-            className="form-select"
-            required={required}
-            defaultValue=""
-          >
-            <option value="" disabled>{label}</option>
-            {field.options.map((opt, i) => (
-              <option key={i} value={opt}>{opt}</option>
-            ))}
-          </select>
-        </div>
-      );
-    }
-
-    // Render date input
-    if (field.type === "date") {
-      return (
-        <div className="mb-3" key={index}>
-          <input
-            type="date"
-            name={field.name}
-            className="form-control"
-            max={new Date().toISOString().split("T")[0]}
-            placeholder={label}
-            required={required}
-          />
-        </div>
-      );
-    }
-
-    // Default: text/email/tel/etc.
-    return (
-      <div className="mb-3" key={index}>
-        <input
-          type={field.type}
-          name={field.name}
-          className="form-control"
-          placeholder={field.placeholder || label}
-          required={required}
-        />
+  <div className="col-lg-12">
+    <div className="cta-wrapper mt-5">
+      <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
+        <i className="bi bi-file-earmark-check" />
+        <h3>Ready to Apply?</h3>
+        <p>
+          Please carefully provide the information requested below. Once submitted, our admissions team will review your application and contact you to arrange interviews for both the student and parents. We are here to answer all your questions and guide you through each step of the admissions process.
+        </p>
       </div>
-    );
-  })}
+    </div>
 
-  <div className="text-center">
-    <button type="submit" className="btn btn-primary">Submit Application</button>
-  </div>
-</form>
+    {/* FULL-WIDTH FORM CARD */}
+    <div className="form-wrapper mt-5">
+      <div className="card w-100">
+        <div className="card-body">
+          <h3 className="card-title">Admission Application Form</h3>
+          <p>Please complete the form below to apply for admission at Leaders International College.</p>
 
+          <form id="applicationForm" className="php-email-form mt-4" onSubmit={handleSubmit}>
+            <h5>Applicant Details</h5>
+
+            <div className="row">
+              {fields.map((field, index) => {
+                const label = field.label || field.name.replace(/_/g, " ");
+                const required = field.required ?? false;
+
+                // RADIO
+                if (field.type === "radio" && field.options?.length) {
+                  return (
+                    <div className="col-md-6 mb-3" key={index}>
+                      <label className="form-label d-block">{label}</label>
+                      {field.options.map((opt, i) => (
+                        <div className="form-check form-check-inline" key={i}>
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name={field.name}
+                            value={opt}
+                            required={required}
+                          />
+                          <label className="form-check-label">{opt}</label>
                         </div>
-                      </div>
+                      ))}
                     </div>
+                  );
+                }
+
+                // SELECT
+                if (field.type === "select" && field.options?.length) {
+                  return (
+                    <div className="col-md-6 mb-3" key={index}>
+                      <select
+                        name={field.name}
+                        className="form-select"
+                        required={required}
+                        defaultValue=""
+                      >
+                        <option value="" disabled>{label}</option>
+                        {field.options.map((opt, i) => (
+                          <option key={i} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                }
+
+                // DATE
+                if (field.type === "date") {
+                  return (
+                    <div className="col-md-6 mb-3" key={index}>
+                      <input
+                        type="date"
+                        name={field.name}
+                        className="form-control"
+                        max={new Date().toISOString().split("T")[0]}
+                        placeholder={label}
+                        required={required}
+                      />
+                    </div>
+                  );
+                }
+
+                // DEFAULT INPUT
+                return (
+                  <div className="col-md-6 mb-3" key={index}>
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      className="form-control"
+                      placeholder={field.placeholder || label}
+                      required={required}
+                    />
                   </div>
-                )}
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-4">
+              <button type="submit" className="btn btn-primary btn-lg px-4">Submit Application</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
               </div>
             </div>
           </section>

@@ -11,6 +11,7 @@ import {
 import { TestimonialsService } from './testimonials.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { Testimonial } from 'src/Schemas/testimonials.schema';
+import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 
 @Controller('testimonials')
 export class TestimonialsController {
@@ -32,27 +33,26 @@ async getActiveTestimonials(): Promise<Testimonial[]> {
 }
 
 
-  @Get(':name')
-  findOne(@Param('name') name: string) {
-    return this.testimonialsService.findByName(name);
-  }
-
-  @Put(':name')
-  update(@Param('name') name: string, @Body() dto: CreateTestimonialDto) {
-    return this.testimonialsService.updateByName(name, dto);
-  }
-
-  @Delete(':name')
-  delete(@Param('name') name: string) {
-    return this.testimonialsService.deleteByName(name);
-  }
-
-  @Patch('name/:name/toggle')
-async toggleByName(
-  @Param('name') name: string,
-  @Body('on') on: boolean,
-): Promise<Testimonial> {
-  return this.testimonialsService.updateVisibilityByName(name, on);
+  @Get(':id')
+getById(@Param('id') id: string) {
+  return this.testimonialsService.findById(id);
 }
+
+
+  @Patch(':id')
+update(@Param('id') id: string, @Body() dto: UpdateTestimonialDto) {
+  return this.testimonialsService.updateById(id, dto);
+}
+
+@Delete(':id')
+delete(@Param('id') id: string) {
+  return this.testimonialsService.deleteById(id);
+}
+
+@Patch('id/:id/toggle')
+toggle(@Param('id') id: string, @Body('on') on: boolean) {
+  return this.testimonialsService.updateVisibilityById(id, on);
+}
+
 
 }
