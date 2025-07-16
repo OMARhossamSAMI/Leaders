@@ -1,11 +1,48 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 
+
+interface FormField {
+  name: string;
+  label?: string;
+  type: string;
+  required?: boolean;
+  options?: string[];
+  placeholder?: string;
+}
+
+
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
+  const [fields, setFields] = useState<FormField[]>([]);
+
+
+useEffect(() => {
+  // Hide preloader
+  const preloader = document.getElementById("preloader");
+  if (preloader) {
+    const timer = setTimeout(() => {
+      preloader.style.display = "none";
+    }, 15);
+    return () => clearTimeout(timer);
+  }
+
+  // Fetch dynamic form fields
+  const fetchFields = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/form-fields");
+      const data = await res.json();
+      setFields(data);
+    } catch (error) {
+      console.error("Failed to fetch form fields", error);
+    }
+  };
+
+  fetchFields();
+}, []);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -15,7 +52,43 @@ export default function AdmissionsPage() {
       }, 15);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, []); // <-- Dependency array must be here
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const data: Record<string, any> = {};
+    console.log("Submitted data:", data);
+
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    try {
+      const response = await fetch("http://localhost:3000/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Application submitted successfully!");
+        form.reset();
+      } else {
+        alert("Error: " + result.message || "Submission failed.");
+      }
+    } catch (error) {
+      console.error("Submission Error:", error);
+      alert("An error occurred while submitting the form.");
+    }
+  };
 
   return (
     <>
@@ -385,234 +458,91 @@ export default function AdmissionsPage() {
                           </p>
                           {/* KEEP your full form here unchanged */}
                           <form
-                            className="php-email-form mt-4"
-                            action="forms/contact.php"
-                          >
-                            <h5>Applicant Details</h5>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="student_name"
-                                className="form-control"
-                                placeholder="Student Full Name"
-                                required
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="date"
-                                name="student_birthdate"
-                                className="form-control"
-                                placeholder="Date of Birth"
-                                required
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="nationality"
-                                className="form-control"
-                                placeholder="Nationality"
-                                required
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="current_school"
-                                className="form-control"
-                                placeholder="Current School/Nursery"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <select
-                                name="second_language"
-                                className="form-select"
-                                required
-                              >
-                                <option value="" disabled selected>
-                                  Student Second Language
-                                </option>
-                                <option value="French">French</option>
-                                <option value="German">German</option>
-                                <option value="No 2nd language">
-                                  No 2nd Language
-                                </option>
-                                <option value="Other">Other</option>
-                              </select>
-                            </div>
-                            <div className="mb-3">
-                              <select
-                                name="grade_applying_for"
-                                className="form-select"
-                                required
-                              >
-                                <option value="" disabled selected>
-                                  Grade Applying For
-                                </option>
-                                <option>Pre school - PYP1</option>
-                                <option>KG1 - PYP2</option>
-                                <option>KG2 - PYP3</option>
-                                <option>Grade1 - PYP4</option>
-                                <option>Grade2 - PYP5</option>
-                                <option>Grade3 - PYP6</option>
-                                <option>Grade4 - PYP7</option>
-                                <option>Grade5 - PYP8</option>
-                                <option>Grade6 - MYP1</option>
-                                <option>Grade7 - MYP2</option>
-                                <option>Grade8 - MYP3</option>
-                                <option>Grade9 - MYP4</option>
-                                <option>Grade10 - MYP5</option>
-                                <option>IG - Year10</option>
-                                <option>Grade11 - DP1</option>
-                                <option>IG - Year11</option>
-                                <option>Grade12 - DP2</option>
-                              </select>
-                            </div>
-                            <div className="mb-3">
-                              <select
-                                name="gender"
-                                className="form-select"
-                                required
-                              >
-                                <option value="" disabled selected>
-                                  Gender
-                                </option>
-                                <option>Male</option>
-                                <option>Female</option>
-                              </select>
-                            </div>
-                            <div className="mb-3">
-                              <label className="form-label d-block">
-                                Does the student have siblings in Leaders
-                                International College?
-                              </label>
-                              <div className="form-check form-check-inline">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="siblings"
-                                  defaultValue="Yes"
-                                  required
-                                />
-                                <label className="form-check-label">Yes</label>
-                              </div>
-                              <div className="form-check form-check-inline">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="siblings"
-                                  defaultValue="No"
-                                />
-                                <label className="form-check-label">No</label>
-                              </div>
-                            </div>
-                            <h5 className="mt-4">Father&apos;s Data</h5>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="father_name"
-                                className="form-control"
-                                placeholder="Father’s Name"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="tel"
-                                name="father_phone"
-                                className="form-control"
-                                placeholder="Father's Mobile Number"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="email"
-                                name="father_email"
-                                className="form-control"
-                                placeholder="Father's Email"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="father_occupation"
-                                className="form-control"
-                                placeholder="Father's Occupation"
-                              />
-                            </div>
-                            <h5 className="mt-4">Mother&apos;s Data</h5>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="mother_name"
-                                className="form-control"
-                                placeholder="Mother's Name"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="tel"
-                                name="mother_phone"
-                                className="form-control"
-                                placeholder="Mother's Mobile Number"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="email"
-                                name="mother_email"
-                                className="form-control"
-                                placeholder="Mother's Email"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <input
-                                type="text"
-                                name="mother_occupation"
-                                className="form-control"
-                                placeholder="Mother's Occupation"
-                              />
-                            </div>
-                            <div className="mb-3">
-                              <select
-                                name="marital_status"
-                                className="form-select"
-                              >
-                                <option value="" disabled selected>
-                                  Marital Status
-                                </option>
-                                <option>Married</option>
-                                <option>Divorced</option>
-                              </select>
-                            </div>
-                            <h5 className="mt-4">How Did You Hear About Us?</h5>
-                            <div className="mb-3">
-                              <select
-                                name="referral_source"
-                                className="form-select"
-                              >
-                                <option value="" disabled selected>
-                                  Select an Option
-                                </option>
-                                <option>Website</option>
-                                <option>Social Media</option>
-                                <option>Word of Mouth</option>
-                                <option>Current Students or Alumni</option>
-                                <option>School Events</option>
-                                <option>Community Outreach</option>
-                              </select>
-                            </div>
-                            <div className="loading">Loading</div>
-                            <div className="error-message" />
-                            <div className="sent-message">
-                              Your application has been submitted. Thank you!
-                            </div>
-                            <div className="text-center">
-                              <button type="submit" className="btn btn-primary">
-                                Submit Application
-                              </button>
-                            </div>
-                          </form>
+  id="applicationForm"
+  className="php-email-form mt-4"
+  onSubmit={handleSubmit}
+>
+  <h5>Applicant Details</h5>
+
+  {fields.map((field, index) => {
+    const label = field.label || field.name.replace(/_/g, " ");
+    const required = field.required ?? false;
+
+    // Render radio group
+    if (field.type === "radio" && field.options?.length) {
+      return (
+        <div className="mb-3" key={index}>
+          <label className="form-label d-block">{label}</label>
+          {field.options.map((opt, i) => (
+            <div className="form-check form-check-inline" key={i}>
+              <input
+                className="form-check-input"
+                type="radio"
+                name={field.name}
+                value={opt}
+                required={required}
+              />
+              <label className="form-check-label">{opt}</label>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Render select
+    if (field.type === "select" && field.options?.length) {
+      return (
+        <div className="mb-3" key={index}>
+          <select
+            name={field.name}
+            className="form-select"
+            required={required}
+            defaultValue=""
+          >
+            <option value="" disabled>{label}</option>
+            {field.options.map((opt, i) => (
+              <option key={i} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    // Render date input
+    if (field.type === "date") {
+      return (
+        <div className="mb-3" key={index}>
+          <input
+            type="date"
+            name={field.name}
+            className="form-control"
+            max={new Date().toISOString().split("T")[0]}
+            placeholder={label}
+            required={required}
+          />
+        </div>
+      );
+    }
+
+    // Default: text/email/tel/etc.
+    return (
+      <div className="mb-3" key={index}>
+        <input
+          type={field.type}
+          name={field.name}
+          className="form-control"
+          placeholder={field.placeholder || label}
+          required={required}
+        />
+      </div>
+    );
+  })}
+
+  <div className="text-center">
+    <button type="submit" className="btn btn-primary">Submit Application</button>
+  </div>
+</form>
+
                         </div>
                       </div>
                     </div>

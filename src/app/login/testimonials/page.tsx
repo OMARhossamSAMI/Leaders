@@ -27,13 +27,13 @@ export default function TestimonialsPage() {
   const handleToggle = async (name: string, newState: boolean) => {
     try {
       await axios.patch(
-        `http://localhost:3000/testimonials/name/${encodeURIComponent(name)}/toggle`,
+        `http://localhost:3000/testimonials/name/${encodeURIComponent(
+          name
+        )}/toggle`,
         { on: newState }
       );
       setTestimonials((prev) =>
-        prev.map((t) =>
-          t.name === name ? { ...t, on: newState } : t
-        )
+        prev.map((t) => (t.name === name ? { ...t, on: newState } : t))
       );
     } catch (error) {
       console.error("Toggle failed", error);
@@ -69,14 +69,21 @@ export default function TestimonialsPage() {
 
       <div className="container testimonial-grid">
         {testimonials.map((t) => (
-          <div key={t._id} className={`testimonial-card ${t.on ? "active" : ""}`}>
+          <div
+            key={t._id}
+            className={`testimonial-card ${t.on ? "active" : ""}`}
+          >
             <div className="quote-icon">
               <i className="bi bi-quote" />
             </div>
             <p className="testimonial-text">{t.description}</p>
             <hr />
             <div className="client-info-row">
-              <img src={t.profilePhoto} alt="Client" className="client-avatar" />
+              <img
+                src={t.profilePhoto}
+                alt="Client"
+                className="client-avatar"
+              />
               <div className="client-info">
                 <div className="client-name">{t.name}</div>
                 <div className="client-role">{t.role}</div>
@@ -92,20 +99,22 @@ export default function TestimonialsPage() {
                 </label>
               </div>
             </div>
-            <div className="testimonial-actions">
+            <div className="testimonial-actions d-flex gap-2 mt-2">
               <button
-                className="btn btn-sm btn-outline-primary"
+                className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
                 onClick={() =>
-                  router.push(`/login/testimonials/update/${encodeURIComponent(t.name)}`)
+                  router.push(
+                    `/login/testimonials/update/${encodeURIComponent(t.name)}`
+                  )
                 }
               >
-                Update
+                <i className="bi bi-pencil-square"></i> Update
               </button>
               <button
-                className="btn btn-sm btn-outline-danger"
+                className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
                 onClick={() => handleDelete(t.name)}
               >
-                Delete
+                <i className="bi bi-trash"></i> Delete
               </button>
             </div>
           </div>

@@ -29,7 +29,7 @@ export default function AdminPage() {
                 title: "School Applications",
                 description:
                   "Manage all student applications submitted through the school’s admission forms.",
-                href: "#",
+                href: "/login/Admin/school_app",
                 color: "#007bff",
               },
               {
