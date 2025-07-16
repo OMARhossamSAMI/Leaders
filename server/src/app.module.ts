@@ -4,6 +4,7 @@ import { TestimonialsModule } from './testimonials/testimonials.module';
 import { EventsModule } from './events/events.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SettingsModule } from './settings/settings.module';
+import { PopupModule } from './popup/popup.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SettingsModule } from './settings/settings.module';
     TestimonialsModule,
     EventsModule,
     SettingsModule,
+    PopupModule,
   ],
 })
 export class AppModule {}
