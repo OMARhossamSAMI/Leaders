@@ -9425,3 +9425,399 @@ section,
 .program-item.character .program-type {
   color: #6f42c1;
 }
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-modal {
+  width: 450px; /* larger */
+  min-height: 380px;
+  padding: 25px 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  animation: slideFade 0.4s ease-in-out;
+}
+
+@keyframes slideFade {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+/* Layout wrapper */
+.events-container {
+  padding: 40px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.events-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.card {
+  width: 300px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 30px;
+  gap: 13px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.062);
+}
+
+.popup-card {
+  height: auto;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.popup-card-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+.popup-icons-left {
+  display: flex;
+  gap: 8px;
+}
+
+.popup-category-icon {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.popup-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #111827;
+  margin-top: 35px;
+}
+
+.popup-description {
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.4;
+  margin: 0 5px;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.acceptButton {
+  width: 80px;
+  height: 30px;
+  background-color: #7b57ff;
+  border: none;
+  color: rgb(241, 241, 241);
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px #977ef3, 0 2px 4px -1px #977ef3;
+  transition: all 0.6s ease;
+}
+
+.acceptButton:hover {
+  background-color: #9173ff;
+  box-shadow: 0 10px 15px -3px #977ef3, 0 4px 6px -2px #977ef3;
+}
+
+.header-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 30px !important;
+}
+
+.create-btn {
+  background-color: #2563eb !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: background 0.3s ease;
+}
+
+.create-btn:hover {
+  background-color: #1e40af !important;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-btn {
+  background: #e5e7eb;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn.danger {
+  background-color: #fee2e2;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.error-box {
+  background-color: #fee2e2 !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  margin-bottom: 20px !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+}
+.popup-card-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 10px;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+}
+
+.popup-icons-right {
+  display: flex;
+  gap: 8px;
+}
+
+.notificationCard {
+  position: relative;
+  width: 370px;
+  min-height: 480px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Top actions: toggle + icons */
+.popup-card-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+}
+
+/* Toggle Button */
+.card-actions {
+  margin: 0;
+}
+
+/* Edit + Delete buttons */
+.popup-icons-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* Edit/Delete button styles */
+.icon-btn {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn.danger {
+  background-color: #fee2e2;
+}
+
+/* Title */
+.notificationHeading {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #111827;
+  margin-top: 65px;
+}
+
+/* Icon */
+.bellIcon {
+  width: 60px;
+  height: 60px;
+  stroke-width: 1.5;
+  color: rgb(58, 117, 200); /* Primary Blue */
+  margin-top: 6px;
+}
+
+/* Description */
+.notificationPara {
+  font-size: 0.85em;
+  color: #4b5563;
+  line-height: 1.4;
+  font-weight: 500;
+  margin: 8px 0;
+}
+
+/* Button container */
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Primary button */
+.AllowBtn {
+  width: 130px;
+  height: 34px;
+  background-color: #26c3f0; /* Main Blue */
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.AllowBtn:hover {
+  background-color: #26c3f0; /* Slightly darker blue */
+}
+
+/* Secondary button */
+.NotnowBtn {
+  width: 130px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  color: #26c3f0;
+  font-weight: 600;
+  font-size: 0.8em;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.NotnowBtn:hover {
+  background-color: rgba(58, 117, 200, 0.1); /* Light blue hover effect */
+}
+
+.NotnowBtn {
+  width: 130px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  color: rgb(116, 161, 234);
+  font-weight: 600;
+  font-size: 0.8em;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.NotnowBtn:hover {
+  background-color: rgb(239, 227, 255);
+}
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+.toggle-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+}
