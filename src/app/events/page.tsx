@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 
 // Type definition for events
@@ -51,6 +51,28 @@ export default function EventsPage() {
     fetchData();
   }, []);
 
+  // Calendar logic
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const eventDaysInCurrentMonth = useMemo(() => {
+    return events
+      .map((e) => new Date(e.date))
+      .filter(
+        (d) => d.getMonth() === currentMonth && d.getFullYear() === currentYear
+      )
+      .map((d) => d.getDate());
+  }, [events]);
+
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const calendarDays: (number | "")[] = [];
+  for (let i = 0; i < firstDayOfMonth; i++) calendarDays.push("");
+  for (let d = 1; d <= daysInMonth; d++) calendarDays.push(d);
+  while (calendarDays.length < 42) calendarDays.push("");
+
   return (
     <>
       <main className="main">
@@ -58,7 +80,7 @@ export default function EventsPage() {
         <div
           className="page-title dark-background"
           style={{
-            backgroundImage: "url(assets/img/education/showcase-1.webp)",
+            backgroundImage: "url(assets/img/Event-Photo.JPG)",
           }}
         >
           <div className="container position-relative">
@@ -114,9 +136,6 @@ export default function EventsPage() {
                             </p>
                           </div>
                           <p>{event.description}</p>
-                          <a href="#" className="btn-event">
-                            Learn More <i className="bi bi-arrow-right" />
-                          </a>
                         </div>
                       </div>
                     );
@@ -138,27 +157,78 @@ export default function EventsPage() {
                   <div
                     className="sidebar-item"
                     data-aos="fade-up"
+                    data-aos-delay={300}
+                  >
+                    <h3 className="sidebar-title">Upcoming Events</h3>
+                    <div className="event-calendar">
+                      <div className="calendar-header">
+                        <h4>
+                          {now.toLocaleString("en-US", { month: "long" })}{" "}
+                          {currentYear}
+                        </h4>
+                      </div>
+                      <div className="calendar-body">
+                        <div className="weekdays">
+                          <div>Su</div>
+                          <div>Mo</div>
+                          <div>Tu</div>
+                          <div>We</div>
+                          <div>Th</div>
+                          <div>Fr</div>
+                          <div>Sa</div>
+                        </div>
+                        <div className="days">
+                          {calendarDays.map((day, i) => (
+                            <div
+                              key={i}
+                              className={`day ${
+                                typeof day === "number" &&
+                                eventDaysInCurrentMonth.includes(day)
+                                  ? "has-event"
+                                  : ""
+                              }`}
+                              style={
+                                typeof day === "number" &&
+                                eventDaysInCurrentMonth.includes(day)
+                                  ? {
+                                      backgroundColor: "#007bff",
+                                      color: "#fff",
+                                      fontWeight: "bold",
+                                    }
+                                  : {}
+                              }
+                            >
+                              {day}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="sidebar-item"
+                    data-aos="fade-up"
                     data-aos-delay={100}
                   >
                     <h3 className="sidebar-title">Event Categories</h3>
                     <ul className="categories">
-                      <li>
-                        <a href="#">Academic</a>
-                      </li>
-                      <li>
-                        <a href="#">Sports</a>
-                      </li>
-                      <li>
-                        <a href="#">Workshops</a>
-                      </li>
-                      <li>
-                        <a href="#">Cultural</a>
-                      </li>
-                      <li>
-                        <a href="#">Trips</a>
-                      </li>
+                      {Object.entries(
+                        events.reduce((acc: Record<string, number>, event) => {
+                          const category = event.category || "Uncategorized";
+                          acc[category] = (acc[category] || 0) + 1;
+                          return acc;
+                        }, {})
+                      ).map(([category, count]) => (
+                        <li key={category}>
+                          <a href="#">
+                            {category} <span>({count})</span>
+                          </a>
+                        </li>
+                      ))}
                     </ul>
                   </div>
+
                   <div
                     className="sidebar-item featured-event"
                     data-aos="fade-up"
@@ -167,21 +237,32 @@ export default function EventsPage() {
                     <h3 className="sidebar-title">Featured Event</h3>
                     <div className="featured-event-content">
                       <img
-                        src="/assets/img/education/events-5.webp"
+                        src="assets/img/Event-Featured.JPG"
                         alt="Featured Event"
                         className="img-fluid"
                       />
-                      <h4>Leadership Conference 2025</h4>
-                      <p>
+                      <h4>Leadership Conference</h4>
+                      {/* <p>
                         <i className="bi bi-calendar-event" /> August 12, 2025
-                      </p>
+                      </p> */}
                       <p>
                         Empowering students through engaging talks, workshops,
-                        and team-building sessions.
+                        Trips and team-building sessions.
                       </p>
-                      <a href="#" className="btn-register">
-                        Register Now
-                      </a>
+                      <div className="event-guidance mt-3">
+                        <strong>Want to participate in an event?</strong>
+                        <p className="mt-1 mb-1">Please reach out via email:</p>
+                        <ul className="contact-emails">
+                          <li>
+                            <i className="bi bi-envelope" />{" "}
+                            studentaffairs@leadersintcollege.com
+                          </li>
+                          <li>
+                            <i className="bi bi-envelope" />{" "}
+                            info@leadersintcollege.com
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>

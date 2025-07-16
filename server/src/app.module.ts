@@ -8,6 +8,8 @@ import { SettingsModule } from './settings/settings.module';
 import { StudentApplicationModule } from './student-application/student-application.module';
 import { FormFieldModule } from './form-field/form-field.module';
 
+import { PopupModule } from './popup/popup.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +24,7 @@ import { FormFieldModule } from './form-field/form-field.module';
     SettingsModule,
     StudentApplicationModule,
     FormFieldModule,
+    PopupModule,
   ],
 })
 export class AppModule {}

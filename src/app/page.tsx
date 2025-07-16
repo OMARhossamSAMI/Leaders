@@ -3,9 +3,25 @@
 import Head from "next/head";
 
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 import axios from "axios";
+import {
+  X,
+  GraduationCap,
+  Megaphone,
+  CalendarClock,
+  Tag,
+  Info,
+  Star,
+} from "lucide-react";
 
+interface LivePopup {
+  title: string;
+  category: string;
+  message: string;
+  buttons?: string[];
+  path?: string[];
+}
 interface Testimonial {
   _id: string;
   name: string;
@@ -27,6 +43,10 @@ type EventType = {
 export default function Home() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [events, setEvents] = useState<EventType[]>([]);
+  // New state for the live popup
+  const [livePopup, setLivePopup] = useState<LivePopup | null>(null);
+  const [showPopup, setShowPopup] = useState(true); // Controls visibility
+  const router = useRouter();
 
   // First useEffect: Preloader
   useEffect(() => {
@@ -69,6 +89,36 @@ export default function Home() {
 
     fetchData();
   }, []);
+  // Fetch the live popup once
+  useEffect(() => {
+    axios
+      .get<LivePopup>("http://localhost:3000/popup/live/only")
+      .then((res) => setLivePopup(res.data))
+      .catch((err) => console.error("No live popup found"));
+  }, []);
+
+  const getCategoryIcon = (category: string) => {
+    const iconProps = {
+      size: 48,
+      color: "#26c3f0", // your theme blue
+      strokeWidth: 2,
+    };
+
+    switch (category.toLowerCase()) {
+      case "admission":
+        return <GraduationCap {...iconProps} />;
+      case "announcement":
+        return <Megaphone {...iconProps} />;
+      case "event":
+        return <CalendarClock {...iconProps} />;
+      case "discount":
+        return <Tag {...iconProps} />;
+      case "deadline":
+        return <Info {...iconProps} />;
+      default:
+        return <Star {...iconProps} />;
+    }
+  };
 
   return (
     <>
@@ -90,6 +140,46 @@ export default function Home() {
   ======================================================== */}
 
       <main className="main">
+        {livePopup && showPopup && (
+          <div className="popup-overlay">
+            <div className="notificationCard popup-modal">
+              <div className="popup-top-bar">
+                <button
+                  className="icon-btn"
+                  onClick={() => setShowPopup(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <p className="notificationHeading">{livePopup.title}</p>
+              <div className="popup-icon-wrapper">
+                {getCategoryIcon(livePopup.category)}
+              </div>
+              <p className="notificationPara">{livePopup.message}</p>
+
+              <div className="buttonContainer">
+                {livePopup.buttons?.slice(0, 3).map((btnText, i) => (
+                  <button
+                    key={i}
+                    className={i === 0 ? "AllowBtn" : "NotnowBtn"}
+                    onClick={() => {
+                      const path = livePopup.path?.[i];
+                      if (!path) return;
+                      if (path === "/") {
+                        window.location.href = "/";
+                      } else {
+                        router.push(path);
+                      }
+                    }}
+                  >
+                    {btnText}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Hero Section */}
         <section id="hero" className="hero section dark-background">
           <div className="hero-container">
@@ -968,12 +1058,8 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="event-actions">
-                              <a href="#" className="btn-learn-more">
+                              <a href="/events" className="btn-learn-more">
                                 Learn More
-                              </a>
-                              <a href="#" className="btn-calendar">
-                                <i className="bi bi-calendar-plus" /> Add to
-                                Calendar
                               </a>
                             </div>
                           </div>
@@ -983,7 +1069,7 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-center mt-5">
-                  <a href="#" className="btn-view-all">
+                  <a href="/events" className="btn-view-all">
                     View All Events
                   </a>
                 </div>

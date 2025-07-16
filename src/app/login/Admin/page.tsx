@@ -64,6 +64,14 @@ export default function AdminPage() {
                 href: "/login/testimonials",
                 color: "#6f42c1",
               },
+              {
+                icon: "bi-window-fullscreen",
+                title: "Popup Message",
+                description:
+                  "Create or update the homepage popup that appears for first-time visitors.",
+                href: "/login/Admin/popup",
+                color: "#fd7e14",
+              },
             ].map((card, index) => (
               <div
                 key={index}
