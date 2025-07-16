@@ -181,6 +181,15 @@ export default function ApplicationsPage() {
   }
 };
 
+const handleMoveField = (index: number, direction: number) => {
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= formStructureDraft.length) return;
+
+  const updated = [...formStructureDraft];
+  const [movedItem] = updated.splice(index, 1);
+  updated.splice(newIndex, 0, movedItem);
+  setFormStructureDraft(updated);
+};
 
 
   return (
@@ -290,62 +299,122 @@ export default function ApplicationsPage() {
       </div>
 
       {editingFormStructure && (
-        <div style={{ background: "#fff", padding: "2rem", marginTop: "2rem", borderRadius: "10px" }}>
-          <h3>Edit Form Structure</h3>
-          {formStructureDraft.map((field, index) => (
-            <div key={index} style={{ marginBottom: "1rem", borderBottom: "1px solid #ddd", paddingBottom: "1rem" }}>
-              <input
-                className="form-input mb-1"
-                placeholder="Field Name"
-                value={field.field_name}
-                onChange={(e) => handleFieldChange(index, "field_name", e.target.value)}
-              />
-              <input
-                className="form-input mb-1"
-                placeholder="Label"
-                value={field.label}
-                onChange={(e) => handleFieldChange(index, "label", e.target.value)}
-              />
-              <select
-                className="form-input mb-1"
-                value={field.type}
-                onChange={(e) => handleFieldChange(index, "type", e.target.value)}
-              >
-                <option value="text">Text</option>
-                <option value="number">Number</option>
-                <option value="email">Email</option>
-                <option value="tel">Phone</option>
-                <option value="date">Date</option>
-                <option value="select">Select</option>
-              </select>
-              <label className="form-check">
-                <input
-                  type="checkbox"
-                  checked={field.required}
-                  onChange={(e) => handleFieldChange(index, "required", e.target.checked)}
-                />{" "}
-                Required
-              </label>
-              {field.type === "select" && (
-                <input
-                  className="form-input mt-1"
-                  placeholder="Comma-separated options"
-                  value={field.options?.join(",") || ""}
-                  onChange={(e) =>
-                    handleFieldChange(index, "options", e.target.value.split(",").map((opt) => opt.trim()))
-                  }
-                />
-              )}
-              <button className="btn-danger mt-2" onClick={() => handleRemoveField(index)}>🗑️ Remove</button>
-            </div>
-          ))}
-          <button onClick={handleAddField} className="btn-secondary mt-2">➕ Add Field</button>
-          <div className="mt-4 flex gap-3">
-            <button onClick={handleSaveForm} className="btn-success">💾 Save Form</button>
-            <button onClick={() => setEditingFormStructure(false)} className="btn-danger">❌ Cancel</button>
-          </div>
+  <div
+    style={{
+      background: "#fff",
+      padding: "2rem",
+      marginTop: "2rem",
+      borderRadius: "10px",
+    }}
+  >
+    <h3>Edit Form Structure</h3>
+    {formStructureDraft.map((field, index) => (
+      <div
+        key={index}
+        style={{
+          marginBottom: "1rem",
+          borderBottom: "1px solid #ddd",
+          paddingBottom: "1rem",
+        }}
+      >
+        <input
+          className="form-input mb-1"
+          placeholder="Field Name"
+          value={field.field_name}
+          onChange={(e) =>
+            handleFieldChange(index, "field_name", e.target.value)
+          }
+        />
+        <input
+          className="form-input mb-1"
+          placeholder="Label"
+          value={field.label}
+          onChange={(e) =>
+            handleFieldChange(index, "label", e.target.value)
+          }
+        />
+        <select
+          className="form-input mb-1"
+          value={field.type}
+          onChange={(e) =>
+            handleFieldChange(index, "type", e.target.value)
+          }
+        >
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="email">Email</option>
+          <option value="tel">Phone</option>
+          <option value="date">Date</option>
+          <option value="select">Select</option>
+        </select>
+        <label className="form-check">
+          <input
+            type="checkbox"
+            checked={field.required}
+            onChange={(e) =>
+              handleFieldChange(index, "required", e.target.checked)
+            }
+          />{" "}
+          Required
+        </label>
+
+        {field.type === "select" && (
+          <input
+            className="form-input mt-1"
+            placeholder="Comma-separated options"
+            value={field.options?.join(",") || ""}
+            onChange={(e) =>
+              handleFieldChange(
+                index,
+                "options",
+                e.target.value.split(",").map((opt) => opt.trim())
+              )
+            }
+          />
+        )}
+
+        <div className="flex gap-2 mt-2">
+          <button
+            className="btn-secondary"
+            disabled={index === 0}
+            onClick={() => handleMoveField(index, -1)}
+          >
+            🔼 Move Up
+          </button>
+          <button
+            className="btn-secondary"
+            disabled={index === formStructureDraft.length - 1}
+            onClick={() => handleMoveField(index, 1)}
+          >
+            🔽 Move Down
+          </button>
+          <button
+            className="btn-danger"
+            onClick={() => handleRemoveField(index)}
+          >
+            🗑️ Remove
+          </button>
         </div>
-      )}
+      </div>
+    ))}
+
+    <button onClick={handleAddField} className="btn-secondary mt-2">
+      ➕ Add Field
+    </button>
+    <div className="mt-4 flex gap-3">
+      <button onClick={handleSaveForm} className="btn-success">
+        💾 Save Form
+      </button>
+      <button
+        onClick={() => setEditingFormStructure(false)}
+        className="btn-danger"
+      >
+        ❌ Cancel
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

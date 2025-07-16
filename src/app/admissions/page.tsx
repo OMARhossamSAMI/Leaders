@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
+import './page.css'
 
 interface FormField {
   name: string;
@@ -419,14 +420,18 @@ export default function AdmissionsPage() {
                   </div>
                 )}
 
-                {activeSection === "form" && (
+               {activeSection === "form" && (
   <div className="col-lg-12">
     <div className="cta-wrapper mt-5">
       <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
         <i className="bi bi-file-earmark-check" />
         <h3>Ready to Apply?</h3>
         <p>
-          Please carefully provide the information requested below. Once submitted, our admissions team will review your application and contact you to arrange interviews for both the student and parents. We are here to answer all your questions and guide you through each step of the admissions process.
+          Please carefully provide the information requested below. Once
+          submitted, our admissions team will review your application and
+          contact you to arrange interviews for both the student and parents.
+          We are here to answer all your questions and guide you through each
+          step of the admissions process.
         </p>
       </div>
     </div>
@@ -436,17 +441,24 @@ export default function AdmissionsPage() {
       <div className="card w-100">
         <div className="card-body">
           <h3 className="card-title">Admission Application Form</h3>
-          <p>Please complete the form below to apply for admission at Leaders International College.</p>
+          <p>
+            Please complete the form below to apply for admission at Leaders
+            International College.
+          </p>
 
-          <form id="applicationForm" className="php-email-form mt-4" onSubmit={handleSubmit}>
+          <form
+            id="applicationForm"
+            className="php-email-form mt-4"
+            onSubmit={handleSubmit}
+          >
             <h5>Applicant Details</h5>
 
             <div className="row">
-              {fields.map((field, index) => {
+              {/* Render form fields in saved order */}
+              {[...fields].map((field, index) => {
                 const label = field.label || field.name.replace(/_/g, " ");
                 const required = field.required ?? false;
 
-                // RADIO
                 if (field.type === "radio" && field.options?.length) {
                   return (
                     <div className="col-md-6 mb-3" key={index}>
@@ -467,7 +479,6 @@ export default function AdmissionsPage() {
                   );
                 }
 
-                // SELECT
                 if (field.type === "select" && field.options?.length) {
                   return (
                     <div className="col-md-6 mb-3" key={index}>
@@ -477,16 +488,19 @@ export default function AdmissionsPage() {
                         required={required}
                         defaultValue=""
                       >
-                        <option value="" disabled>{label}</option>
+                        <option value="" disabled>
+                          {label}
+                        </option>
                         {field.options.map((opt, i) => (
-                          <option key={i} value={opt}>{opt}</option>
+                          <option key={i} value={opt}>
+                            {opt}
+                          </option>
                         ))}
                       </select>
                     </div>
                   );
                 }
 
-                // DATE
                 if (field.type === "date") {
                   return (
                     <div className="col-md-6 mb-3" key={index}>
@@ -502,7 +516,6 @@ export default function AdmissionsPage() {
                   );
                 }
 
-                // DEFAULT INPUT
                 return (
                   <div className="col-md-6 mb-3" key={index}>
                     <input
@@ -518,7 +531,9 @@ export default function AdmissionsPage() {
             </div>
 
             <div className="text-center mt-4">
-              <button type="submit" className="btn btn-primary btn-lg px-4">Submit Application</button>
+              <button type="submit" className="btn-submit-application">
+                <i className="bi bi-file-earmark-text"></i> Submit Application
+              </button>
             </div>
           </form>
         </div>
@@ -526,6 +541,7 @@ export default function AdmissionsPage() {
     </div>
   </div>
 )}
+
 
               </div>
             </div>
