@@ -16,12 +16,13 @@ export default function ClientLayoutWrapper({ children }: Props) {
   const isLogin = pathname.startsWith("/login");
   const isTestimonials = pathname.startsWith("/testimonials");
   const isSchool_app = pathname.startsWith("/login/Admin/school_app");
+  const isVacancy = pathname.startsWith("/login/Admin/Vacancy");
 
   return (
     <>
-      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && <Header />}
+      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && !isVacancy && <Header />}
       {children}
-      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && <Footer />}
+      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && !isVacancy &&<Footer />}
     </>
   );
 }

@@ -45,7 +45,7 @@ export default function AdminPage() {
                 title: "Vacancy Applications",
                 description:
                   "Track and process job applications for school vacancies.",
-                href: "#",
+                href: "/login/Admin/Vacancy",
                 color: "#ffc107",
               },
               {

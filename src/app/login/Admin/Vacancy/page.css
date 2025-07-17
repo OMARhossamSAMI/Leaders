@@ -1,0 +1,29 @@
+.application-card {
+  background-color: #f6f8fa;
+  border-left: 5px solid #278acb;
+}
+
+.application-card h5 {
+  color: #278acb;
+}
+
+.details-box {
+  background: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #d0d0d0;
+}
+body {
+  background-color: #f4f8f8 !important; /* matches card background */
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.container {
+  background-color: #f4f8f8 !important;
+  min-height: 100vh;
+  padding: 2rem;
+}
+

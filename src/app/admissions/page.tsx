@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
-import './page.css'
+import "./page.css";
 
 interface FormField {
+  order: number;
   name: string;
   label?: string;
   type: string;
@@ -420,129 +421,164 @@ export default function AdmissionsPage() {
                   </div>
                 )}
 
-               {activeSection === "form" && (
-  <div className="col-lg-12">
-    <div className="cta-wrapper mt-5">
-      <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
-        <i className="bi bi-file-earmark-check" />
-        <h3>Ready to Apply?</h3>
-        <p>
-          Please carefully provide the information requested below. Once
-          submitted, our admissions team will review your application and
-          contact you to arrange interviews for both the student and parents.
-          We are here to answer all your questions and guide you through each
-          step of the admissions process.
-        </p>
-      </div>
-    </div>
+                {activeSection === "form" && (
+                  <div className="col-lg-12">
+                    <div className="cta-wrapper mt-5">
+                      <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
+                        <i className="bi bi-file-earmark-check" />
+                        <h3>Ready to Apply?</h3>
+                        <p>
+                          Please carefully provide the information requested
+                          below. Once submitted, our admissions team will review
+                          your application and contact you to arrange interviews
+                          for both the student and parents. We are here to
+                          answer all your questions and guide you through each
+                          step of the admissions process.
+                        </p>
+                      </div>
+                    </div>
 
-    {/* FULL-WIDTH FORM CARD */}
-    <div className="form-wrapper mt-5">
-      <div className="card w-100">
-        <div className="card-body">
-          <h3 className="card-title">Admission Application Form</h3>
-          <p>
-            Please complete the form below to apply for admission at Leaders
-            International College.
-          </p>
+                    {/* FULL-WIDTH FORM CARD */}
+                    <div className="form-wrapper mt-5">
+                      <div className="card w-100">
+                        <div className="card-body">
+                          <h3 className="card-title">
+                            Admission Application Form
+                          </h3>
+                          <p>
+                            Please complete the form below to apply for
+                            admission at Leaders International College.
+                          </p>
 
-          <form
-            id="applicationForm"
-            className="php-email-form mt-4"
-            onSubmit={handleSubmit}
-          >
-            <h5>Applicant Details</h5>
+                          <form
+                            id="applicationForm"
+                            className="php-email-form mt-4"
+                            onSubmit={handleSubmit}
+                          >
+                            <h5>Applicant Details</h5>
 
-            <div className="row">
-              {/* Render form fields in saved order */}
-              {[...fields].map((field, index) => {
-                const label = field.label || field.name.replace(/_/g, " ");
-                const required = field.required ?? false;
+                            <div className="row">
+                              {/* Sort by order before rendering */}
+                              {[...fields]
+                                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                                .map((field, index) => {
+                                  const label =
+                                    field.label ||
+                                    field.name.replace(/_/g, " ");
+                                  const required = field.required ?? false;
 
-                if (field.type === "radio" && field.options?.length) {
-                  return (
-                    <div className="col-md-6 mb-3" key={index}>
-                      <label className="form-label d-block">{label}</label>
-                      {field.options.map((opt, i) => (
-                        <div className="form-check form-check-inline" key={i}>
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name={field.name}
-                            value={opt}
-                            required={required}
-                          />
-                          <label className="form-check-label">{opt}</label>
+                                  if (
+                                    field.type === "radio" &&
+                                    field.options?.length
+                                  ) {
+                                    return (
+                                      <div
+                                        className="col-md-6 mb-3"
+                                        key={index}
+                                      >
+                                        <label className="form-label d-block">
+                                          {label}
+                                        </label>
+                                        {field.options.map((opt, i) => (
+                                          <div
+                                            className="form-check form-check-inline"
+                                            key={i}
+                                          >
+                                            <input
+                                              className="form-check-input"
+                                              type="radio"
+                                              name={field.name}
+                                              value={opt}
+                                              required={required}
+                                            />
+                                            <label className="form-check-label">
+                                              {opt}
+                                            </label>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    );
+                                  }
+
+                                  if (
+                                    field.type === "select" &&
+                                    field.options?.length
+                                  ) {
+                                    return (
+                                      <div
+                                        className="col-md-6 mb-3"
+                                        key={index}
+                                      >
+                                        <select
+                                          name={field.name}
+                                          className="form-select"
+                                          required={required}
+                                          defaultValue=""
+                                        >
+                                          <option value="" disabled>
+                                            {label}
+                                          </option>
+                                          {field.options.map((opt, i) => (
+                                            <option key={i} value={opt}>
+                                              {opt}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                    );
+                                  }
+
+                                  if (field.type === "date") {
+                                    return (
+                                      <div
+                                        className="col-md-6 mb-3"
+                                        key={index}
+                                      >
+                                        <input
+                                          type="date"
+                                          name={field.name}
+                                          className="form-control"
+                                          max={
+                                            new Date()
+                                              .toISOString()
+                                              .split("T")[0]
+                                          }
+                                          placeholder={label}
+                                          required={required}
+                                        />
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div className="col-md-6 mb-3" key={index}>
+                                      <input
+                                        type={field.type}
+                                        name={field.name}
+                                        className="form-control"
+                                        placeholder={field.placeholder || label}
+                                        required={required}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                            </div>
+
+                            <div className="text-center mt-4">
+                              <button
+                                type="submit"
+                                className="btn-submit-application"
+                              >
+                                <i className="bi bi-file-earmark-text"></i>{" "}
+                                Submit Application
+                              </button>
+                            </div>
+                          </form>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  );
-                }
-
-                if (field.type === "select" && field.options?.length) {
-                  return (
-                    <div className="col-md-6 mb-3" key={index}>
-                      <select
-                        name={field.name}
-                        className="form-select"
-                        required={required}
-                        defaultValue=""
-                      >
-                        <option value="" disabled>
-                          {label}
-                        </option>
-                        {field.options.map((opt, i) => (
-                          <option key={i} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                }
-
-                if (field.type === "date") {
-                  return (
-                    <div className="col-md-6 mb-3" key={index}>
-                      <input
-                        type="date"
-                        name={field.name}
-                        className="form-control"
-                        max={new Date().toISOString().split("T")[0]}
-                        placeholder={label}
-                        required={required}
-                      />
-                    </div>
-                  );
-                }
-
-                return (
-                  <div className="col-md-6 mb-3" key={index}>
-                    <input
-                      type={field.type}
-                      name={field.name}
-                      className="form-control"
-                      placeholder={field.placeholder || label}
-                      required={required}
-                    />
                   </div>
-                );
-              })}
-            </div>
-
-            <div className="text-center mt-4">
-              <button type="submit" className="btn-submit-application">
-                <i className="bi bi-file-earmark-text"></i> Submit Application
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+                )}
               </div>
             </div>
           </section>

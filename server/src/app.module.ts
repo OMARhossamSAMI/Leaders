@@ -10,6 +10,8 @@ import { FormFieldModule } from './form-field/form-field.module';
 
 import { PopupModule } from './popup/popup.module';
 import { ContactUsModule } from './contactus/contactus.module';
+import { EmploymentFormFieldsModule } from './employment-form-fields/employment-form-fields.module';
+import { VacancyModule } from './vacancy/vacancy.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ContactUsModule } from './contactus/contactus.module';
     FormFieldModule,
     PopupModule,
     ContactUsModule,
+    EmploymentFormFieldsModule,
+    VacancyModule,
   ],
 })
 export class AppModule {}
