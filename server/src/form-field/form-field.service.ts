@@ -26,8 +26,15 @@ export class FormFieldService {
   }
 
   async replaceAll(fields: FormField[]) {
-  await this.fieldModel.deleteMany(); // clear old form
-  return this.fieldModel.insertMany(fields); // insert all
+  // Assign order to each field based on its position in the array
+  const orderedFields = fields.map((field, index) => ({
+    ...field,
+    order: index,
+  }));
+
+  await this.fieldModel.deleteMany(); // Clear old form fields
+  return this.fieldModel.insertMany(orderedFields); // Insert new ones with correct order
 }
+
 
 }

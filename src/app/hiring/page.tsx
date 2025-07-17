@@ -467,7 +467,12 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <Link href="/hiring/apply" className="btn-register">
+                        <Link
+                          href={`/hiring/apply?position=${encodeURIComponent(
+                            "Current Vacancies Co-teacher"
+                          )}`}
+                          className="btn-register"
+                        >
                           Apply Now
                         </Link>
                       </div>
@@ -491,7 +496,12 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <Link href="/hiring/apply" className="btn-register">
+                        <Link
+                          href={`/hiring/apply?position=${encodeURIComponent(
+                            "Music Teacher"
+                          )}`}
+                          className="btn-register"
+                        >
                           Apply Now
                         </Link>
                       </div>
@@ -515,7 +525,12 @@ export default function WeAreHiringPage() {
                         </div>
                       </div>
                       <div className="event-action">
-                        <Link href="/hiring/apply" className="btn-register">
+                        <Link
+                          href={`/hiring/apply?position=${encodeURIComponent(
+                            "PR and Marketing Specialist"
+                          )}`}
+                          className="btn-register"
+                        >
                           Apply Now
                         </Link>
                       </div>

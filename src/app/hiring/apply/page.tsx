@@ -1,10 +1,86 @@
 "use client";
 
 import Link from "next/link";
-import "./page.css"; // Import the CSS file for styling
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import "./page.css";
+import { Send } from "lucide-react";
+
+interface EmploymentFormField {
+  _id: string;
+  field_name: string;
+  label: string;
+  type: string;
+  required: boolean;
+  options?: string[];
+  placeholder?: string;
+}
 
 export default function ApplyPage() {
+  const [fields, setFields] = useState<EmploymentFormField[]>([]);
+  const [positionFromURL, setPositionFromURL] = useState("");
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const job = searchParams.get("position");
+    if (job) setPositionFromURL(decodeURIComponent(job));
+
+    axios
+      .get<EmploymentFormField[]>("http://localhost:3000/employment-form-fields")
+      .then((res) => setFields(res.data))
+      .catch((err) => console.error("Failed to fetch fields", err));
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+
+  const formData = new FormData(form);
+  const payload: Record<string, any> = {};
+
+  for (const [key, value] of formData.entries()) {
+    if (key.endsWith("[]")) {
+      const baseKey = key.slice(0, -2);
+      if (!payload[baseKey]) payload[baseKey] = [];
+      payload[baseKey].push(value);
+    } else {
+      if (payload[key]) {
+        // Handle multiple inputs with same name (e.g. radio fallbacks)
+        if (!Array.isArray(payload[key])) payload[key] = [payload[key]];
+        payload[key].push(value);
+      } else {
+        payload[key] = value;
+      }
+    }
+  }
+
+  // Ensure the `position` from URL is included (in case it's not captured)
+  if (positionFromURL) {
+    payload["position"] = positionFromURL;
+  }
+
+  try {
+    form.querySelector(".loading")?.classList.add("d-block");
+    form.querySelector(".error-message")?.classList.remove("d-block");
+    form.querySelector(".sent-message")?.classList.remove("d-block");
+
+    await axios.post("http://localhost:3000/vacancy", payload);
+
+    form.querySelector(".loading")?.classList.remove("d-block");
+    form.querySelector(".sent-message")?.classList.add("d-block");
+    form.reset();
+  } catch (error: any) {
+    console.error("Submission error:", error);
+    form.querySelector(".loading")?.classList.remove("d-block");
+    const errEl = form.querySelector(".error-message");
+    if (errEl) {
+      errEl.innerHTML = "Submission failed. Please try again.";
+      errEl.classList.add("d-block");
+    }
+  }
+};
+
   return (
     <>
       {/* PAGE TITLE SECTION */}
@@ -12,30 +88,23 @@ export default function ApplyPage() {
         className="page-title dark-background"
         style={{
           backgroundImage: "url(/assets/img/education/Background_school.JPG)",
-          marginTop: "90px", // offset for fixed header
+          marginTop: "90px",
         }}
       >
         <div className="container position-relative">
           <h1>Employment Application</h1>
-          <p>
-            Apply to join our vibrant community at Leaders International
-            College.
-          </p>
+          <p>Apply to join our vibrant community at Leaders International College.</p>
           <nav className="breadcrumbs">
             <ol>
-              <li>
-                <Link href="/">Home</Link>
-              </li>
-              <li>
-                <Link href="/we-are-hiring">We Are Hiring</Link>
-              </li>
+              <li><Link href="/">Home</Link></li>
+              <li><Link href="/we-are-hiring">We Are Hiring</Link></li>
               <li className="current">Apply</li>
             </ol>
           </nav>
         </div>
       </div>
 
-      {/* MAIN FORM CONTENT */}
+      {/* FORM SECTION */}
       <main className="main">
         <section className="container my-5">
           <div className="row align-items-start">
@@ -43,315 +112,142 @@ export default function ApplyPage() {
               <div className="impact-content">
                 <h3>Employment Application</h3>
                 <p>
-                  Interested in becoming a part of our community? Please fill
-                  out the application form below and submit your CV.
+                  Interested in becoming a part of our community? Please fill out the application form below and submit your CV.
                 </p>
 
-                <form
-                  className="php-email-form mt-4"
-                  method="post"
-                  encType="multipart/form-data"
-                >
-                  <h5>PERSONAL INFORMATION</h5>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="full_name"
-                      className="form-control"
-                      placeholder="Full Name"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="nationality"
-                      className="form-control"
-                      placeholder="Nationality"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="tel"
-                      name="contact_number"
-                      className="form-control"
-                      placeholder="Contact Number"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="tel"
-                      name="alt_contact_number"
-                      className="form-control"
-                      placeholder="Alternate Contact Number"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="email"
-                      name="email"
-                      className="form-control"
-                      placeholder="Email Address"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="current_address"
-                      className="form-control"
-                      placeholder="Current Address"
-                      required
-                    />
+                <form className="php-email-form mt-4" onSubmit={handleSubmit} encType="multipart/form-data">
+                  <div className="loading" style={{ display: "none" }}>Loading</div>
+                  <div className="error-message" style={{ display: "none", color: "red" }}></div>
+                  <div className="sent-message" style={{ display: "none", color: "green" }}>
+                    Your application has been sent. Thank you!
                   </div>
 
-                  <h5 className="mt-4">How Did You Learn About Us?</h5>
-                  <div className="mb-3">
-                    <select name="source_info" className="form-select" required>
-                      <option value="" disabled selected>
-                        Select an option
-                      </option>
-                      <option value="Website">Website</option>
-                      <option value="Social Media Platforms">
-                        Social Media Platforms
-                      </option>
-                      <option value="Family/Friends">Family/Friends</option>
-                      <option value="Colleagues">
-                        Colleagues Working at the School
-                      </option>
-                      <option value="Community Outreach">
-                        Community Outreach
-                      </option>
-                      <option value="Other">Other</option>
-                    </select>
+                  <div className="row">
+                    {fields.map((field, index) => {
+                      const label = field.label || field.field_name.replace(/_/g, " ");
+                      const required = field.required ?? false;
+
+                      if (field.field_name === "position") {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label">{label}</label>
+                            <input
+                              type="text"
+                              name={field.field_name}
+                              className="form-control"
+                              value={positionFromURL}
+                              readOnly
+                              required={required}
+                            />
+                          </div>
+                        );
+                      }
+
+                      if (field.type === "radio" && field.options?.length) {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label d-block">{label}</label>
+                            {field.options.map((opt, i) => (
+                              <div className="form-check form-check-inline" key={i}>
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name={field.field_name}
+                                  value={opt}
+                                  required={required}
+                                />
+                                <label className="form-check-label">{opt}</label>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+
+                      if (field.type === "checkbox" && field.options?.length) {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label d-block">{label}</label>
+                            {field.options.map((opt, i) => (
+                              <div className="form-check form-check-inline" key={i}>
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  name={`${field.field_name}[]`}
+                                  value={opt}
+                                />
+                                <label className="form-check-label">{opt}</label>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+
+                      if (field.type === "select" && field.options?.length) {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <select
+                              name={field.field_name}
+                              className="form-select"
+                              required={required}
+                              defaultValue=""
+                            >
+                              <option value="" disabled>{label}</option>
+                              {field.options.map((opt, i) => (
+                                <option key={i} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                        );
+                      }
+
+                      if (field.type === "date") {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <input
+                              type="date"
+                              name={field.field_name}
+                              className="form-control"
+                              placeholder={label}
+                              required={required}
+                            />
+                          </div>
+                        );
+                      }
+
+                      if (field.type === "file") {
+                        return (
+                          <div className="col-md-12 mb-3" key={index}>
+                            <label className="form-label">{label}</label>
+                            <input
+                              type="file"
+                              name={field.field_name}
+                              className="form-control"
+                              multiple={field.field_name.includes("certificates")}
+                              required={required}
+                            />
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="col-md-6 mb-3" key={index}>
+                          <input
+                            type={field.type}
+                            name={field.field_name}
+                            className="form-control"
+                            placeholder={field.placeholder || label}
+                            required={required}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  <h5 className="mt-4">Position Applying For</h5>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="position"
-                      className="form-control"
-                      placeholder="Desired Position"
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label">Employment Type:</label>
-                    <br />
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="employment_type[]"
-                        value="Full Time"
-                      />
-                      <label className="form-check-label">Full Time</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="employment_type[]"
-                        value="Part Time"
-                      />
-                      <label className="form-check-label">Part Time</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="employment_type[]"
-                        value="Internship"
-                      />
-                      <label className="form-check-label">Internship</label>
-                    </div>
-                  </div>
-
-                  <h5 className="mt-4">Educational Background</h5>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="high_school"
-                      className="form-control"
-                      placeholder="High School"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="university"
-                      className="form-control"
-                      placeholder="University"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="college"
-                      className="form-control"
-                      placeholder="College"
-                    />
-                  </div>
-
-                  <h5 className="mt-4">Additional Studies</h5>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="diploma"
-                      className="form-control"
-                      placeholder="Diploma"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="masters"
-                      className="form-control"
-                      placeholder="Master's Degree"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="ib_certificate"
-                      className="form-control"
-                      placeholder="IB Certificate"
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label">Upload Certificates</label>
-                    <input
-                      type="file"
-                      name="certificates[]"
-                      className="form-control"
-                      multiple
-                    />
-                  </div>
-
-                  <h5 className="mt-4">Work Experience</h5>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="prev_employer"
-                      className="form-control"
-                      placeholder="Previous Employer"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="prev_position"
-                      className="form-control"
-                      placeholder="Previous Position"
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <input
-                      type="text"
-                      name="prev_salary"
-                      className="form-control"
-                      placeholder="Previous Salary"
-                    />
-                  </div>
-
-                  <h5 className="mt-4">References</h5>
-                  <p className="text-muted">
-                    References should include superintendents, principals, or
-                    professors with knowledge of your competence.
-                  </p>
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref1_name"
-                        className="form-control"
-                        placeholder="Reference 1 - Name"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref2_name"
-                        className="form-control"
-                        placeholder="Reference 2 - Name"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref1_position"
-                        className="form-control"
-                        placeholder="Position"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref2_position"
-                        className="form-control"
-                        placeholder="Position"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref1_contact"
-                        className="form-control"
-                        placeholder="Contact"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="text"
-                        name="ref2_contact"
-                        className="form-control"
-                        placeholder="Contact"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="email"
-                        name="ref1_email"
-                        className="form-control"
-                        placeholder="Email"
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <input
-                        type="email"
-                        name="ref2_email"
-                        className="form-control"
-                        placeholder="Email"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-4 mt-4">
-                    <label className="form-label">Upload Your CV</label>
-                    <input
-                      type="file"
-                      name="cv_file"
-                      className="form-control"
-                      required
-                    />
-                  </div>
-
-                  <div className="loading">Loading</div>
-                  <div className="error-message"></div>
-                  <div className="sent-message">
-                    Your application has been submitted. Thank you!
-                  </div>
-
-                  <div className="event-action">
-                    <button type="submit" className="btn-register">
-                      Submit Application
-                    </button>
-                  </div>
+                  <div className="event-action mt-4 text-center">
+  <button type="submit" className="btn-register text-white d-flex align-items-center justify-content-center gap-2" style={{ backgroundColor: "#00a6d9", border: "none", padding: "10px 20px", borderRadius: "5px" }}>
+    <Send size={18} /> Submit Application
+  </button>
+</div>
                   <p className="mt-4 text-muted">
                     Thanks for your interest in Leaders International College!
                   </p>

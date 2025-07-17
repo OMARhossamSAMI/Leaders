@@ -159,27 +159,33 @@ export default function ApplicationsPage() {
     setEditingFormStructure(false);
   };
   const handleSaveForm = async () => {
-  console.log("Saving form..."); // Confirm click works
+  const formWithOrder = formStructureDraft.map((field, index) => ({
+    ...field,
+    order: index,
+  }));
+
   try {
     const response = await fetch("http://localhost:3000/form-fields", {
-      method: "PUT", // ✅ overwrite full structure
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formStructureDraft), // ✅ this is your form!
+      body: JSON.stringify(formWithOrder),
     });
 
-    const result = await response.json();
-    console.log("Saved:", result);
-    alert("Form structure saved successfully!");
-
-    setFormFields(formStructureDraft);
-    setEditingFormStructure(false);
+    if (response.ok) {
+      setFormFields(formWithOrder);
+      setEditingFormStructure(false);
+      alert("Form structure saved successfully!");
+    } else {
+      alert("Failed to save form structure");
+    }
   } catch (error) {
-    console.error("Failed to save form field:", error);
+    console.error("Failed to save form fields:", error);
     alert("Failed to save form structure");
   }
 };
+
 
 const handleMoveField = (index: number, direction: number) => {
   const newIndex = index + direction;
