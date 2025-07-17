@@ -5,10 +5,12 @@ import { StudentApplicationService } from './student-application.service';
 export class StudentApplicationController {
   constructor(private readonly appService: StudentApplicationService) {}
 
-  @Post()
-  async handleForm(@Body() body: any) {
-    return this.appService.submitApplication(body);
-  }
+  // applications.controller.ts
+@Post()
+async create(@Body() body: Record<string, any>) {
+  return this.appService.submitApplication({ data: body });
+}
+
 
   @Get()
   async getAllApplications() {

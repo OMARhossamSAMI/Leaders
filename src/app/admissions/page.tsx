@@ -6,6 +6,7 @@ import Link from "next/link";
 import "./page.css";
 
 interface FormField {
+  field_name: string;
   order: number;
   name: string;
   label?: string;
@@ -54,40 +55,47 @@ export default function AdmissionsPage() {
   }, []); // <-- Dependency array must be here
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+  const form = e.currentTarget;
+  const formData = new FormData(form);
 
-    const data: Record<string, any> = {};
-    console.log("Submitted data:", data);
+  const data: Record<string, any> = {};
 
-    formData.forEach((value, key) => {
-      data[key] = value;
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
+
+  console.log("Submitted data:", data); // ✅ Moved here after filling
+
+  try {
+    const response = await fetch("http://localhost:3000/applications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
-    try {
-      const response = await fetch("http://localhost:3000/applications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+    const result = await response.json();
+    console.log("FormData entries:");
+for (let [key, value] of formData.entries()) {
+  console.log(`${key}: ${value}`);
+}
 
-      const result = await response.json();
 
-      if (response.ok) {
-        alert("Application submitted successfully!");
-        form.reset();
-      } else {
-        alert("Error: " + result.message || "Submission failed.");
-      }
-    } catch (error) {
-      console.error("Submission Error:", error);
-      alert("An error occurred while submitting the form.");
+    if (response.ok) {
+      alert("Application submitted successfully!");
+      form.reset();
+    } else {
+      alert("Error: " + result.message || "Submission failed.");
     }
-  };
+  } catch (error) {
+    console.error("Submission Error:", error);
+    alert("An error occurred while submitting the form.");
+  }
+};
+
 
   return (
     <>
@@ -451,129 +459,103 @@ export default function AdmissionsPage() {
                           </p>
 
                           <form
-                            id="applicationForm"
-                            className="php-email-form mt-4"
-                            onSubmit={handleSubmit}
-                          >
-                            <h5>Applicant Details</h5>
+  id="applicationForm"
+  className="php-email-form mt-4"
+  onSubmit={handleSubmit}
+>
+  <h5>Applicant Details</h5>
 
-                            <div className="row">
-                              {/* Sort by order before rendering */}
-                              {[...fields]
-                                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                                .map((field, index) => {
-                                  const label =
-                                    field.label ||
-                                    field.name.replace(/_/g, " ");
-                                  const required = field.required ?? false;
+  <div className="row">
+    {[...fields]
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map((field, index) => {
+        const label = field.label || (field.field_name ? field.field_name.replace(/_/g, " ") : "");
+        const required = field.required ?? false;
 
-                                  if (
-                                    field.type === "radio" &&
-                                    field.options?.length
-                                  ) {
-                                    return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label d-block">
-                                          {label}
-                                        </label>
-                                        {field.options.map((opt, i) => (
-                                          <div
-                                            className="form-check form-check-inline"
-                                            key={i}
-                                          >
-                                            <input
-                                              className="form-check-input"
-                                              type="radio"
-                                              name={field.name}
-                                              value={opt}
-                                              required={required}
-                                            />
-                                            <label className="form-check-label">
-                                              {opt}
-                                            </label>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    );
-                                  }
+        // RADIO BUTTONS
+        if (field.type === "radio" && field.options?.length) {
+          return (
+            <div className="col-md-6 mb-3" key={index}>
+              <label className="form-label d-block">{label}</label>
+              {field.options.map((opt, i) => (
+                <div className="form-check form-check-inline" key={i}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name={field.field_name}
+                    value={opt}
+                    required={required}
+                  />
+                  <label className="form-check-label">{opt}</label>
+                </div>
+              ))}
+            </div>
+          );
+        }
 
-                                  if (
-                                    field.type === "select" &&
-                                    field.options?.length
-                                  ) {
-                                    return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <select
-                                          name={field.name}
-                                          className="form-select"
-                                          required={required}
-                                          defaultValue=""
-                                        >
-                                          <option value="" disabled>
-                                            {label}
-                                          </option>
-                                          {field.options.map((opt, i) => (
-                                            <option key={i} value={opt}>
-                                              {opt}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </div>
-                                    );
-                                  }
+        // SELECT DROPDOWN
+        if (field.type === "select" && field.options?.length) {
+          return (
+            <div className="col-md-6 mb-3" key={index}>
+              <label className="form-label">{label}</label>
+              <select
+                name={field.field_name}
+                className="form-select"
+                required={required}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  {label}
+                </option>
+                {field.options.map((opt, i) => (
+                  <option key={i} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        }
 
-                                  if (field.type === "date") {
-                                    return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <input
-                                          type="date"
-                                          name={field.name}
-                                          className="form-control"
-                                          max={
-                                            new Date()
-                                              .toISOString()
-                                              .split("T")[0]
-                                          }
-                                          placeholder={label}
-                                          required={required}
-                                        />
-                                      </div>
-                                    );
-                                  }
+        // DATE INPUT
+        if (field.type === "date") {
+          return (
+            <div className="col-md-6 mb-3" key={index}>
+              <label className="form-label">{label}</label>
+              <input
+                type="date"
+                name={field.field_name}
+                className="form-control"
+                max={new Date().toISOString().split("T")[0]}
+                required={required}
+              />
+            </div>
+          );
+        }
 
-                                  return (
-                                    <div className="col-md-6 mb-3" key={index}>
-                                      <input
-                                        type={field.type}
-                                        name={field.name}
-                                        className="form-control"
-                                        placeholder={field.placeholder || label}
-                                        required={required}
-                                      />
-                                    </div>
-                                  );
-                                })}
-                            </div>
+        // DEFAULT INPUTS (text, email, number, etc.)
+        return (
+          <div className="col-md-6 mb-3" key={index}>
+            <label className="form-label">{label}</label>
+            <input
+              type={field.type}
+              name={field.field_name}
+              className="form-control"
+              placeholder={field.placeholder || label}
+              required={required}
+            />
+          </div>
+        );
+      })}
+  </div>
 
-                            <div className="text-center mt-4">
-                              <button
-                                type="submit"
-                                className="btn-submit-application"
-                              >
-                                <i className="bi bi-file-earmark-text"></i>{" "}
-                                Submit Application
-                              </button>
-                            </div>
-                          </form>
+  <div className="text-center mt-4">
+    <button type="submit" className="btn-submit-application">
+      <i className="bi bi-file-earmark-text"></i> Submit Application
+    </button>
+  </div>
+</form>
+
                         </div>
                       </div>
                     </div>
