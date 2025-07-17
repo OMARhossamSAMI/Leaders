@@ -8,11 +8,12 @@ import { Briefcase, User, Clock } from "lucide-react";
 export default function CreateJobPage() {
   const [title, setTitle] = useState("");
   const [careerLevel, setCareerLevel] = useState("Experienced (Non-Manager)");
-  const [employmentType, setEmploymentType] = useState("Full Time");
-  const router = useRouter();
-  const pathname = usePathname(); // 🔍 Get current route
+    const pathname = usePathname(); // 🔍 Get current route
 
-  const isInternshipPage = pathname.includes("/Internship");
+const isInternshipPage = pathname.includes("/Internship");
+const [employmentType, setEmploymentType] = useState(isInternshipPage ? "Internship" : "Full Time");
+  const router = useRouter();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

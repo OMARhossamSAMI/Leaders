@@ -37,7 +37,7 @@ export default function AdminPage() {
                 title: "Internship Applications",
                 description:
                   "Review and manage internship application forms for external candidates.",
-                href: "#",
+                href: "/login/Admin/Internship",
                 color: "#17a2b8",
               },
               {
