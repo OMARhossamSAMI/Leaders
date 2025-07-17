@@ -1,11 +1,31 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { useHiringTabs } from "../components/HiringTabsContext";
 import Link from "next/link";
 
+// ✅ Optional: define the structure of a Job
+interface Job {
+  careerLevel: string;
+  employmentType: string;
+  _id: string;
+  title: string;
+  level: string;
+  type: string;
+}
+
 export default function WeAreHiringPage() {
   const { hiringSection, setHiringSection } = useHiringTabs();
+
+  const [jobs, setJobs] = useState<Job[]>([]); // ✅ Add useState for jobs
+
+  useEffect(() => {
+    axios
+      .get<Job[]>("http://localhost:3000/jobs") // adjust if hosted elsewhere
+      .then((res) => setJobs(res.data))
+      .catch((err) => console.error("Failed to fetch jobs", err));
+  }, []);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -16,6 +36,7 @@ export default function WeAreHiringPage() {
       return () => clearTimeout(timer);
     }
   }, []);
+
 
   return (
     <>
@@ -432,113 +453,54 @@ export default function WeAreHiringPage() {
                 </div>
               )}
 
-              {/* ✅ VACANCIES */}
               {hiringSection === "vacancies" && (
-                <div className="upcoming-events">
-                  <div
-                    className="section-header text-center"
-                    data-aos="fade-up"
-                    data-aos-delay={200}
-                  >
-                    <h3>Current Vacancies</h3>
-                    <p>
-                      Explore exciting career opportunities currently open at
-                      Leaders International College.
-                    </p>
-                  </div>
+  <div className="upcoming-events">
+    <div
+      className="section-header text-center"
+      data-aos="fade-up"
+      data-aos-delay={200}
+    >
+      <h3>Current Vacancies</h3>
+      <p>
+        Explore exciting career opportunities currently open at
+        Leaders International College.
+      </p>
+    </div>
 
-                  {/* ✅ Start merged event list */}
-                  <div
-                    className="events-wrapper"
-                    data-aos="fade-up"
-                    data-aos-delay={300}
-                  >
-                    <div className="event">
-                      <div className="event-info">
-                        <h4>Current Vacancies Co-teacher</h4>
-                        <div className="event-meta">
-                          <span>
-                            <i className="bi bi-pin-map" />
-                            Career Level: Experienced (Non-Manager)
-                          </span>
-                          <span>
-                            <i className="bi bi-clock" /> Full-Time
-                          </span>
-                        </div>
-                      </div>
-                      <div className="event-action">
-                        <Link
-                          href={`/hiring/apply?position=${encodeURIComponent(
-                            "Current Vacancies Co-teacher"
-                          )}`}
-                          className="btn-register"
-                        >
-                          Apply Now
-                        </Link>
-                      </div>
-                    </div>
+    <div className="events-wrapper" data-aos="fade-up" data-aos-delay={300}>
+      {jobs.length === 0 ? (
+        <p className="text-center">No current job openings available.</p>
+      ) : (
+        jobs.map((job, index) => (
+          <div className="event" key={job._id} data-aos="fade-up" data-aos-delay={300 + index * 50}>
+            <div className="event-info">
+              <h4>{job.title}</h4>
+              <div className="event-meta">
+                <span>
+                  <i className="bi bi-pin-map" />
+                  Career Level: {job.careerLevel}
+                </span>
+                <span>
+                  <i className="bi bi-clock" /> {job.employmentType}
+                </span>
+              </div>
+            </div>
+            <div className="event-action">
+              <Link
+  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}`}
+  className="btn-register"
+>
+  Apply Now
+</Link>
 
-                    <div
-                      className="event"
-                      data-aos="fade-up"
-                      data-aos-delay={300}
-                    >
-                      <div className="event-info">
-                        <h4>Music Teacher</h4>
-                        <div className="event-meta">
-                          <span>
-                            <i className="bi bi-pin-map" />
-                            Career Level: Experienced (Non-Manager)
-                          </span>
-                          <span>
-                            <i className="bi bi-clock" /> Full-Time
-                          </span>
-                        </div>
-                      </div>
-                      <div className="event-action">
-                        <Link
-                          href={`/hiring/apply?position=${encodeURIComponent(
-                            "Music Teacher"
-                          )}`}
-                          className="btn-register"
-                        >
-                          Apply Now
-                        </Link>
-                      </div>
-                    </div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+)}
 
-                    <div
-                      className="event"
-                      data-aos="fade-up"
-                      data-aos-delay={300}
-                    >
-                      <div className="event-info">
-                        <h4>PR and Marketing Specialist</h4>
-                        <div className="event-meta">
-                          <span>
-                            <i className="bi bi-pin-map" />
-                            Career Level: Experienced (Non-Manager)
-                          </span>
-                          <span>
-                            <i className="bi bi-clock" /> Full-Time
-                          </span>
-                        </div>
-                      </div>
-                      <div className="event-action">
-                        <Link
-                          href={`/hiring/apply?position=${encodeURIComponent(
-                            "PR and Marketing Specialist"
-                          )}`}
-                          className="btn-register"
-                        >
-                          Apply Now
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                  {/* ✅ End merged event list */}
-                </div>
-              )}
             </div>
           </section>
         </main>

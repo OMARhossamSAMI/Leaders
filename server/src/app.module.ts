@@ -12,6 +12,7 @@ import { PopupModule } from './popup/popup.module';
 import { ContactUsModule } from './contactus/contactus.module';
 import { EmploymentFormFieldsModule } from './employment-form-fields/employment-form-fields.module';
 import { VacancyModule } from './vacancy/vacancy.module';
+import { JobModule } from './job/job.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { VacancyModule } from './vacancy/vacancy.module';
     ContactUsModule,
     EmploymentFormFieldsModule,
     VacancyModule,
+    JobModule,
   ],
 })
 export class AppModule {}

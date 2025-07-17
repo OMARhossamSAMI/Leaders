@@ -9,7 +9,7 @@ interface Field {
   label: string;
   type: string;
   required: boolean;
-  options?: string[]; // Optional array for checkboxes
+  options?: string[]; // For select and checkbox types
 }
 
 export default function EditFormStructure() {
@@ -126,97 +126,97 @@ export default function EditFormStructure() {
         </button>
       </div>
 
-      {fields.length === 0 ? (
-        <p>No fields defined.</p>
-      ) : (
-        fields.map((field, index) => (
-          <div key={index} className="mb-4 p-3 border rounded bg-white shadow-sm">
-            <input
-              className="form-control mb-2"
-              value={field.field_name}
-              onChange={(e) => handleFieldChange(index, "field_name", e.target.value)}
-              placeholder="Field Name"
-            />
-            <input
-              className="form-control mb-2"
-              value={field.label}
-              onChange={(e) => handleFieldChange(index, "label", e.target.value)}
-              placeholder="Label"
-            />
-            <select
-              className="form-select mb-2"
-              value={field.type}
-              onChange={(e) => handleFieldChange(index, "type", e.target.value)}
-            >
-              <option value="text">Text</option>
-              <option value="date">Date</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
-              <option value="checkbox">Checkbox Group</option>
-            </select>
+      {fields.map((field, index) => (
+        <div key={index} className="mb-4 p-3 border rounded bg-white shadow-sm">
+          <input
+            className="form-control mb-2"
+            value={field.field_name}
+            onChange={(e) => handleFieldChange(index, "field_name", e.target.value)}
+            placeholder="Field Name"
+          />
+          <input
+            className="form-control mb-2"
+            value={field.label}
+            onChange={(e) => handleFieldChange(index, "label", e.target.value)}
+            placeholder="Label"
+          />
+          <select
+            className="form-select mb-2"
+            value={field.type}
+            onChange={(e) => handleFieldChange(index, "type", e.target.value)}
+          >
+            <option value="text">Text</option>
+            <option value="date">Date</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="checkbox">Checkbox Group</option>
+            <option value="select">Multiple Select</option>
+            <option value="file">File Upload</option>
+          </select>
 
-            {field.type === "checkbox" && (
-              <div className="mb-3">
-                <label className="form-label">Checkbox Options:</label>
-                {field.options?.map((option, i) => (
-                  <div key={i} className="d-flex mb-1">
-                    <input
-                      className="form-control me-2"
-                      value={option}
-                      onChange={(e) => handleOptionChange(index, i, e.target.value)}
-                      placeholder={`Option ${i + 1}`}
-                    />
-                    <button
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => removeOption(index, i)}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  className="btn btn-outline-secondary btn-sm mt-2"
-                  onClick={() => addOption(index)}
-                >
-                  <Plus size={14} className="me-1" /> Add Option
-                </button>
-              </div>
-            )}
-
-            <div className="mb-2">
-              <label>
-                <input
-                  type="checkbox"
-                  className="form-check-input me-2"
-                  checked={field.required}
-                  onChange={(e) => handleFieldChange(index, "required", e.target.checked)}
-                />
-                Required
+          {(field.type === "checkbox" || field.type === "select") && (
+            <div className="mb-3">
+              <label className="form-label">
+                {field.type === "checkbox" ? "Checkbox Options:" : "Select Options:"}
               </label>
+              {field.options?.map((option, i) => (
+                <div key={i} className="d-flex mb-1">
+                  <input
+                    className="form-control me-2"
+                    value={option}
+                    onChange={(e) => handleOptionChange(index, i, e.target.value)}
+                    placeholder={`Option ${i + 1}`}
+                  />
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => removeOption(index, i)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                className="btn btn-outline-secondary btn-sm mt-2"
+                onClick={() => addOption(index)}
+              >
+                <Plus size={14} className="me-1" /> Add Option
+              </button>
             </div>
+          )}
 
-            <div className="d-flex gap-2">
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => moveUp(index)}
-                disabled={index === 0}
-              >
-                <ArrowUp size={16} /> Move Up
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => moveDown(index)}
-                disabled={index === fields.length - 1}
-              >
-                <ArrowDown size={16} /> Move Down
-              </button>
-              <button className="btn btn-danger btn-sm" onClick={() => removeField(index)}>
-                <Trash2 size={16} /> Remove
-              </button>
-            </div>
+          <div className="mb-2">
+            <label>
+              <input
+                type="checkbox"
+                className="form-check-input me-2"
+                checked={field.required}
+                onChange={(e) => handleFieldChange(index, "required", e.target.checked)}
+              />
+              Required
+            </label>
           </div>
-        ))
-      )}
+
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => moveUp(index)}
+              disabled={index === 0}
+            >
+              <ArrowUp size={16} /> Move Up
+            </button>
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => moveDown(index)}
+              disabled={index === fields.length - 1}
+            >
+              <ArrowDown size={16} /> Move Down
+            </button>
+            <button className="btn btn-danger btn-sm" onClick={() => removeField(index)}>
+              <Trash2 size={16} /> Remove
+            </button>
+          </div>
+        </div>
+      ))}
 
       <div className="text-center">
         <button className="btn btn-success px-4 py-2 mt-3" onClick={saveChanges}>
