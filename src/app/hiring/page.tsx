@@ -465,35 +465,66 @@ export default function WeAreHiringPage() {
       {jobs.filter((job) => job.employmentType !== "Internship").length === 0 ? (
         <p className="text-center text-muted">No current job openings available.</p>
       ) : (
-        jobs
-          .filter((job) => job.employmentType !== "Internship")
-          .map((job, index) => (
-            <div className="event" key={job._id} data-aos="fade-up" data-aos-delay={300 + index * 50}>
-              <div className="event-info">
-                <h4>{job.title}</h4>
-                <div className="event-meta">
-                  <span>
-                    <i className="bi bi-pin-map" /> Career Level: {job.careerLevel}
-                  </span>
-                  <span>
-                    <i className="bi bi-clock" /> {job.employmentType}
-                  </span>
+        <>
+          {jobs
+            .filter((job) => job.employmentType !== "Internship")
+            .map((job, index) => (
+              <div
+                className="event"
+                key={job._id}
+                data-aos="fade-up"
+                data-aos-delay={300 + index * 50}
+              >
+                <div className="event-info">
+                  <h4>{job.title}</h4>
+                  <div className="event-meta">
+                    <span>
+                      <i className="bi bi-pin-map" /> Career Level: {job.careerLevel}
+                    </span>
+                    <span>
+                      <i className="bi bi-clock" /> {job.employmentType}
+                    </span>
+                  </div>
+                </div>
+                <div className="event-action">
+                  <Link
+                    href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}`}
+                    className="btn-register"
+                  >
+                    Apply Now
+                  </Link>
                 </div>
               </div>
-              <div className="event-action">
-                <Link
-                  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}`}
-                  className="btn-register"
-                >
-                  Apply Now
-                </Link>
+            ))}
+
+          {/* Static custom job application card */}
+          <div className="event" data-aos="fade-up" data-aos-delay={jobs.length * 50 + 300}>
+            <div className="event-info">
+              <h4>Other Opportunities</h4>
+              <div className="event-meta">
+                <span>
+                  <i className="bi bi-pin-map" /> Custom Career Request
+                </span>
+                <span>
+                  <i className="bi bi-clock" /> Your Preferred Type
+                </span>
               </div>
             </div>
-          ))
+            <div className="event-action">
+              <Link
+                href={`/hiring/apply?position=Other&employmentType=Custom`}
+                className="btn-register"
+              >
+                Apply Now
+              </Link>
+            </div>
+          </div>
+        </>
       )}
     </div>
   </div>
 )}
+
 
             </div>
           </section>

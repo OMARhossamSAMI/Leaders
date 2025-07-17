@@ -36,35 +36,61 @@ export default function ApplicationsPage() {
   const [formStructureDraft, setFormStructureDraft] = useState<FormField[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/form-fields")
-      .then((res) => res.json())
-      .then((data) => setFormFields(data))
-      .catch((err) => console.error("Failed to fetch form fields", err));
+  fetch("http://localhost:3000/form-fields")
+    .then((res) => res.json())
+    .then((data) => setFormFields(data))
+    .catch((err) => console.error("Failed to fetch form fields", err));
 
-    fetch("http://localhost:3000/applications")
-      .then((res) => res.json())
-      .then((data) => setApplications(data))
-      .catch((err) => console.error("Failed to fetch applications", err));
-  }, []);
+  fetch("http://localhost:3000/applications")
+    .then((res) => res.json())
+    .then((apps) => {
+      console.log("Raw applications:", apps); // 🐞 Log before processing
+
+      const normalized = apps.map((app: any) => {
+        // Check if app has `data` as object
+        if (app.data && typeof app.data === "object") {
+          return {
+            ...app,
+            ...app.data,
+          };
+        } else {
+          return app;
+        }
+      });
+
+      console.log("Normalized Applications:", normalized); // ✅ Final shape
+      setApplications(normalized);
+    })
+    .catch((err) => console.error("Failed to fetch applications", err));
+}, []);
+
+
+
+
 
   const handleExpand = async (id: string) => {
-    if (expandedId === id) {
-      setExpandedId(null);
-      return;
-    }
+  if (expandedId === id) {
+    setExpandedId(null);
+    return;
+  }
 
-    if (!expandedData[id]) {
-      try {
-        const res = await fetch(`http://localhost:3000/applications/${id}`);
-        const data = await res.json();
-        setExpandedData((prev) => ({ ...prev, [id]: data }));
-      } catch (error) {
-        console.error("Failed to fetch full application", error);
+  if (!expandedData[id]) {
+    try {
+      const res = await fetch(`http://localhost:3000/applications/${id}`);
+      let data = await res.json();
+      if (data.data) {
+        data = { ...data, ...data.data }; // normalize
       }
+      setExpandedData((prev) => ({ ...prev, [id]: data }));
+    } catch (error) {
+      console.error("Failed to fetch full application", error);
     }
+  }
 
-    setExpandedId(id);
-  };
+  setExpandedId(id);
+};
+
+
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
@@ -76,43 +102,45 @@ export default function ApplicationsPage() {
   };
 
   const handleEditChange = (key: string, value: any) => {
-    if (editingApp) {
-      setEditingApp({ ...editingApp, [key]: value });
-    }
-  };
+  if (editingApp) {
+    setEditingApp({
+      ...editingApp,
+      data: {
+        ...editingApp.data,
+        [key]: value,
+      },
+    });
+  }
+};
+
 
   const handleUpdate = async () => {
-    if (!editingApp) return;
+  if (!editingApp) return;
 
-    const today = new Date().toISOString().split("T")[0];
-    if (editingApp.student_birthdate && editingApp.student_birthdate > today) {
-      alert("Date of birth cannot be in the future.");
-      return;
+  const response = await fetch(
+    `http://localhost:3000/applications/${editingApp._id}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: editingApp.data }),
     }
+  );
 
-    const response = await fetch(
-      `http://localhost:3000/applications/${editingApp._id}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingApp),
-      }
+  if (response.ok) {
+    setApplications((prev) =>
+      prev.map((a) => (a._id === editingApp._id ? editingApp : a))
     );
+    setExpandedData((prev) => ({
+      ...prev,
+      [editingApp._id]: editingApp,
+    }));
+    alert("Updated!");
+    setEditingApp(null);
+  } else {
+    alert("Update failed");
+  }
+};
 
-    if (response.ok) {
-      setApplications((prev) =>
-        prev.map((a) => (a._id === editingApp._id ? editingApp : a))
-      );
-      setExpandedData((prev) => ({
-        ...prev,
-        [editingApp._id]: editingApp,
-      }));
-      alert("Updated!");
-      setEditingApp(null);
-    } else {
-      alert("Update failed");
-    }
-  };
 
   // ==== Admin Form Structure Editing ====
   const handleFormStructureEdit = () => {
@@ -149,15 +177,7 @@ export default function ApplicationsPage() {
     setFormStructureDraft(updated);
   };
 
-  const saveFormStructure = async () => {
-    await fetch("http://localhost:3000/form-fields", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formStructureDraft),
-    });
-    setFormFields(formStructureDraft);
-    setEditingFormStructure(false);
-  };
+
   const handleSaveForm = async () => {
   const formWithOrder = formStructureDraft.map((field, index) => ({
     ...field,
@@ -220,7 +240,9 @@ const handleMoveField = (index: number, direction: number) => {
             }}
           >
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">{app.student_name}</h3>
+              <h3 className="text-lg font-semibold">
+  {app.student_name || app.data?.student_name || "Unnamed Applicant"}
+</h3>
               <div className="flex gap-2">
                 <button onClick={() => handleExpand(app._id)} className="icon-button">
                   {expandedId === app._id ? <EyeOff /> : <Eye />}
@@ -232,8 +254,8 @@ const handleMoveField = (index: number, direction: number) => {
             </div>
 
             <p className="text-sm text-gray-600 mb-2">
-              <strong>Grade:</strong> {app.grade_applying_for}
-            </p>
+  <strong>Grade:</strong> {app.grade_applying_for || app.data?.grade_applying_for || "N/A"}
+</p>
             <p className="text-sm text-gray-600 mb-4">
               <strong>Submitted:</strong>{" "}
               {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
@@ -246,14 +268,15 @@ const handleMoveField = (index: number, direction: number) => {
                 ) : !editingApp || editingApp._id !== app._id ? (
                   <>
                     {formFields.map((field) => (
-                      <p key={field.field_name}>
-                        <strong>{field.label}:</strong>{" "}
-                        {expandedData[app._id]?.[field.field_name] !== undefined &&
-                        expandedData[app._id]?.[field.field_name] !== ""
-                          ? expandedData[app._id]?.[field.field_name]?.toString()
-                          : <em>Not provided</em>}
-                      </p>
-                    ))}
+  <p key={field.field_name}>
+    <strong>{field.label}:</strong>{" "}
+    {expandedData[app._id]?.[field.field_name] ??
+     expandedData[app._id]?.data?.[field.field_name] ??
+     <em>Not provided</em>}
+  </p>
+))}
+
+
                     <button
                       onClick={() => setEditingApp(expandedData[app._id])}
                       className="btn-secondary mt-3"
@@ -278,13 +301,13 @@ const handleMoveField = (index: number, direction: number) => {
                           </select>
                         ) : (
                           <input
-                            type={field.type}
-                            value={editingApp[field.field_name] || ""}
-                            onChange={(e) => handleEditChange(field.field_name, e.target.value)}
-                            className="form-input"
-                            placeholder={field.label}
-                            max={field.type === "date" ? new Date().toISOString().split("T")[0] : undefined}
-                          />
+  type={field.type}
+  value={editingApp?.data?.[field.field_name] || ""}
+  onChange={(e) => handleEditChange(field.field_name, e.target.value)}
+  className="form-input"
+  placeholder={field.label}
+/>
+
                         )}
                       </div>
                     ))}

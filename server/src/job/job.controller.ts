@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 
@@ -14,5 +14,10 @@ export class JobController {
   @Post()
   create(@Body() createJobDto: CreateJobDto) {
     return this.jobService.create(createJobDto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.jobService.deleteJob(id);
   }
 }

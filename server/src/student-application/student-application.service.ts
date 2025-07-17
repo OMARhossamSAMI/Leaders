@@ -64,11 +64,21 @@ export class StudentApplicationService {
   }
 
   async getAllApplications() {
-    return this.appModel
-      .find({}, 'student_name grade_applying_for createdAt') // only select required fields
-      .sort({ createdAt: -1 }) // newest first
-      .exec();
-  }
+  const applications = await this.appModel
+    .find()
+    .sort({ createdAt: -1 })
+    .lean()
+    .exec();
+
+  return applications.map((app) => {
+    const { data = {}, ...rest } = app;
+    return {
+      ...rest,
+      ...data, // flatten `data` so student_name etc. are at top level
+    };
+  });
+}
+
 
   async deleteApplication(id: string) {
     return this.appModel.findByIdAndDelete(id);

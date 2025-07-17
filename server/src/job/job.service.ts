@@ -16,4 +16,11 @@ export class JobService {
     const job = new this.jobModel(createJobDto);
     return job.save();
   }
+
+  async deleteJob(id: string) {
+  return this.jobModel.findByIdAndDelete(id);
+}
+
+
+
 }
