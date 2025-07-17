@@ -41,6 +41,12 @@ export default function ApplicationsPage() {
   return (
     <div className="container my-5">
       <h2 className="mb-4">Submitted Applications</h2>
+       <button
+    className="btn btn-info"
+    onClick={() => window.location.href = "/login/Admin/Vacancy/create-job"}
+  >
+    + Create Job
+  </button>
       <button
     className="btn btn-outline-info d-flex align-items-center gap-2"
     onClick={() => window.location.href = "/login/Admin/Vacancy/form-fields"} // adjust path as needed
