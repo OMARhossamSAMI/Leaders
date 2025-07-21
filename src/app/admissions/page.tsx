@@ -54,7 +54,7 @@ export default function AdmissionsPage() {
     }
   }, []); // <-- Dependency array must be here
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
 
   const form = e.currentTarget;
@@ -66,35 +66,29 @@ export default function AdmissionsPage() {
     data[key] = value;
   });
 
-  console.log("Submitted data:", data); // ✅ Moved here after filling
-
   try {
     const response = await fetch("http://localhost:3000/applications", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data), // ✅ Send data directly, NOT { data }
     });
 
     const result = await response.json();
-    console.log("FormData entries:");
-for (let [key, value] of formData.entries()) {
-  console.log(`${key}: ${value}`);
-}
-
 
     if (response.ok) {
-      alert("Application submitted successfully!");
+      alert(result.message || "Application submitted successfully!");
       form.reset();
     } else {
-      alert("Error: " + result.message || "Submission failed.");
+      alert("❌ Error: " + (result.message || "Submission failed."));
     }
   } catch (error) {
     console.error("Submission Error:", error);
-    alert("An error occurred while submitting the form.");
+    alert("❌ An error occurred while submitting the form.");
   }
 };
+
 
 
   return (

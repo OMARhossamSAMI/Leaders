@@ -5,91 +5,126 @@ import {
   StudentApplicationDocument,
 } from '../Schemas/studentApplication.schema';
 import { Model } from 'mongoose';
-import * as nodemailer from 'nodemailer';
+import * as sgMail from '@sendgrid/mail';
+
+// ✅ Confirm API key
+console.log(
+  'SENDGRID API KEY (partial):',
+  process.env.SENDGRID_API_KEY?.slice(0, 10) || 'Not found'
+);
+
+// ✅ Set SendGrid API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 @Injectable()
 export class StudentApplicationService {
   constructor(
     @InjectModel(StudentApplication.name)
-    private appModel: Model<StudentApplicationDocument>,
+    private appModel: Model<StudentApplicationDocument>
   ) {}
 
   async submitApplication(data: any): Promise<any> {
-    const createdApp = new this.appModel(data);
-    await createdApp.save();
+  console.log('📥 Incoming application data:', data);
 
-    // Setup email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    });
+  const appData = data.data || data;
 
-    const parentEmails = [data.father_email, data.mother_email]
-      .filter(Boolean)
-      .join(',');
+  const createdApp = new this.appModel(appData);
+  await createdApp.save();
 
-    const parentMail = {
-      from: process.env.MAIL_USER,
-      to: parentEmails,
-      subject: 'LIC Application Received',
-      html: `<p>Dear Parent,</p>
-             <p>We’ve received the application for <b>${data.student_name}</b>. Our admissions team will contact you soon.</p>
-             <p>Regards,<br>Leaders International College</p>`,
-    };
+  // 🔁 Convert application data to HTML table rows
+  const applicationHtmlRows = Object.entries(appData)
+    .map(([key, value]) => `<tr><td><strong>${key}</strong></td><td>${value}</td></tr>`)
+    .join('');
 
-    const hrMail = {
-      from: process.env.MAIL_USER,
-      to: 'careers@leadersintcollege.com',
-      subject: `New Application: ${data.student_name}`,
-      html: `<h3>New Student Application Submitted</h3>
-             <p><strong>Student:</strong> ${data.student_name}</p>
-             <p><strong>Grade:</strong> ${data.grade_applying_for}</p>
-             <p><strong>Father:</strong> ${data.father_name} (${data.father_email})</p>
-             <p><strong>Mother:</strong> ${data.mother_name} (${data.mother_email})</p>
-             <p>--</p>
-             <p>See all info in the admin dashboard or database.</p>`,
-    };
+  const fullApplicationHtml = `
+    <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; width: 100%;">
+      <thead>
+        <tr style="background-color: #f2f2f2;">
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${applicationHtmlRows}
+      </tbody>
+    </table>
+  `;
 
-    try {
-      await transporter.sendMail(parentMail);
-      await transporter.sendMail(hrMail);
-      return { message: 'Application submitted and emails sent.' };
-    } catch (err) {
-      console.error(err);
-      throw new Error('Application saved but failed to send email.');
-    }
-  }
+  const parentMail = {
+    to: [{ email: 'youssefsahhar2406@gmail.com' }],
+    from: 'youssefsahhar2406@gmail.com',
+    subject: '✅ Parent Application Received',
+    html: `
+      <p>Dear Parent,</p>
+      <p>We’ve received the application for <b>${appData.student_name}</b>. Our admissions team will contact you soon.</p>
+      ${fullApplicationHtml}
+      <p>Regards,<br>Leaders International College</p>
+    `,
+  };
 
-  async getAllApplications() {
-  const applications = await this.appModel
-    .find()
-    .sort({ createdAt: -1 })
-    .lean()
-    .exec();
+  const hrMail = {
+    to: 'youssefsahhar2406@gmail.com',
+    from: 'youssefsahhar2406@gmail.com',
+    subject: `📥 New Application from ${appData.student_name}`,
+    html: `
+      <h3>Full Student Application</h3>
+      ${fullApplicationHtml}
+      <p>Login to the admin dashboard for more actions.</p>
+    `,
+  };
 
-  return applications.map((app) => {
-    const { data = {}, ...rest } = app;
+  const testMail = {
+    to: 'youssefsahhar2406@gmail.com',
+    from: 'youssefsahhar2406@gmail.com',
+    subject: `🧪 SendGrid Test Email – ${appData.student_name}`,
+    html: `
+      <h2>Testing Full Application Email Render</h2>
+      ${fullApplicationHtml}
+    `,
+  };
+
+  try {
+    //await sgMail.send(parentMail);
+    await sgMail.send(hrMail);
+    //await sgMail.send(testMail);
     return {
-      ...rest,
-      ...data, // flatten `data` so student_name etc. are at top level
+      message: '✅ Application saved and full data sent via email.',
     };
-  });
+  } catch (err) {
+    console.error('❌ SendGrid Email Error:', err.response?.body || err.message);
+    throw new Error('Application saved but failed to send emails.');
+  }
 }
 
+
+  async getAllApplications() {
+    const applications = await this.appModel
+      .find()
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return applications.map((app) => {
+      const { data = {}, ...rest } = app;
+      return {
+        ...rest,
+        ...data,
+      };
+    });
+  }
 
   async deleteApplication(id: string) {
     return this.appModel.findByIdAndDelete(id);
   }
 
-  async updateApplication(id: string, updateData: Partial<StudentApplication>) {
-  return this.appModel.findByIdAndUpdate(id, updateData, { new: true });
-}
+  async updateApplication(
+    id: string,
+    updateData: Partial<StudentApplication>
+  ) {
+    return this.appModel.findByIdAndUpdate(id, updateData, { new: true });
+  }
+
   async getApplicationById(id: string) {
-  return this.appModel.findById(id).exec(); // ✅ don't forget ()
-}
-
-
+    return this.appModel.findById(id).exec();
+  }
 }
