@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Briefcase, User, Clock, Trash2 } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
 import "./page.css";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface Job {
   _id: string;
@@ -183,6 +184,7 @@ export default function JobManagementPage() {
           )}
         </div>
       </div>
+          <AdminFooter />
     </>
   );
 }

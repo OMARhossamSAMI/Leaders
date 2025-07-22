@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import AdminHeader from "@/app/components/AdminHeader";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface Popup {
   _id: string;
@@ -170,6 +171,7 @@ export default function PopupPage() {
           </div>
         </div>
       </div>
+    <AdminFooter />
     </>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import EventsCard from "./EventsCard";
 import AdminHeader from "@/app/components/AdminHeader";
 import "./events.css";
+import AdminFooter from "@/app/components/AdminFooter";
 
 type EventType = {
   title: string;
@@ -109,6 +110,7 @@ export default function AdminEventsPage() {
           </div>
         </div>
       </div>
+          <AdminFooter />
     </>
   );
 }

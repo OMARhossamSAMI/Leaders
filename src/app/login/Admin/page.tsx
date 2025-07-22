@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import AdminHeader from "@/app/components/AdminHeader";
+import AdminFooter from "@/app/components/AdminFooter";
 
 export default function AdminPage() {
   useEffect(() => {
@@ -187,6 +188,8 @@ export default function AdminPage() {
           text-decoration: underline;
         }
       `}</style>
+                <AdminFooter />
+      
     </>
   );
 }

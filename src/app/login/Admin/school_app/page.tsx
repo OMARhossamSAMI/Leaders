@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import "./page.css";
 import AdminHeader from "@/app/components/AdminHeader";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface Application {
   _id: string;
@@ -458,6 +459,8 @@ return (
         )}
       </div> {/* end of white shadow box */}
     </div>
+        <AdminFooter />
+    
   </>
 );
 }

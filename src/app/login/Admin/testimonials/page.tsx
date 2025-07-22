@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import "./page.css";
 import AdminHeader from "@/app/components/AdminHeader";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface Testimonial {
   _id: string;
@@ -139,6 +140,8 @@ export default function TestimonialsPage() {
           </div>
         </section>
       </div>
+          <AdminFooter />
+      
     </>
   );
 }

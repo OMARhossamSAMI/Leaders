@@ -5,6 +5,7 @@ import axios from "axios";
 import { Eye, EyeOff, PencilLine, Trash2, Save, XCircle } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
 import "./internship.css";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface InternshipApplication {
   _id: string;
@@ -160,6 +161,8 @@ export default function InternshipApplicationsPage() {
           )}
         </div>
       </div>
+          <AdminFooter />
+      
     </>
   );
 }

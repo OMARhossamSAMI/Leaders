@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./page.css";
 import AdminHeader from "@/app/components/AdminHeader"; // ✅ Add AdminHeader
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface ContactUsEntry {
   _id: string;
@@ -172,6 +173,7 @@ export default function ContactUsAdminPage() {
         </div>
       </div>
     </div>
+        <AdminFooter />
   </>
 );
 
