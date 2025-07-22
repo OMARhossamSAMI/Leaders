@@ -1,8 +1,10 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import EventsCard from "./EventsCard";
+import AdminHeader from "@/app/components/AdminHeader";
 import "./events.css";
 
 type EventType = {
@@ -68,38 +70,43 @@ export default function AdminEventsPage() {
   }, []);
 
   return (
-    <div className="admin-events">
-      <div className="header">
-        <div className="title-and-switch">
-          <h1 className="page-title">Manage Events</h1>
-          <label className="styled-switch">
-            <input
-              type="checkbox"
-              checked={showEvents}
-              onChange={handleToggleShowEvents}
-            />
-            <span className="slider" />
-            <span className="switch-label">
-              {showEvents ? "Showing on Website" : "Hidden from Website"}
-            </span>
-          </label>
+    <>
+      <AdminHeader />
+      <div className="admin-events-wrapper">
+        <div className="admin-events">
+          <div className="header-row">
+            <div className="left-controls">
+              <h1 className="page-title">Manage Events</h1>
+              <label className="styled-switch">
+                <input
+                  type="checkbox"
+                  checked={showEvents}
+                  onChange={handleToggleShowEvents}
+                />
+                <span className="slider" />
+                <span className="switch-label">
+                  {showEvents ? "Showing on Website" : "Hidden from Website"}
+                </span>
+              </label>
+            </div>
+            <button className="add-btn" onClick={handleCreate}>
+              + Create Event
+            </button>
+          </div>
+
+
+          <div className="event-grid">
+            {events.map((event) => (
+              <EventsCard
+                key={event.title}
+                event={event}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         </div>
-
-        <button className="add-btn" onClick={handleCreate}>
-          + Create Event
-        </button>
       </div>
-
-      <div className="event-grid">
-        {events.map((event) => (
-          <EventsCard
-            key={event.title}
-            event={event}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 }

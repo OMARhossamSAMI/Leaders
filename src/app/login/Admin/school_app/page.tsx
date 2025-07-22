@@ -227,18 +227,19 @@ const handleMoveField = (index: number, direction: number) => {
       </button>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
-        {applications.map((app) => (
-          <div
-            key={app._id}
-            style={{
-              background: "#fff",
-              borderRadius: "10px",
-              padding: "1.5rem",
-              width: "100%",
-              maxWidth: "600px",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            }}
-          >
+  {applications.map((app) => (
+    <div
+      key={app._id}
+      style={{
+        background: "#fff",
+        borderRadius: "10px",
+        padding: "1.5rem",
+        width: "100%",
+        maxWidth: "600px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">
   {app.student_name || app.data?.student_name || "Unnamed Applicant"}

@@ -21,6 +21,7 @@ export default function ApplyPage() {
   const [fields, setFields] = useState<EmploymentFormField[]>([]);
   const [positionFromURL, setPositionFromURL] = useState("");
   const [employmentTypeFromURL, setEmploymentTypeFromURL] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -37,55 +38,62 @@ export default function ApplyPage() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
+  e.preventDefault();
+  const form = e.currentTarget;
+  const formData = new FormData(form);
 
-    const formData = new FormData(form);
-    const payload: Record<string, any> = {};
+  if (positionFromURL) formData.set("position", positionFromURL);
+  if (employmentTypeFromURL) {
+    formData.delete("employment_type[]"); // remove default if exists
+    employmentTypeFromURL.split(",").forEach((type) => {
+      formData.append("employment_type[]", type.trim());
+    });
+  }
 
-    for (const [key, value] of formData.entries()) {
-      if (key.endsWith("[]")) {
-        const baseKey = key.slice(0, -2);
-        if (!payload[baseKey]) payload[baseKey] = [];
-        payload[baseKey].push(value);
+  const plainData: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    if (plainData[key]) {
+      // handle multiple values (e.g., checkbox arrays)
+      if (Array.isArray(plainData[key])) {
+        plainData[key].push(value);
       } else {
-        if (payload[key]) {
-          if (!Array.isArray(payload[key])) payload[key] = [payload[key]];
-          payload[key].push(value);
-        } else {
-          payload[key] = value;
-        }
+        plainData[key] = [plainData[key], value];
       }
+    } else {
+      plainData[key] = value;
     }
+  }
 
-    // ✅ Inject URL values manually (important fix)
-    if (positionFromURL) {
-      payload["position"] = positionFromURL;
+  const payload = { data: plainData };
+
+  setIsLoading(true);
+  try {
+    form.querySelector(".loading")?.classList.add("d-block");
+    form.querySelector(".error-message")?.classList.remove("d-block");
+    form.querySelector(".sent-message")?.classList.remove("d-block");
+
+    await axios.post("http://localhost:3000/vacancy", payload, {
+      headers: {
+        "Content-Type": "application/json", // no longer multipart
+      },
+    });
+
+    form.querySelector(".loading")?.classList.remove("d-block");
+    form.querySelector(".sent-message")?.classList.add("d-block");
+    form.reset();
+  } catch (error: any) {
+    console.error("Submission error:", error);
+    form.querySelector(".loading")?.classList.remove("d-block");
+    const errEl = form.querySelector(".error-message");
+    if (errEl) {
+      errEl.innerHTML = "Submission failed. Please try again.";
+      errEl.classList.add("d-block");
     }
-    if (employmentTypeFromURL) {
-      payload["employment_type"] = employmentTypeFromURL.split(",").map((e) => e.trim());
-    }
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-    try {
-      form.querySelector(".loading")?.classList.add("d-block");
-      form.querySelector(".error-message")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.remove("d-block");
-
-      await axios.post("http://localhost:3000/vacancy", { data: payload });
-
-      form.querySelector(".loading")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.add("d-block");
-      form.reset();
-    } catch (error: any) {
-      console.error("Submission error:", error);
-      form.querySelector(".loading")?.classList.remove("d-block");
-      const errEl = form.querySelector(".error-message");
-      if (errEl) {
-        errEl.innerHTML = "Submission failed. Please try again.";
-        errEl.classList.add("d-block");
-      }
-    }
-  };
 
   return (
     <>
@@ -117,11 +125,7 @@ export default function ApplyPage() {
                 <h3>Employment Application</h3>
                 <p>Please fill out the application form below and submit your CV.</p>
 
-                <form
-                  className="php-email-form mt-4"
-                  onSubmit={handleSubmit}
-                  encType="multipart/form-data"
-                >
+                <form className="php-email-form mt-4" onSubmit={handleSubmit} encType="multipart/form-data">
                   <div className="loading" style={{ display: "none" }}>Loading</div>
                   <div className="error-message" style={{ display: "none", color: "red" }}></div>
                   <div className="sent-message" style={{ display: "none", color: "green" }}>
@@ -150,36 +154,34 @@ export default function ApplyPage() {
                       }
 
                       if (field.field_name === "employment_type" && field.options?.length) {
-  const selectedTypes = employmentTypeFromURL
-    .split(",")
-    .map((s) => s.replace(/\s+/g, "").toLowerCase()); // remove spaces and lowercase
+                        const selectedTypes = employmentTypeFromURL
+                          .split(",")
+                          .map((s) => s.replace(/\s+/g, "").toLowerCase());
 
-  return (
-    <div className="col-md-6 mb-3" key={index}>
-      <label className="form-label d-block">{label}</label>
-      {field.options.map((opt, i) => {
-        const normalizedOpt = opt.replace(/\s+/g, "").toLowerCase(); // normalize option
-        const isChecked = selectedTypes.includes(normalizedOpt);
-
-        return (
-          <div className="form-check form-check-inline" key={i}>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              name={`${field.field_name}[]`}
-              value={opt}
-              checked={isChecked}
-              readOnly
-              disabled
-            />
-            <label className="form-check-label">{opt}</label>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label d-block">{label}</label>
+                            {field.options.map((opt, i) => {
+                              const normalizedOpt = opt.replace(/\s+/g, "").toLowerCase();
+                              const isChecked = selectedTypes.includes(normalizedOpt);
+                              return (
+                                <div className="form-check form-check-inline" key={i}>
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    name={`${field.field_name}[]`}
+                                    value={opt}
+                                    checked={isChecked}
+                                    readOnly
+                                    disabled
+                                  />
+                                  <label className="form-check-label">{opt}</label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
 
                       if (field.type === "radio" && field.options?.length) {
                         return (
@@ -290,11 +292,24 @@ export default function ApplyPage() {
                         border: "none",
                         padding: "10px 20px",
                         borderRadius: "5px",
+                        cursor: isLoading ? "not-allowed" : "pointer",
+                        opacity: isLoading ? 0.7 : 1,
                       }}
+                      disabled={isLoading}
                     >
-                      <Send size={18} /> Submit Application
+                      {isLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={18} /> Submit Application
+                        </>
+                      )}
                     </button>
                   </div>
+
                   <p className="mt-4 text-muted">
                     Thanks for your interest in Leaders International College!
                   </p>
