@@ -13,6 +13,7 @@ import { ContactUsModule } from './contactus/contactus.module';
 import { EmploymentFormFieldsModule } from './employment-form-fields/employment-form-fields.module';
 import { VacancyModule } from './vacancy/vacancy.module';
 import { JobModule } from './job/job.module';
+import { InternshipModule } from './internship/internship.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { JobModule } from './job/job.module';
     EmploymentFormFieldsModule,
     VacancyModule,
     JobModule,
+    InternshipModule,
   ],
 })
 export class AppModule {}
