@@ -18,7 +18,7 @@ import {
   Star,
 } from "lucide-react";
 
-import AdminHeader from "@/app/components/AdminHeader"; // ✅ Import header
+import AdminHeader from "@/app/components/AdminHeader";
 
 interface Popup {
   _id: string;
@@ -93,11 +93,18 @@ export default function PopupPage() {
     <>
       <AdminHeader />
       <div style={{ paddingTop: "130px", background: "#f5f9fa", minHeight: "100vh" }}>
-        <div className="events-container">
+        {/* Header outside the shadow box */}
+        <div className="container section-title mb-4">
+          <h2>Popup Manager</h2>
+          <p>Manage and control website popup banners.</p>
+        </div>
+
+
+        {/* Shadow box */}
+        <div className="popup-shadow-box">
           <div className="header-row">
-            <h1 className="events-title">Popup Manager</h1>
             <button
-              className="create-btn"
+              className="add-btn"
               onClick={() => router.push("/login/Admin/popup/create")}
             >
               <Plus size={18} /> Create Popup

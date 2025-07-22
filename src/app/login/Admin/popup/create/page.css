@@ -1,15 +1,17 @@
-/* Full-page wrapper to center the form */
+:root {
+  --accent-color: hsl(193, 75%, 54%);
+}
+
 .page-wrapper {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
   height: 100vh !important;
-  background-color: #f9f9f9 !important;
+  background-color: #f4f8fb !important;
   padding: 20px !important;
   box-sizing: border-box !important;
 }
 
-/* Slide-in animation */
 @keyframes slide-in {
   from {
     transform: translateY(30px);
@@ -21,34 +23,30 @@
   }
 }
 
-/* Form container */
 .form-container {
   width: 100% !important;
   max-width: 550px !important;
   background: #ffffff !important;
   padding: 40px !important;
   border-radius: 16px !important;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 15px 30px rgba(123, 87, 255, 0.15) !important;
   animation: slide-in 0.6s ease-out !important;
 }
 
-/* Title */
 .form-title {
   font-size: 28px !important;
   font-weight: 700 !important;
   text-align: center !important;
-  color: #2563eb !important;
+  color: var(--accent-color) !important;
   margin-bottom: 30px !important;
 }
 
-/* Form layout */
 .popup-form {
   display: flex !important;
   flex-direction: column !important;
   gap: 20px !important;
 }
 
-/* Input + Textarea + Select */
 .form-input,
 .form-select,
 .form-textarea {
@@ -64,8 +62,8 @@
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(123, 87, 255, 0.2) !important;
 }
 
 .form-textarea {
@@ -73,9 +71,8 @@
   min-height: 100px !important;
 }
 
-/* Button */
 .form-button {
-  background-color: #2563eb !important;
+  background-color: var(--accent-color) !important;
   color: white !important;
   padding: 12px !important;
   font-size: 16px !important;
@@ -87,10 +84,9 @@
 }
 
 .form-button:hover {
-  background-color: #1e40af !important;
+  background-color: var(--accent-color) !important;
 }
 
-/* Error box */
 .error-box {
   background-color: #fee2e2 !important;
   border: 1px solid #fca5a5 !important;
@@ -101,6 +97,19 @@
   text-align: center !important;
   font-weight: 600 !important;
 }
+
+.success-toast {
+  background-color: #e0f4ff !important;
+  color: #1b4d8a !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid #7ecbff !important;
+  font-weight: 600 !important;
+  margin-bottom: 20px !important;
+  text-align: center !important;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
 .form-preview-wrapper {
   display: flex !important;
   flex-wrap: wrap;
@@ -111,20 +120,6 @@
   max-width: 1200px !important;
 }
 
-/* Success toast */
-.success-toast {
-  background-color: #d1fae5 !important;
-  color: #065f46 !important;
-  padding: 12px 16px !important;
-  border-radius: 8px !important;
-  border: 1px solid #6ee7b7 !important;
-  font-weight: 600 !important;
-  margin-bottom: 20px !important;
-  text-align: center !important;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Preview Card Styling (same as your design) */
 .preview-card {
   width: 300px;
   height: 220px;
@@ -146,6 +141,7 @@
 .preview-card #cookieSvg g path {
   fill: rgb(97, 81, 81);
 }
+
 .buttons-section {
   display: flex;
   flex-direction: column;
@@ -155,7 +151,7 @@
 .section-label {
   font-weight: 600;
   margin-bottom: 4px;
-  color: #2563eb;
+  color: var(--accent-color);
 }
 
 .button-field {
@@ -166,7 +162,7 @@
 
 .add-btn,
 .remove-btn {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 6px;

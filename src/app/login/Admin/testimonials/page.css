@@ -211,3 +211,13 @@ input:checked + .slider:before {
   color: #fff;
   box-shadow: 0 3px 8px rgba(220, 53, 69, 0.2);
 }
+
+.testimonial-box {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
+  max-width: 1100px;
+}
+

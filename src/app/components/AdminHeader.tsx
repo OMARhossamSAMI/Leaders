@@ -2,23 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "./admin.css"; // 👈 Only import here
+import "./admin.css";
 
 export default function AdminHeader() {
   const pathname = usePathname();
 
   return (
     <header id="header" className="header d-flex align-items-center fixed-top">
-      <div className="container-fluid container-xl d-flex align-items-center justify-content-between">
-        <Link href="/login/Admin" className="logo d-flex align-items-center">
+      <div className="container-fluid container-xl d-flex align-items-center justify-content-start">
+        {/* Logo + Title */}
+        <Link href="/login/Admin" className="logo d-flex align-items-center me-4">
           <img
             src="/assets/img/lic_logo.png"
             alt="Leaders Logo"
             style={{ height: 40, marginRight: 10 }}
           />
-          <h1 className="sitename">Leaders International College</h1>
+          <h1 className="sitename mb-0">Leaders International College</h1>
         </Link>
 
+        {/* Navigation */}
         <nav id="navmenu" className="navmenu">
           <ul>
             <li>
@@ -27,6 +29,14 @@ export default function AdminHeader() {
                 className={pathname === "/login/Admin" ? "active" : ""}
               >
                 Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/login/Admin/school_app"
+                className={pathname.includes("/school_app") ? "active" : ""}
+              >
+                Student App
               </Link>
             </li>
             <li>
@@ -44,7 +54,7 @@ export default function AdminHeader() {
               >
                 Vacancies
               </Link>
-            </li>  
+            </li>
             <li>
               <Link
                 href="/login/Admin/events"

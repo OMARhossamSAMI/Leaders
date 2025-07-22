@@ -1,125 +1,60 @@
-/* Layout wrapper */
-.events-container {
-  padding: 40px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
+/* Page Wrapper */
+:root {
+  --accent-color: hsl(193, 75%, 54%);
 }
 
+.popup-page-container {
+  background-color: #f5f9fa;
+  padding-top: 130px;
+  min-height: 100vh;
+}
 .events-title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 30px;
   text-align: center;
   color: #333;
+  margin-top: 40px; /* ⬅️ Add this line */
 }
 
-.cards-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
 
-.card {
-  width: 300px;
-  background-color: rgb(255, 255, 255);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 30px;
-  gap: 13px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.062);
-}
-
-.popup-card {
-  height: auto;
-  padding: 20px;
+/* Section Title */
+.section-title {
   text-align: center;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  margin-bottom: 30px;
+  margin-top: 60px; /* Added more space below AdminHeader */
 }
 
-.popup-card-top {
-  width: 100%;
+.section-title h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+.section-title p {
+  color: #555;
+  font-size: 1rem;
+}
+
+/* Shadow Box Wrapper */
+.popup-shadow-box {
+  background: white;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 0 auto 50px auto;
+  max-width: 1300px;
+}
+
+/* Header Row */
+.header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-}
-
-.popup-icons-left {
-  display: flex;
-  gap: 8px;
-}
-
-.popup-category-icon {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4b5563;
-}
-
-.popup-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #111827;
-  margin-top: 35px;
-}
-
-.popup-description {
-  font-size: 0.85rem;
-  color: #4b5563;
-  line-height: 1.4;
-  margin: 0 5px;
-}
-
-.popup-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.acceptButton {
-  width: 80px;
-  height: 30px;
-  background-color: #7b57ff;
-  border: none;
-  color: rgb(241, 241, 241);
-  cursor: pointer;
-  font-weight: 600;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px -1px #977ef3, 0 2px 4px -1px #977ef3;
-  transition: all 0.6s ease;
-}
-
-.acceptButton:hover {
-  background-color: #9173ff;
-  box-shadow: 0 10px 15px -3px #977ef3, 0 4px 6px -2px #977ef3;
-}
-
-.header-row {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  margin-bottom: 30px !important;
+  margin-bottom: 30px;
 }
 
 .create-btn {
-  background-color: #2563eb !important;
+  background-color: rgb(168, 131, 255) !important;
   color: white !important;
   font-weight: 600 !important;
   border: none !important;
@@ -130,41 +65,16 @@
   align-items: center !important;
   gap: 8px !important;
   cursor: pointer !important;
-  transition: background 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
 .create-btn:hover {
-  background-color: #1e40af !important;
+  background-color: rgb(153, 110, 255) !important;
 }
 
-.card-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  justify-content: center;
-  align-items: center;
-}
 
-.icon-btn {
-  background: #e5e7eb;
-  border: none;
-  border-radius: 6px;
-  padding: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
 
-.icon-btn.danger {
-  background-color: #fee2e2;
-}
-
-.toggle-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
+/* Error Box */
 .error-box {
   background-color: #fee2e2 !important;
   border: 1px solid #fca5a5 !important;
@@ -175,26 +85,19 @@
   text-align: center !important;
   font-weight: 600 !important;
 }
-.popup-card-top {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 10px;
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
+
+/* Grid for Cards */
+.cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
 }
 
-.popup-icons-right {
-  display: flex;
-  gap: 8px;
-}
-
+/* Notification Card */
 .notificationCard {
   position: relative;
-  width: 270px;
+  width: 100%;
   min-height: 380px;
   background: #ffffff;
   border-radius: 20px;
@@ -209,7 +112,7 @@
   text-align: center;
 }
 
-/* Top actions: toggle + icons */
+/* Card Top Bar */
 .popup-card-top {
   width: 100%;
   display: flex;
@@ -221,18 +124,33 @@
   right: 16px;
 }
 
-/* Toggle Button */
 .card-actions {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 0;
+}
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.toggle-btn:hover {
+  transform: scale(1.1);
+}
+.toggle-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
 }
 
-/* Edit + Delete buttons */
+/* Icons */
 .popup-icons-right {
   display: flex;
   gap: 8px;
 }
-
-/* Edit/Delete button styles */
 .icon-btn {
   background: #f3f4f6;
   border: none;
@@ -243,12 +161,11 @@
   align-items: center;
   justify-content: center;
 }
-
 .icon-btn.danger {
   background-color: #fee2e2;
 }
 
-/* Title */
+/* Card Title */
 .notificationHeading {
   font-weight: bold;
   font-size: 1.1em;
@@ -256,7 +173,7 @@
   margin-top: 65px;
 }
 
-/* Icon */
+/* Category Icon */
 .bellIcon {
   width: 60px;
   height: 60px;
@@ -265,7 +182,7 @@
   margin-top: 6px;
 }
 
-/* Description */
+/* Message */
 .notificationPara {
   font-size: 0.85em;
   color: #4b5563;
@@ -274,7 +191,7 @@
   margin: 8px 0;
 }
 
-/* Buttons */
+/* Button Container */
 .buttonContainer {
   display: flex;
   flex-direction: column;
@@ -284,7 +201,6 @@
   margin-top: auto;
   padding-top: 8px;
 }
-
 .AllowBtn {
   width: 130px;
   height: 34px;
@@ -297,11 +213,9 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-
 .AllowBtn:hover {
   background-color: rgb(153, 110, 255);
 }
-
 .NotnowBtn {
   width: 130px;
   height: 34px;
@@ -314,31 +228,21 @@
   border-radius: 20px;
   transition: background-color 0.2s ease;
 }
-
 .NotnowBtn:hover {
   background-color: rgb(239, 227, 255);
 }
-.card-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  margin-top: 0;
-}
 
-.toggle-btn {
-  background: none;
+.add-btn {
+  padding: 10px 20px;
+  background: var(--accent-color);
+  color: white;
   border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.toggle-btn:hover {
-  transform: scale(1.1);
-}
-
-.toggle-label {
-  font-size: 0.75rem;
+  border-radius: 8px;
   font-weight: 600;
-  color: #4b5563;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.add-btn:hover {
+  background-color: hsl(193, 85%, 48%);
 }
