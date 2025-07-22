@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff, PencilLine, Trash2, Save, XCircle } from "lucide-react";
+import AdminHeader from "@/app/components/AdminHeader"; // ✅ Include header
 
 interface Application {
   _id: string;
@@ -64,120 +65,143 @@ export default function InternshipApplicationsPage() {
   };
 
   return (
-    <div style={{ backgroundColor: "#f5f9fa", minHeight: "100vh", padding: "2rem" }}>
-      <div className="container">
-        <h2 className="mb-4" style={{ color: "#007bff" }}>
-          Internship Applications
-        </h2>
+    <>
+      <AdminHeader />
 
-        {/* ✅ Create Job Button */}
-        <div className="mb-4">
-          <button
-            className="btn btn-info"
-            onClick={() => (window.location.href = "/login/Admin/Internship/create-job")}
-          >
-            + Create Job
-          </button>
-        </div>
+      <div
+        style={{
+          backgroundColor: "#f5f9fa",
+          minHeight: "100vh",
+          padding: "2rem",
+          paddingTop: "130px", // ✅ Push down for fixed header
+        }}
+      >
+        <div className="container">
+          <h2 className="mb-4" style={{ color: "#007bff" }}>
+            Internship Applications
+          </h2>
 
-        {applications.length === 0 ? (
-          <p>No internship applications submitted yet.</p>
-        ) : (
-          applications.map((app) => {
-            const info = app.data?.data || {};
-            return (
-              <div
-                key={app._id}
-                className="card p-3 mb-4 shadow-sm"
-                style={{ borderLeft: "5px solid #00a6d9", backgroundColor: "white" }}
-              >
-                <h5 style={{ color: "#007bff" }}>
-                  {info.student_name || info.full_name || "Unnamed"}
-                </h5>
-                <p>
-                  <strong>Position:</strong> {info.position || "N/A"}<br />
-                  <strong>Date:</strong> {new Date(app.createdAt).toLocaleDateString()}
-                </p>
+          {/* ✅ Create Job Button */}
+          <div className="mb-4">
+            <button
+              className="btn btn-info"
+              onClick={() => (window.location.href = "/login/Admin/Internship/create-job")}
+            >
+              + Create Job
+            </button>
+          </div>
 
-                <div className="d-flex gap-2">
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() =>
-                      expandedId === app._id
-                        ? setExpandedId(null)
-                        : setExpandedId(app._id)
-                    }
-                  >
-                    {expandedId === app._id ? <EyeOff size={16} /> : <Eye size={16} />}
-                    {expandedId === app._id ? " Hide Details" : " View Details"}
-                  </button>
+          {applications.length === 0 ? (
+            <p>No internship applications submitted yet.</p>
+          ) : (
+            applications.map((app) => {
+              const info = app.data?.data || {};
+              return (
+                <div
+                  key={app._id}
+                  className="card p-3 mb-4 shadow-sm"
+                  style={{
+                    borderLeft: "5px solid #00a6d9",
+                    backgroundColor: "white",
+                  }}
+                >
+                  <h5 style={{ color: "#007bff" }}>
+                    {info.student_name || info.full_name || "Unnamed"}
+                  </h5>
+                  <p>
+                    <strong>Position:</strong> {info.position || "N/A"}
+                    <br />
+                    <strong>Date:</strong>{" "}
+                    {new Date(app.createdAt).toLocaleDateString()}
+                  </p>
 
-                  <button
-                    className="btn btn-sm btn-warning text-white"
-                    onClick={() => {
-                      setEditingId(app._id);
-                      setEditData(info);
-                      setExpandedId(app._id);
-                    }}
-                  >
-                    <PencilLine size={16} className="me-1" />
-                    Edit
-                  </button>
+                  <div className="d-flex gap-2">
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() =>
+                        expandedId === app._id
+                          ? setExpandedId(null)
+                          : setExpandedId(app._id)
+                      }
+                    >
+                      {expandedId === app._id ? (
+                        <EyeOff size={16} />
+                      ) : (
+                        <Eye size={16} />
+                      )}
+                      {expandedId === app._id ? " Hide Details" : " View Details"}
+                    </button>
 
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(app._id)}
-                  >
-                    <Trash2 size={16} className="me-1" />
-                    Delete
-                  </button>
-                </div>
+                    <button
+                      className="btn btn-sm btn-warning text-white"
+                      onClick={() => {
+                        setEditingId(app._id);
+                        setEditData(info);
+                        setExpandedId(app._id);
+                      }}
+                    >
+                      <PencilLine size={16} className="me-1" />
+                      Edit
+                    </button>
 
-                {expandedId === app._id && (
-                  <div className="mt-3">
-                    {editingId === app._id ? (
-                      <>
-                        {Object.entries(info).map(([key, value]) => (
-                          <div key={key} className="mb-2">
-                            <label className="form-label">{key.replace(/_/g, " ")}</label>
-                            <input
-                              className="form-control"
-                              value={editData[key] || ""}
-                              onChange={(e) =>
-                                setEditData({ ...editData, [key]: e.target.value })
-                              }
-                            />
-                          </div>
-                        ))}
-                        <div className="d-flex gap-2 mt-2">
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={() => handleUpdate(app._id)}
-                          >
-                            <Save size={16} /> Save
-                          </button>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => setEditingId(null)}
-                          >
-                            <XCircle size={16} /> Cancel
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      Object.entries(info).map(([key, value]) => (
-                        <p key={key}>
-                          <strong>{key.replace(/_/g, " ")}:</strong> {String(value)}
-                        </p>
-                      ))
-                    )}
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDelete(app._id)}
+                    >
+                      <Trash2 size={16} className="me-1" />
+                      Delete
+                    </button>
                   </div>
-                )}
-              </div>
-            );
-          })
-        )}
+
+                  {expandedId === app._id && (
+                    <div className="mt-3">
+                      {editingId === app._id ? (
+                        <>
+                          {Object.entries(info).map(([key, value]) => (
+                            <div key={key} className="mb-2">
+                              <label className="form-label">
+                                {key.replace(/_/g, " ")}
+                              </label>
+                              <input
+                                className="form-control"
+                                value={editData[key] || ""}
+                                onChange={(e) =>
+                                  setEditData({ ...editData, [key]: e.target.value })
+                                }
+                              />
+                            </div>
+                          ))}
+                          <div className="d-flex gap-2 mt-2">
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() => handleUpdate(app._id)}
+                            >
+                              <Save size={16} /> Save
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => setEditingId(null)}
+                            >
+                              <XCircle size={16} /> Cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        Object.entries(info).map(([key, value]) => (
+                          <p key={key}>
+                            <strong>{key.replace(/_/g, " ")}:</strong>{" "}
+                            {String(value)}
+                          </p>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import "./page.css";
 import axios from "axios";
@@ -16,6 +17,8 @@ import {
   Info,
   Star,
 } from "lucide-react";
+
+import AdminHeader from "@/app/components/AdminHeader"; // ✅ Import header
 
 interface Popup {
   _id: string;
@@ -47,12 +50,10 @@ export default function PopupPage() {
       fetchPopups();
     } catch (err: any) {
       if (err.response?.data?.message) {
-        setError(err.response.data.message); // Show server error (e.g. only one popup can be live)
+        setError(err.response.data.message);
       } else {
         setError("Could not toggle status.");
       }
-
-      // Clear error after 3 seconds
       setTimeout(() => setError(""), 3000);
     }
   };
@@ -89,78 +90,79 @@ export default function PopupPage() {
   }, []);
 
   return (
-    <div className="events-container">
-      <div className="header-row">
-        <h1 className="events-title">Popup Manager</h1>
-        <button
-          className="create-btn"
-          onClick={() => router.push("/login/Admin/popup/create")}
-        >
-          <Plus size={18} /> Create Popup
-        </button>
-      </div>
-
-      {error && <div className="error-box">{error}</div>}
-
-      <div className="cards-wrapper">
-        {popups.map((popup) => (
-          <div className="notificationCard" key={popup._id}>
-            <div className="popup-top-bar">
-              <div className="card-actions">
-                <button
-                  className="toggle-btn"
-                  onClick={() => toggleStatus(popup._id)}
-                >
-                  {popup.status === "on" ? (
-                    <>
-                      <ToggleRight color="#10b981" size={32} />
-                    </>
-                  ) : (
-                    <>
-                      <ToggleLeft color="#d1d5db" size={32} />
-                    </>
-                  )}
-                </button>
-                <p className="toggle-label">
-                  {popup.status === "on" ? "Currently Live" : "Make Live"}
-                </p>
-              </div>
-
-              <div className="popup-icons-right">
-                <button
-                  className="icon-btn"
-                  onClick={() =>
-                    router.push(`/login/Admin/popup/edit?id=${popup._id}`)
-                  }
-                >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  className="icon-btn danger"
-                  onClick={() => deletePopup(popup._id)}
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-
-            <p className="notificationHeading">{popup.title}</p>
-            <div className="popup-icon-wrapper">
-              {getCategoryIcon(popup.category)}
-            </div>
-
-            <p className="notificationPara">{popup.message}</p>
-
-            <div className="buttonContainer">
-              {popup.buttons?.slice(0, 3).map((btnText, i) => (
-                <button key={i} className={i === 0 ? "AllowBtn" : "NotnowBtn"}>
-                  {btnText}
-                </button>
-              ))}
-            </div>
+    <>
+      <AdminHeader />
+      <div style={{ paddingTop: "130px", background: "#f5f9fa", minHeight: "100vh" }}>
+        <div className="events-container">
+          <div className="header-row">
+            <h1 className="events-title">Popup Manager</h1>
+            <button
+              className="create-btn"
+              onClick={() => router.push("/login/Admin/popup/create")}
+            >
+              <Plus size={18} /> Create Popup
+            </button>
           </div>
-        ))}
+
+          {error && <div className="error-box">{error}</div>}
+
+          <div className="cards-wrapper">
+            {popups.map((popup) => (
+              <div className="notificationCard" key={popup._id}>
+                <div className="popup-top-bar">
+                  <div className="card-actions">
+                    <button
+                      className="toggle-btn"
+                      onClick={() => toggleStatus(popup._id)}
+                    >
+                      {popup.status === "on" ? (
+                        <ToggleRight color="#10b981" size={32} />
+                      ) : (
+                        <ToggleLeft color="#d1d5db" size={32} />
+                      )}
+                    </button>
+                    <p className="toggle-label">
+                      {popup.status === "on" ? "Currently Live" : "Make Live"}
+                    </p>
+                  </div>
+
+                  <div className="popup-icons-right">
+                    <button
+                      className="icon-btn"
+                      onClick={() =>
+                        router.push(`/login/Admin/popup/edit?id=${popup._id}`)
+                      }
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      className="icon-btn danger"
+                      onClick={() => deletePopup(popup._id)}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <p className="notificationHeading">{popup.title}</p>
+                <div className="popup-icon-wrapper">
+                  {getCategoryIcon(popup.category)}
+                </div>
+
+                <p className="notificationPara">{popup.message}</p>
+
+                <div className="buttonContainer">
+                  {popup.buttons?.slice(0, 3).map((btnText, i) => (
+                    <button key={i} className={i === 0 ? "AllowBtn" : "NotnowBtn"}>
+                      {btnText}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -305,3 +305,18 @@ h1.page-title {
 .event-card span {
   font-size: 16px;
 }
+/* Wrapper fix to push down below header and restore full visibility */
+.admin-events-wrapper {
+  padding-top: 130px;
+  background-color: #f5f9fa;
+  min-height: 100vh;
+}
+
+/* Fix for title + switch row alignment */
+.title-and-switch {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+

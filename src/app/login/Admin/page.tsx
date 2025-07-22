@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import AdminHeader from "@/app/components/AdminHeader";
 
 export default function AdminPage() {
   useEffect(() => {
@@ -16,7 +17,8 @@ export default function AdminPage() {
 
   return (
     <>
-      <main className="main admin-dashboard">
+      <AdminHeader />
+      <main className="main admin-dashboard" style={{ paddingTop: "130px" }}>
         <div className="container py-5">
           <h1 className="text-center mb-5 admin-heading">
             <i className="bi bi-speedometer2 me-2"></i>
@@ -108,14 +110,13 @@ export default function AdminPage() {
       </main>
 
       <style jsx global>{`
-        /* Ensure the background spans the whole page */
         html,
         body {
           margin: 0;
           padding: 0;
           height: 100%;
-          background: #c2c8ebff !important; /* forcefully override layout */
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !importan;
+          background: #c2c8ebff !important;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
         }
 
         .admin-dashboard {
@@ -133,9 +134,9 @@ export default function AdminPage() {
         }
 
         .admin-card {
-          background: #ffffff; /* PURE white */
+          background: #ffffff;
           border-radius: 16px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* softer shadow */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
           padding: 2rem;
           transition: all 0.3s ease-in-out;
           height: 100%;
