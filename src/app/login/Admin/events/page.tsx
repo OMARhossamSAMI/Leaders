@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import EventsCard from "./EventsCard";
 import AdminHeader from "@/app/components/AdminHeader";
 import "./events.css";
+import AdminFooter from "@/app/components/AdminFooter";
 
 type EventType = {
   title: string;
@@ -73,27 +74,29 @@ export default function AdminEventsPage() {
     <>
       <AdminHeader />
       <div className="admin-events-wrapper">
-        <div className="admin-events">
-          <div className="header-row">
-            <div className="left-controls">
-              <h1 className="page-title">Manage Events</h1>
-              <label className="styled-switch">
-                <input
-                  type="checkbox"
-                  checked={showEvents}
-                  onChange={handleToggleShowEvents}
-                />
-                <span className="slider" />
-                <span className="switch-label">
-                  {showEvents ? "Showing on Website" : "Hidden from Website"}
-                </span>
-              </label>
-            </div>
+        <div className="container section-title">
+          <h2>Manage Events</h2>
+          <p>View, edit, or delete upcoming events shown on the website.</p>
+        </div>
+
+        {/* Shadow Box */}
+        <div className="event-shadow-box">
+          <div className="event-controls">
+            <label className="styled-switch">
+              <input
+                type="checkbox"
+                checked={showEvents}
+                onChange={handleToggleShowEvents}
+              />
+              <span className="slider" />
+              <span className="switch-label">
+                {showEvents ? "Showing on Website" : "Hidden from Website"}
+              </span>
+            </label>
             <button className="add-btn" onClick={handleCreate}>
               + Create Event
             </button>
           </div>
-
 
           <div className="event-grid">
             {events.map((event) => (
@@ -107,6 +110,7 @@ export default function AdminEventsPage() {
           </div>
         </div>
       </div>
+          <AdminFooter />
     </>
   );
 }

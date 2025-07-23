@@ -32,7 +32,7 @@ export default function CreateTestimonial() {
   const handleSubmit = async () => {
     try {
       await axios.post("http://localhost:3000/testimonials", form);
-      router.push("/login/testimonials");
+      router.push("/login/Admin/testimonials");
     } catch (err) {
       console.error("Failed to create testimonial", err);
     }

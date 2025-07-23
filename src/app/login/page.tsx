@@ -3,6 +3,7 @@
 import "./page.css";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import AdminFooter from "../components/AdminFooter";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -91,5 +92,6 @@ export default function LoginPage() {
         <div className="button-glow"></div>
       </button>
     </form>
+    
   );
 }

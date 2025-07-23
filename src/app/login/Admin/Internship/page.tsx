@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff, PencilLine, Trash2, Save, XCircle } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
+import "./internship.css";
+import AdminFooter from "@/app/components/AdminFooter";
 
 interface InternshipApplication {
   _id: string;
@@ -60,45 +62,21 @@ export default function InternshipApplicationsPage() {
     <>
       <AdminHeader />
 
-      <div
-        style={{
-          backgroundColor: "#f5f9fa",
-          minHeight: "100vh",
-          padding: "2rem",
-          paddingTop: "130px",
-        }}
-      >
-        <div className="container">
-          <h2 className="mb-4" style={{ color: "#007bff" }}>
-            Internship Applications
-          </h2>
+      <div className="internship-container">
+        {/* Section Title */}
+        <div className="container section-title" style={{ marginTop: "30px", marginBottom: "2rem" }}>
+          <h2>Internship Applications</h2>
+          <p>Review and manage all internship requests submitted by students.</p>
+        </div>
 
-          <div className="mb-4">
-            <button
-              className="btn btn-info"
-              onClick={() =>
-                (window.location.href = "/login/Admin/Internship/create-job")
-              }
-            >
-              + Create Job
-            </button>
-          </div>
-
+        {/* Shadow Box for Cards */}
+        <div className="internship-box">
           {applications.length === 0 ? (
             <p>No internship applications submitted yet.</p>
           ) : (
             applications.map((app) => (
-              <div
-                key={app._id}
-                className="card p-3 mb-4 shadow-sm"
-                style={{
-                  borderLeft: "5px solid #00a6d9",
-                  backgroundColor: "white",
-                }}
-              >
-                <h5 style={{ color: "#007bff" }}>
-                  {app.full_name || "Unnamed"}
-                </h5>
+              <div key={app._id} className="card">
+                <h5 className="accent-text">{app.full_name || "Unnamed"}</h5>
                 <p>
                   <strong>University:</strong> {app.university}
                   <br />
@@ -106,41 +84,35 @@ export default function InternshipApplicationsPage() {
                   {new Date(app.createdAt).toLocaleDateString()}
                 </p>
 
-                <div className="d-flex gap-2">
+                <div className="flex gap-2 mt-2">
                   <button
-                    className="btn btn-sm btn-primary"
+                    className="btn-primary"
                     onClick={() =>
                       expandedId === app._id
                         ? setExpandedId(null)
                         : setExpandedId(app._id)
                     }
                   >
-                    {expandedId === app._id ? (
-                      <EyeOff size={16} />
-                    ) : (
-                      <Eye size={16} />
-                    )}
+                    {expandedId === app._id ? <EyeOff size={16} /> : <Eye size={16} />}
                     {expandedId === app._id ? " Hide Details" : " View Details"}
                   </button>
 
-                  <button
-                    className="btn btn-sm btn-warning text-white"
+                  {/* <button
+                    className="btn-warning"
                     onClick={() => {
                       setEditingId(app._id);
                       setEditData(app);
                       setExpandedId(app._id);
                     }}
                   >
-                    <PencilLine size={16} className="me-1" />
-                    Edit
-                  </button>
+                    <PencilLine size={16} className="me-1" /> Edit
+                  </button> */}
 
                   <button
-                    className="btn btn-sm btn-danger"
+                    className="btn-danger"
                     onClick={() => handleDelete(app._id)}
                   >
-                    <Trash2 size={16} className="me-1" />
-                    Delete
+                    <Trash2 size={16} className="me-1" /> Delete
                   </button>
                 </div>
 
@@ -152,33 +124,22 @@ export default function InternshipApplicationsPage() {
                           if (key === "_id" || key === "createdAt") return null;
                           return (
                             <div key={key} className="mb-2">
-                              <label className="form-label">
-                                {key.replace(/_/g, " ")}
-                              </label>
+                              <label className="form-label">{key.replace(/_/g, " ")}</label>
                               <input
-                                className="form-control"
+                                className="form-input"
                                 value={editData[key as keyof InternshipApplication] || ""}
                                 onChange={(e) =>
-                                  setEditData({
-                                    ...editData,
-                                    [key]: e.target.value,
-                                  })
+                                  setEditData({ ...editData, [key]: e.target.value })
                                 }
                               />
                             </div>
                           );
                         })}
-                        <div className="d-flex gap-2 mt-2">
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={() => handleUpdate(app._id)}
-                          >
+                        <div className="flex gap-2 mt-2">
+                          <button className="btn-success" onClick={() => handleUpdate(app._id)}>
                             <Save size={16} /> Save
                           </button>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => setEditingId(null)}
-                          >
+                          <button className="btn-secondary" onClick={() => setEditingId(null)}>
                             <XCircle size={16} /> Cancel
                           </button>
                         </div>
@@ -188,8 +149,7 @@ export default function InternshipApplicationsPage() {
                         if (key === "_id" || key === "createdAt") return null;
                         return (
                           <p key={key}>
-                            <strong>{key.replace(/_/g, " ")}:</strong>{" "}
-                            {String(value)}
+                            <strong>{key.replace(/_/g, " ")}:</strong> {String(value)}
                           </p>
                         );
                       })
@@ -201,6 +161,8 @@ export default function InternshipApplicationsPage() {
           )}
         </div>
       </div>
+          <AdminFooter />
+      
     </>
   );
 }

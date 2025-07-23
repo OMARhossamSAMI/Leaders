@@ -232,3 +232,33 @@ body {
   height: 48px;
   margin-bottom: 12px;
 }
+
+.tabs-container {
+  display: flex;
+  justify-content: center; /* ✅ center horizontally */
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.tab-btn:hover {
+  background-color: hsl(193, 75%, 90%);
+}
+
+.tab-btn.active-tab {
+  background-color: hsl(193, 75%, 54%);
+  color: white;
+}
+
