@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { usePathname } from "next/navigation";
-import { Briefcase, User, Clock, Trash2 } from "lucide-react";
+import { Briefcase, User, Clock, Trash2, FileEdit, Eye } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
-import "./page.css";
 import AdminFooter from "@/app/components/AdminFooter";
+import "./page.css";
 
 interface Job {
   _id: string;
@@ -15,20 +15,68 @@ interface Job {
   employmentType: string;
 }
 
+interface Vacancy {
+  _id: string;
+  data: { [key: string]: any };
+  createdAt: string;
+  expanded?: boolean;
+}
+
+interface FormField {
+  id: string;
+  name: string;
+  label: string;
+  type: string;
+  required: boolean;
+}
+
 export default function JobManagementPage() {
-  const [activeTab, setActiveTab] = useState<"create" | "view">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "view" | "applications" | "edit-structure">("create");
+
   const [title, setTitle] = useState("");
   const [careerLevel, setCareerLevel] = useState("Experienced (Non-Manager)");
   const [employmentType, setEmploymentType] = useState("Full Time");
-  const [jobs, setJobs] = useState<Job[]>([]);
 
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [applications, setApplications] = useState<Vacancy[]>([]);
+  const [formFields, setFormFields] = useState<FormField[]>([]);
   const pathname = usePathname();
   const isInternshipPage = pathname.includes("/Internship");
 
   useEffect(() => {
     setEmploymentType(isInternshipPage ? "Internship" : "Full Time");
-    fetchJobs(); // Load jobs once on mount
+    fetchJobs();
+    fetchApplications();
+    fetchFormStructure();
   }, [isInternshipPage]);
+
+  const fetchJobs = async () => {
+    try {
+      const res = await axios.get<Job[]>("http://localhost:3000/jobs");
+      setJobs(res.data);
+    } catch (err) {
+      console.error("Failed to fetch jobs", err);
+    }
+  };
+
+  const fetchApplications = async () => {
+    try {
+      const res = await axios.get<Vacancy[]>("http://localhost:3000/vacancy");
+      const appsWithExpand = res.data.map((app) => ({ ...app, expanded: false }));
+      setApplications(appsWithExpand);
+    } catch (err) {
+      console.error("Failed to fetch applications", err);
+    }
+  };
+
+  const fetchFormStructure = async () => {
+    try {
+      const res = await axios.get<FormField[]>("http://localhost:3000/employment-form-fields");
+      setFormFields(res.data);
+    } catch (err) {
+      console.error("Failed to fetch form structure", err);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,17 +98,7 @@ export default function JobManagementPage() {
     }
   };
 
-  const fetchJobs = async () => {
-    try {
-      const res = await axios.get<Job[]>("http://localhost:3000/jobs");
-      setJobs(res.data);
-    } catch (err) {
-      alert("Failed to fetch jobs");
-      console.error(err);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
+  const handleDeleteJob = async (id: string) => {
     if (!confirm("Are you sure you want to delete this job?")) return;
     try {
       await axios.delete(`http://localhost:3000/jobs/${id}`);
@@ -71,79 +109,115 @@ export default function JobManagementPage() {
     }
   };
 
+  const handleDeleteApplication = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this application?")) return;
+    try {
+      await axios.delete(`http://localhost:3000/vacancy/${id}`);
+      setApplications((prev) => prev.filter((app) => app._id !== id));
+    } catch (err) {
+      alert("Failed to delete application");
+      console.error(err);
+    }
+  };
+
+  const toggleView = (id: string) => {
+    setApplications((prev) =>
+      prev.map((app) =>
+        app._id === id ? { ...app, expanded: !app.expanded } : app
+      )
+    );
+  };
+
+  const updateField = (index: number, key: keyof FormField, value: FormField[keyof FormField]) => {
+  const updated = [...formFields];
+  updated[index] = { ...updated[index], [key]: value };
+  setFormFields(updated);
+};
+
+
+  const moveFieldUp = (index: number) => {
+    if (index === 0) return;
+    const updated = [...formFields];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    setFormFields(updated);
+  };
+
+  const moveFieldDown = (index: number) => {
+    if (index === formFields.length - 1) return;
+    const updated = [...formFields];
+    [updated[index + 1], updated[index]] = [updated[index], updated[index + 1]];
+    setFormFields(updated);
+  };
+
+  const removeField = (index: number) => {
+    const updated = [...formFields];
+    updated.splice(index, 1);
+    setFormFields(updated);
+  };
+
+  const addField = () => {
+    setFormFields((prev) => [
+      ...prev,
+      {
+        id: Math.random().toString(36).substring(7),
+        name: "",
+        label: "",
+        type: "Text",
+        required: false,
+      },
+    ]);
+  };
+
+  const saveFields = async () => {
+    try {
+      await axios.put("http://localhost:3000/employment-form-fields", formFields);
+      alert("Form structure saved successfully!");
+    } catch (err) {
+      console.error("Failed to save form structure", err);
+      alert("Error saving form structure.");
+    }
+  };
+
   return (
     <>
       <AdminHeader />
 
       <div className="job-page-wrapper">
         <div className="container section-title">
-            <h2>Vacancies</h2>
-            <p>Manage and view vacancies below.</p>
-          </div>
-        {/* Tabs */}
+          <h2>Vacancies</h2>
+          <p>Manage and view vacancies below.</p>
+        </div>
+
         <div className="tabs-container">
-          <button
-            className={`tab-btn ${activeTab === "create" ? "active-tab" : ""}`}
-            onClick={() => setActiveTab("create")}
-          >
+          <button className={`tab-btn ${activeTab === "create" ? "active-tab" : ""}`} onClick={() => setActiveTab("create")}>
             Create Vacancy
           </button>
-          <button
-            className={`tab-btn ${activeTab === "view" ? "active-tab" : ""}`}
-            onClick={() => setActiveTab("view")}
-          >
+          <button className={`tab-btn ${activeTab === "view" ? "active-tab" : ""}`} onClick={() => setActiveTab("view")}>
             View Vacancies
+          </button>
+          <button className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""}`} onClick={() => setActiveTab("applications")}>
+            View Applications
+          </button>
+          <button className={`tab-btn ${activeTab === "edit-structure" ? "active-tab" : ""}`} onClick={() => setActiveTab("edit-structure")}>
+            Edit Form Structure
           </button>
         </div>
 
-        {/* Shadowed Content Box */}
         <div className="job-box">
-          {activeTab === "create" ? (
+          {activeTab === "create" && (
             <form onSubmit={handleSubmit}>
-              <h2 className="section-heading">
-                <Briefcase size={28} className="me-2" />
-                Create New Vacancy
-              </h2>
-
+              <h2 className="section-heading"><Briefcase size={28} className="me-2" />Create New Vacancy</h2>
               <div className="form-group">
-                <label>
-                  <User size={16} className="me-2" />
-                  Job Title
-                </label>
-                <input
-                  className="form-input"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  placeholder="e.g. Mathematics Teacher"
-                />
+                <label><User size={16} className="me-2" /> Job Title</label>
+                <input className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} required />
               </div>
-
               <div className="form-group">
-                <label>
-                  <User size={16} className="me-2" />
-                  Career Level
-                </label>
-                <input
-                  className="form-input"
-                  value={careerLevel}
-                  onChange={(e) => setCareerLevel(e.target.value)}
-                  required
-                  placeholder="e.g. Experienced (Non-Manager)"
-                />
+                <label><User size={16} className="me-2" /> Career Level</label>
+                <input className="form-input" value={careerLevel} onChange={(e) => setCareerLevel(e.target.value)} required />
               </div>
-
               <div className="form-group">
-                <label>
-                  <Clock size={16} className="me-2" />
-                  Employment Type
-                </label>
-                <select
-                  className="form-input"
-                  value={employmentType}
-                  onChange={(e) => setEmploymentType(e.target.value)}
-                  required
-                >
+                <label><Clock size={16} className="me-2" /> Employment Type</label>
+                <select className="form-input" value={employmentType} onChange={(e) => setEmploymentType(e.target.value)} required>
                   {!isInternshipPage && (
                     <>
                       <option value="Full Time">Full Time</option>
@@ -153,38 +227,120 @@ export default function JobManagementPage() {
                   {isInternshipPage && <option value="Internship">Internship</option>}
                 </select>
               </div>
-
-              <button type="submit" className="btn-primary mt-3">
-                Save Job
-              </button>
+              <button type="submit" className="btn-primary mt-3">Save Job</button>
             </form>
-          ) : (
+          )}
+
+          {activeTab === "view" && (
             <>
               <h2 className="section-heading"><Briefcase size={28} className="me-2" />Available Vacancies</h2>
-              {jobs.length === 0 ? (
-                <p>No jobs created yet.</p>
-              ) : (
-                <div className="scroll-grid mt-4">
-                  {jobs.map((job) => (
-                    <div key={job._id} className="card">
-                      <h5>{job.title}</h5>
-                      <p>
-                        <strong>Career Level:</strong> {job.careerLevel}
-                        <br />
-                        <strong>Type:</strong> {job.employmentType}
-                      </p>
-                      <button className="btn-danger btn-sm" onClick={() => handleDelete(job._id)}>
+              <div className="scroll-grid mt-4">
+                {jobs.map((job) => (
+                  <div key={job._id} className="card">
+                    <h5>{job.title}</h5>
+                    <p><strong>Career Level:</strong> {job.careerLevel}<br /><strong>Type:</strong> {job.employmentType}</p>
+                    <button className="btn-danger btn-sm" onClick={() => handleDeleteJob(job._id)}>
+                      <Trash2 size={16} className="me-1" /> Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {activeTab === "applications" && (
+            <>
+              <h2 className="section-heading"><Eye size={24} className="me-2" />Vacancy Applications</h2>
+              <div className="scroll-grid mt-4">
+                {applications.map((app) => (
+                  <div key={app._id} className="card">
+                    <h5>{app.data?.["Full Name"] || "Untitled Applicant"}</h5>
+                    <p><strong>Email:</strong> {app.data?.["Email"] || "N/A"}<br /><strong>Submitted:</strong> {new Date(app.createdAt).toLocaleString()}</p>
+                    <div className="btn-group mt-2">
+                      <button className="btn-primary btn-sm" onClick={() => toggleView(app._id)}>
+                        <Eye size={16} className="me-1" /> {app.expanded ? "Hide" : "View"}
+                      </button>
+                      <button className="btn-danger btn-sm" onClick={() => handleDeleteApplication(app._id)}>
                         <Trash2 size={16} className="me-1" /> Delete
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
+                    {app.expanded && (
+                      <div className="application-details mt-3">
+                        {Object.entries(app.data).map(([key, value]) => (
+                          <p key={key}><strong>{key}:</strong> {Array.isArray(value) ? value.join(", ") : value?.toString()}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </>
           )}
+
+          {activeTab === "edit-structure" && (
+            <>
+              <h2 className="section-heading">
+                <FileEdit size={24} className="me-2" />Edit Form Structure
+              </h2>
+
+              {formFields.length === 0 ? (
+                <p className="text-muted">No fields yet. Click <strong>Add New Field</strong> to begin.</p>
+              ) : (
+                formFields.map((field, index) => (
+                  <div key={field.id} className="form-structure-box">
+                    <input
+                      className="form-input"
+                      value={field.name}
+                      onChange={(e) => updateField(index, "name", e.target.value)}
+                      placeholder="Field Name"
+                    />
+                    <input
+                      className="form-input"
+                      value={field.label}
+                      onChange={(e) => updateField(index, "label", e.target.value)}
+                      placeholder="Field Label"
+                    />
+                    <select
+                      className="form-input"
+                      value={field.type}
+                      onChange={(e) => updateField(index, "type", e.target.value)}
+                    >
+                      <option value="Text">Text</option>
+                      <option value="Number">Number</option>
+                      <option value="Phone">Phone</option>
+                      <option value="Email">Email</option>
+                      <option value="Select">Select</option>
+                      <option value="Checkbox">Checkbox</option>
+                      <option value="Textarea">Textarea</option>
+                      <option value="Date">Date</option>
+                    </select>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={(e) => updateField(index, "required", e.target.checked)}
+                      /> Required
+                    </label>
+
+                    <div className="btn-group mt-2">
+                      <button className="btn-move" onClick={() => moveFieldUp(index)} disabled={index === 0}>🔼 Move Up</button>
+                      <button className="btn-move" onClick={() => moveFieldDown(index)} disabled={index === formFields.length - 1}>🔽 Move Down</button>
+                      <button className="btn-danger btn-sm" onClick={() => removeField(index)}>🗑️ Remove</button>
+                    </div>
+                    <hr />
+                  </div>
+                ))
+              )}
+
+              <button className="btn-primary mt-3" onClick={addField}>➕ Add New Field</button>
+              <button className="btn-primary mt-3 ms-3" onClick={saveFields}>💾 Save Structure</button>
+            </>
+          )}
+
         </div>
       </div>
-          <AdminFooter />
+
+      <AdminFooter />
     </>
   );
 }
