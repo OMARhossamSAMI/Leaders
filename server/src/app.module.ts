@@ -14,6 +14,7 @@ import { EmploymentFormFieldsModule } from './employment-form-fields/employment-
 import { VacancyModule } from './vacancy/vacancy.module';
 import { JobModule } from './job/job.module';
 import { InternshipModule } from './internship/internship.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { InternshipModule } from './internship/internship.module';
     VacancyModule,
     JobModule,
     InternshipModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
