@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import '../update/[id]/form.css';
+import "../update/form.css";
 
 export default function CreateTestimonial() {
   const router = useRouter();
@@ -12,8 +12,20 @@ export default function CreateTestimonial() {
     description: "",
     profilePhoto: "",
   });
+  const [authenticated, setAuthenticated] = useState(false);
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -41,14 +53,45 @@ export default function CreateTestimonial() {
   return (
     <div className="form-container">
       <h2 style={{ textAlign: "center" }}>Add Testimonial</h2>
-      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-        <input name="role" placeholder="Role" value={form.role} onChange={handleChange} required />
-        <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} required />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <input
+          name="name"
+          placeholder="Name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="role"
+          placeholder="Role"
+          value={form.role}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={form.description}
+          onChange={handleChange}
+          required
+        />
         <input type="file" accept="image/*" onChange={handleFile} required />
         <div className="buttons-row">
-          <button type="submit" className="submit-btn">Submit</button>
-          <button type="button" className="cancel-btn" onClick={() => router.back()}>Cancel</button>
+          <button type="submit" className="submit-btn">
+            Submit
+          </button>
+          <button
+            type="button"
+            className="cancel-btn"
+            onClick={() => router.back()}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>

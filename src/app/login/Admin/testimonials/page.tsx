@@ -19,13 +19,37 @@ interface Testimonial {
 export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const router = useRouter();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
   useEffect(() => {
-    axios
-      .get<Testimonial[]>("http://localhost:3000/testimonials")
-      .then((res) => setTestimonials(res.data))
-      .catch((err) => console.error(err));
+    const fetchData = async () => {
+      setLoadingTestimonials(true);
+      try {
+        const res = await axios.get<Testimonial[]>(
+          "http://localhost:3000/testimonials"
+        );
+        setTestimonials(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingTestimonials(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
 
   const handleToggle = async (id: string, newState: boolean) => {
     try {
@@ -55,7 +79,7 @@ export default function TestimonialsPage() {
 
   return (
     <>
-     <AdminHeader />
+      <AdminHeader />
 
       <div
         style={{
@@ -81,67 +105,122 @@ export default function TestimonialsPage() {
                 + Add Testimonial
               </button>
             </div>
-            <div className="container testimonial-grid">
-              {testimonials.map((t) => (
-                <div
-                  key={t._id}
-                  className={`testimonial-card ${t.on ? "active" : ""}`}
-                >
-                  <div className="quote-icon">
-                    <i className="bi bi-quote" />
-                  </div>
-                  <p className="testimonial-text">{t.description}</p>
-                  <hr />
-                  <div className="client-info-row">
-                    <img
-                      src={t.profilePhoto}
-                      alt="Client"
-                      className="client-avatar"
-                    />
-                    <div className="client-info">
-                      <div className="client-name">{t.name}</div>
-                      <div className="client-role">{t.role}</div>
-                    </div>
-                    <div className="toggle-switch">
-                      <label className="switch">
-                        <input
-                          type="checkbox"
-                          checked={t.on}
-                          onChange={(e) =>
-                            handleToggle(t._id, e.target.checked)
-                          }
-                        />
-                        <span className="slider round"></span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="testimonial-actions d-flex gap-2 mt-2">
-                    <button
-                      className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
-                      onClick={() =>
-                        router.push(
-                          `/login/testimonials/update/${encodeURIComponent(t._id)}`
-                        )
-                      }
-                    >
-                      <i className="bi bi-pencil-square"></i> Update
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                      onClick={() => handleDelete(t._id)}
-                    >
-                      <i className="bi bi-trash"></i> Delete
-                    </button>
-                  </div>
+            {loadingTestimonials ? (
+              <>
+                <div className="loader-container">
+                  <div className="spinner" />
+                  <p className="loading-text">Loading Testimonials...</p>
                 </div>
-              ))}
-            </div>
+
+                <style jsx>{`
+                  .loader-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 4rem 1rem;
+                    width: 100%;
+                  }
+
+                  .spinner {
+                    width: 50px;
+                    height: 50px;
+                    border: 6px solid #c2c8eb;
+                    border-top: 6px solid #3d9bdeff;
+                    border-radius: 50%;
+                    animation: spin 0.9s linear infinite;
+                  }
+
+                  .loading-text {
+                    margin-top: 1rem;
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    color: #3f9adaff;
+                  }
+
+                  @keyframes spin {
+                    to {
+                      transform: rotate(360deg);
+                    }
+                  }
+                `}</style>
+              </>
+            ) : (
+              <div className="container testimonial-grid">
+                {testimonials.length === 0 ? (
+                  <p
+                    style={{
+                      color: "#888",
+                      fontStyle: "italic",
+                      padding: "1rem",
+                    }}
+                  >
+                    No testimonials added yet.
+                  </p>
+                ) : (
+                  testimonials.map((t) => (
+                    <div
+                      key={t._id}
+                      className={`testimonial-card ${t.on ? "active" : ""}`}
+                    >
+                      <div className="quote-icon">
+                        <i className="bi bi-quote" />
+                      </div>
+                      <p className="testimonial-text">{t.description}</p>
+                      <hr />
+                      <div className="client-info-row">
+                        <img
+                          src={t.profilePhoto}
+                          alt="Client"
+                          className="client-avatar"
+                        />
+                        <div className="client-info">
+                          <div className="client-name">{t.name}</div>
+                          <div className="client-role">{t.role}</div>
+                        </div>
+                        <div className="toggle-switch">
+                          <label className="switch">
+                            <input
+                              type="checkbox"
+                              checked={t.on}
+                              onChange={(e) =>
+                                handleToggle(t._id, e.target.checked)
+                              }
+                            />
+                            <span className="slider round"></span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="testimonial-actions d-flex gap-2 mt-2">
+                        <button
+                          className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                          onClick={() =>
+                            router.push(
+                              `/login/Admin/testimonials/update?id=${encodeURIComponent(
+                                t._id
+                              )}`
+                            )
+                          }
+                        >
+                          <i className="bi bi-pencil-square"></i> Update
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                          onClick={() => handleDelete(t._id)}
+                        >
+                          <i className="bi bi-trash"></i> Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         </section>
       </div>
-          <AdminFooter />
-      
+      <AdminFooter />
     </>
   );
 }

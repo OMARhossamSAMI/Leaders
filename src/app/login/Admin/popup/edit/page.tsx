@@ -31,7 +31,17 @@ export default function EditPopupPage({ params }: { params: { id: string } }) {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   useEffect(() => {
     const fetchPopup = async () => {
       try {
