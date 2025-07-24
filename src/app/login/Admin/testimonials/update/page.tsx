@@ -4,11 +4,13 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import "./form.css";
+import { useSearchParams } from "next/navigation";
 
 export default function UpdateTestimonial() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { id } = useParams();
-  const safeId = typeof id === "string" ? id : id?.[0] || "";
+  const safeId = searchParams.get("id");
 
   const [form, setForm] = useState({
     name: "",
@@ -20,9 +22,12 @@ export default function UpdateTestimonial() {
   useEffect(() => {
     if (safeId) {
       axios
-        .get<{ name: string; role: string; description: string; profilePhoto: string }>(
-          `http://localhost:3000/testimonials/${safeId}`
-        )
+        .get<{
+          name: string;
+          role: string;
+          description: string;
+          profilePhoto: string;
+        }>(`http://localhost:3000/testimonials/${safeId}`)
         .then((res) => {
           setForm(res.data);
         })
@@ -53,14 +58,16 @@ export default function UpdateTestimonial() {
   const handleSubmit = async () => {
     try {
       await axios.patch(`http://localhost:3000/testimonials/${safeId}`, form);
-      router.push("/login/testimonials");
+      router.push("/login/Admin/testimonials");
     } catch (err) {
       console.error("Failed to update testimonial", err);
     }
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this testimonial?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this testimonial?"
+    );
     if (!confirmDelete) return;
 
     try {
