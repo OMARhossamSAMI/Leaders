@@ -12,22 +12,33 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    const accounts = {
-      hr: { email: "hr@example.com", password: "hr123" },
-      it: { email: "it@example.com", password: "it123" },
-    };
+    try {
+      const res = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const matchedRole = Object.entries(accounts).find(
-      ([role, creds]) => creds.email === email && creds.password === password
-    );
+      if (!res.ok) {
+        throw new Error("Invalid credentials");
+      }
 
-    if (matchedRole) {
-      const [role] = matchedRole;
-      router.push(`/login/Admin?role=${role}`);
-    } else {
+      const data = await res.json();
+
+      // ✅ Save token and role in sessionStorage
+      sessionStorage.setItem("admin_token", data.access_token);
+      sessionStorage.setItem("admin_role", data.role); // ✅ save role
+      sessionStorage.setItem("force_admin_refresh", "true");
+
+      // ✅ Redirect using the actual role
+      router.push(`/login/Admin?role=${data.role}`);
+    } catch (err) {
       setError("Invalid email or password.");
     }
   };
@@ -92,6 +103,5 @@ export default function LoginPage() {
         <div className="button-glow"></div>
       </button>
     </form>
-    
   );
 }

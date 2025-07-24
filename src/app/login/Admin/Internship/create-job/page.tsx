@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter, usePathname } from "next/navigation";
 import { Briefcase, User, Clock } from "lucide-react";
@@ -8,13 +8,24 @@ import { Briefcase, User, Clock } from "lucide-react";
 export default function CreateJobPage() {
   const [title, setTitle] = useState("");
   const [careerLevel, setCareerLevel] = useState("Experienced (Non-Manager)");
-    const pathname = usePathname(); // 🔍 Get current route
-
-const isInternshipPage = pathname.includes("/Internship");
-const [employmentType, setEmploymentType] = useState(isInternshipPage ? "Internship" : "Full Time");
+  const pathname = usePathname(); // 🔍 Get current route
+  const [authenticated, setAuthenticated] = useState(false);
+  const isInternshipPage = pathname.includes("/Internship");
+  const [employmentType, setEmploymentType] = useState(
+    isInternshipPage ? "Internship" : "Full Time"
+  );
   const router = useRouter();
 
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -24,7 +35,9 @@ const [employmentType, setEmploymentType] = useState(isInternshipPage ? "Interns
         employmentType,
       });
       alert("Job created successfully");
-      router.push(isInternshipPage ? "/login/Admin/Internship" : "/login/Admin/Vacancy");
+      router.push(
+        isInternshipPage ? "/login/Admin/Internship" : "/login/Admin/Vacancy"
+      );
     } catch (err) {
       alert("Failed to create job");
       console.error(err);

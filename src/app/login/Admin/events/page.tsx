@@ -22,11 +22,21 @@ type EventType = {
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<EventType[]>([]);
   const [showEvents, setShowEvents] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingEvents, setLoadingEvents] = useState(true);
   const router = useRouter();
 
   const fetchEvents = async () => {
-    const res = await axios.get<EventType[]>("http://localhost:3000/events");
-    setEvents(res.data);
+    setLoadingEvents(true); // Start loading
+    try {
+      const res = await axios.get<EventType[]>("http://localhost:3000/events");
+      setEvents(res.data);
+    } catch (err) {
+      console.error("Failed to fetch events", err);
+    } finally {
+      setLoadingEvents(false); // Stop loading
+    }
   };
 
   const fetchShowEventsSetting = async () => {
@@ -69,7 +79,17 @@ export default function AdminEventsPage() {
     fetchEvents();
     fetchShowEventsSetting();
   }, []);
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+    setLoading(false);
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   return (
     <>
       <AdminHeader />
@@ -98,19 +118,73 @@ export default function AdminEventsPage() {
             </button>
           </div>
 
-          <div className="event-grid">
-            {events.map((event) => (
-              <EventsCard
-                key={event.title}
-                event={event}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
+          {loadingEvents ? (
+            <>
+              <div className="loader-container">
+                <div className="spinner" />
+                <p className="loading-text">Loading Events...</p>
+              </div>
+
+              <style jsx>{`
+                .loader-container {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 4rem 1rem;
+                  width: 100%;
+                }
+
+                .spinner {
+                  width: 50px;
+                  height: 50px;
+                  border: 6px solid #c2c8eb;
+                  border-top: 6px solid #3d9bdeff;
+                  border-radius: 50%;
+                  animation: spin 0.9s linear infinite;
+                }
+
+                .loading-text {
+                  margin-top: 1rem;
+                  font-size: 1.1rem;
+                  font-weight: 500;
+                  color: #3f9adaff;
+                }
+
+                @keyframes spin {
+                  to {
+                    transform: rotate(360deg);
+                  }
+                }
+              `}</style>
+            </>
+          ) : (
+            <div className="event-grid">
+              {events.length === 0 ? (
+                <p
+                  style={{
+                    color: "#888",
+                    fontStyle: "italic",
+                    padding: "1rem",
+                  }}
+                >
+                  No events created yet.
+                </p>
+              ) : (
+                events.map((event) => (
+                  <EventsCard
+                    key={event.title}
+                    event={event}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
-          <AdminFooter />
+      <AdminFooter />
     </>
   );
 }

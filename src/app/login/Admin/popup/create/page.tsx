@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./page.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,17 @@ export default function CreatePopupPage() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement

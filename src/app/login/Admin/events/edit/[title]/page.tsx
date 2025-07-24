@@ -20,6 +20,7 @@ export default function EditEventPage() {
   const { title } = useParams();
   const router = useRouter();
   const [showCustomCategory, setShowCustomCategory] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const [form, setForm] = useState<EventType>({
     title: "",
     description: "",
@@ -63,7 +64,16 @@ export default function EditEventPage() {
         );
       });
   }, [title]);
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
