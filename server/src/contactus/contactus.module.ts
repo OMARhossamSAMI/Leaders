@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ContactUsService } from './contactus.service';
 import { ContactUsController } from './contactus.controller';
 import { ContactUs, ContactUsSchema } from '../Schemas/contactus.schema';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { ContactUs, ContactUsSchema } from '../Schemas/contactus.schema';
     ]),
   ],
   controllers: [ContactUsController],
-  providers: [ContactUsService],
+  providers: [ContactUsService, MailService],
 })
 export class ContactUsModule {}

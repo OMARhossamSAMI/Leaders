@@ -8015,6 +8015,8 @@ section,
   color: color-mix(in srgb, var(--default-color), transparent 20%);
   font-size: 15px;
   line-height: 1.5;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .contact .contact-info-box .info-content p:last-child {
@@ -9821,3 +9823,42 @@ section,
   font-weight: 600;
   color: #4b5563;
 }
+.tab-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding-bottom: 0.5rem;
+}
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: nowrap !important; /* Important to override Bootstrap */
+  width: max-content;
+}
+
+.nav-tabs .nav-item {
+  white-space: nowrap;
+  flex: 0 0 auto; /* Prevent squishing */
+}
+.program-tabs-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.program-tabs-scroll-wrapper .nav-tabs {
+  display: flex;
+  flex-wrap: nowrap !important;
+  width: max-content;
+}
+
+.program-tabs-scroll-wrapper .nav-item {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
