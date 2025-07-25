@@ -5,6 +5,7 @@ import axios from "axios";
 import { Eye, EyeOff, Trash2, Save, XCircle, Download } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
 import AdminFooter from "@/app/components/AdminFooter";
+import { useRouter } from "next/navigation";
 import "./internship.css";
 
 interface InternshipApplication {
@@ -28,17 +29,36 @@ export default function InternshipApplicationsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<InternshipApplication>>({});
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingApplications, setLoadingApplications] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
-    fetchApplications();
+    const token = sessionStorage.getItem("admin_token");
+
+    if (!token) {
+      setLoading(false);
+      const timer = setTimeout(() => {
+        router.push("/login");
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else {
+      setAuthenticated(true);
+      fetchApplications();
+    }
   }, []);
 
   const fetchApplications = async () => {
+    setLoadingApplications(true);
     try {
       const res = await axios.get<InternshipApplication[]>("http://localhost:3000/internship");
       setApplications(res.data);
     } catch (err) {
       console.error("Failed to fetch internship applications", err);
+    } finally {
+      setLoadingApplications(false);
     }
   };
 
@@ -65,14 +85,12 @@ export default function InternshipApplicationsPage() {
 
   const handleExport = async () => {
     try {
-      const response = await axios.get<Blob>("http://localhost:3000/internship/export", {
+      const response = await axios.get("http://localhost:3000/internship/export", {
         responseType: "blob",
       });
-
-      const blob = new Blob([response.data], {
+      const blob = new Blob([response.data as BlobPart], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -85,6 +103,22 @@ export default function InternshipApplicationsPage() {
     }
   };
 
+  if (!authenticated) {
+    return (
+      <div className="auth-redirect-screen">
+        <div className="auth-box">
+          <div className="warning-icon">⚠️</div>
+          <h2>Authentication Required</h2>
+          <p>Redirecting to login</p>
+          <div className="dots-loading">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -104,7 +138,12 @@ export default function InternshipApplicationsPage() {
         </div>
 
         <div className="internship-box">
-          {applications.length === 0 ? (
+          {loadingApplications ? (
+            <div className="loader-container">
+              <div className="spinner" />
+              <p className="loading-text">Loading internship applications...</p>
+            </div>
+          ) : applications.length === 0 ? (
             <p>No internship applications submitted yet.</p>
           ) : (
             applications.map((app) => (
@@ -138,30 +177,19 @@ export default function InternshipApplicationsPage() {
                       <>
                         {Object.entries(app).map(([key, value]) => {
                           if (key === "_id" || key === "createdAt") return null;
-
-                          if (
-                            (key === "cv_file_url" || key === "cover_letter_url") &&
-                            typeof value === "string" &&
-                            value.trim()
-                          ) {
-                            return (
-                              <p key={key}>
-                                <strong>{key.replace(/_/g, " ")}:</strong>{" "}
-                                <a href={`http://localhost:3000${value}`} target="_blank" rel="noopener noreferrer">
-                                  Open PDF
-                                </a>
-                              </p>
-                            );
-                          }
-
                           return (
-                            <p key={key}>
-                              <strong>{key.replace(/_/g, " ")}:</strong>{" "}
-                              {String(value || "N/A")}
-                            </p>
+                            <div key={key} className="mb-2">
+                              <label className="form-label">{key.replace(/_/g, " ")}</label>
+                              <input
+                                className="form-input"
+                                value={editData[key as keyof InternshipApplication] || ""}
+                                onChange={(e) =>
+                                  setEditData({ ...editData, [key]: e.target.value })
+                                }
+                              />
+                            </div>
                           );
                         })}
-
                         <div className="flex gap-2 mt-2">
                           <button className="btn-success" onClick={() => handleUpdate(app._id)}>
                             <Save size={16} /> Save
@@ -172,38 +200,34 @@ export default function InternshipApplicationsPage() {
                         </div>
                       </>
                     ) : (
-                      <>
-                        {Object.entries(app).map(([key, value]) => {
-                          if (key === "_id" || key === "createdAt") return null;
-
-                          if (
-                            (key === "cv_file_url" || key === "cover_letter_url") &&
-                            typeof value === "string" &&
-                            value.trim()
-                          ) {
-                            const label = key === "cv_file_url" ? "Download CV" : "Download Cover Letter";
-                            return (
-                              <p key={key}>
-                                <strong>{key.replace(/_/g, " ")}:</strong>{" "}
-                                <a
-                                  href={`http://localhost:3000${value}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  download
-                                >
-                                  {label}
-                                </a>
-                              </p>
-                            );
-                          }
-
+                      Object.entries(app).map(([key, value]) => {
+                        if (key === "_id" || key === "createdAt") return null;
+                        if (
+                          (key === "cv_file_url" || key === "cover_letter_url") &&
+                          typeof value === "string" &&
+                          value.trim()
+                        ) {
+                          const label = key === "cv_file_url" ? "Download CV" : "Download Cover Letter";
                           return (
                             <p key={key}>
-                              <strong>{key.replace(/_/g, " ")}:</strong> {String(value || "N/A")}
+                              <strong>{key.replace(/_/g, " ")}:</strong>{" "}
+                              <a
+                                href={`http://localhost:3000${value}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                              >
+                                {label}
+                              </a>
                             </p>
                           );
-                        })}
-                      </>
+                        }
+                        return (
+                          <p key={key}>
+                            <strong>{key.replace(/_/g, " ")}:</strong> {String(value || "N/A")}
+                          </p>
+                        );
+                      })
                     )}
                   </div>
                 )}

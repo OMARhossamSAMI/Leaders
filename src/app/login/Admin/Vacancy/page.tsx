@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Briefcase, User, Clock, Trash2, FileEdit, Eye } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
 import AdminFooter from "@/app/components/AdminFooter";
 import "./page.css";
 import { EmploymentFormField } from "../../../../../server/src/Schemas/employment-form-field.schema";
 
+// Interfaces
 interface Job {
   _id: string;
   title: string;
@@ -33,17 +34,28 @@ interface FormField {
 
 export default function JobManagementPage() {
   const [activeTab, setActiveTab] = useState<"create" | "view" | "applications" | "edit-structure">("create");
-
   const [title, setTitle] = useState("");
   const [careerLevel, setCareerLevel] = useState("Experienced (Non-Manager)");
   const [employmentType, setEmploymentType] = useState("Full Time");
-
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Vacancy[]>([]);
   const [formFields, setFormFields] = useState<FormField[]>([]);
+  const [authenticated, setAuthenticated] = useState(false);
   const pathname = usePathname();
   const isInternshipPage = pathname.includes("/Internship");
+  const router = useRouter();
 
+  // Auth
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+
+  // Init
   useEffect(() => {
     setEmploymentType(isInternshipPage ? "Internship" : "Full Time");
     fetchJobs();
@@ -51,6 +63,7 @@ export default function JobManagementPage() {
     fetchFormStructure();
   }, [isInternshipPage]);
 
+  // Fetch
   const fetchJobs = async () => {
     try {
       const res = await axios.get<Job[]>("http://localhost:3000/jobs");
@@ -63,40 +76,12 @@ export default function JobManagementPage() {
   const fetchApplications = async () => {
     try {
       const res = await axios.get("http://localhost:3000/vacancy");
-
-      const appsWithExpand = (res.data as Vacancy[]).map((app) => {
-        const rawData = app.data || {};
-        const formattedData: Record<string, any> = {};
-
-        // Loop through each field in the data
-        for (const key in rawData) {
-          const value = rawData[key];
-
-          // Convert resume file URLs to clickable links
-          if (key.toLowerCase().includes("resume") && Array.isArray(value)) {
-            formattedData[key] = value.map((link: string) => (
-              `<a href="${link}" target="_blank" rel="noopener noreferrer">View Resume</a>`
-            )).join(', ');
-          } else {
-            formattedData[key] = value;
-          }
-        }
-
-        return {
-          ...app,
-          formattedData,
-          expanded: false,
-        };
-      });
-
+      const appsWithExpand = (res.data as Vacancy[]).map((app) => ({ ...app, expanded: false }));
       setApplications(appsWithExpand);
     } catch (err) {
-      console.error("❌ Failed to fetch applications:", err);
+      console.error("Failed to fetch applications", err);
     }
   };
-
-
-
 
   const fetchFormStructure = async () => {
     try {
@@ -107,15 +92,11 @@ export default function JobManagementPage() {
     }
   };
 
+  // Handlers (submit, delete, etc.)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      await axios.post("http://localhost:3000/jobs", {
-        title,
-        careerLevel,
-        employmentType,
-      });
+      await axios.post("http://localhost:3000/jobs", { title, careerLevel, employmentType });
       alert("Job created successfully");
       setTitle("");
       setCareerLevel("Experienced (Non-Manager)");
@@ -129,7 +110,7 @@ export default function JobManagementPage() {
   };
 
   const handleDeleteJob = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this job?")) return;
+    if (!confirm("Delete this job?")) return;
     try {
       await axios.delete(`http://localhost:3000/jobs/${id}`);
       setJobs((prev) => prev.filter((job) => job._id !== id));
@@ -140,7 +121,7 @@ export default function JobManagementPage() {
   };
 
   const handleDeleteApplication = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this application?")) return;
+    if (!confirm("Delete this application?")) return;
     try {
       await axios.delete(`http://localhost:3000/vacancy/${id}`);
       setApplications((prev) => prev.filter((app) => app._id !== id));
@@ -152,18 +133,15 @@ export default function JobManagementPage() {
 
   const toggleView = (id: string) => {
     setApplications((prev) =>
-      prev.map((app) =>
-        app._id === id ? { ...app, expanded: !app.expanded } : app
-      )
+      prev.map((app) => (app._id === id ? { ...app, expanded: !app.expanded } : app))
     );
   };
 
-  const updateField = (index: number, key: keyof FormField, value: FormField[keyof FormField]) => {
+  const updateField = (index: number, key: keyof FormField, value: any) => {
     const updated = [...formFields];
     updated[index] = { ...updated[index], [key]: value };
     setFormFields(updated);
   };
-
 
   const moveFieldUp = (index: number) => {
     if (index === 0) return;
@@ -175,7 +153,7 @@ export default function JobManagementPage() {
   const moveFieldDown = (index: number) => {
     if (index === formFields.length - 1) return;
     const updated = [...formFields];
-    [updated[index + 1], updated[index]] = [updated[index], updated[index + 1]];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
     setFormFields(updated);
   };
 
@@ -188,96 +166,57 @@ export default function JobManagementPage() {
   const addField = () => {
     setFormFields((prev) => [
       ...prev,
-      {
-        id: Math.random().toString(36).substring(7),
-        field_name: "",
-        label: "",
-        type: "Text",
-        required: false,
-      },
+      { id: Math.random().toString(36).substring(2), field_name: "", label: "", type: "text", required: false },
     ]);
   };
 
-
-
   const saveFields = async () => {
-    // Validate fields before submitting
-    const errors: string[] = [];
+    const errors = formFields.reduce<string[]>((errs, f, i) => {
+      if (!f.field_name.trim()) errs.push(`Missing 'field_name' in field ${i + 1}`);
+      if (!f.label.trim()) errs.push(`Missing 'label' in field ${i + 1}`);
+      if (!f.type.trim()) errs.push(`Missing 'type' in field ${i + 1}`);
+      return errs;
+    }, []);
 
-    formFields.forEach((field, index) => {
-      if (!field.field_name?.trim()) {
-        errors.push(`Field ${index + 1} is missing 'field_name'.`);
-      }
-      if (!field.label?.trim()) {
-        errors.push(`Field ${index + 1} is missing 'label'.`);
-      }
-      if (!field.type?.trim()) {
-        errors.push(`Field ${index + 1} is missing 'type'.`);
-      }
-    });
-
-    if (errors.length > 0) {
+    if (errors.length) {
       alert("Validation errors:\n" + errors.join("\n"));
       return;
     }
 
     try {
-      // Send as raw array (not wrapped in { fields: ... })
       await axios.put("http://localhost:3000/employment-form-fields", formFields);
-
-      alert("✅ Form structure saved successfully!");
-      console.log("✅ Submitted formFields:", formFields);
+      alert("✅ Structure saved!");
     } catch (err) {
-      console.error("❌ Failed to save form structure", err);
-      alert("❌ Error saving form structure. Check console for details.");
+      console.error("Save failed", err);
+      alert("❌ Error saving structure");
     }
   };
 
-
-
   const handleExportCSV = () => {
     const csvRows: string[] = [];
-
-    // Headers
-    const headers = formFields.map(field => field.label);
-    headers.push("Submitted At");
+    const headers = [...formFields.map((f) => f.label), "Submitted At"];
     csvRows.push(headers.join(","));
 
-    // Rows
-    applications.forEach(app => {
-      const row = formFields.map(field => {
-        const val = app.data?.[field.field_name];
-
-        let formatted = "";
-        if (Array.isArray(val)) {
-          formatted = val.map(v => {
-            return typeof v === "string" && v.startsWith("http")
-              ? v
-              : v.toString();
-          }).join(", ");
-        } else if (typeof val === "string" && val.startsWith("http")) {
-          formatted = val;
-        } else {
-          formatted = val?.toString() || "";
-        }
-
-        return `"${formatted.replace(/"/g, '""')}"`;
+    applications.forEach((app) => {
+      const row = formFields.map((f) => {
+        const val = app.data[f.field_name];
+        if (Array.isArray(val)) return `"${val.join(",").replace(/"/g, '""')}"`;
+        return `"${String(val ?? "").replace(/"/g, '""')}"`;
       });
-
       row.push(`"${new Date(app.createdAt).toLocaleString()}"`);
       csvRows.push(row.join(","));
     });
 
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-    const encodedUri = encodeURI(csvContent);
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Vac_applications.csv");
-    document.body.appendChild(link);
+    link.href = url;
+    link.download = "Vac_applications.csv";
     link.click();
-    document.body.removeChild(link);
-    console.log("✅ CSV Exported with file links");
+    URL.revokeObjectURL(url);
   };
+
+  if (!authenticated) return null;
 
 
 
