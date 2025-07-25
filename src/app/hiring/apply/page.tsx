@@ -32,10 +32,12 @@ export default function ApplyPage() {
     if (type) setEmploymentTypeFromURL(decodeURIComponent(type));
 
     axios
-      .get<EmploymentFormField[]>("http://localhost:3000/employment-form-fields")
+      .get<EmploymentFormField[]>(
+        "http://localhost:3000/employment-form-fields"
+      )
       .then((res) => setFields(res.data))
       .catch((err) => console.error("Failed to fetch fields", err));
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,7 +68,7 @@ export default function ApplyPage() {
       form.querySelector(".loading")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.add("d-block");
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
       form.querySelector(".loading")?.classList.remove("d-block");
       const errEl = form.querySelector(".error-message");
@@ -79,8 +81,6 @@ export default function ApplyPage() {
     }
   };
 
-
-
   return (
     <>
       <div
@@ -92,11 +92,18 @@ export default function ApplyPage() {
       >
         <div className="container position-relative">
           <h1>Employment Application</h1>
-          <p>Apply to join our vibrant community at Leaders International College.</p>
+          <p>
+            Apply to join our vibrant community at Leaders International
+            College.
+          </p>
           <nav className="breadcrumbs">
             <ol>
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/we-are-hiring">We Are Hiring</Link></li>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <Link href="/we-are-hiring">We Are Hiring</Link>
+              </li>
               <li className="current">Apply</li>
             </ol>
           </nav>
@@ -109,18 +116,33 @@ export default function ApplyPage() {
             <div className="col-lg-8 offset-lg-2">
               <div className="impact-content">
                 <h3>Employment Application</h3>
-                <p>Please fill out the application form below and submit your CV.</p>
+                <p>
+                  Please fill out the application form below and submit your CV.
+                </p>
 
-                <form className="php-email-form mt-4" onSubmit={handleSubmit} encType="multipart/form-data">
-                  <div className="loading" style={{ display: "none" }}>Loading</div>
-                  <div className="error-message" style={{ display: "none", color: "red" }}></div>
-                  <div className="sent-message" style={{ display: "none", color: "green" }}>
+                <form
+                  className="php-email-form mt-4"
+                  onSubmit={handleSubmit}
+                  encType="multipart/form-data"
+                >
+                  <div className="loading" style={{ display: "none" }}>
+                    Loading
+                  </div>
+                  <div
+                    className="error-message"
+                    style={{ display: "none", color: "red" }}
+                  ></div>
+                  <div
+                    className="sent-message"
+                    style={{ display: "none", color: "green" }}
+                  >
                     Your application has been sent. Thank you!
                   </div>
 
                   <div className="row">
                     {fields.map((field, index) => {
-                      const label = field.label || field.field_name.replace(/_/g, " ");
+                      const label =
+                        field.label || field.field_name.replace(/_/g, " ");
                       const required = field.required ?? false;
 
                       if (field.field_name === "position") {
@@ -139,19 +161,30 @@ export default function ApplyPage() {
                         );
                       }
 
-                      if (field.field_name === "employment_type" && field.options?.length) {
+                      if (
+                        field.field_name === "employment_type" &&
+                        field.options?.length
+                      ) {
                         const selectedTypes = employmentTypeFromURL
                           .split(",")
                           .map((s) => s.replace(/\s+/g, "").toLowerCase());
 
                         return (
                           <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">{label}</label>
+                            <label className="form-label d-block">
+                              {label}
+                            </label>
                             {field.options.map((opt, i) => {
-                              const normalizedOpt = opt.replace(/\s+/g, "").toLowerCase();
-                              const isChecked = selectedTypes.includes(normalizedOpt);
+                              const normalizedOpt = opt
+                                .replace(/\s+/g, "")
+                                .toLowerCase();
+                              const isChecked =
+                                selectedTypes.includes(normalizedOpt);
                               return (
-                                <div className="form-check form-check-inline" key={i}>
+                                <div
+                                  className="form-check form-check-inline"
+                                  key={i}
+                                >
                                   <input
                                     className="form-check-input"
                                     type="checkbox"
@@ -161,7 +194,9 @@ export default function ApplyPage() {
                                     readOnly
                                     disabled
                                   />
-                                  <label className="form-check-label">{opt}</label>
+                                  <label className="form-check-label">
+                                    {opt}
+                                  </label>
                                 </div>
                               );
                             })}
@@ -172,9 +207,14 @@ export default function ApplyPage() {
                       if (field.type === "radio" && field.options?.length) {
                         return (
                           <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">{label}</label>
+                            <label className="form-label d-block">
+                              {label}
+                            </label>
                             {field.options.map((opt, i) => (
-                              <div className="form-check form-check-inline" key={i}>
+                              <div
+                                className="form-check form-check-inline"
+                                key={i}
+                              >
                                 <input
                                   className="form-check-input"
                                   type="radio"
@@ -182,7 +222,9 @@ export default function ApplyPage() {
                                   value={opt}
                                   required={required}
                                 />
-                                <label className="form-check-label">{opt}</label>
+                                <label className="form-check-label">
+                                  {opt}
+                                </label>
                               </div>
                             ))}
                           </div>
@@ -192,16 +234,23 @@ export default function ApplyPage() {
                       if (field.type === "checkbox" && field.options?.length) {
                         return (
                           <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">{label}</label>
+                            <label className="form-label d-block">
+                              {label}
+                            </label>
                             {field.options.map((opt, i) => (
-                              <div className="form-check form-check-inline" key={i}>
+                              <div
+                                className="form-check form-check-inline"
+                                key={i}
+                              >
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
                                   name={`${field.field_name}[]`}
                                   value={opt}
                                 />
-                                <label className="form-check-label">{opt}</label>
+                                <label className="form-check-label">
+                                  {opt}
+                                </label>
                               </div>
                             ))}
                           </div>
@@ -217,9 +266,13 @@ export default function ApplyPage() {
                               required={required}
                               defaultValue=""
                             >
-                              <option value="" disabled>{label}</option>
+                              <option value="" disabled>
+                                {label}
+                              </option>
                               {field.options.map((opt, i) => (
-                                <option key={i} value={opt}>{opt}</option>
+                                <option key={i} value={opt}>
+                                  {opt}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -248,7 +301,9 @@ export default function ApplyPage() {
                               type="file"
                               name={field.field_name}
                               className="form-control"
-                              multiple={field.field_name.includes("certificates")}
+                              multiple={field.field_name.includes(
+                                "certificates"
+                              )}
                               required={required}
                             />
                           </div>
@@ -285,7 +340,11 @@ export default function ApplyPage() {
                     >
                       {isLoading ? (
                         <>
-                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
                           Submitting...
                         </>
                       ) : (

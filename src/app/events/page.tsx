@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-
+import Image from "next/image";
+import Link from "next/link";
 // Type definition for events
 type EventType = {
   title: string;
@@ -63,7 +64,7 @@ export default function EventsPage() {
         (d) => d.getMonth() === currentMonth && d.getFullYear() === currentYear
       )
       .map((d) => d.getDate());
-  }, [events]);
+  }, [events, currentMonth, currentYear]); // ✅ Add these
 
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -92,7 +93,7 @@ export default function EventsPage() {
             <nav className="breadcrumbs">
               <ol>
                 <li>
-                  <a href="/">Home</a>
+                  <Link href="/">Home</Link>
                 </li>
                 <li className="current">Events</li>
               </ol>
@@ -221,9 +222,9 @@ export default function EventsPage() {
                         }, {})
                       ).map(([category, count]) => (
                         <li key={category}>
-                          <a href="#">
+                          <Link href={`#`}>
                             {category} <span>({count})</span>
-                          </a>
+                          </Link>
                         </li>
                       ))}
                     </ul>
@@ -236,10 +237,12 @@ export default function EventsPage() {
                   >
                     <h3 className="sidebar-title">Featured Event</h3>
                     <div className="featured-event-content">
-                      <img
-                        src="assets/img/Event-Featured.JPG"
+                      <Image
+                        src="/assets/img/Event-Featured.JPG"
                         alt="Featured Event"
                         className="img-fluid"
+                        width={1200} // 🔁 Replace with actual width
+                        height={800} // 🔁 Replace with actual height
                       />
                       <h4>Leadership Conference</h4>
                       {/* <p>
@@ -273,13 +276,13 @@ export default function EventsPage() {
       </main>
 
       {/* Scroll Top */}
-      <a
-        href="#"
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         id="scroll-top"
         className="scroll-top d-flex align-items-center justify-content-center"
       >
         <i className="bi bi-arrow-up-short" />
-      </a>
+      </button>
 
       {/* Preloader */}
       <div id="preloader" />
