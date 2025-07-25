@@ -17,7 +17,7 @@
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/serve-static": "^5.0.3",
     "@sendgrid/mail": "^8.1.5",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "bootstrap-icons": "^1.13.1",
     "class-transformer": "^0.5.1",

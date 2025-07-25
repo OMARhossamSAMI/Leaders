@@ -48,12 +48,14 @@ export default function InternshipApplicationsPage() {
       setAuthenticated(true);
       fetchApplications();
     }
-  }, []);
+  }, [router]);
 
   const fetchApplications = async () => {
     setLoadingApplications(true);
     try {
-      const res = await axios.get<InternshipApplication[]>("http://localhost:3000/internship");
+      const res = await axios.get<InternshipApplication[]>(
+        "http://localhost:3000/internship"
+      );
       setApplications(res.data);
     } catch (err) {
       console.error("Failed to fetch internship applications", err);
@@ -85,9 +87,12 @@ export default function InternshipApplicationsPage() {
 
   const handleExport = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/internship/export", {
-        responseType: "blob",
-      });
+      const response = await axios.get(
+        "http://localhost:3000/internship/export",
+        {
+          responseType: "blob",
+        }
+      );
       const blob = new Blob([response.data as BlobPart], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
@@ -103,7 +108,7 @@ export default function InternshipApplicationsPage() {
     }
   };
 
-  if (!authenticated) {
+  if (loading || !authenticated) {
     return (
       <div className="auth-redirect-screen">
         <div className="auth-box">
@@ -125,13 +130,21 @@ export default function InternshipApplicationsPage() {
       <AdminHeader />
 
       <div className="internship-container">
-        <div className="container section-title" style={{ marginTop: "30px", marginBottom: "2rem" }}>
+        <div
+          className="container section-title"
+          style={{ marginTop: "30px", marginBottom: "2rem" }}
+        >
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <h2>Internship Applications</h2>
-              <p>Review and manage all internship requests submitted by students.</p>
+              <p>
+                Review and manage all internship requests submitted by students.
+              </p>
             </div>
-            <button className="btn-success d-flex align-items-center gap-2" onClick={handleExport}>
+            <button
+              className="btn-success d-flex align-items-center gap-2"
+              onClick={handleExport}
+            >
               <Download size={16} /> Export to Excel
             </button>
           </div>
@@ -152,21 +165,31 @@ export default function InternshipApplicationsPage() {
                 <p>
                   <strong>University:</strong> {app.university}
                   <br />
-                  <strong>Date:</strong> {new Date(app.createdAt).toLocaleDateString()}
+                  <strong>Date:</strong>{" "}
+                  {new Date(app.createdAt).toLocaleDateString()}
                 </p>
 
                 <div className="flex gap-2 mt-2">
                   <button
                     className="btn-primary"
                     onClick={() =>
-                      expandedId === app._id ? setExpandedId(null) : setExpandedId(app._id)
+                      expandedId === app._id
+                        ? setExpandedId(null)
+                        : setExpandedId(app._id)
                     }
                   >
-                    {expandedId === app._id ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {expandedId === app._id ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                     {expandedId === app._id ? " Hide Details" : " View Details"}
                   </button>
 
-                  <button className="btn-danger" onClick={() => handleDelete(app._id)}>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDelete(app._id)}
+                  >
                     <Trash2 size={16} className="me-1" /> Delete
                   </button>
                 </div>
@@ -175,26 +198,41 @@ export default function InternshipApplicationsPage() {
                   <div className="mt-3">
                     {editingId === app._id ? (
                       <>
-                        {Object.entries(app).map(([key, value]) => {
+                        {Object.entries(app).map(([key]) => {
                           if (key === "_id" || key === "createdAt") return null;
                           return (
                             <div key={key} className="mb-2">
-                              <label className="form-label">{key.replace(/_/g, " ")}</label>
+                              <label className="form-label">
+                                {key.replace(/_/g, " ")}
+                              </label>
                               <input
                                 className="form-input"
-                                value={editData[key as keyof InternshipApplication] || ""}
+                                value={
+                                  editData[
+                                    key as keyof InternshipApplication
+                                  ] || ""
+                                }
                                 onChange={(e) =>
-                                  setEditData({ ...editData, [key]: e.target.value })
+                                  setEditData({
+                                    ...editData,
+                                    [key]: e.target.value,
+                                  })
                                 }
                               />
                             </div>
                           );
                         })}
                         <div className="flex gap-2 mt-2">
-                          <button className="btn-success" onClick={() => handleUpdate(app._id)}>
+                          <button
+                            className="btn-success"
+                            onClick={() => handleUpdate(app._id)}
+                          >
                             <Save size={16} /> Save
                           </button>
-                          <button className="btn-secondary" onClick={() => setEditingId(null)}>
+                          <button
+                            className="btn-secondary"
+                            onClick={() => setEditingId(null)}
+                          >
                             <XCircle size={16} /> Cancel
                           </button>
                         </div>
@@ -203,11 +241,15 @@ export default function InternshipApplicationsPage() {
                       Object.entries(app).map(([key, value]) => {
                         if (key === "_id" || key === "createdAt") return null;
                         if (
-                          (key === "cv_file_url" || key === "cover_letter_url") &&
+                          (key === "cv_file_url" ||
+                            key === "cover_letter_url") &&
                           typeof value === "string" &&
                           value.trim()
                         ) {
-                          const label = key === "cv_file_url" ? "Download CV" : "Download Cover Letter";
+                          const label =
+                            key === "cv_file_url"
+                              ? "Download CV"
+                              : "Download Cover Letter";
                           return (
                             <p key={key}>
                               <strong>{key.replace(/_/g, " ")}:</strong>{" "}
@@ -224,7 +266,8 @@ export default function InternshipApplicationsPage() {
                         }
                         return (
                           <p key={key}>
-                            <strong>{key.replace(/_/g, " ")}:</strong> {String(value || "N/A")}
+                            <strong>{key.replace(/_/g, " ")}:</strong>{" "}
+                            {String(value || "N/A")}
                           </p>
                         );
                       })

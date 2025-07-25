@@ -107,9 +107,24 @@ export default function EditEventPage() {
     try {
       await axios.put(`http://localhost:3000/events/${title}`, form);
       router.push("/login/Admin/events");
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || "Failed to update event.";
-      setError(typeof msg === "string" ? msg : msg.join(" \n "));
+    } catch (err: unknown) {
+      let msg = "Failed to update event.";
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as any).response === "object"
+      ) {
+        const responseMsg = (err as any).response?.data?.message;
+        if (typeof responseMsg === "string") {
+          msg = responseMsg;
+        } else if (Array.isArray(responseMsg)) {
+          msg = responseMsg.join(" \n ");
+        }
+      }
+
+      setError(msg);
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
 import { TabsProvider } from "./components/TabsContext";
 import { CurriculumProvider } from "./components/CurriculumContext";
 import { HiringTabsProvider } from "./components/HiringTabsContext";
