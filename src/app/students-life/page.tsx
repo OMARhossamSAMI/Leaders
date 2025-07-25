@@ -28,7 +28,7 @@ export default function StudentsLifePage() {
     if (hash) {
       setStudentsLifeSection(hash);
     }
-  }, []);
+  }, [setStudentsLifeSection]);
 
   return (
     <>
