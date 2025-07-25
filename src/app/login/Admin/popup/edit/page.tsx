@@ -14,7 +14,7 @@ interface Popup {
   paths?: string[];
 }
 
-export default function EditPopupPage({}: { params: { id: string } }) {
+export default function EditPopupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const popupId = searchParams.get("id");
