@@ -7,14 +7,14 @@ import { CreateInternshipDto } from './dto/create-internship.dto';
 @Injectable()
 export class InternshipService {
   constructor(
-    @InjectModel(Internship.name) private internshipModel: Model<InternshipDocument>,
+    @InjectModel(Internship.name)
+    private internshipModel: Model<InternshipDocument>,
   ) {}
 
- async create(createInternshipDto: CreateInternshipDto): Promise<Internship> {
-  const created = new this.internshipModel(createInternshipDto);
-  return created.save();
-}
-
+  async create(createInternshipDto: CreateInternshipDto): Promise<Internship> {
+    const created = new this.internshipModel(createInternshipDto);
+    return created.save();
+  }
 
   async findAll(): Promise<Internship[]> {
     return this.internshipModel.find().sort({ createdAt: -1 }).exec();

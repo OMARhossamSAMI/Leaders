@@ -15,9 +15,21 @@ import { JobModule } from './job/job.module';
 import { InternshipModule } from './internship/internship.module';
 import { AuthModule } from './auth/auth.module';
 import { MailService } from './mail/mail.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { join } from 'path';
 
 @Module({
   imports: [
+    MulterModule.register({
+      storage: diskStorage({
+        destination: join(__dirname, '..', 'uploads'),
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, `${uniqueSuffix}-${file.originalname}`);
+        },
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
