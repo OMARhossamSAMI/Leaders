@@ -38,61 +38,47 @@ export default function ApplyPage() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  const form = e.currentTarget;
-  const formData = new FormData(form);
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
-  if (positionFromURL) formData.set("position", positionFromURL);
-  if (employmentTypeFromURL) {
-    formData.delete("employment_type[]"); // remove default if exists
-    employmentTypeFromURL.split(",").forEach((type) => {
-      formData.append("employment_type[]", type.trim());
-    });
-  }
+    // Inject position and employment type from URL
+    if (positionFromURL) formData.set("position", positionFromURL);
+    if (employmentTypeFromURL) {
+      formData.delete("employment_type[]");
+      employmentTypeFromURL.split(",").forEach((type) => {
+        formData.append("employment_type[]", type.trim());
+      });
+    }
 
-  const plainData: Record<string, any> = {};
-  for (const [key, value] of formData.entries()) {
-    if (plainData[key]) {
-      // handle multiple values (e.g., checkbox arrays)
-      if (Array.isArray(plainData[key])) {
-        plainData[key].push(value);
-      } else {
-        plainData[key] = [plainData[key], value];
+    setIsLoading(true);
+    try {
+      form.querySelector(".loading")?.classList.add("d-block");
+      form.querySelector(".error-message")?.classList.remove("d-block");
+      form.querySelector(".sent-message")?.classList.remove("d-block");
+
+      await axios.post("http://localhost:3000/vacancy", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      form.querySelector(".loading")?.classList.remove("d-block");
+      form.querySelector(".sent-message")?.classList.add("d-block");
+      form.reset();
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      form.querySelector(".loading")?.classList.remove("d-block");
+      const errEl = form.querySelector(".error-message");
+      if (errEl) {
+        errEl.innerHTML = "Submission failed. Please try again.";
+        errEl.classList.add("d-block");
       }
-    } else {
-      plainData[key] = value;
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  const payload = { data: plainData };
-
-  setIsLoading(true);
-  try {
-    form.querySelector(".loading")?.classList.add("d-block");
-    form.querySelector(".error-message")?.classList.remove("d-block");
-    form.querySelector(".sent-message")?.classList.remove("d-block");
-
-    await axios.post("http://localhost:3000/vacancy", payload, {
-      headers: {
-        "Content-Type": "application/json", // no longer multipart
-      },
-    });
-
-    form.querySelector(".loading")?.classList.remove("d-block");
-    form.querySelector(".sent-message")?.classList.add("d-block");
-    form.reset();
-  } catch (error: any) {
-    console.error("Submission error:", error);
-    form.querySelector(".loading")?.classList.remove("d-block");
-    const errEl = form.querySelector(".error-message");
-    if (errEl) {
-      errEl.innerHTML = "Submission failed. Please try again.";
-      errEl.classList.add("d-block");
-    }
-  } finally {
-    setIsLoading(false);
-  }
-};
 
 
   return (

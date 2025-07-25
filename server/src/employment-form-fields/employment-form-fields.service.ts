@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   EmploymentFormField,
@@ -18,6 +18,10 @@ export class EmploymentFormFieldsService {
   }
 
   async replaceAll(fields: EmploymentFormField[]): Promise<EmploymentFormField[]> {
+  if (!Array.isArray(fields)) {
+    throw new BadRequestException('Expected an array of fields');
+  }
+
   try {
     await this.fieldModel.deleteMany({});
 
@@ -28,10 +32,11 @@ export class EmploymentFormFieldsService {
 
     return await this.fieldModel.insertMany(orderedFields);
   } catch (error) {
-    console.error("Error inserting fields:", error); // ✅ log actual reason
+    console.error("Error inserting fields:", error);
     throw new InternalServerErrorException('Failed to replace fields');
   }
 }
+
 
 
   async create(field: EmploymentFormField): Promise<EmploymentFormField> {
