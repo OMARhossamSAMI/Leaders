@@ -7,9 +7,12 @@ import AdminHeader from "@/app/components/AdminHeader";
 import AdminFooter from "@/app/components/AdminFooter";
 import { useRouter } from "next/navigation";
 
+type FieldValue = string | number | boolean | string[] | File | null;
+
 interface Application {
   _id: string;
-  [key: string]: any;
+  data?: Record<string, FieldValue>;
+  [key: string]: FieldValue | Record<string, FieldValue> | undefined;
 }
 
 interface FormField {
@@ -19,7 +22,7 @@ interface FormField {
   required: boolean;
   options?: string[];
 }
-type FieldValue = string | number | boolean | string[];
+
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -38,6 +41,22 @@ export default function ApplicationsPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
   const [loadingApplications, setLoadingApplications] = useState(true);
+  const renderFieldValue = (value: unknown): React.ReactNode => {
+    if (value === null || value === undefined) return <em>Not provided</em>;
+    if (typeof value === "string" || typeof value === "number") return value;
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+    if (Array.isArray(value)) return value.join(", ");
+    if (value instanceof File) return value.name;
+    if (typeof value === "object") return JSON.stringify(value);
+    return <em>Unsupported</em>;
+  };
+  const getSafeInputValue = (
+    value: string | number | boolean | string[] | File | null | undefined
+  ): string | number | readonly string[] | undefined => {
+    if (typeof value === "string" || typeof value === "number") return value;
+    if (Array.isArray(value)) return value;
+    return ""; // fallback for null, undefined, boolean, File, etc.
+  };
 
   useEffect(() => {
     setLoadingApplications(true);
@@ -339,9 +358,11 @@ export default function ApplicationsPage() {
                         >
                           <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold">
-                              {app.student_name ||
-                                app.data?.student_name ||
-                                "Unnamed Applicant"}
+                              {renderFieldValue(
+                                app.student_name ||
+                                  app.data?.student_name ||
+                                  "Unnamed Applicant"
+                              )}
                             </h3>
                             <div className="flex gap-2">
                               <button
@@ -361,14 +382,18 @@ export default function ApplicationsPage() {
 
                           <p className="text-sm text-gray-600 mb-2">
                             <strong>Grade:</strong>{" "}
-                            {app.grade_applying_for ||
-                              app.data?.grade_applying_for ||
-                              "N/A"}
+                            {renderFieldValue(
+                              app.grade_applying_for ||
+                                app.data?.grade_applying_for ||
+                                "N/A"
+                            )}
                           </p>
                           <p className="text-sm text-gray-600 mb-4">
                             <strong>Submitted:</strong>{" "}
                             {app.createdAt
-                              ? new Date(app.createdAt).toLocaleDateString()
+                              ? new Date(
+                                  String(app.createdAt)
+                                ).toLocaleDateString()
                               : "N/A"}
                           </p>
 
@@ -381,12 +406,14 @@ export default function ApplicationsPage() {
                                   {formFields.map((field) => (
                                     <p key={field.field_name}>
                                       <strong>{field.label}:</strong>{" "}
-                                      {expandedData[app._id]?.[
-                                        field.field_name
-                                      ] ??
-                                        expandedData[app._id]?.data?.[
+                                      {renderFieldValue(
+                                        expandedData[app._id]?.[
                                           field.field_name
-                                        ] ?? <em>Not provided</em>}
+                                        ] ??
+                                          expandedData[app._id]?.data?.[
+                                            field.field_name
+                                          ]
+                                      )}
                                     </p>
                                   ))}
 
@@ -409,9 +436,9 @@ export default function ApplicationsPage() {
                                     <div key={field.field_name}>
                                       {field.type === "select" ? (
                                         <select
-                                          value={
-                                            editingApp[field.field_name] || ""
-                                          }
+                                          value={getSafeInputValue(
+                                            editingApp?.data?.[field.field_name]
+                                          )}
                                           onChange={(e) =>
                                             handleEditChange(
                                               field.field_name,
@@ -432,11 +459,9 @@ export default function ApplicationsPage() {
                                       ) : (
                                         <input
                                           type={field.type}
-                                          value={
-                                            editingApp?.data?.[
-                                              field.field_name
-                                            ] || ""
-                                          }
+                                          value={getSafeInputValue(
+                                            editingApp?.data?.[field.field_name]
+                                          )}
                                           onChange={(e) =>
                                             handleEditChange(
                                               field.field_name,

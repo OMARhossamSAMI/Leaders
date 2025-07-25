@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import "./form.css";
 import { useSearchParams } from "next/navigation";

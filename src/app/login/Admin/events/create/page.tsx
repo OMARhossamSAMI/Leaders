@@ -66,7 +66,7 @@ export default function CreateEventPage() {
   const generateTimeSlots = () => {
     const slots: string[] = [];
     for (let hour = 7; hour <= 24; hour++) {
-      for (let min of [0, 30]) {
+      for (const min of [0, 30]) {
         const date = new Date();
         date.setHours(hour, min);
         const options: Intl.DateTimeFormatOptions = {
