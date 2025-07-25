@@ -158,53 +158,54 @@ export default function CampusFacilitiesPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                <ul className="nav nav-tabs" role="tablist">
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className={`nav-link ${
-                        campusTab === "academic" ? "active" : ""
-                      }`}
-                      type="button"
-                      onClick={() => setCampusTab("academic")}
-                    >
-                      <i className="bi bi-book" /> Academic Environments
-                    </button>
-                  </li>
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className={`nav-link ${
-                        campusTab === "athletic" ? "active" : ""
-                      }`}
-                      type="button"
-                      onClick={() => setCampusTab("athletic")}
-                    >
-                      <i className="bi bi-trophy" /> Sports Facilities
-                    </button>
-                  </li>
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className={`nav-link ${
-                        campusTab === "technology" ? "active" : ""
-                      }`}
-                      type="button"
-                      onClick={() => setCampusTab("technology")}
-                    >
-                      <i className="bi bi-laptop" /> Technology Integration
-                    </button>
-                  </li>
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className={`nav-link ${
-                        campusTab === "arts" ? "active" : ""
-                      }`}
-                      type="button"
-                      onClick={() => setCampusTab("arts")}
-                    >
-                      <i className="bi bi-people" /> Arts and Innovation
-                    </button>
-                  </li>
-                </ul>
-
+                <div className="tab-scroll-wrapper">
+                  <ul className="nav nav-tabs" role="tablist">
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className={`nav-link ${
+                          campusTab === "academic" ? "active" : ""
+                        }`}
+                        type="button"
+                        onClick={() => setCampusTab("academic")}
+                      >
+                        <i className="bi bi-book" /> Academic Environments
+                      </button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className={`nav-link ${
+                          campusTab === "athletic" ? "active" : ""
+                        }`}
+                        type="button"
+                        onClick={() => setCampusTab("athletic")}
+                      >
+                        <i className="bi bi-trophy" /> Sports Facilities
+                      </button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className={`nav-link ${
+                          campusTab === "technology" ? "active" : ""
+                        }`}
+                        type="button"
+                        onClick={() => setCampusTab("technology")}
+                      >
+                        <i className="bi bi-laptop" /> Technology Integration
+                      </button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className={`nav-link ${
+                          campusTab === "arts" ? "active" : ""
+                        }`}
+                        type="button"
+                        onClick={() => setCampusTab("arts")}
+                      >
+                        <i className="bi bi-people" /> Arts and Innovation
+                      </button>
+                    </li>
+                  </ul>
+                </div>
                 <div className="tab-content">
                   {/* Academic Facilities Tab */}
                   <div

@@ -7,7 +7,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SettingsModule } from './settings/settings.module';
 import { StudentApplicationModule } from './student-application/student-application.module';
 import { FormFieldModule } from './form-field/form-field.module';
-
 import { PopupModule } from './popup/popup.module';
 import { ContactUsModule } from './contactus/contactus.module';
 import { EmploymentFormFieldsModule } from './employment-form-fields/employment-form-fields.module';
@@ -15,6 +14,7 @@ import { VacancyModule } from './vacancy/vacancy.module';
 import { JobModule } from './job/job.module';
 import { InternshipModule } from './internship/internship.module';
 import { AuthModule } from './auth/auth.module';
+import { MailService } from './mail/mail.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
@@ -31,12 +31,12 @@ import { join } from 'path';
       }),
     }),
     ConfigModule.forRoot({
-      isGlobal: true, // makes config available everywhere
+      isGlobal: true,
     }),
     MongooseModule.forRoot(
       'mongodb://Behz92:Behz9204@ac-o8nt2z7-shard-00-00.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-01.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-02.icdejxj.mongodb.net:27017/?replicaSet=atlas-12nls9-shard-0&ssl=true&authSource=admin',
-    ), // or MongoDB Atlas URI
-    ScheduleModule.forRoot(), // ✅ Add this line to enable cron jobs
+    ),
+    ScheduleModule.forRoot(),
     TestimonialsModule,
     EventsModule,
     SettingsModule,
@@ -49,6 +49,9 @@ import { join } from 'path';
     JobModule,
     InternshipModule,
     AuthModule,
+  ],
+  providers: [
+    MailService, // ✅ Added here correctly
   ],
 })
 export class AppModule {}
