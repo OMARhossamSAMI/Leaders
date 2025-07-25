@@ -5,7 +5,7 @@
 import { useEffect } from "react";
 import { useCampusTabs } from "../components/CampusTabsContext";
 import Link from "next/link";
-
+import Image from "next/image";
 export default function CampusFacilitiesPage() {
   const { campusTab, setCampusTab } = useCampusTabs();
   useEffect(() => {
@@ -22,46 +22,6 @@ export default function CampusFacilitiesPage() {
   return (
     <>
       <div>
-        <meta charSet="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Campus &amp; Facilities - LeadersIntCollege</title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
-        {/* Favicons */}
-        <link href="assets/img/lic_logo.png" rel="icon" />
-        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
-        {/* Fonts */}
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link
-          href="https://fonts.gstatic.com"
-          rel="preconnect"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet"
-        />
-        {/* Vendor CSS Files */}
-        <link
-          href="assets/vendor/bootstrap/css/bootstrap.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
-          rel="stylesheet"
-        />
-        <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
-        <link
-          href="assets/vendor/swiper/swiper-bundle.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/glightbox/css/glightbox.min.css"
-          rel="stylesheet"
-        />
-        {/* Main CSS File */}
-        <link href="assets/css/main.css" rel="stylesheet" />
-
         <main className="main">
           {/* Page Title */}
           <div
@@ -132,10 +92,12 @@ export default function CampusFacilitiesPage() {
                   >
                     <div className="intro-image-container">
                       <div className="intro-image main-image">
-                        <img
-                          src="assets/img/education/Campus.JPG"
+                        <Image
+                          src="/assets/img/education/Campus.JPG"
                           alt="Main Campus"
                           className="img-fluid rounded"
+                          width={1200} // replace with actual dimensions
+                          height={800}
                         />
                       </div>
                       <div className="tour-button">
@@ -224,10 +186,12 @@ export default function CampusFacilitiesPage() {
                         <div className="facility-highlight">
                           <div className="facility-slider">
                             <div className="facility-slide">
-                              <img
-                                src="assets/img/education/Class.JPG"
+                              <Image
+                                src="/assets/img/education/Class.JPG"
                                 alt="Library"
                                 className="img-fluid rounded"
+                                width={1200}
+                                height={800}
                               />
                               <div className="slide-caption">Class Room</div>
                             </div>
@@ -278,32 +242,44 @@ export default function CampusFacilitiesPage() {
                               <i className="bi bi-book" />
                             </div>
                             <h4>Libraries</h4>
-                            <img
-                              src="assets/img/education/Lib.PNG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "250px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Lib.PNG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           <div className="facility-card">
                             <div className="icon-container">
                               <i className="bi bi-flask" />
                             </div>
                             <h4>Science Labs</h4>
-                            <img
-                              src="assets/img/education/ziad_t.JPG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "250px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/ziad_t.JPG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -326,10 +302,12 @@ export default function CampusFacilitiesPage() {
                         <div className="facility-highlight">
                           <div className="facility-slider">
                             <div className="facility-slide">
-                              <img
-                                src="assets/img/education/Play.png"
+                              <Image
+                                src="/assets/img/education/Play.png"
                                 alt="Athletic Center"
                                 className="img-fluid rounded"
+                                width={1200}
+                                height={800}
                               />
                               <div className="slide-caption">
                                 Sports playground
@@ -405,32 +383,44 @@ export default function CampusFacilitiesPage() {
                               <i className="bi bi-water" />
                             </div>
                             <h4>Swimming Pool</h4>
-                            <img
-                              src="assets/img/education/Pool2.JPG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "420px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Pool2.JPG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           <div className="facility-card">
                             <div className="icon-container">
                               <i className="bi bi-stopwatch" />
                             </div>
                             <h4>Training Facilities</h4>
-                            <img
-                              src="assets/img/education/Bas.PNG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "420px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Bas.PNG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -453,10 +443,12 @@ export default function CampusFacilitiesPage() {
                         <div className="facility-highlight">
                           <div className="facility-slider">
                             <div className="facility-slide">
-                              <img
-                                src="assets/img/education/Tech1.JPG"
+                              <Image
+                                src="/assets/img/education/Tech1.JPG"
                                 alt="Residence Hall"
                                 className="img-fluid rounded"
+                                width={1200}
+                                height={800}
                               />
                               <div className="slide-caption">Technology</div>
                             </div>
@@ -507,32 +499,44 @@ export default function CampusFacilitiesPage() {
                               <i className="bi bi-laptop" />
                             </div>
                             <h4>ICT Lab</h4>
-                            <img
-                              src="assets/img/education/Tech3.png"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "250px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Tech3.png"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           <div className="facility-card">
                             <div className="icon-container">
                               <i className="bi bi-lightbulb" />
                             </div>
                             <h4>Visual Design Lab</h4>
-                            <img
-                              src="assets/img/education/Tech2.JPG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "250px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Tech2.JPG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -555,10 +559,12 @@ export default function CampusFacilitiesPage() {
                         <div className="facility-highlight">
                           <div className="facility-slider">
                             <div className="facility-slide">
-                              <img
-                                src="assets/img/education/Art2.JPG"
+                              <Image
+                                src="/assets/img/education/Art2.JPG"
                                 alt="Student Center"
                                 className="img-fluid rounded"
+                                width={1200}
+                                height={800}
                               />
                               <div className="slide-caption">
                                 Student Center
@@ -612,32 +618,45 @@ export default function CampusFacilitiesPage() {
                               <i className="bi bi-brush" />
                             </div>
                             <h4>Art</h4>
-                            <img
-                              src="assets/img/education/Art.JPG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "300px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Art.JPG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           <div className="facility-card">
                             <div className="icon-container">
                               <i className="bi bi-lightbulb" />
                             </div>
                             <h4>Innovation</h4>
-                            <img
-                              src="assets/img/education/Inno.JPG"
-                              alt="Library"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "300px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Inno.JPG"
+                                alt="Library"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                                priority={false}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -657,10 +676,12 @@ export default function CampusFacilitiesPage() {
                     data-aos="zoom-in"
                     data-aos-delay={100}
                   >
-                    <img
-                      src="assets/img/education/Reception.JPG"
+                    <Image
+                      src="/assets/img/education/Reception.JPG"
                       alt="Library"
                       className="img-fluid"
+                      width={1200}
+                      height={800}
                       loading="lazy"
                     />
                     <div className="gallery-overlay">
@@ -672,10 +693,12 @@ export default function CampusFacilitiesPage() {
                     data-aos="zoom-in"
                     data-aos-delay={200}
                   >
-                    <img
-                      src="assets/img/education/bbbbb.JPG"
+                    <Image
+                      src="/assets/img/education/bbbbb.JPG"
                       alt="Student Center"
                       className="img-fluid"
+                      width={1200}
+                      height={800}
                       loading="lazy"
                     />
                     <div className="gallery-overlay">
@@ -687,10 +710,12 @@ export default function CampusFacilitiesPage() {
                     data-aos="zoom-in"
                     data-aos-delay={300}
                   >
-                    <img
-                      src="assets/img/education/Takleed.png"
+                    <Image
+                      src="/assets/img/education/Takleed.png"
                       alt="Dormitory"
                       className="img-fluid"
+                      width={1200}
+                      height={800}
                       loading="lazy"
                     />
                     <div className="gallery-overlay">
@@ -702,12 +727,15 @@ export default function CampusFacilitiesPage() {
                     data-aos="zoom-in"
                     data-aos-delay={400}
                   >
-                    <img
-                      src="assets/img/education/Court.png"
+                    <Image
+                      src="/assets/img/education/Court.png"
                       alt="Study Areas"
                       className="img-fluid"
+                      width={1200}
+                      height={800}
                       loading="lazy"
                     />
+
                     <div className="gallery-overlay">
                       <h4>Courts</h4>
                     </div>
@@ -717,10 +745,12 @@ export default function CampusFacilitiesPage() {
                     data-aos="zoom-in"
                     data-aos-delay={500}
                   >
-                    <img
-                      src="assets/img/education/Stage.png"
+                    <Image
+                      src="/assets/img/education/Stage.png"
                       alt="Sports Complex"
                       className="img-fluid"
+                      width={1200}
+                      height={800}
                       loading="lazy"
                     />
                     <div className="gallery-overlay">

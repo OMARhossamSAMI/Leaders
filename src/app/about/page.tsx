@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import Link from "next/link";
-
+import Image from "next/image";
 export default function AboutPage() {
   const { aboutTab, setAboutTab } = useAboutTabs();
 
@@ -20,44 +20,6 @@ export default function AboutPage() {
   return (
     <>
       <div>
-        <meta charSet="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>About - LeadersIntCollege</title>
-        <meta
-          name="description"
-          content="Learn more about Leaders International College, our vision, mission, and team."
-        />
-        <link href="assets/img/lic_logo.png" rel="icon" />
-        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link
-          href="https://fonts.gstatic.com"
-          rel="preconnect"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto&family=Poppins&family=Raleway&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/bootstrap/css/bootstrap.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
-          rel="stylesheet"
-        />
-        <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
-        <link
-          href="assets/vendor/swiper/swiper-bundle.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/glightbox/css/glightbox.min.css"
-          rel="stylesheet"
-        />
-        <link href="assets/css/main.css" rel="stylesheet" />
-
         <main className="main">
           <div
             className="page-title dark-background"
@@ -187,16 +149,21 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/WHO1.JPG"
-                              alt="Who We Are"
-                              className="img-fluid rounded"
+                            <div
                               style={{
+                                position: "relative",
                                 width: "100%",
                                 height: "700px",
-                                objectFit: "cover",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/WHO1.JPG"
+                                alt="Who We Are"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
@@ -345,14 +312,16 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Governance.JPG"
+                            <Image
+                              src="/assets/img/education/Governance.JPG"
                               alt="Governance"
                               className="img-fluid rounded"
+                              width={1200} // ← Replace with actual image width
+                              height={800} // ← Replace with actual image height
                               style={{
+                                objectFit: "cover",
                                 width: "100%",
                                 height: "auto",
-                                objectFit: "cover",
                               }}
                             />
                           </div>
@@ -437,73 +406,102 @@ export default function AboutPage() {
                             >
                               <div className="carousel-inner">
                                 <div className="carousel-item active">
-                                  <img
-                                    src="assets/img/education/A2.Jpeg"
-                                    alt="Accreditation Slide 1"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "500px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A2.Jpeg"
+                                      alt="Accreditation Slide 1"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="carousel-item">
-                                  <img
-                                    src="assets/img/education/A1.Jpeg"
-                                    alt="Accreditation Slide 2"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "500px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A1.Jpeg"
+                                      alt="Accreditation Slide 2"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="carousel-item">
-                                  <img
-                                    src="assets/img/education/A5.Jpeg"
-                                    alt="Accreditation Slide 5"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "100px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A5.Jpeg"
+                                      alt="Accreditation Slide 5"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="carousel-item">
-                                  <img
-                                    src="assets/img/education/A3.Jpeg"
-                                    alt="Accreditation Slide 3"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "100px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A3.Jpeg"
+                                      alt="Accreditation Slide 3"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="carousel-item">
-                                  <img
-                                    src="assets/img/education/A4.Jpeg"
-                                    alt="Accreditation Slide 4"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "200px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A4.Jpeg"
+                                      alt="Accreditation Slide 4"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                                 <div className="carousel-item">
-                                  <img
-                                    src="assets/img/education/A6.Jpeg"
-                                    alt="Accreditation Slide 6"
-                                    className="d-block w-100 img-fluid rounded"
+                                  <div
                                     style={{
+                                      position: "relative",
                                       height: "100px",
-                                      objectFit: "cover",
                                     }}
-                                  />
+                                  >
+                                    <Image
+                                      src="/assets/img/education/A6.Jpeg"
+                                      alt="Accreditation Slide 6"
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="cover"
+                                    />
+                                  </div>
                                 </div>
                               </div>
-
                               {/* Optional Carousel Controls */}
                               <button
                                 className="carousel-control-prev"
@@ -613,16 +611,21 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/LearnerProfile.JPG"
-                              alt="IB Learner Profile"
-                              className="img-fluid rounded"
+                            <div
                               style={{
-                                width: "10000px",
+                                position: "relative",
                                 height: "1000px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/LearnerProfile.JPG"
+                                alt="IB Learner Profile"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
@@ -760,14 +763,17 @@ export default function AboutPage() {
                         <div className="row align-items-center mb-5">
                           {/* Mission Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/ac.JPG"
+                            <Image
+                              src="/assets/img/education/ac.JPG"
                               alt="Mission"
                               className="img-fluid rounded"
+                              width={1200} // ⬅️ replace with actual image width
+                              height={800} // ⬅️ replace with actual image height
                               style={{
+                                objectFit: "cover",
                                 width: "100%",
                                 height: "auto",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
                             />
                           </div>
@@ -811,14 +817,17 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Vision Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Vis.JPG"
+                            <Image
+                              src="/assets/img/education/Vis.JPG"
                               alt="Vision"
                               className="img-fluid rounded"
+                              width={1200}
+                              height={800}
                               style={{
+                                objectFit: "cover",
                                 width: "100%",
                                 height: "auto",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
                             />
                           </div>
@@ -891,16 +900,21 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Rec.png"
-                              alt="Who We Are"
-                              className="img-fluid rounded"
+                            <div
                               style={{
-                                width: "100%",
+                                position: "relative",
                                 height: "1000px",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
-                            />
+                            >
+                              <Image
+                                src="/assets/img/education/Rec.png"
+                                alt="Who We Are"
+                                className="img-fluid rounded"
+                                layout="fill"
+                                objectFit="cover"
+                              />
+                            </div>
                           </div>
 
                           {/* Text Right */}
@@ -1059,14 +1073,17 @@ export default function AboutPage() {
                         <div className="row align-items-center">
                           {/* Image Left */}
                           <div className="col-md-5">
-                            <img
-                              src="assets/img/education/Accr.JPG"
+                            <Image
+                              src="/assets/img/education/Accr.JPG"
                               alt="Strategies"
                               className="img-fluid rounded"
+                              width={1200}
+                              height={800}
                               style={{
+                                objectFit: "cover",
                                 width: "100%",
                                 height: "auto",
-                                objectFit: "cover",
+                                marginBottom: "1rem",
                               }}
                             />
                           </div>

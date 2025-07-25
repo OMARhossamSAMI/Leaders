@@ -8,6 +8,7 @@ import { useStudentsLifeTabs } from "./StudentsLifeTabsContext";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import { useCampusTabs } from "../components/CampusTabsContext";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -63,10 +64,13 @@ export default function Header() {
     <header id="header" className="header d-flex align-items-center fixed-top">
       <div className="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
         <Link href="/" className="logo d-flex align-items-center">
-          <img
+          <Image
             src="/assets/img/lic_logo.png"
             alt="School Logo"
-            style={{ height: 40, marginRight: 10 }}
+            width={40} // You can adjust this if the image isn't square
+            height={40}
+            style={{ marginRight: 10 }}
+            priority // Optional: use if this logo is in your header or shown above the fold
           />
           <h1 className="sitename">Leaders International College</h1>
         </Link>
@@ -94,12 +98,18 @@ export default function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" onClick={() => handleAboutTab("strategies")}>
+                  <Link
+                    href="/about"
+                    onClick={() => handleAboutTab("strategies")}
+                  >
                     Strategies
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" onClick={() => handleAboutTab("governance")}>
+                  <Link
+                    href="/about"
+                    onClick={() => handleAboutTab("governance")}
+                  >
                     Governance
                   </Link>
                 </li>
@@ -131,22 +141,34 @@ export default function Header() {
               </Link>
               <ul>
                 <li>
-                  <Link href="/campus-facilities" onClick={() => handleCampusTab("academic")}>
+                  <Link
+                    href="/campus-facilities"
+                    onClick={() => handleCampusTab("academic")}
+                  >
                     Academic Environments
                   </Link>
                 </li>
                 <li>
-                  <Link href="/campus-facilities" onClick={() => handleCampusTab("athletic")}>
+                  <Link
+                    href="/campus-facilities"
+                    onClick={() => handleCampusTab("athletic")}
+                  >
                     Sports Facilities
                   </Link>
                 </li>
                 <li>
-                  <Link href="/campus-facilities" onClick={() => handleCampusTab("technology")}>
+                  <Link
+                    href="/campus-facilities"
+                    onClick={() => handleCampusTab("technology")}
+                  >
                     Technology Integration
                   </Link>
                 </li>
                 <li>
-                  <Link href="/campus-facilities" onClick={() => handleCampusTab("arts")}>
+                  <Link
+                    href="/campus-facilities"
+                    onClick={() => handleCampusTab("arts")}
+                  >
                     Arts & Innovation
                   </Link>
                 </li>
@@ -160,12 +182,18 @@ export default function Header() {
               </Link>
               <ul>
                 <li>
-                  <Link href="/admissions" onClick={() => handleAdmissionTab("apply")}>
+                  <Link
+                    href="/admissions"
+                    onClick={() => handleAdmissionTab("apply")}
+                  >
                     How to Apply
                   </Link>
                 </li>
                 <li>
-                  <Link href="/admissions" onClick={() => handleAdmissionTab("form")}>
+                  <Link
+                    href="/admissions"
+                    onClick={() => handleAdmissionTab("form")}
+                  >
                     Apply Now
                   </Link>
                 </li>
@@ -306,12 +334,18 @@ export default function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/students-life" onClick={() => handleStudentsLifeTab("clubs")}>
+                  <Link
+                    href="/students-life"
+                    onClick={() => handleStudentsLifeTab("clubs")}
+                  >
                     Clubs
                   </Link>
                 </li>
                 <li>
-                  <Link href="/students-life" onClick={() => handleStudentsLifeTab("trips")}>
+                  <Link
+                    href="/students-life"
+                    onClick={() => handleStudentsLifeTab("trips")}
+                  >
                     Trips
                   </Link>
                 </li>
@@ -324,7 +358,10 @@ export default function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/students-life" onClick={() => handleStudentsLifeTab("art")}>
+                  <Link
+                    href="/students-life"
+                    onClick={() => handleStudentsLifeTab("art")}
+                  >
                     Art Programs
                   </Link>
                 </li>
@@ -364,27 +401,42 @@ export default function Header() {
               </Link>
               <ul>
                 <li>
-                  <Link href="/hiring" onClick={() => handleHiringTab("opening")}>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("opening")}
+                  >
                     Opening
                   </Link>
                 </li>
                 <li>
-                  <Link href="/hiring" onClick={() => handleHiringTab("development")}>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("development")}
+                  >
                     Professional Development
                   </Link>
                 </li>
                 <li>
-                  <Link href="/hiring" onClick={() => handleHiringTab("working")}>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("working")}
+                  >
                     Working at LIC
                   </Link>
                 </li>
                 <li>
-                  <Link href="/hiring" onClick={() => handleHiringTab("internship")}>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("internship")}
+                  >
                     Internship Program
                   </Link>
                 </li>
                 <li>
-                  <Link href="/hiring" onClick={() => handleHiringTab("vacancies")}>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("vacancies")}
+                  >
                     Current Vacancies
                   </Link>
                 </li>

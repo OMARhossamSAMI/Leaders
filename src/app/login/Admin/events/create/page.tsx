@@ -98,11 +98,16 @@ export default function CreateEventPage() {
 
         <select
           name="category"
-          value={form.category}
+          value={showCustomCategory ? "OTHER" : form.category}
           onChange={(e) => {
             const value = e.target.value;
-            setShowCustomCategory(value === "OTHER");
-            handleChange(e);
+            if (value === "OTHER") {
+              setShowCustomCategory(true);
+              setForm({ ...form, category: "" }); // reset for user input
+            } else {
+              setShowCustomCategory(false);
+              setForm({ ...form, category: value });
+            }
           }}
           required
         >
@@ -121,10 +126,10 @@ export default function CreateEventPage() {
         {showCustomCategory && (
           <input
             type="text"
-            name="category"
+            name="customCategory"
             placeholder="Enter your custom category"
             className="custom-category-input"
-            value={form.category !== "OTHER" ? form.category : ""}
+            value={form.category}
             onChange={(e) =>
               setForm({ ...form, category: e.target.value.toUpperCase() })
             }

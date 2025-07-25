@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./admin.css";
+import Image from "next/image";
 
 export default function AdminHeader() {
   const pathname = usePathname();
@@ -67,10 +68,12 @@ export default function AdminHeader() {
           href="/login/Admin"
           className="logo d-flex align-items-center me-4"
         >
-          <img
+          <Image
             src="/assets/img/lic_logo.png"
             alt="Leaders Logo"
-            style={{ height: 40, marginRight: 10 }}
+            width={40} // Specify actual width if known; use same height ratio if needed
+            height={40}
+            style={{ marginRight: 10 }}
           />
           <h1 className="sitename mb-0">Leaders International College</h1>
         </Link>
