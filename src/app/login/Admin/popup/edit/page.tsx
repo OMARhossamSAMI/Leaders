@@ -14,7 +14,7 @@ interface Popup {
   paths?: string[];
 }
 
-export default function EditPopupPage({ params }: { params: { id: string } }) {
+export default function EditPopupPage({}: { params: { id: string } }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const popupId = searchParams.get("id");
@@ -41,7 +41,6 @@ export default function EditPopupPage({ params }: { params: { id: string } }) {
       setAuthenticated(true);
     }
   }, [router]);
-  if (!authenticated) return null; // prevent flashing
   useEffect(() => {
     const fetchPopup = async () => {
       try {
@@ -52,14 +51,14 @@ export default function EditPopupPage({ params }: { params: { id: string } }) {
         setForm({ title, category, message, status });
         setButtons(buttons || []);
         setPaths(paths || []);
-      } catch (err) {
+      } catch {
         setError("Failed to fetch popup data.");
       }
     };
 
     fetchPopup();
   }, [popupId]);
-
+  if (!authenticated) return null; // prevent flashing
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -68,7 +67,7 @@ export default function EditPopupPage({ params }: { params: { id: string } }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess(false);
@@ -80,12 +79,35 @@ export default function EditPopupPage({ params }: { params: { id: string } }) {
         buttons,
         paths,
       });
+
       setSuccess(true);
       setTimeout(() => {
         router.push("/login/Admin/popup");
       }, 2000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+    } catch (err: unknown) {
+      let message = "Something went wrong.";
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as Record<string, unknown>).response === "object"
+      ) {
+        const response = (
+          err as {
+            response?: { data?: { message?: unknown } };
+          }
+        ).response;
+
+        const rawMessage = response?.data?.message;
+        if (typeof rawMessage === "string") {
+          message = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          message = rawMessage.join(" \n ");
+        }
+      }
+
+      setError(message);
     }
   };
 

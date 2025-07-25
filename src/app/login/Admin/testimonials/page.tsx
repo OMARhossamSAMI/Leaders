@@ -6,7 +6,7 @@ import axios from "axios";
 import "./page.css";
 import AdminHeader from "@/app/components/AdminHeader";
 import AdminFooter from "@/app/components/AdminFooter";
-
+import Image from "next/image";
 interface Testimonial {
   _id: string;
   name: string;
@@ -169,10 +169,13 @@ export default function TestimonialsPage() {
                       <p className="testimonial-text">{t.description}</p>
                       <hr />
                       <div className="client-info-row">
-                        <img
-                          src={t.profilePhoto}
+                        <Image
+                          src={t.profilePhoto ?? "/default-avatar.png"}
                           alt="Client"
                           className="client-avatar"
+                          width={100} // ✅ required
+                          height={100} // ✅ required
+                          unoptimized // ⬅️ Optional: disable image optimization for local/static links
                         />
                         <div className="client-info">
                           <div className="client-name">{t.name}</div>

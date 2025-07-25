@@ -19,7 +19,7 @@ interface FormField {
   required: boolean;
   options?: string[];
 }
-
+type FieldValue = string | number | boolean | string[];
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -41,24 +41,30 @@ export default function ApplicationsPage() {
 
   useEffect(() => {
     setLoadingApplications(true);
+
     fetch("http://localhost:3000/form-fields")
       .then((res) => res.json())
-      .then((data) => setFormFields(data))
-      .catch((err) => console.error("Failed to fetch form fields", err));
+      .then((data: FormField[]) => setFormFields(data))
+      .catch((err: unknown) =>
+        console.error("Failed to fetch form fields", err)
+      );
 
     fetch("http://localhost:3000/applications")
       .then((res) => res.json())
-      .then((apps) => {
-        const normalized = apps.map((app: any) =>
+      .then((apps: Application[]) => {
+        const normalized = apps.map((app) =>
           app.data && typeof app.data === "object"
             ? { ...app, ...app.data }
             : app
         );
         setApplications(normalized);
       })
-      .catch((err) => console.error("Failed to fetch applications", err))
-      .finally(() => setLoadingApplications(false)); // ✅ Stop loading
+      .catch((err: unknown) =>
+        console.error("Failed to fetch applications", err)
+      )
+      .finally(() => setLoadingApplications(false));
   }, []);
+
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
 
@@ -98,7 +104,7 @@ export default function ApplicationsPage() {
     setExpandedId(null);
   };
 
-  const handleEditChange = (key: string, value: any) => {
+  const handleEditChange = (key: string, value: string | number | boolean) => {
     if (editingApp) {
       setEditingApp({
         ...editingApp,
@@ -146,13 +152,16 @@ export default function ApplicationsPage() {
   const handleFieldChange = (
     index: number,
     key: keyof FormField,
-    value: any
+    value: FieldValue
   ) => {
     const updated = [...formStructureDraft];
     if (key === "options" && updated[index].type === "select") {
       updated[index].options = value as string[];
     } else if (key !== "options") {
-      (updated[index] as any)[key] = value;
+      updated[index] = {
+        ...updated[index],
+        [key]: value,
+      };
     }
     setFormStructureDraft(updated);
   };

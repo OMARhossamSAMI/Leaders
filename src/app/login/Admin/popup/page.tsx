@@ -43,7 +43,7 @@ export default function PopupPage() {
     try {
       const res = await axios.get<Popup[]>("http://localhost:3000/popup");
       setPopups(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to load popups.");
     } finally {
       setLoadingPopups(false);
@@ -54,12 +54,30 @@ export default function PopupPage() {
     try {
       await axios.patch(`http://localhost:3000/popup/toggle/${id}`);
       fetchPopups();
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Could not toggle status.");
+    } catch (err: unknown) {
+      let message = "Could not toggle status.";
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as Record<string, unknown>).response === "object"
+      ) {
+        const response = (
+          err as {
+            response?: { data?: { message?: unknown } };
+          }
+        ).response;
+
+        const rawMessage = response?.data?.message;
+        if (typeof rawMessage === "string") {
+          message = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          message = rawMessage.join(" \n ");
+        }
       }
+
+      setError(message);
       setTimeout(() => setError(""), 3000);
     }
   };
@@ -68,7 +86,7 @@ export default function PopupPage() {
     try {
       await axios.delete(`http://localhost:3000/popup/${id}`);
       fetchPopups();
-    } catch (err) {
+    } catch {
       setError("Failed to delete popup.");
     }
   };

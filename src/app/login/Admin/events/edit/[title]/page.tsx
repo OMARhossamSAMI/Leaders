@@ -104,6 +104,7 @@ export default function EditEventPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
       await axios.put(`http://localhost:3000/events/${title}`, form);
       router.push("/login/Admin/events");
@@ -114,13 +115,19 @@ export default function EditEventPage() {
         typeof err === "object" &&
         err !== null &&
         "response" in err &&
-        typeof (err as any).response === "object"
+        typeof (err as Record<string, unknown>).response === "object"
       ) {
-        const responseMsg = (err as any).response?.data?.message;
-        if (typeof responseMsg === "string") {
-          msg = responseMsg;
-        } else if (Array.isArray(responseMsg)) {
-          msg = responseMsg.join(" \n ");
+        const response = (
+          err as {
+            response: { data?: { message?: unknown } };
+          }
+        ).response;
+
+        const rawMessage = response.data?.message;
+        if (typeof rawMessage === "string") {
+          msg = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          msg = rawMessage.join(" \n ");
         }
       }
 

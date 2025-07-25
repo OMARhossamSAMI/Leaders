@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation";
 export default function UpdateTestimonial() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { id } = useParams();
+
   const safeId = searchParams.get("id");
 
   const [form, setForm] = useState({

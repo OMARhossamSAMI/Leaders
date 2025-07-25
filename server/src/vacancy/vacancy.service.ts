@@ -59,7 +59,7 @@ export class VacancyService {
       .join('\n');
 
     const mail = {
-      to: 'youssefsahhar2406@gmail.com',
+      to: 'omar.hossam3@gmail.com',
       from: 'youssefsahhar2406@gmail.com',
       subject: `📩 New Vacancy Application - ${data['full_name'] || 'Applicant'}`,
       text: `Dear HR,\n\nA new vacancy application has been submitted.\n\n${plainText}\n\nBest regards,\nLeaders International College`,
@@ -80,7 +80,6 @@ export class VacancyService {
     } catch (err) {
       console.error('❌ Email Error:', err.response?.body || err.message);
     }
-    
 
     return created;
   }

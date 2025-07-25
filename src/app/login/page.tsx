@@ -3,8 +3,7 @@
 import "./page.css";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminFooter from "../components/AdminFooter";
-
+import Image from "next/image";
 export default function LoginPage() {
   const router = useRouter();
 
@@ -38,7 +37,7 @@ export default function LoginPage() {
 
       // ✅ Redirect using the actual role
       router.push(`/login/Admin?role=${data.role}`);
-    } catch (err) {
+    } catch {
       setError("Invalid email or password.");
     }
   };
@@ -46,10 +45,13 @@ export default function LoginPage() {
   return (
     <form className="modern-form" onSubmit={handleSubmit}>
       <div className="form-logo-container">
-        <img
+        <Image
           src="/assets/img/lic_logo.png"
           alt="School Logo"
           className="form-logo"
+          width={120} // ✅ Set the correct size
+          height={120} // ✅ Adjust based on your design
+          priority // Optional: preload this image for better performance
         />
         <h2 className="form-title">Admin Login</h2>
       </div>

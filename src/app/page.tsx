@@ -1,10 +1,11 @@
 "use client";
 
 import Head from "next/head";
-
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 import {
   X,
   GraduationCap,
@@ -94,7 +95,7 @@ export default function Home() {
     axios
       .get<LivePopup>("http://localhost:3000/popup/live/only")
       .then((res) => setLivePopup(res.data))
-      .catch((err) => console.error("No live popup found"));
+      .catch(() => console.error("No live popup found"));
   }, []);
 
   const getCategoryIcon = (category: string) => {
@@ -202,12 +203,12 @@ export default function Home() {
                       and the vibrant community that shapes our future leaders.
                     </p>
                     <div className="cta-buttons">
-                      <a href="/admissions" className="btn-primary">
+                      <Link href="/admissions" className="btn-primary">
                         Start Your Journey
-                      </a>
-                      <a href="/curriculum" className="btn-secondary">
+                      </Link>
+                      <Link href="/curriculum" className="btn-secondary">
                         Discover Programs
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -288,7 +289,7 @@ export default function Home() {
                   digital learning help every student thrive — start your
                   journey with us today.
                 </p>
-                <a
+                <Link
                   href="/admissions"
                   className="btn"
                   style={{
@@ -302,7 +303,8 @@ export default function Home() {
                   }}
                 >
                   Apply Now
-                </a>
+                </Link>
+
                 <div className="d-flex flex-wrap gap-4 mb-4">
                   <div className="stat-box">
                     <span className="stat-number">
@@ -355,10 +357,12 @@ export default function Home() {
                     data-aos="zoom-in"
                     data-aos-delay={200}
                   >
-                    <img
+                    <Image
                       src="/assets/img/education/Wall_Logo.webp"
                       alt="Campus Life"
                       className="img-fluid rounded-4 shadow-lg"
+                      width={600}
+                      height={400}
                     />
                   </div>
                   <div
@@ -366,10 +370,12 @@ export default function Home() {
                     data-aos="zoom-in"
                     data-aos-delay={600}
                   >
-                    <img
+                    <Image
                       src="/assets/img/education/ziad_t.JPG"
                       alt="Students"
                       className="img-fluid rounded-4 shadow-lg"
+                      width={600}
+                      height={400}
                     />
                   </div>
                 </div>
@@ -417,10 +423,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
-                            src="assets/img/education/pyp.jpg"
-                            className="img-fluid"
+                          <Image
+                            src="/assets/img/education/pyp.jpg"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -432,10 +440,10 @@ export default function Home() {
                             that builds foundational skills, curiosity, and
                             global awareness.
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -452,10 +460,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
-                            src="assets/img/education/myp.JPG"
-                            className="img-fluid"
+                          <Image
+                            src="/assets/img/education/myp.JPG"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -467,10 +477,10 @@ export default function Home() {
                             connects academic learning with real-world
                             application and personal development.{" "}
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -487,10 +497,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
-                            src="assets/img/education/dp.jpg"
-                            className="img-fluid"
+                          <Image
+                            src="/assets/img/education/dp.jpg"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -502,10 +514,10 @@ export default function Home() {
                             ages 16–19 that fosters critical thinking, research
                             skills, and global citizenship.
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -523,10 +535,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
+                          <Image
                             src="/assets/img/education/CB.png"
-                            className="img-fluid"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -538,10 +552,10 @@ export default function Home() {
                             moral integrity, respect, responsibility, and
                             empathy to shape principled, ethical future leaders.{" "}
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -558,10 +572,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
-                            src="assets/img/education/A1.jpeg"
-                            className="img-fluid"
+                          <Image
+                            src="/assets/img/education/A1.jpeg"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -573,10 +589,10 @@ export default function Home() {
                             offering a well-rounded education tailored to
                             individual student goals.
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -593,10 +609,12 @@ export default function Home() {
                     <div className="row g-0">
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
-                          <img
-                            src="assets/img/education/british.jpg"
-                            className="img-fluid"
+                          <Image
+                            src="/assets/img/education/british.jpg"
                             alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -608,10 +626,10 @@ export default function Home() {
                             10–12 that emphasizes academic excellence and
                             readiness for higher education worldwide.
                           </p>
-                          <a href="#" className="program-btn">
+                          <Link href="#" className="program-btn">
                             <span>Learn More</span>{" "}
                             <i className="bi bi-arrow-right" />
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -646,16 +664,18 @@ export default function Home() {
                 data-aos-delay={200}
               >
                 <div className="students-life-img position-relative">
-                  <img
+                  <Image
                     src="/assets/img/education/SL3.PNG"
-                    className="img-fluid rounded-4 shadow-sm"
                     alt="Students Life"
+                    className="img-fluid rounded-4 shadow-sm"
+                    width={600}
+                    height={400}
                   />
                   <div className="img-overlay">
                     <h3>Discover Campus Life</h3>
-                    <a href="/students-life" className="explore-btn">
+                    <Link href="/students-life" className="explore-btn">
                       Explore More <i className="bi bi-arrow-right" />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -740,9 +760,9 @@ export default function Home() {
                     data-aos="fade-up"
                     data-aos-delay={600}
                   >
-                    <a href="/students-life" className="btn btn-primary">
+                    <Link href="/students-life" className="btn btn-primary">
                       View All Student Activities
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -775,30 +795,28 @@ export default function Home() {
                     security, surveillance systems, and controlled access.
                   </p>
                   <div className="stats-cta">
-                    <a href="/campus-facilities" className="btn btn-primary">
+                    <Link href="/campus-facilities" className="btn btn-primary">
                       Learn More
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                       href="http://vrtour.leadersintcollege.com/"
                       className="btn btn-outline"
                     >
                       Virtual Tour
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
               <div className="col-lg-6 d-flex justify-content-center align-items-center">
-                <img
+                <Image
                   src="/assets/img/education/CampusH.JPG"
                   alt="Our Campus"
+                  width={500}
+                  height={500}
                   className="img-fluid rounded-circle border shadow"
-                  style={{
-                    width: "500px",
-                    height: "500px",
-                    objectFit: "cover",
-                  }}
+                  style={{ objectFit: "cover" }}
                   data-aos="zoom-in"
-                  data-aos-delay={200}
+                  data-aos-delay="200"
                 />
               </div>
             </div>
@@ -856,14 +874,14 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <a
+                    <Link
                       href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
                       className="btn btn-map"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <i className="bi bi-geo-alt me-2"></i> Get Directions
-                    </a>
+                    </Link>
                   </div>
                 </div>
 
@@ -992,7 +1010,16 @@ export default function Home() {
                     <p>{t.description}</p>
                     <div className="client-info">
                       <div className="client-image">
-                        <img src={t.profilePhoto} alt="Client" />
+                        {t.profilePhoto && (
+                          <Image
+                            src={t.profilePhoto}
+                            alt="Client"
+                            width={200} // You can adjust as needed
+                            height={200}
+                            className="img-fluid rounded"
+                            style={{ objectFit: "cover" }}
+                          />
+                        )}
                       </div>
                       <div className="client-details">
                         <h3>{t.name}</h3>
@@ -1057,9 +1084,9 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="event-actions">
-                              <a href="/events" className="btn-learn-more">
+                              <Link href="/events" className="btn-learn-more">
                                 Learn More
-                              </a>
+                              </Link>
                             </div>
                           </div>
                         </div>
@@ -1068,9 +1095,9 @@ export default function Home() {
                   })}
                 </div>
                 <div className="text-center mt-5">
-                  <a href="/events" className="btn-view-all">
+                  <Link href="/events" className="btn-view-all">
                     View All Events
-                  </a>
+                  </Link>
                 </div>
               </>
             ) : (
@@ -1087,13 +1114,13 @@ export default function Home() {
       </main>
 
       {/* Scroll Top */}
-      <a
+      <Link
         href="#"
         id="scroll-top"
         className="scroll-top d-flex align-items-center justify-content-center"
       >
         <i className="bi bi-arrow-up-short" />
-      </a>
+      </Link>
       {/* Preloader */}
       <div id="preloader" />
     </>

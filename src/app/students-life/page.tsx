@@ -1,6 +1,7 @@
 // src/app/students-life/page.tsx
 
 "use client"; // ✅ Needed for useEffect
+import Image from "next/image";
 
 import { useEffect } from "react";
 import "./page.css";
@@ -32,53 +33,6 @@ export default function StudentsLifePage() {
   return (
     <>
       <div>
-        <meta charSet="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Students Life - LeadersIntCollege</title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
-        {/* Favicons */}
-        <link href="assets/img/lic_logo.png" rel="icon" />
-        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
-        {/* Fonts */}
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link
-          href="https://fonts.gstatic.com"
-          rel="preconnect"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet"
-        />
-        {/* Vendor CSS Files */}
-        <link
-          href="assets/vendor/bootstrap/css/bootstrap.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
-          rel="stylesheet"
-        />
-        <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
-        <link
-          href="assets/vendor/swiper/swiper-bundle.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/glightbox/css/glightbox.min.css"
-          rel="stylesheet"
-        />
-        {/* Main CSS File */}
-        <link href="assets/css/main.css" rel="stylesheet" />
-        {/* =======================================================
-  * Template Name: NiceSchool
-  * Template URL: https://bootstrapmade.com/nice-school-bootstrap-education-template/
-  * Updated: May 10 2025 with Bootstrap v5.3.6
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== */}
-
         <main className="main">
           {/* Page Title */}
           <div
@@ -127,10 +81,12 @@ export default function StudentsLifePage() {
                     together to inspire growth, friendship, and discovery.
                   </p>
                 </div>
-                <img
-                  src="assets/img/education/Statuslife.jpeg"
+                <Image
+                  src="/assets/img/education/Statuslife.jpeg"
                   alt="Campus Life"
                   className="img-fluid"
+                  width={800}
+                  height={600}
                 />
               </div>
               {/* Tabs Section */}
@@ -332,10 +288,12 @@ export default function StudentsLifePage() {
                     >
                       <div className="sport-cards-grid">
                         <div className="sport-card">
-                          <img
-                            src="assets/img/education/SWIMMING.JPG"
+                          <Image
+                            src="/assets/img/education/SWIMMING.JPG"
                             className="img-fluid"
                             alt="Swimming"
+                            width={800}
+                            height={600}
                           />
                           <div className="sport-info">
                             <h5>Swimming</h5>
@@ -344,10 +302,12 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="sport-card">
-                          <img
-                            src="assets/img/education/FOOTBALL.png"
+                          <Image
+                            src="/assets/img/education/FOOTBALL.png"
                             className="img-fluid"
                             alt="Football"
+                            width={800}
+                            height={600}
                           />
                           <div className="sport-info">
                             <h5>Football</h5>
@@ -356,10 +316,12 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="sport-card">
-                          <img
-                            src="assets/img/education/BASKETBALL.JPG"
+                          <Image
+                            src="/assets/img/education/BASKETBALL.JPG"
                             className="img-fluid"
                             alt="Basketball"
+                            width={800}
+                            height={600}
                           />
                           <div className="sport-info">
                             <h5>Basketball</h5>
@@ -368,10 +330,12 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="sport-card">
-                          <img
-                            src="assets/img/education/Volleyball.png"
+                          <Image
+                            src="/assets/img/education/Volleyball.png"
                             className="img-fluid"
                             alt="Volleyball"
+                            width={800}
+                            height={600}
                           />
                           <div className="sport-info">
                             <h5>Volleyball</h5>
@@ -446,10 +410,12 @@ export default function StudentsLifePage() {
                           </p>
 
                           {/* Image below Engaging Environment */}
-                          <img
-                            src="assets/img/education/Engage.png"
+                          <Image
+                            src="/assets/img/education/Engage.png"
                             alt="Engaging Environment"
                             className="img-fluid rounded mt-3"
+                            width={800}
+                            height={600}
                           />
                         </div>
                       </div>
@@ -576,9 +542,11 @@ export default function StudentsLifePage() {
                         {/* Morning Arrival */}
                         <article className="dayinlic-card shift-image-down">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/morning-arrival.png"
+                            <Image
+                              src="/assets/img/education/morning-arrival.png"
                               alt="Morning Arrival"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -593,9 +561,11 @@ export default function StudentsLifePage() {
                         {/* Academic Sessions */}
                         <article className="dayinlic-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/Students.jpg"
+                            <Image
+                              src="/assets/img/education/Students.jpg"
                               alt="Academic Sessions"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -610,9 +580,11 @@ export default function StudentsLifePage() {
                         {/* Lunch */}
                         <article className="dayinlic-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/Break.jpeg"
+                            <Image
+                              src="/assets/img/education/Break.jpeg"
                               alt="Midday Break and Lunch"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -628,9 +600,11 @@ export default function StudentsLifePage() {
                         {/* Afternoon Classes */}
                         <article className="dayinlic-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/dismissal.jpg"
+                            <Image
+                              src="/assets/img/education/dismissal.jpg"
                               alt="Afternoon Classes"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -646,9 +620,11 @@ export default function StudentsLifePage() {
                         {/* Dismissal */}
                         <article className="dayinlic-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/Dimiss.JPG"
+                            <Image
+                              src="/assets/img/education/Dimiss.JPG"
                               alt="Dismissal"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -663,9 +639,11 @@ export default function StudentsLifePage() {
                         {/* Clubs & Extracurriculars */}
                         <article className="dayinlic-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/EXTR.png"
+                            <Image
+                              src="/assets/img/education/EXTR.png"
                               alt="Clubs and Extracurricular Activities"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -711,9 +689,11 @@ export default function StudentsLifePage() {
                         {/* Health Center */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/aaaaaa.JPG"
+                            <Image
+                              src="/assets/img/education/aaaaaa.JPG"
                               alt="Health Center"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -729,9 +709,11 @@ export default function StudentsLifePage() {
                         {/* Counseling Services */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/counseling.jpg"
+                            <Image
+                              src="/assets/img/education/counseling.jpg"
                               alt="Counseling Services"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -747,9 +729,11 @@ export default function StudentsLifePage() {
                         {/* Psychological Support */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/psychology.jpg"
+                            <Image
+                              src="/assets/img/education/psychology.jpg"
                               alt="Psychological Support"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -765,9 +749,11 @@ export default function StudentsLifePage() {
                         {/* Physical Fitness */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/fitness.jpg"
+                            <Image
+                              src="/assets/img/education/fitness.jpg"
                               alt="Physical Fitness"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -783,9 +769,11 @@ export default function StudentsLifePage() {
                         {/* Nutritional Services */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/nutrition.jpg"
+                            <Image
+                              src="/assets/img/education/nutrition.jpg"
                               alt="Nutritional Services"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -800,9 +788,11 @@ export default function StudentsLifePage() {
                         {/* Wellness Programs */}
                         <article className="healthwellness-card">
                           <div className="card-image">
-                            <img
-                              src="assets/img/education/wellness-programs.jpg"
+                            <Image
+                              src="/assets/img/education/wellness-programs.jpg"
                               alt="Wellness Programs"
+                              width={800}
+                              height={600}
                             />
                           </div>
                           <div className="card-body">
@@ -900,9 +890,11 @@ export default function StudentsLifePage() {
 
                       <div className="clubs-grid">
                         <div className="club-card">
-                          <img
-                            src="assets/img/education/art-club.jpg"
+                          <Image
+                            src="/assets/img/education/art-club.jpg"
                             alt="Art Club"
+                            width={400}
+                            height={250}
                           />
                           <h5>Art Club</h5>
                           <p>
@@ -910,10 +902,13 @@ export default function StudentsLifePage() {
                             crafting.
                           </p>
                         </div>
+
                         <div className="club-card">
-                          <img
-                            src="assets/img/education/science-club.jpg"
+                          <Image
+                            src="/assets/img/education/science-club.jpg"
                             alt="Science Club"
+                            width={400}
+                            height={250}
                           />
                           <h5>Science Club</h5>
                           <p>
@@ -921,10 +916,13 @@ export default function StudentsLifePage() {
                             experiments.
                           </p>
                         </div>
+
                         <div className="club-card">
-                          <img
-                            src="assets/img/education/Drama.jpeg"
+                          <Image
+                            src="/assets/img/education/Drama.jpeg"
                             alt="Drama Club"
+                            width={400}
+                            height={250}
                           />
                           <h5>Drama Club</h5>
                           <p>
@@ -935,13 +933,13 @@ export default function StudentsLifePage() {
 
                         <div className="clubs-bottom">
                           <div className="club-card">
-                            <img
-                              src="assets/img/education/shagarha.png"
+                            <Image
+                              src="/assets/img/education/shagarha.png"
                               alt="Eco Club"
+                              width={400}
+                              height={200}
                               className="img-fluid rounded-top"
                               style={{
-                                width: "400px",
-                                height: "200px",
                                 objectFit: "cover",
                                 objectPosition: "center",
                               }}
@@ -952,14 +950,15 @@ export default function StudentsLifePage() {
                               awareness.
                             </p>
                           </div>
+
                           <div className="club-card">
-                            <img
-                              src="assets/img/education/CHESS2.png"
+                            <Image
+                              src="/assets/img/education/CHESS2.png"
                               alt="Chess Club"
+                              width={400}
+                              height={200}
                               className="img-fluid rounded-top"
                               style={{
-                                width: "400px",
-                                height: "200px",
                                 objectFit: "cover",
                                 objectPosition: "center",
                               }}
@@ -1048,9 +1047,11 @@ export default function StudentsLifePage() {
 
                       <div className="trips-grid">
                         <div className="trip-card">
-                          <img
-                            src="assets/img/education/Trip1.jpeg"
+                          <Image
+                            src="/assets/img/education/Trip1.jpeg"
                             alt="Curriculum-Integrated Daily Trips"
+                            width={800}
+                            height={500}
                           />
                           <h4>Curriculum-Integrated Daily Trips</h4>
                           <p>
@@ -1067,9 +1068,11 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="trip-card">
-                          <img
-                            src="assets/img/education/Egypt.png"
+                          <Image
+                            src="/assets/img/education/Egypt.png"
                             alt="Exploring Egypt"
+                            width={800}
+                            height={500}
                           />
                           <h4>Exploring Egypt</h4>
                           <p>
@@ -1149,9 +1152,11 @@ export default function StudentsLifePage() {
                               textAlign: "center",
                             }}
                           >
-                            <img
-                              src="assets/img/education/Voice.png"
+                            <Image
+                              src="/assets/img/education/Voice.png"
                               alt="Voice of the Students"
+                              width={800}
+                              height={500}
                             />
                             <h5>Voice of the Students</h5>
                             <p>
@@ -1169,9 +1174,11 @@ export default function StudentsLifePage() {
                               textAlign: "center",
                             }}
                           >
-                            <img
-                              src="assets/img/education/EventP.png"
+                            <Image
+                              src="/assets/img/education/EventP.png"
                               alt="Event Planning"
+                              width={800}
+                              height={500}
                             />
                             <h5>Event Planning</h5>
                             <p>
@@ -1189,9 +1196,11 @@ export default function StudentsLifePage() {
                               textAlign: "center",
                             }}
                           >
-                            <img
-                              src="assets/img/education/Comm.jpeg"
+                            <Image
+                              src="/assets/img/education/Comm.jpeg"
                               alt="Community Engagement"
+                              width={800}
+                              height={500}
                             />
                             <h5>Community Engagement</h5>
                             <p>
@@ -1264,9 +1273,11 @@ export default function StudentsLifePage() {
 
                       <div className="arts-grid">
                         <div className="arts-card">
-                          <img
-                            src="assets/img/education/annual.jpeg"
+                          <Image
+                            src="/assets/img/education/annual.jpeg"
                             alt="Comprehensive Arts Education"
+                            width={800}
+                            height={500}
                           />
                           <h4>Comprehensive Arts Education</h4>
                           <p>
@@ -1280,9 +1291,11 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="arts-card">
-                          <img
-                            src="assets/img/education/EX2.png"
+                          <Image
+                            src="/assets/img/education/EX2.png"
                             alt="Annual Art Competition"
+                            width={800}
+                            height={500}
                           />
                           <h4>Annual Art Competition</h4>
                           <p>
@@ -1298,9 +1311,11 @@ export default function StudentsLifePage() {
                         </div>
 
                         <div className="arts-card">
-                          <img
-                            src="assets/img/education/show.jpeg"
+                          <Image
+                            src="/assets/img/education/show.jpeg"
                             alt="Showcasing Talent"
+                            width={800}
+                            height={500}
                           />
                           <h4>Showcasing Talent</h4>
                           <p>
@@ -1385,10 +1400,12 @@ export default function StudentsLifePage() {
                               borderRadius: "8px",
                             }}
                           >
-                            <img
-                              src="assets/img/education/pypex.jpeg"
+                            <Image
+                              src="/assets/img/education/pypex.jpeg"
                               alt="PYP Exhibition"
                               className="img-fluid rounded mb-3"
+                              width={800}
+                              height={500}
                             />
                             <h5>PYP Exhibition</h5>
                             <p>
@@ -1410,10 +1427,12 @@ export default function StudentsLifePage() {
                               borderRadius: "8px",
                             }}
                           >
-                            <img
-                              src="assets/img/education/MYPEX.jpeg"
+                            <Image
+                              src="/assets/img/education/MYPEX.jpeg"
                               alt="MYP Personal Project Exhibition"
                               className="img-fluid rounded mb-3"
+                              width={800}
+                              height={500}
                             />
                             <h5>MYP Personal Project Exhibition</h5>
                             <p>
@@ -1434,10 +1453,12 @@ export default function StudentsLifePage() {
                               borderRadius: "8px",
                             }}
                           >
-                            <img
-                              src="assets/img/education/CAS.png"
+                            <Image
+                              src="/assets/img/education/CAS.png"
                               alt="CAS Exhibition"
                               className="img-fluid rounded mb-3"
+                              width={800}
+                              height={500}
                             />
                             <h5>CAS Exhibition</h5>
                             <p>
@@ -1471,11 +1492,14 @@ export default function StudentsLifePage() {
                             borderRadius: "8px",
                           }}
                         >
-                          <img
-                            src="assets/img/education/CARN.jpeg"
+                          <Image
+                            src="/assets/img/education/CARN.jpeg"
                             alt="School Carnival"
                             className="img-fluid rounded mb-3"
+                            width={800}
+                            height={500}
                           />
+
                           <h5>School Carnival</h5>
                           <p>
                             Our annual school carnival is a highlight, bringing
@@ -1496,10 +1520,12 @@ export default function StudentsLifePage() {
                             borderRadius: "8px",
                           }}
                         >
-                          <img
-                            src="assets/img/education/sehour.jpeg"
+                          <Image
+                            src="/assets/img/education/sehour.jpeg"
                             alt="School Sohour"
                             className="img-fluid rounded mb-3"
+                            width={800}
+                            height={500}
                           />
                           <h5>School Sohour</h5>
                           <p>
@@ -1594,10 +1620,12 @@ export default function StudentsLifePage() {
                       </header>
 
                       <div className="dining-card">
-                        <img
-                          src="assets/img/education/Dining.png"
+                        <Image
+                          src="/assets/img/education/Dining.png"
                           alt="On-Campus Dining"
                           className="img-fluid rounded"
+                          width={1920}
+                          height={600}
                           style={{
                             width: "100%",
                             height: "600px",
@@ -1641,10 +1669,12 @@ export default function StudentsLifePage() {
                       </header>
 
                       <div className="transport-card">
-                        <img
-                          src="assets/img/education/Trans.png"
+                        <Image
+                          src="/assets/img/education/Trans.png"
                           alt="School Transportation"
                           className="img-fluid rounded"
+                          width={1920}
+                          height={600}
                           style={{
                             width: "100%",
                             height: "auto",
@@ -1676,10 +1706,12 @@ export default function StudentsLifePage() {
                       href="assets/img/education/SL5.JPG"
                       className="gallery-item glightbox"
                     >
-                      <img
-                        src="assets/img/education/SL5.JPG"
-                        className="img-fluid"
+                      <Image
+                        src="/assets/img/education/SL5.JPG"
                         alt="Student Life"
+                        className="img-fluid"
+                        width={800}
+                        height={500}
                       />
                     </Link>
                   </div>
@@ -1689,10 +1721,12 @@ export default function StudentsLifePage() {
                     data-aos-delay={50}
                   >
                     <Link href="" className="gallery-item glightbox">
-                      <img
-                        src="assets/img/education/SL1.JPG"
-                        className="img-fluid"
+                      <Image
+                        src="/assets/img/education/SL1.JPG"
                         alt="Student Life"
+                        className="img-fluid"
+                        width={800}
+                        height={500}
                       />
                     </Link>
                   </div>
@@ -1705,10 +1739,12 @@ export default function StudentsLifePage() {
                       href="assets/img/education/SL4.JPG"
                       className="gallery-item glightbox"
                     >
-                      <img
-                        src="assets/img/education/SL4.JPG"
-                        className="img-fluid"
+                      <Image
+                        src="/assets/img/education/SL4.JPG"
                         alt="Student Life"
+                        className="img-fluid"
+                        width={800}
+                        height={500}
                       />
                     </Link>
                   </div>
@@ -1721,10 +1757,12 @@ export default function StudentsLifePage() {
                       href="assets/img/education/SL2.JPG"
                       className="gallery-item glightbox"
                     >
-                      <img
-                        src="assets/img/education/SL2.JPG"
-                        className="img-fluid"
+                      <Image
+                        src="/assets/img/education/SL2.JPG"
                         alt="Student Life"
+                        className="img-fluid"
+                        width={800}
+                        height={500}
                       />
                     </Link>
                   </div>
@@ -1737,10 +1775,12 @@ export default function StudentsLifePage() {
                       href="assets/img/education/SL3.JPG"
                       className="gallery-item glightbox"
                     >
-                      <img
-                        src="assets/img/education/SL3.JPG"
-                        className="img-fluid"
+                      <Image
+                        src="/assets/img/education/SL3.JPG"
                         alt="Student Life"
+                        className="img-fluid"
+                        width={800}
+                        height={500}
                       />
                     </Link>
                   </div>

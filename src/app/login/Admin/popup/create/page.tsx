@@ -37,7 +37,7 @@ export default function CreatePopupPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess(false);
@@ -47,15 +47,37 @@ export default function CreatePopupPage() {
         ...form,
         category: form.category || customCategory,
         buttons,
-        paths, // ✅ This was missing
+        paths,
       });
       setSuccess(true);
 
       setTimeout(() => {
         router.push("/login/Admin/popup");
       }, 2000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong.");
+    } catch (err: unknown) {
+      let message = "Something went wrong.";
+
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as Record<string, unknown>).response === "object"
+      ) {
+        const response = (
+          err as {
+            response?: { data?: { message?: unknown } };
+          }
+        ).response;
+
+        const rawMessage = response?.data?.message;
+        if (typeof rawMessage === "string") {
+          message = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          message = rawMessage.join(" \n ");
+        }
+      }
+
+      setError(message);
     }
   };
 

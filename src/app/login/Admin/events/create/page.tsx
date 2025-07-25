@@ -39,12 +39,20 @@ export default function CreateEventPage() {
     } catch (err: unknown) {
       let message = "Failed to create event.";
 
-      if (isAxiosError(err)) {
-        const responseMessage = (err as any).response?.data?.message;
-        if (typeof responseMessage === "string") {
-          message = responseMessage;
-        } else if (Array.isArray(responseMessage)) {
-          message = responseMessage.join(", ");
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as Record<string, unknown>).response === "object"
+      ) {
+        const response = (err as { response: { data?: { message?: unknown } } })
+          .response;
+
+        const msg = response.data?.message;
+        if (typeof msg === "string") {
+          message = msg;
+        } else if (Array.isArray(msg)) {
+          message = msg.join(", ");
         }
       }
 
@@ -54,23 +62,11 @@ export default function CreateEventPage() {
     }
   };
 
-  // ✅ Custom fallback isAxiosError function
-  function isAxiosError(
-    error: unknown
-  ): error is { response?: { data?: { message?: string | string[] } } } {
-    return (
-      typeof error === "object" &&
-      error !== null &&
-      "response" in error &&
-      typeof (error as any).response === "object"
-    );
-  }
-
   // 🔁 Generate 12-hour formatted time slots with AM/PM (e.g., 09:00 AM)
   const generateTimeSlots = () => {
     const slots: string[] = [];
     for (let hour = 7; hour <= 24; hour++) {
-      for (const min of [0, 30]) {
+      for (let min of [0, 30]) {
         const date = new Date();
         date.setHours(hour, min);
         const options: Intl.DateTimeFormatOptions = {
