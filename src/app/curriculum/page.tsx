@@ -104,107 +104,109 @@ export default function CurriculumPage() {
               >
                 <div className="row">
                   <div className="col-12">
-                    <div className="program-tabs">
-                      <ul
-                        className="nav nav-tabs justify-content-center"
-                        role="tablist"
-                      >
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "pyp" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("pyp")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-book" />
-                            </span>
-                            <span className="text">PYP</span>
-                          </button>
-                        </li>
+                    <div className="program-tabs-scroll-wrapper">
+                      <div className="program-tabs">
+                        <ul
+                          className="nav nav-tabs justify-content-center"
+                          role="tablist"
+                        >
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "pyp" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("pyp")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-book" />
+                              </span>
+                              <span className="text">PYP</span>
+                            </button>
+                          </li>
 
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "myp" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("myp")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-award" />
-                            </span>
-                            <span className="text">MYP</span>
-                          </button>
-                        </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "myp" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("myp")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-award" />
+                              </span>
+                              <span className="text">MYP</span>
+                            </button>
+                          </li>
 
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "dp" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("dp")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-mortarboard" />
-                            </span>
-                            <span className="text">DP</span>
-                          </button>
-                        </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "dp" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("dp")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-mortarboard" />
+                              </span>
+                              <span className="text">DP</span>
+                            </button>
+                          </li>
 
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "american" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("american")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-globe-americas" />
-                            </span>
-                            <span className="text">American Diploma</span>
-                          </button>
-                        </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "american" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("american")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-globe-americas" />
+                              </span>
+                              <span className="text">American Diploma</span>
+                            </button>
+                          </li>
 
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "igcse" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("igcse")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-journal-bookmark" />
-                            </span>
-                            <span className="text">IGCSE</span>
-                          </button>
-                        </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "igcse" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("igcse")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-journal-bookmark" />
+                              </span>
+                              <span className="text">IGCSE</span>
+                            </button>
+                          </li>
 
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${
-                              curriculumTab === "character" ? "active" : ""
-                            }`}
-                            onClick={() => setCurriculumTab("character")}
-                            type="button"
-                            role="tab"
-                          >
-                            <span className="icon">
-                              <i className="bi bi-grid-3x3-gap" />
-                            </span>
-                            <span className="text">Character Building</span>
-                          </button>
-                        </li>
-                      </ul>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "character" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("character")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-grid-3x3-gap" />
+                              </span>
+                              <span className="text">Character Building</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>

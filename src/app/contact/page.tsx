@@ -20,6 +20,7 @@ interface ContactUsForm {
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -47,66 +48,24 @@ export default function ContactPage() {
       bestTime: formData.get("bestTime") as string,
       message: formData.get("message") as string,
     };
-
+    setLoading(true); // ⏳ Start loading
     try {
       await axios.post("http://localhost:3000/contactus", data);
       setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 4000);
       form.reset();
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Something went wrong. Please try again later.");
+    } finally {
+      setLoading(false); // ✅ Stop loading
     }
   };
   return (
     <>
       <div>
-        <meta charSet="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Contact - LeadersIntCollege</title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
-        {/* Favicons */}
-        <link href="assets/img/lic_logo.png" rel="icon" />
-        <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
-        {/* Fonts */}
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link
-          href="https://fonts.gstatic.com"
-          rel="preconnect"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet"
-        />
-        {/* Vendor CSS Files */}
-        <link
-          href="assets/vendor/bootstrap/css/bootstrap.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
-          rel="stylesheet"
-        />
-        <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
-        <link
-          href="assets/vendor/swiper/swiper-bundle.min.css"
-          rel="stylesheet"
-        />
-        <link
-          href="assets/vendor/glightbox/css/glightbox.min.css"
-          rel="stylesheet"
-        />
-        {/* Main CSS File */}
-        <link href="assets/css/main.css" rel="stylesheet" />
-        {/* =======================================================
-  * Template Name: NiceSchool
-  * Template URL: https://bootstrapmade.com/nice-school-bootstrap-education-template/
-  * Updated: May 10 2025 with Bootstrap v5.3.6
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== */}
-
         <main className="main">
           {/* Page Title */}
           <div
@@ -461,8 +420,49 @@ export default function ContactPage() {
                             <button
                               type="submit"
                               className="btn btn-primary btn-submit"
+                              disabled={loading}
+                              style={{
+                                position: "relative",
+                                minWidth: "160px",
+                                height: "48px",
+                              }}
                             >
-                              SEND MESSAGE
+                              {loading ? (
+                                <>
+                                  <span className="custom-spinner"></span>
+                                  <span className="loading-text">
+                                    Sending...
+                                  </span>
+                                </>
+                              ) : (
+                                "SEND MESSAGE"
+                              )}
+
+                              <style jsx>{`
+                                .custom-spinner {
+                                  display: inline-block;
+                                  width: 18px;
+                                  height: 18px;
+                                  border: 2.5px solid rgba(255, 255, 255, 0.3);
+                                  border-top-color: #fff;
+                                  border-radius: 50%;
+                                  animation: spin 0.8s ease-in-out infinite;
+                                  vertical-align: middle;
+                                  margin-right: 10px;
+                                }
+
+                                .loading-text {
+                                  vertical-align: middle;
+                                  font-weight: 500;
+                                  color: #fff;
+                                }
+
+                                @keyframes spin {
+                                  to {
+                                    transform: rotate(360deg);
+                                  }
+                                }
+                              `}</style>
                             </button>
                           </div>
                         </div>

@@ -158,6 +158,10 @@ body {
   border-left: 4px solid #2c7be5;
   border-radius: 6px;
   margin-top: 10px;
+  word-break: break-word; /* ✅ force long words to wrap */
+  overflow-wrap: break-word; /* ✅ ensures compatibility */
+  white-space: pre-wrap; /* ✅ keeps line breaks, wraps text */
+  max-width: 100%; /* ✅ ensures message doesn't stretch card */
 }
 
 .label-icon {

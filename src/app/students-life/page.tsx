@@ -1773,7 +1773,7 @@ export default function StudentsLifePage() {
                       data-aos-delay={400}
                     >
                       <div className="cta-buttons">
-                        <Link href="#" className="btn btn-primary">
+                        <Link href="/admissions" className="btn btn-primary">
                           Apply Now
                         </Link>
                       </div>

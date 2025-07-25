@@ -4,16 +4,20 @@ import { Model } from 'mongoose';
 import { ContactUs, ContactUsDocument } from '../Schemas/contactus.schema';
 import { CreateContactUsDto } from './dto/create-contactus.dto';
 import { UpdateContactUsDto } from './dto/update-contactus.dto';
+import { MailService } from '../mail/mail.service'; // 👈 Add this
 
 @Injectable()
 export class ContactUsService {
   constructor(
     @InjectModel(ContactUs.name)
     private contactUsModel: Model<ContactUsDocument>,
+    private readonly mailService: MailService, // 👈 Inject
   ) {}
 
   async create(createDto: CreateContactUsDto): Promise<ContactUs> {
     const created = new this.contactUsModel(createDto);
+    // ✅ Send emails after saving
+    await this.mailService.sendToHRAndUser(createDto);
     return created.save();
   }
 

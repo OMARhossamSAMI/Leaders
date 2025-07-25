@@ -969,19 +969,18 @@ export default function Home() {
           <div className="container section-title" data-aos="fade-up">
             <h2>Testimonials</h2>
             <p>
-              Necessitatibus eius consequatur ex aliquid fuga eum quidem sint
-              consectetur velit
+              Hear directly from our students, parents, and staff about their
+              experiences at Leaders International College.
             </p>
           </div>
+
           {/* End Section Title */}
 
           <div className="container">
             <div className="testimonial-masonry">
               {testimonials.map((t, index) => (
                 <div
-                  className={`testimonial-item ${
-                    index % 2 === 1 ? "highlight" : ""
-                  }`}
+                  className="testimonial-item"
                   data-aos="fade-up"
                   data-aos-delay={index * 100}
                   key={t._id}
