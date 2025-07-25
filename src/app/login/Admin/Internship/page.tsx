@@ -6,6 +6,7 @@ import { Eye, EyeOff, PencilLine, Trash2, Save, XCircle } from "lucide-react";
 import AdminHeader from "@/app/components/AdminHeader";
 import "./internship.css";
 import AdminFooter from "@/app/components/AdminFooter";
+import { useRouter } from "next/navigation";
 
 interface InternshipApplication {
   _id: string;
@@ -28,13 +29,37 @@ export default function InternshipApplicationsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<InternshipApplication>>({});
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingApplications, setLoadingApplications] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
+    setLoadingApplications(true);
+
     axios
       .get<InternshipApplication[]>("http://localhost:3000/internship")
-      .then((res) => setApplications(res.data))
-      .catch((err) => console.error("Failed to fetch internship applications", err));
+      .then((res) => {
+        setApplications(res.data);
+        setLoadingApplications(false); // ✅ stop spinner
+      })
+      .catch((err) => {
+        console.error("Failed to fetch internship applications", err);
+        setLoadingApplications(false); // ✅ still stop spinner on error
+      });
   }, []);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
 
   const handleDelete = async (id: string) => {
     try {
@@ -51,7 +76,9 @@ export default function InternshipApplicationsPage() {
       await axios.patch(`http://localhost:3000/internship/${id}`, editData);
       setEditingId(null);
       setExpandedId(null);
-      const res = await axios.get<InternshipApplication[]>("http://localhost:3000/internship");
+      const res = await axios.get<InternshipApplication[]>(
+        "http://localhost:3000/internship"
+      );
       setApplications(res.data);
     } catch (err) {
       console.error("Failed to update application", err);
@@ -64,14 +91,61 @@ export default function InternshipApplicationsPage() {
 
       <div className="internship-container">
         {/* Section Title */}
-        <div className="container section-title" style={{ marginTop: "30px", marginBottom: "2rem" }}>
+        <div
+          className="container section-title"
+          style={{ marginTop: "30px", marginBottom: "2rem" }}
+        >
           <h2>Internship Applications</h2>
-          <p>Review and manage all internship requests submitted by students.</p>
+          <p>
+            Review and manage all internship requests submitted by students.
+          </p>
         </div>
 
         {/* Shadow Box for Cards */}
         <div className="internship-box">
-          {applications.length === 0 ? (
+          {loadingApplications ? (
+            <>
+              <div className="loader-container">
+                <div className="spinner" />
+                <p className="loading-text">
+                  Loading internship applications...
+                </p>
+              </div>
+
+              <style jsx>{`
+                .loader-container {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 4rem 1rem;
+                  width: 100%;
+                }
+
+                .spinner {
+                  width: 50px;
+                  height: 50px;
+                  border: 6px solid #c2c8eb;
+                  border-top: 6px solid #3d9bdeff;
+                  border-radius: 50%;
+                  animation: spin 0.9s linear infinite;
+                }
+
+                .loading-text {
+                  margin-top: 1rem;
+                  font-size: 1.1rem;
+                  font-weight: 500;
+                  color: #3f9adaff;
+                }
+
+                @keyframes spin {
+                  to {
+                    transform: rotate(360deg);
+                  }
+                }
+              `}</style>
+            </>
+          ) : applications.length === 0 ? (
             <p>No internship applications submitted yet.</p>
           ) : (
             applications.map((app) => (
@@ -93,7 +167,11 @@ export default function InternshipApplicationsPage() {
                         : setExpandedId(app._id)
                     }
                   >
-                    {expandedId === app._id ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {expandedId === app._id ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                     {expandedId === app._id ? " Hide Details" : " View Details"}
                   </button>
 
@@ -124,22 +202,37 @@ export default function InternshipApplicationsPage() {
                           if (key === "_id" || key === "createdAt") return null;
                           return (
                             <div key={key} className="mb-2">
-                              <label className="form-label">{key.replace(/_/g, " ")}</label>
+                              <label className="form-label">
+                                {key.replace(/_/g, " ")}
+                              </label>
                               <input
                                 className="form-input"
-                                value={editData[key as keyof InternshipApplication] || ""}
+                                value={
+                                  editData[
+                                    key as keyof InternshipApplication
+                                  ] || ""
+                                }
                                 onChange={(e) =>
-                                  setEditData({ ...editData, [key]: e.target.value })
+                                  setEditData({
+                                    ...editData,
+                                    [key]: e.target.value,
+                                  })
                                 }
                               />
                             </div>
                           );
                         })}
                         <div className="flex gap-2 mt-2">
-                          <button className="btn-success" onClick={() => handleUpdate(app._id)}>
+                          <button
+                            className="btn-success"
+                            onClick={() => handleUpdate(app._id)}
+                          >
                             <Save size={16} /> Save
                           </button>
-                          <button className="btn-secondary" onClick={() => setEditingId(null)}>
+                          <button
+                            className="btn-secondary"
+                            onClick={() => setEditingId(null)}
+                          >
                             <XCircle size={16} /> Cancel
                           </button>
                         </div>
@@ -149,7 +242,8 @@ export default function InternshipApplicationsPage() {
                         if (key === "_id" || key === "createdAt") return null;
                         return (
                           <p key={key}>
-                            <strong>{key.replace(/_/g, " ")}:</strong> {String(value)}
+                            <strong>{key.replace(/_/g, " ")}:</strong>{" "}
+                            {String(value)}
                           </p>
                         );
                       })
@@ -161,8 +255,7 @@ export default function InternshipApplicationsPage() {
           )}
         </div>
       </div>
-          <AdminFooter />
-      
+      <AdminFooter />
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import "./page.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -19,6 +19,7 @@ export default function CreateEventPage() {
   const [showCustomCategory, setShowCustomCategory] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -63,7 +64,16 @@ export default function CreateEventPage() {
   };
 
   const timeSlots = generateTimeSlots();
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
 
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+  if (!authenticated) return null; // prevent flashing
   return (
     <div className="create-form-wrapper">
       <form className="create-form" onSubmit={handleSubmit}>

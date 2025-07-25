@@ -1,21 +1,124 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AdminHeader from "@/app/components/AdminHeader";
 import AdminFooter from "@/app/components/AdminFooter";
 
 export default function AdminPage() {
+  const router = useRouter();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [readyToRender, setReadyToRender] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+  // ✅ Separate auth logic
+  useEffect(() => {
+    const shouldRefresh = sessionStorage.getItem("force_admin_refresh");
+
+    if (shouldRefresh === "true") {
+      sessionStorage.removeItem("force_admin_refresh"); // prevent loop
+      location.reload(); // force full reload
+      return;
+    }
+
+    const token = sessionStorage.getItem("admin_token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      setAuthenticated(true);
+      const storedRole = sessionStorage.getItem("admin_role");
+      setRole(storedRole);
+    }
+    setLoading(false);
+  }, [router]);
+  // ✅ Preloader logic
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
       const timer = setTimeout(() => {
         preloader.style.display = "none";
-      }, 15);
+        setReadyToRender(true); // ✅ Trigger content after preloader
+      }, 200); // give time for layout/styles to finish loading
       return () => clearTimeout(timer);
+    } else {
+      setReadyToRender(true); // fallback
     }
   }, []);
 
+  if (!readyToRender || loading) {
+    return (
+      <>
+        <div id="preloader"></div>
+      </>
+    );
+  }
+
+  if (!authenticated) return null; // prevent flashing
+  const cards = [
+    {
+      icon: "bi-person-lines-fill",
+      title: "School Applications",
+      description:
+        "Manage all student applications submitted through the school’s admission forms.",
+      href: "/login/Admin/school_app",
+      color: "#007bff",
+      roles: ["it", "Admission"],
+    },
+    {
+      icon: "bi-laptop",
+      title: "Internship Applications",
+      description:
+        "Review and manage internship application forms for external candidates.",
+      href: "/login/Admin/Internship",
+      color: "#17a2b8",
+      roles: ["it", "hr"],
+    },
+    {
+      icon: "bi-briefcase-fill",
+      title: "Vacancy Applications",
+      description: "Track and process job applications for school vacancies.",
+      href: "/login/Admin/Vacancy",
+      color: "#ffc107",
+      roles: ["it", "hr"],
+    },
+    {
+      icon: "bi-calendar-event-fill",
+      title: "Events",
+      description: "Add, update, or delete school events and activities.",
+      href: "/login/Admin/events",
+      color: "#28a745",
+      roles: ["it"],
+    },
+    {
+      icon: "bi-chat-left-quote-fill",
+      title: "Testimonials",
+      description: "Manage testimonials from students, parents, and staff.",
+      href: "/login/testimonials",
+      color: "#6f42c1",
+      roles: ["it"],
+    },
+    {
+      icon: "bi-window-fullscreen",
+      title: "Popup Message",
+      description:
+        "Create or update the homepage popup that appears for first-time visitors.",
+      href: "/login/Admin/popup",
+      color: "#fd7e14",
+      roles: ["it"],
+    },
+    {
+      icon: "bi-envelope-paper-fill",
+      title: "Contact Messages",
+      description:
+        "View and respond to messages submitted via the Contact Us form.",
+      href: "/login/Admin/contactus",
+      color: "#dc3545",
+      roles: ["it"],
+    },
+  ];
+  const filteredCards = cards.filter((card) => card.roles.includes(role || ""));
   return (
     <>
       <AdminHeader />
@@ -26,64 +129,7 @@ export default function AdminPage() {
             Admin Dashboard
           </h1>
           <div className="row g-4">
-            {[
-              {
-                icon: "bi-person-lines-fill",
-                title: "School Applications",
-                description:
-                  "Manage all student applications submitted through the school’s admission forms.",
-                href: "/login/Admin/school_app",
-                color: "#007bff",
-              },
-              {
-                icon: "bi-laptop",
-                title: "Internship Applications",
-                description:
-                  "Review and manage internship application forms for external candidates.",
-                href: "/login/Admin/Internship",
-                color: "#17a2b8",
-              },
-              {
-                icon: "bi-briefcase-fill",
-                title: "Vacancy Applications",
-                description:
-                  "Track and process job applications for school vacancies.",
-                href: "/login/Admin/Vacancy",
-                color: "#ffc107",
-              },
-              {
-                icon: "bi-calendar-event-fill",
-                title: "Events",
-                description:
-                  "Add, update, or delete school events and activities.",
-                href: "/login/Admin/events",
-                color: "#28a745",
-              },
-              {
-                icon: "bi-chat-left-quote-fill",
-                title: "Testimonials",
-                description:
-                  "Manage testimonials from students, parents, and staff.",
-                href: "/login/testimonials",
-                color: "#6f42c1",
-              },
-              {
-                icon: "bi-window-fullscreen",
-                title: "Popup Message",
-                description:
-                  "Create or update the homepage popup that appears for first-time visitors.",
-                href: "/login/Admin/popup",
-                color: "#fd7e14",
-              },
-              {
-                icon: "bi-envelope-paper-fill",
-                title: "Contact Messages",
-                description:
-                  "View and respond to messages submitted via the Contact Us form.",
-                href: "/login/Admin/contactus",
-                color: "#dc3545",
-              },
-            ].map((card, index) => (
+            {filteredCards.map((card, index) => (
               <div
                 key={index}
                 className="col-lg-4 col-md-6"
@@ -107,9 +153,7 @@ export default function AdminPage() {
             ))}
           </div>
         </div>
-        <div id="preloader"></div>
       </main>
-
       <style jsx global>{`
         html,
         body {
@@ -188,8 +232,7 @@ export default function AdminPage() {
           text-decoration: underline;
         }
       `}</style>
-                <AdminFooter />
-      
+      <AdminFooter />
     </>
   );
 }
