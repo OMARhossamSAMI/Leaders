@@ -12,6 +12,9 @@ interface Field {
   required: boolean;
   options?: string[]; // For select and checkbox types
 }
+interface FieldResponse {
+  fields: Field[];
+}
 
 export default function EditFormStructure() {
   const [fields, setFields] = useState<Field[]>([]);
@@ -29,16 +32,18 @@ export default function EditFormStructure() {
       setAuthenticated(true);
     }
   }, [router]);
-  if (!authenticated) return null; // prevent flashing
   useEffect(() => {
     axios
-      .get<Field[]>("http://localhost:3000/employment-form-fields")
+      .get<Field[] | FieldResponse>(
+        "http://localhost:3000/employment-form-fields"
+      )
       .then((res) => {
         const data = Array.isArray(res.data)
           ? res.data
-          : Array.isArray((res.data as any).fields)
-          ? (res.data as any).fields
+          : Array.isArray((res.data as FieldResponse).fields)
+          ? (res.data as FieldResponse).fields
           : [];
+
         setFields(data);
       })
       .catch((err) => {
@@ -47,7 +52,7 @@ export default function EditFormStructure() {
       })
       .then(() => setLoading(false));
   }, []);
-
+  if (!authenticated) return null; // prevent flashing
   const handleFieldChange = <K extends keyof Field>(
     index: number,
     key: K,

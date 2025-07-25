@@ -89,7 +89,7 @@ export default function AdminEventsPage() {
     }
     setLoading(false);
   }, [router]);
-  if (!authenticated) return null; // prevent flashing
+  if (loading || !authenticated) return null; // prevent flashing
   return (
     <>
       <AdminHeader />

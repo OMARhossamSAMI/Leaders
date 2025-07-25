@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./page.css";
@@ -57,7 +56,7 @@ export default function ContactUsAdminPage() {
     }
     setLoading(false);
   }, [router]);
-  if (!authenticated) return null; // prevent flashing
+  if (loading || !authenticated) return null; // prevent flashing
   const handleReviewToggle = async (id: string, reviewed: boolean) => {
     try {
       await axios.patch(`http://localhost:3000/contactus/${id}/reviewed`, {

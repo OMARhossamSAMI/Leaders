@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useHiringTabs } from "../components/HiringTabsContext";
 import Link from "next/link";
-
+import Image from "next/image";
 // ✅ Optional: define the structure of a Job
 interface Job {
   careerLevel: string;
@@ -36,7 +36,6 @@ export default function WeAreHiringPage() {
       return () => clearTimeout(timer);
     }
   }, []);
-
 
   return (
     <>
@@ -156,10 +155,12 @@ export default function WeAreHiringPage() {
                     >
                       <div className="hero-image-wrapper">
                         <div className="hero-image">
-                          <img
-                            src="assets/img/education/Teacher.JPG"
+                          <Image
+                            src="/assets/img/education/Teacher.JPG"
                             alt="Alumni Network"
                             className="img-fluid"
+                            width={1200} // ✅ Replace with actual width
+                            height={800} // ✅ Replace with actual height
                           />
                         </div>
                       </div>
@@ -372,139 +373,184 @@ export default function WeAreHiringPage() {
 
               {/* ✅ INTERNSHIP */}
               {hiringSection === "internship" && (
-  <div className="impact-banner" data-aos="fade-up" data-aos-delay={200}>
-    <div className="row align-items-center">
-      <div className="col-lg-7">
-        <div className="impact-content">
-          <h3>Internship Program</h3>
-          <p>
-            Leaders International College offers a dynamic internship program...
-          </p>
-          <h4>Eligibility Criteria</h4>
-          <ul>
-            <li>
-              <strong>Undergraduates:</strong> Final-year students ready to apply their learning in a practical environment.
-            </li>
-            <li>
-              <strong>Fresh Graduates:</strong> Recent graduates seeking meaningful, supportive early-career experience.
-            </li>
-            <li>
-              <strong>Career Shifters:</strong> Individuals (up to 30 years old) exploring a career change into education and administration.
-            </li>
-          </ul>
-          <h4>Program Highlights</h4>
-          <ul>
-            <li>Work alongside experienced professionals in teaching, administration, curriculum design, or school management.</li>
-            <li>Participate in workshops and training sessions to enhance your skills and career readiness.</li>
-            <li>Engage in impactful projects that contribute directly to our school community.</li>
-          </ul>
-          <p>
-            This internship is more than work experience—it’s a chance to make a real difference in students’ lives while building your own professional toolkit.
-          </p>
-  
+                <div
+                  className="impact-banner"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="row align-items-center">
+                    <div className="col-lg-7">
+                      <div className="impact-content">
+                        <h3>Internship Program</h3>
+                        <p>
+                          Leaders International College offers a dynamic
+                          internship program...
+                        </p>
+                        <h4>Eligibility Criteria</h4>
+                        <ul>
+                          <li>
+                            <strong>Undergraduates:</strong> Final-year students
+                            ready to apply their learning in a practical
+                            environment.
+                          </li>
+                          <li>
+                            <strong>Fresh Graduates:</strong> Recent graduates
+                            seeking meaningful, supportive early-career
+                            experience.
+                          </li>
+                          <li>
+                            <strong>Career Shifters:</strong> Individuals (up to
+                            30 years old) exploring a career change into
+                            education and administration.
+                          </li>
+                        </ul>
+                        <h4>Program Highlights</h4>
+                        <ul>
+                          <li>
+                            Work alongside experienced professionals in
+                            teaching, administration, curriculum design, or
+                            school management.
+                          </li>
+                          <li>
+                            Participate in workshops and training sessions to
+                            enhance your skills and career readiness.
+                          </li>
+                          <li>
+                            Engage in impactful projects that contribute
+                            directly to our school community.
+                          </li>
+                        </ul>
+                        <p>
+                          This internship is more than work experience—it’s a
+                          chance to make a real difference in students’ lives
+                          while building your own professional toolkit.
+                        </p>
 
-          {/* ✅ Internship Cards Start Here */}
-          <div className="events-wrapper mt-5 text-center">
-  <Link
-    href="/hiring/internship_apply"
-    className="btn btn-primary d-inline-flex align-items-center gap-2 px-4 py-2"
-  >
-    <i className="bi bi-clipboard-check" />
-    Apply Now
-  </Link>
-</div>
+                        {/* ✅ Internship Cards Start Here */}
+                        <div className="events-wrapper mt-5 text-center">
+                          <Link
+                            href="/hiring/internship_apply"
+                            className="btn btn-primary d-inline-flex align-items-center gap-2 px-4 py-2"
+                          >
+                            <i className="bi bi-clipboard-check" />
+                            Apply Now
+                          </Link>
+                        </div>
 
-          {/* ✅ Internship Cards End */}
-        </div>
-      </div>
-      <div className="col-lg-5">
-        <div className="impact-image">
-          <img
-            src="assets/img/education/Intern.PNG"
-            alt="Internship Program"
-            className="img-fluid"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
-              {hiringSection === "vacancies" && (
-  <div className="upcoming-events">
-    <div className="section-header text-center" data-aos="fade-up" data-aos-delay={200}>
-      <h3>Current Vacancies</h3>
-      <p>
-        Explore exciting career opportunities currently open at Leaders International College.
-      </p>
-    </div>
-
-    <div className="events-wrapper" data-aos="fade-up" data-aos-delay={300}>
-      {jobs.filter((job) => job.employmentType !== "Internship").length === 0 ? (
-        <p className="text-center text-muted">No current job openings available.</p>
-      ) : (
-        <>
-          {jobs
-            .filter((job) => job.employmentType !== "Internship")
-            .map((job, index) => (
-              <div
-                className="event"
-                key={job._id}
-                data-aos="fade-up"
-                data-aos-delay={300 + index * 50}
-              >
-                <div className="event-info">
-                  <h4>{job.title}</h4>
-                  <div className="event-meta">
-                    <span>
-                      <i className="bi bi-pin-map" /> Career Level: {job.careerLevel}
-                    </span>
-                    <span>
-                      <i className="bi bi-clock" /> {job.employmentType}
-                    </span>
+                        {/* ✅ Internship Cards End */}
+                      </div>
+                    </div>
+                    <div className="col-lg-5">
+                      <div className="impact-image">
+                        <Image
+                          src="/assets/img/education/Intern.PNG"
+                          alt="Internship Program"
+                          className="img-fluid"
+                          width={1200} // ✅ Replace with actual width
+                          height={800} // ✅ Replace with actual height
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="event-action">
-                  <Link
-                    href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}`}
-                    className="btn-register"
+              )}
+
+              {hiringSection === "vacancies" && (
+                <div className="upcoming-events">
+                  <div
+                    className="section-header text-center"
+                    data-aos="fade-up"
+                    data-aos-delay={200}
                   >
-                    Apply Now
-                  </Link>
+                    <h3>Current Vacancies</h3>
+                    <p>
+                      Explore exciting career opportunities currently open at
+                      Leaders International College.
+                    </p>
+                  </div>
+
+                  <div
+                    className="events-wrapper"
+                    data-aos="fade-up"
+                    data-aos-delay={300}
+                  >
+                    {jobs.filter((job) => job.employmentType !== "Internship")
+                      .length === 0 ? (
+                      <p className="text-center text-muted">
+                        No current job openings available.
+                      </p>
+                    ) : (
+                      <>
+                        {jobs
+                          .filter((job) => job.employmentType !== "Internship")
+                          .map((job, index) => (
+                            <div
+                              className="event"
+                              key={job._id}
+                              data-aos="fade-up"
+                              data-aos-delay={300 + index * 50}
+                            >
+                              <div className="event-info">
+                                <h4>{job.title}</h4>
+                                <div className="event-meta">
+                                  <span>
+                                    <i className="bi bi-pin-map" /> Career
+                                    Level: {job.careerLevel}
+                                  </span>
+                                  <span>
+                                    <i className="bi bi-clock" />{" "}
+                                    {job.employmentType}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="event-action">
+                                <Link
+                                  href={`/hiring/apply?position=${encodeURIComponent(
+                                    job.title
+                                  )}&employmentType=${encodeURIComponent(
+                                    job.employmentType
+                                  )}`}
+                                  className="btn-register"
+                                >
+                                  Apply Now
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+
+                        {/* Static custom job application card */}
+                        <div
+                          className="event"
+                          data-aos="fade-up"
+                          data-aos-delay={jobs.length * 50 + 300}
+                        >
+                          <div className="event-info">
+                            <h4>Other Opportunities</h4>
+                            <div className="event-meta">
+                              <span>
+                                <i className="bi bi-pin-map" /> Custom Career
+                                Request
+                              </span>
+                              <span>
+                                <i className="bi bi-clock" /> Your Preferred
+                                Type
+                              </span>
+                            </div>
+                          </div>
+                          <div className="event-action">
+                            <Link
+                              href={`/hiring/apply?position=Other&employmentType=Custom`}
+                              className="btn-register"
+                            >
+                              Apply Now
+                            </Link>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-
-          {/* Static custom job application card */}
-          <div className="event" data-aos="fade-up" data-aos-delay={jobs.length * 50 + 300}>
-            <div className="event-info">
-              <h4>Other Opportunities</h4>
-              <div className="event-meta">
-                <span>
-                  <i className="bi bi-pin-map" /> Custom Career Request
-                </span>
-                <span>
-                  <i className="bi bi-clock" /> Your Preferred Type
-                </span>
-              </div>
-            </div>
-            <div className="event-action">
-              <Link
-                href={`/hiring/apply?position=Other&employmentType=Custom`}
-                className="btn-register"
-              >
-                Apply Now
-              </Link>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  </div>
-)}
-
-
+              )}
             </div>
           </section>
         </main>

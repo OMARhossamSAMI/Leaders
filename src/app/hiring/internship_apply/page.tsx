@@ -14,7 +14,7 @@ export default function InternshipApplyPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const plainData: Record<string, any> = {};
+    const plainData: Record<string, FormDataEntryValue> = {};
     formData.forEach((value, key) => {
       plainData[key] = value;
     });
@@ -34,7 +34,7 @@ export default function InternshipApplyPage() {
       form.querySelector(".loading")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.add("d-block");
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
       form.querySelector(".loading")?.classList.remove("d-block");
       const errEl = form.querySelector(".error-message");

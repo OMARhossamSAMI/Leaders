@@ -36,19 +36,41 @@ export default function CreateEventPage() {
     try {
       await axios.post("http://localhost:3000/events", form);
       router.push("/login/Admin/events");
-    } catch (err: any) {
-      const message = err?.response?.data?.message || "Failed to create event.";
-      setError(typeof message === "string" ? message : message.join(", "));
+    } catch (err: unknown) {
+      let message = "Failed to create event.";
+
+      if (isAxiosError(err)) {
+        const responseMessage = (err as any).response?.data?.message;
+        if (typeof responseMessage === "string") {
+          message = responseMessage;
+        } else if (Array.isArray(responseMessage)) {
+          message = responseMessage.join(", ");
+        }
+      }
+
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Custom fallback isAxiosError function
+  function isAxiosError(
+    error: unknown
+  ): error is { response?: { data?: { message?: string | string[] } } } {
+    return (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof (error as any).response === "object"
+    );
+  }
+
   // 🔁 Generate 12-hour formatted time slots with AM/PM (e.g., 09:00 AM)
   const generateTimeSlots = () => {
     const slots: string[] = [];
     for (let hour = 7; hour <= 24; hour++) {
-      for (let min of [0, 30]) {
+      for (const min of [0, 30]) {
         const date = new Date();
         date.setHours(hour, min);
         const options: Intl.DateTimeFormatOptions = {
