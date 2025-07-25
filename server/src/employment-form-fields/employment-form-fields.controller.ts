@@ -12,9 +12,10 @@ export class EmploymentFormFieldsController {
   }
 
   @Put()
-async replaceAll(@Body() body: { fields: EmploymentFormField[] }) {
-  return this.service.replaceAll(body.fields);
+async replaceAll(@Body() fields: EmploymentFormField[]) {
+  return this.service.replaceAll(fields);
 }
+
 
 
   @Post()

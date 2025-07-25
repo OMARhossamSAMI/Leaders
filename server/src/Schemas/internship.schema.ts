@@ -29,6 +29,9 @@ export class Internship {
   @Prop({ required: true })
   duration: string;
 
+  @Prop({ required: true})
+  desired_position: string;
+
   @Prop()
   motivation: string;
 
@@ -37,6 +40,9 @@ export class Internship {
 
   @Prop()
   cover_letter_url: string;
+
+  @Prop()
+  createdAt: Date;
 }
 
 export const InternshipSchema = SchemaFactory.createForClass(Internship);

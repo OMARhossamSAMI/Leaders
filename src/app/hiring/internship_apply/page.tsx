@@ -25,12 +25,11 @@ export default function InternshipApplyPage() {
       form.querySelector(".error-message")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.remove("d-block");
 
-     await axios.post("http://localhost:3000/internship", formData, {
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
-});
-
+      await axios.post("http://localhost:3000/internship", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       form.querySelector(".loading")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.add("d-block");
@@ -59,11 +58,18 @@ export default function InternshipApplyPage() {
       >
         <div className="container position-relative">
           <h1>Internship Application</h1>
-          <p>Apply for an internship opportunity at Leaders International College.</p>
+          <p>
+            Apply for an internship opportunity at Leaders International
+            College.
+          </p>
           <nav className="breadcrumbs">
             <ol>
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/we-are-hiring">We Are Hiring</Link></li>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <Link href="/we-are-hiring">We Are Hiring</Link>
+              </li>
               <li className="current">Internship Apply</li>
             </ol>
           </nav>
@@ -76,67 +82,150 @@ export default function InternshipApplyPage() {
             <div className="col-lg-8 offset-lg-2">
               <div className="impact-content">
                 <h3>Internship Application</h3>
-                <p>Please fill out the internship form below and submit your CV.</p>
+                <p>
+                  Please fill out the internship form below and submit your CV.
+                </p>
 
-                <form className="php-email-form mt-4" onSubmit={handleSubmit} encType="multipart/form-data">
-                  <div className="loading" style={{ display: "none" }}>Loading</div>
-                  <div className="error-message" style={{ display: "none", color: "red" }}></div>
-                  <div className="sent-message" style={{ display: "none", color: "green" }}>
+                <form
+                  className="php-email-form mt-4"
+                  onSubmit={handleSubmit}
+                  encType="multipart/form-data"
+                >
+                  <div className="loading" style={{ display: "none" }}>
+                    Loading
+                  </div>
+                  <div
+                    className="error-message"
+                    style={{ display: "none", color: "red" }}
+                  ></div>
+                  <div
+                    className="sent-message"
+                    style={{ display: "none", color: "green" }}
+                  >
                     Your application has been sent. Thank you!
                   </div>
 
                   <div className="row">
                     {/* Full Name */}
                     <div className="col-md-6 mb-3">
-                      <input type="text" name="full_name" className="form-control" placeholder="Full Name" required />
+                      <input
+                        type="text"
+                        name="full_name"
+                        className="form-control"
+                        placeholder="Full Name"
+                        required
+                      />
                     </div>
 
                     {/* Email */}
                     <div className="col-md-6 mb-3">
-                      <input type="email" name="email" className="form-control" placeholder="Email" required />
+                      <input
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Email"
+                        required
+                      />
                     </div>
 
                     {/* Phone Number */}
                     <div className="col-md-6 mb-3">
-                      <input type="tel" name="phone" className="form-control" placeholder="Phone Number" required />
+                      <input
+                        type="tel"
+                        name="phone"
+                        className="form-control"
+                        placeholder="Phone Number"
+                        required
+                      />
                     </div>
 
                     {/* University */}
                     <div className="col-md-6 mb-3">
-                      <input type="text" name="university" className="form-control" placeholder="University Name" required />
+                      <input
+                        type="text"
+                        name="university"
+                        className="form-control"
+                        placeholder="University Name"
+                        required
+                      />
                     </div>
 
                     {/* Degree */}
                     <div className="col-md-6 mb-3">
-                      <input type="text" name="degree" className="form-control" placeholder="Degree / Program" required />
+                      <input
+                        type="text"
+                        name="degree"
+                        className="form-control"
+                        placeholder="Degree / Program"
+                        required
+                      />
                     </div>
 
                     {/* Year of Study */}
                     <div className="col-md-6 mb-3">
-                      <input type="number" name="year_of_study" className="form-control" placeholder="Year of Study" required />
+                      <input
+                        type="number"
+                        name="year_of_study"
+                        className="form-control"
+                        placeholder="Year of Study"
+                        required
+                      />
                     </div>
 
                     {/* Start Date */}
                     <div className="col-md-6 mb-3">
                       <label className="form-label">Preferred Start Date</label>
-                      <input type="date" name="start_date" className="form-control" required />
+                      <input
+                        type="date"
+                        name="start_date"
+                        className="form-control"
+                        required
+                      />
                     </div>
 
                     {/* Duration */}
                     <div className="col-md-6 mb-3">
-                      <input type="text" name="duration" className="form-control" placeholder="Preferred Duration (e.g. 3 months)" required />
+                      <input
+                        type="text"
+                        name="duration"
+                        className="form-control"
+                        placeholder="Preferred Duration (e.g. 3 months)"
+                        required
+                      />
+                    </div>
+
+                    {/* Desired Position */}
+                    <div className="col-md-12 mb-3">
+                      <input
+                        type="text"
+                        name="desired_position"
+                        className="form-control"
+                        placeholder="Desired Position (e.g. Marketing Intern)"
+                        required
+                      />
                     </div>
 
                     {/* CV Upload */}
                     <div className="col-md-12 mb-3">
                       <label className="form-label">Upload CV</label>
-                      <input type="file" name="cv_file" className="form-control" required />
+                      <input
+                        type="file"
+                        name="cv_file"
+                        className="form-control"
+                        required
+                      />
                     </div>
 
                     {/* Cover Letter Upload */}
                     <div className="col-md-12 mb-3">
-                      <label className="form-label">Upload Cover Letter (optional)</label>
-                      <input type="file" name="cover_letter" className="form-control" />
+                      <label className="form-label">
+                        Upload Cover Letter (optional)
+                      </label>
+                      <input
+                        type="file"
+                        name="cover_letter"
+                        className="form-control"
+                      />
                     </div>
 
                     {/* Motivation */}
@@ -167,7 +256,11 @@ export default function InternshipApplyPage() {
                     >
                       {isLoading ? (
                         <>
-                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
                           Submitting...
                         </>
                       ) : (
@@ -179,7 +272,8 @@ export default function InternshipApplyPage() {
                   </div>
 
                   <p className="mt-4 text-muted">
-                    Thanks for your interest in an internship at Leaders International College!
+                    Thanks for your interest in an internship at Leaders
+                    International College!
                   </p>
                 </form>
               </div>
