@@ -49,7 +49,7 @@ export class MailService {
       html: `
       <div style="font-family: Arial, sans-serif; padding: 16px;">
         <p>Hi <strong>${data.fullName}</strong>,</p>
-        <p>Thank you for contacting Leaders International College. We’ve received your message and our team will respond shortly.</p>
+        <p>Thank you for contacting Leaders International College. We’ve received your message and our team will respond shortly. helooooooooooooooooooooo</p>
         <p><strong>Your Message:</strong></p>
         <blockquote style="color: #555;">${data.message}</blockquote>
         <p style="margin-top: 24px;">Best regards,<br/>Leaders International College Team</p>
