@@ -108,7 +108,7 @@ export default function InternshipApplicationsPage() {
     }
   };
 
-  if (loading || !authenticated) {
+  if (!loading || !authenticated) {
     return (
       <div className="auth-redirect-screen">
         <div className="auth-box">
