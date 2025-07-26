@@ -64,7 +64,9 @@ export default function Home() {
   // Second useEffect: Fetch testimonials
   useEffect(() => {
     axios
-      .get<Testimonial[]>("http://localhost:3000/testimonials/active")
+      .get<Testimonial[]>(
+        `${process.env.NEXT_PUBLIC_API_URL}/testimonials/active`
+      )
       .then((res) => setTestimonials(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -72,9 +74,11 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [eventsRes, settingsRes] = await Promise.all([
-          axios.get<EventType[]>("http://localhost:3000/events/visible"),
+          axios.get<EventType[]>(
+            `${process.env.NEXT_PUBLIC_API_URL}/events/visible`
+          ),
           axios.get<{ showEvents: boolean }>(
-            "http://localhost:3000/settings/show-events"
+            `${process.env.NEXT_PUBLIC_API_URL}/settings/show-events`
           ),
         ]);
 
@@ -93,7 +97,7 @@ export default function Home() {
   // Fetch the live popup once
   useEffect(() => {
     axios
-      .get<LivePopup>("http://localhost:3000/popup/live/only")
+      .get<LivePopup>(`${process.env.NEXT_PUBLIC_API_URL}/popup/live/only`)
       .then((res) => setLivePopup(res.data))
       .catch(() => console.error("No live popup found"));
   }, []);

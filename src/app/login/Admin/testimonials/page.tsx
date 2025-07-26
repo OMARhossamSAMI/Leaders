@@ -27,7 +27,7 @@ export default function TestimonialsPage() {
       setLoadingTestimonials(true);
       try {
         const res = await axios.get<Testimonial[]>(
-          "http://localhost:3000/testimonials"
+          `${process.env.NEXT_PUBLIC_API_URL}/testimonials`
         );
         setTestimonials(res.data);
       } catch (err) {
@@ -53,9 +53,12 @@ export default function TestimonialsPage() {
 
   const handleToggle = async (id: string, newState: boolean) => {
     try {
-      await axios.patch(`http://localhost:3000/testimonials/id/${id}/toggle`, {
-        on: newState,
-      });
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/testimonials/id/${id}/toggle`,
+        {
+          on: newState,
+        }
+      );
       setTestimonials((prev) =>
         prev.map((t) => (t._id === id ? { ...t, on: newState } : t))
       );
@@ -68,7 +71,9 @@ export default function TestimonialsPage() {
     if (!confirm(`Are you sure you want to delete this testimonial?`)) return;
 
     try {
-      await axios.delete(`http://localhost:3000/testimonials/${id}`);
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/testimonials/${id}`
+      );
       setTestimonials((prev) => prev.filter((t) => t._id !== id));
       alert("Testimonial deleted successfully.");
     } catch (error) {

@@ -22,7 +22,7 @@ export default function WeAreHiringPage() {
 
   useEffect(() => {
     axios
-      .get<Job[]>("http://localhost:3000/jobs") // adjust if hosted elsewhere
+      .get<Job[]>(`${process.env.NEXT_PUBLIC_API_URL}/jobs`) // adjust if hosted elsewhere
       .then((res) => setJobs(res.data))
       .catch((err) => console.error("Failed to fetch jobs", err));
   }, []);

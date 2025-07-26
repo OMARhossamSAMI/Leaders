@@ -30,7 +30,9 @@ export default function AdminEventsPage() {
   const fetchEvents = async () => {
     setLoadingEvents(true); // Start loading
     try {
-      const res = await axios.get<EventType[]>("http://localhost:3000/events");
+      const res = await axios.get<EventType[]>(
+        `${process.env.NEXT_PUBLIC_API_URL}/events`
+      );
       setEvents(res.data);
     } catch (err) {
       console.error("Failed to fetch events", err);
@@ -42,7 +44,7 @@ export default function AdminEventsPage() {
   const fetchShowEventsSetting = async () => {
     try {
       const res = await axios.get<{ showEvents: boolean }>(
-        "http://localhost:3000/settings/show-events"
+        `${process.env.NEXT_PUBLIC_API_URL}/settings/show-events`
       );
       setShowEvents(res.data.showEvents);
     } catch (error) {
@@ -54,16 +56,19 @@ export default function AdminEventsPage() {
     try {
       const updated = !showEvents;
       setShowEvents(updated);
-      await axios.put("http://localhost:3000/settings/show-events", {
-        showEvents: updated,
-      });
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/settings/show-events`,
+        {
+          showEvents: updated,
+        }
+      );
     } catch (error) {
       console.error("Failed to update showEvents setting:", error);
     }
   };
 
   const handleDelete = async (title: string) => {
-    await axios.delete(`http://localhost:3000/events/${title}`);
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/events/${title}`);
     fetchEvents();
   };
 

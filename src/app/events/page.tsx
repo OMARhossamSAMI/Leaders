@@ -33,9 +33,11 @@ export default function EventsPage() {
     const fetchData = async () => {
       try {
         const [eventsRes, settingsRes] = await Promise.all([
-          axios.get<EventType[]>("http://localhost:3000/events/visible"),
+          axios.get<EventType[]>(
+            `${process.env.NEXT_PUBLIC_API_URL}/events/visible`
+          ),
           axios.get<{ showEvents: boolean }>(
-            "http://localhost:3000/settings/show-events"
+            `${process.env.NEXT_PUBLIC_API_URL}/settings/show-events`
           ),
         ]);
 

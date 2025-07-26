@@ -33,7 +33,7 @@ export default function ApplyPage() {
 
     axios
       .get<EmploymentFormField[]>(
-        "http://localhost:3000/employment-form-fields"
+        `${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`
       )
       .then((res) => setFields(res.data))
       .catch((err) => console.error("Failed to fetch fields", err));
@@ -59,7 +59,7 @@ export default function ApplyPage() {
       form.querySelector(".error-message")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.remove("d-block");
 
-      await axios.post("http://localhost:3000/vacancy", formData, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/vacancy`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

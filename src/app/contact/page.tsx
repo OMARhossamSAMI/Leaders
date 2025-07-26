@@ -50,7 +50,7 @@ export default function ContactPage() {
     };
     setLoading(true); // ⏳ Start loading
     try {
-      await axios.post("http://localhost:3000/contactus", data);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/contactus`, data);
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);

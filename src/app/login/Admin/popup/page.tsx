@@ -41,7 +41,9 @@ export default function PopupPage() {
 
   const fetchPopups = async () => {
     try {
-      const res = await axios.get<Popup[]>("http://localhost:3000/popup");
+      const res = await axios.get<Popup[]>(
+        `${process.env.NEXT_PUBLIC_API_URL}/popup`
+      );
       setPopups(res.data);
     } catch {
       setError("Failed to load popups.");
@@ -52,7 +54,9 @@ export default function PopupPage() {
 
   const toggleStatus = async (id: string) => {
     try {
-      await axios.patch(`http://localhost:3000/popup/toggle/${id}`);
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/popup/toggle/${id}`
+      );
       fetchPopups();
     } catch (err: unknown) {
       let message = "Could not toggle status.";
@@ -84,7 +88,7 @@ export default function PopupPage() {
 
   const deletePopup = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/popup/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/popup/${id}`);
       fetchPopups();
     } catch {
       setError("Failed to delete popup.");

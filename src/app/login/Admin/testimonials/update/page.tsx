@@ -27,7 +27,7 @@ export default function UpdateTestimonial() {
           role: string;
           description: string;
           profilePhoto: string;
-        }>(`http://localhost:3000/testimonials/${safeId}`)
+        }>(`${process.env.NEXT_PUBLIC_API_URL}/testimonials/${safeId}`)
         .then((res) => {
           setForm(res.data);
         })
@@ -57,7 +57,10 @@ export default function UpdateTestimonial() {
 
   const handleSubmit = async () => {
     try {
-      await axios.patch(`http://localhost:3000/testimonials/${safeId}`, form);
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/testimonials/${safeId}`,
+        form
+      );
       router.push("/login/Admin/testimonials");
     } catch (err) {
       console.error("Failed to update testimonial", err);
@@ -71,7 +74,9 @@ export default function UpdateTestimonial() {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:3000/testimonials/${safeId}`);
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/testimonials/${safeId}`
+      );
       alert("Testimonial deleted successfully.");
       router.push("/login/testimonials");
     } catch (err) {

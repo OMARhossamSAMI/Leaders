@@ -54,7 +54,7 @@ export default function InternshipApplicationsPage() {
     setLoadingApplications(true);
     try {
       const res = await axios.get<InternshipApplication[]>(
-        "http://localhost:3000/internship"
+        `${process.env.NEXT_PUBLIC_API_URL}/internship`
       );
       setApplications(res.data);
     } catch (err) {
@@ -66,7 +66,7 @@ export default function InternshipApplicationsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/internship/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/internship/${id}`);
       setApplications((prev) => prev.filter((app) => app._id !== id));
     } catch (err) {
       alert("Failed to delete application");
@@ -76,7 +76,10 @@ export default function InternshipApplicationsPage() {
 
   const handleUpdate = async (id: string) => {
     try {
-      await axios.patch(`http://localhost:3000/internship/${id}`, editData);
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/internship/${id}`,
+        editData
+      );
       setEditingId(null);
       setExpandedId(null);
       await fetchApplications();
@@ -88,7 +91,7 @@ export default function InternshipApplicationsPage() {
   const handleExport = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/internship/export",
+        `${process.env.NEXT_PUBLIC_API_URL}/internship/export`,
         {
           responseType: "blob",
         }
@@ -254,7 +257,7 @@ export default function InternshipApplicationsPage() {
                             <p key={key}>
                               <strong>{key.replace(/_/g, " ")}:</strong>{" "}
                               <a
-                                href={`http://localhost:3000${value}`}
+                                href={`${process.env.NEXT_PUBLIC_API_URL}${value}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 download

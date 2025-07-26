@@ -45,7 +45,7 @@ export default function EditPopupPage() {
     const fetchPopup = async () => {
       try {
         const res = await axios.get<Popup>(
-          `http://localhost:3000/popup/${popupId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/popup/${popupId}`
         );
         const { title, category, message, status, buttons, paths } = res.data;
         setForm({ title, category, message, status });
@@ -73,7 +73,7 @@ export default function EditPopupPage() {
     setSuccess(false);
 
     try {
-      await axios.put(`http://localhost:3000/popup/${popupId}`, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/popup/${popupId}`, {
         ...form,
         category: form.category || customCategory,
         buttons,

@@ -27,7 +27,7 @@ export default function CreateJobPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/jobs", {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/jobs`, {
         title,
         careerLevel,
         employmentType,
