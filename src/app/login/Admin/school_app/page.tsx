@@ -61,14 +61,14 @@ export default function ApplicationsPage() {
   useEffect(() => {
     setLoadingApplications(true);
 
-    fetch("http://localhost:3000/form-fields")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`)
       .then((res) => res.json())
       .then((data: FormField[]) => setFormFields(data))
       .catch((err: unknown) =>
         console.error("Failed to fetch form fields", err)
       );
 
-    fetch("http://localhost:3000/applications")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
       .then((res) => res.json())
       .then((apps: Application[]) => {
         const normalized = apps.map((app) =>
@@ -102,7 +102,9 @@ export default function ApplicationsPage() {
 
     if (!expandedData[id]) {
       try {
-        const res = await fetch(`http://localhost:3000/applications/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/applications/${id}`
+        );
         let data = await res.json();
         if (data.data) data = { ...data, ...data.data };
         setExpandedData((prev) => ({ ...prev, [id]: data }));
@@ -116,7 +118,7 @@ export default function ApplicationsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure?")) return;
-    await fetch(`http://localhost:3000/applications/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications/${id}`, {
       method: "DELETE",
     });
     setApplications((prev) => prev.filter((app) => app._id !== id));
@@ -139,7 +141,7 @@ export default function ApplicationsPage() {
     if (!editingApp) return;
 
     const response = await fetch(
-      `http://localhost:3000/applications/${editingApp._id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/applications/${editingApp._id}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -205,11 +207,14 @@ export default function ApplicationsPage() {
     }));
 
     try {
-      const response = await fetch("http://localhost:3000/form-fields", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formWithOrder),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/form-fields`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formWithOrder),
+        }
+      );
 
       if (response.ok) {
         setFormFields(formWithOrder);

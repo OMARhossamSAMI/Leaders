@@ -36,7 +36,7 @@ export default function EditEventPage() {
 
   useEffect(() => {
     axios
-      .get<EventType>(`http://localhost:3000/events/${title}`)
+      .get<EventType>(`${process.env.NEXT_PUBLIC_API_URL}/events/${title}`)
       .then((res) => {
         const fetched = res.data;
         setForm({
@@ -106,7 +106,10 @@ export default function EditEventPage() {
     setError(null);
 
     try {
-      await axios.put(`http://localhost:3000/events/${title}`, form);
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${title}`,
+        form
+      );
       router.push("/login/Admin/events");
     } catch (err: unknown) {
       let msg = "Failed to update event.";

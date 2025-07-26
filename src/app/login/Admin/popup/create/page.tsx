@@ -43,7 +43,7 @@ export default function CreatePopupPage() {
     setSuccess(false);
 
     try {
-      await axios.post("http://localhost:3000/popup", {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/popup`, {
         ...form,
         category: form.category || customCategory,
         buttons,

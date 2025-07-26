@@ -34,7 +34,7 @@ export default function CreateEventPage() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/events", form);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/events`, form);
       router.push("/login/Admin/events");
     } catch (err: unknown) {
       let message = "Failed to create event.";

@@ -35,7 +35,7 @@ export default function EditFormStructure() {
   useEffect(() => {
     axios
       .get<Field[] | FieldResponse>(
-        "http://localhost:3000/employment-form-fields"
+        `${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`
       )
       .then((res) => {
         const data = Array.isArray(res.data)
@@ -127,7 +127,9 @@ export default function EditFormStructure() {
 
   const saveChanges = () => {
     axios
-      .put("http://localhost:3000/employment-form-fields", { fields })
+      .put(`${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`, {
+        fields,
+      })
       .then(() => alert("Changes saved successfully!"))
       .catch((err) => alert("Failed to save changes: " + err.message));
   };

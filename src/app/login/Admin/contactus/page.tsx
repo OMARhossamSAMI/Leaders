@@ -33,7 +33,7 @@ export default function ContactUsAdminPage() {
   const fetchMessages = async () => {
     try {
       const res = await axios.get<ContactUsEntry[]>(
-        "http://localhost:3000/contactus"
+        `${process.env.NEXT_PUBLIC_API_URL}/contactus`
       );
       setMessages(res.data);
     } catch (err) {

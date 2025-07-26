@@ -25,11 +25,15 @@ export default function InternshipApplyPage() {
       form.querySelector(".error-message")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.remove("d-block");
 
-      await axios.post("http://localhost:3000/internship", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/internship`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       form.querySelector(".loading")?.classList.remove("d-block");
       form.querySelector(".sent-message")?.classList.add("d-block");

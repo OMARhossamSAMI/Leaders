@@ -70,7 +70,9 @@ export default function JobManagementPage() {
   // Fetch
   const fetchJobs = async () => {
     try {
-      const res = await axios.get<Job[]>("http://localhost:3000/jobs");
+      const res = await axios.get<Job[]>(
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs`
+      );
       setJobs(res.data);
     } catch (err) {
       console.error("Failed to fetch jobs", err);
@@ -79,7 +81,7 @@ export default function JobManagementPage() {
 
   const fetchApplications = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/vacancy");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/vacancy`);
       const appsWithExpand = (res.data as Vacancy[]).map((app) => ({
         ...app,
         expanded: false,
@@ -93,7 +95,7 @@ export default function JobManagementPage() {
   const fetchFormStructure = async () => {
     try {
       const res = await axios.get<FormField[]>(
-        "http://localhost:3000/employment-form-fields"
+        `${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`
       );
       setFormFields(res.data);
     } catch (err) {
@@ -105,7 +107,7 @@ export default function JobManagementPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/jobs", {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/jobs`, {
         title,
         careerLevel,
         employmentType,
@@ -125,7 +127,7 @@ export default function JobManagementPage() {
   const handleDeleteJob = async (id: string) => {
     if (!confirm("Delete this job?")) return;
     try {
-      await axios.delete(`http://localhost:3000/jobs/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${id}`);
       setJobs((prev) => prev.filter((job) => job._id !== id));
     } catch (err) {
       alert("Failed to delete job");
@@ -136,7 +138,7 @@ export default function JobManagementPage() {
   const handleDeleteApplication = async (id: string) => {
     if (!confirm("Delete this application?")) return;
     try {
-      await axios.delete(`http://localhost:3000/vacancy/${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/vacancy/${id}`);
       setApplications((prev) => prev.filter((app) => app._id !== id));
     } catch (err) {
       alert("Failed to delete application");
@@ -211,7 +213,7 @@ export default function JobManagementPage() {
 
     try {
       await axios.put(
-        "http://localhost:3000/employment-form-fields",
+        `${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`,
         formFields
       );
       alert("✅ Structure saved!");
@@ -432,7 +434,7 @@ export default function JobManagementPage() {
                                       href={
                                         fileUrl.startsWith("http")
                                           ? fileUrl
-                                          : `http://localhost:3000/uploads/vacancy/${fileUrl}`
+                                          : `${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${fileUrl}`
                                       }
                                       target="_blank"
                                       rel="noopener noreferrer"
@@ -452,7 +454,7 @@ export default function JobManagementPage() {
                                 href={
                                   value.startsWith("http")
                                     ? value
-                                    : `http://localhost:3000/uploads/vacancy/${value}`
+                                    : `${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${value}`
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"

@@ -34,7 +34,9 @@ export default function AdmissionsPage() {
     // Fetch dynamic form fields
     const fetchFields = async () => {
       try {
-        const res = await fetch("http://localhost:3000/form-fields");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/form-fields`
+        );
         const data = await res.json();
         setFields(data);
       } catch (error) {
@@ -68,13 +70,16 @@ export default function AdmissionsPage() {
     });
 
     try {
-      const response = await fetch("http://localhost:3000/applications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data), // ✅ Send data directly, NOT { data }
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/applications`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data), // ✅ Send data directly, NOT { data }
+        }
+      );
 
       const result = await response.json();
 
