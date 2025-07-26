@@ -1,0 +1,124 @@
+/* Reset and global override */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: linear-gradient(to right, #e6f0ff, #f9fcff) !important;
+  font-family: "Segoe UI", sans-serif !important;
+  height: 100%;
+}
+
+/* Center wrapper */
+.create-form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  animation: fadeIn 0.6s ease-in;
+}
+
+/* Card container */
+.create-form {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 600px;
+  animation: slideUp 0.6s ease-in-out;
+  transition: all 0.3s ease;
+}
+
+/* Header */
+.create-form h2 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  text-align: center;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+/* Field styling */
+.create-form input,
+.create-form select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: 0.25s;
+  background: #f9fbfd;
+}
+
+.create-form input:focus,
+.create-form select:focus {
+  outline: none;
+  border-color: #00bfff;
+  background-color: #ffffff;
+  box-shadow: 0 0 5px rgba(0, 191, 255, 0.3);
+}
+
+/* Button styling */
+.create-form button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #00bfff, #0094cc);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: bold;
+}
+
+.create-form button:hover {
+  background: linear-gradient(135deg, #0094cc, #00bfff);
+}
+
+/* Subtle animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.custom-category-input {
+  background-color: #f0f9ff !important; /* light blue background */
+  color: #007acc !important; /* blue text */
+  border: 1px dashed #007acc !important;
+  font-size: 14px !important;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  margin-top: 10px !important;
+  width: 100% !important;
+  transition: box-shadow 0.3s ease !important;
+}
+
+.custom-category-input:focus {
+  box-shadow: 0 0 5px rgba(0, 191, 255, 0.4) !important;
+  background-color: #ffffff !important;
+}
+.error-message {
+  color: #d32f2f !important;
+  background-color: #fdecea;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #f5c6cb;
+  font-size: 14px;
+}

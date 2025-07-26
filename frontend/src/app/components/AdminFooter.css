@@ -1,0 +1,15 @@
+.admin-footer {
+  background-color: #000000;
+  border-top: 1px solid #444;
+}
+
+.admin-footer .footer-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.admin-footer .footer-link:hover {
+  color: #ffffff;
+}
