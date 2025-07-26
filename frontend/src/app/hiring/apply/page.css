@@ -1,0 +1,25 @@
+/* === HEADER NAV DROPDOWN === */
+
+/* Keep the dropdown background white */
+#header .navmenu .dropdown ul {
+  background: #fff; /* keep menu background white */
+}
+
+/* Make dropdown links dark so they are visible on white */
+#header .navmenu .dropdown ul li a {
+  color: #333 !important; /* dark text for contrast */
+  transition: color 0.3s ease;
+}
+
+/* Keep link color the same on hover and active */
+#header .navmenu .dropdown ul li a:hover,
+#header .navmenu .dropdown ul li a:active,
+#header .navmenu .dropdown ul li a.active {
+  color: #333 !important; /* no color change */
+  background: none !important; /* no background on hover */
+}
+
+/* OPTIONAL: If you want subtle hover background */
+#header .navmenu .dropdown ul li a:hover {
+  background: rgba(0, 0, 0, 0.05) !important; /* very light hover */
+}

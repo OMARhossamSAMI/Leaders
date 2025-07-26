@@ -1,0 +1,290 @@
+:root {
+  --accent-color: hsl(193, 75%, 54%);
+}
+
+/* Force reset body and html for this page */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #f5f9fa !important;
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden !important;
+}
+
+/* Wrapper fix to push down below header */
+.admin-events-wrapper {
+  padding-top: 180px; /* 🔼 Increased to push content further down */
+  background-color: #f5f9fa;
+  min-height: 100vh;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+
+/* Section Title like other admin pages */
+.section-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.section-title h2 {
+  font-size: 2rem;
+}
+.section-title p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Shadow Box around all events */
+.event-shadow-box {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Event Header Controls */
+.event-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  gap: 20px;
+}
+
+/* Add button */
+.add-btn {
+  padding: 10px 20px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.add-btn:hover {
+  background-color: hsl(193, 85%, 48%);
+}
+
+/* Event Grid */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card Styles */
+.event-card {
+  background: #fff;
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 700px;
+}
+
+.date-box {
+  background: var(--accent-color);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+.date-box .month { font-size: 14px; }
+.date-box .day { font-size: 30px; }
+.date-box .year { font-size: 12px; }
+
+.event-content {
+  padding: 20px;
+  flex: 1;
+}
+.event-content .badge {
+  font-size: 12px;
+  border-radius: 12px;
+  padding: 4px 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.badge.academic { background: #d0eaff; }
+.badge.sports { background: #e6ffe6; }
+
+.event-content .meta {
+  font-size: 13px;
+  color: gray;
+  margin: 8px 0;
+}
+.event-content .actions button {
+  margin-right: 8px;
+  padding: 6px 10px;
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Countdown style */
+.countdown {
+  font-size: 12px;
+  color: #777;
+  margin-top: 10px;
+}
+.countdown-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-top: 10px;
+}
+.countdown-value {
+  background-color: #e9f5ff;
+  color: var(--accent-color);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal-form input,
+.modal-form select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Header Row */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.left-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Title style */
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #007bff;
+  font-family: "Segoe UI", sans-serif !important;
+  letter-spacing: 0.3px;
+  padding: 20px 0 10px 0 !important;
+}
+
+/* Styled switch */
+.styled-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.styled-switch input {
+  display: none;
+}
+.styled-switch .slider {
+  width: 50px;
+  height: 26px;
+  background-color: #ccc;
+  border-radius: 30px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+.styled-switch .slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.styled-switch input:checked + .slider {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+.styled-switch input:checked + .slider::before {
+  transform: translateX(24px);
+}
+.styled-switch .switch-label {
+  color: var(--accent-color);
+}
+
+/* Buttons */
+.actions button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  transition: all 0.3s ease;
+  transform: scale(1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.actions button i {
+  font-size: 16px;
+}
+.btn-edit {
+  background-color: #e7f4ff;
+  color: #007acc;
+}
+.btn-edit:hover {
+  background-color: #cce7ff;
+  color: #005c99;
+  transform: scale(1.05);
+}
+.btn-delete {
+  background-color: #ffecec;
+  color: #d00000;
+}
+.btn-delete:hover {
+  background-color: #ffc6c6;
+  color: #a00000;
+  transform: scale(1.05);
+}

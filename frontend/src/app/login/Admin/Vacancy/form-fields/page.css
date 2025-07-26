@@ -1,0 +1,14 @@
+.container {
+  background-color: #f5f9f9;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+h3 {
+  font-weight: 600;
+}
+
+button svg {
+  margin-right: 5px;
+  vertical-align: middle;
+}
