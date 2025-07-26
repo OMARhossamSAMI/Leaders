@@ -1,16 +1,30 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { StudentApplicationService } from './student-application.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('applications')
 export class StudentApplicationController {
   constructor(private readonly appService: StudentApplicationService) {}
 
   // applications.controller.ts
-@Post()
-async create(@Body() body: Record<string, any>) {
-  return this.appService.submitApplication({ data: body });
-}
-
+  @Post()
+  @UseInterceptors(FilesInterceptor('files'))
+  async submitApplication(
+    @Body() body: any,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.appService.submitApplication(body, files);
+  }
 
   @Get()
   async getAllApplications() {
@@ -23,9 +37,9 @@ async create(@Body() body: Record<string, any>) {
   }
 
   @Patch(':id')
-async updateApplication(@Param('id') id: string, @Body() body: any) {
-  return this.appService.updateApplication(id, body);
-}
+  async updateApplication(@Param('id') id: string, @Body() body: any) {
+    return this.appService.updateApplication(id, body);
+  }
   @Get(':id')
   async getApplicationById(@Param('id') id: string) {
     return this.appService.getApplicationById(id);
