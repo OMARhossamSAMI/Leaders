@@ -18,14 +18,16 @@ import { MailService } from './mail/mail.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 @Module({
   imports: [
     MulterModule.register({
       storage: diskStorage({
         destination: join(__dirname, '..', 'uploads'),
         filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, `${uniqueSuffix}-${file.originalname}`);
         },
       }),
@@ -50,7 +52,9 @@ import { join } from 'path';
     InternshipModule,
     AuthModule,
   ],
+  controllers: [AppController], // ✅ Add this line
   providers: [
+    AppService,
     MailService, // ✅ Added here correctly
   ],
 })
