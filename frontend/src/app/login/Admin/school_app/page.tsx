@@ -6,14 +6,20 @@ import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 
 type FieldValue = string | number | boolean | string[] | File | null;
 
 interface Application {
   _id: string;
-  data?: Record<string, FieldValue>;
-  [key: string]: FieldValue | Record<string, FieldValue> | undefined;
+  createdAt: string;
+  data: Record<string, FieldValue>; // all dynamic fields stored here
+  files?: { originalname: string; path: string }[];
 }
+
+
 
 interface FormField {
   field_name: string;
@@ -71,17 +77,22 @@ export default function ApplicationsPage() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
       .then((res) => res.json())
       .then((apps: Application[]) => {
-        const normalized = apps.map((app) =>
-          app.data && typeof app.data === "object"
+        const normalized = apps.map((app) => {
+          const flattened = app.data && typeof app.data === "object"
             ? { ...app, ...app.data }
-            : app
-        );
+            : app;
+
+          return {
+            ...flattened,
+            files: app.files ?? [],
+          };
+        });
+
         setApplications(normalized);
       })
       .catch((err: unknown) =>
         console.error("Failed to fetch applications", err)
-      )
-      .finally(() => setLoadingApplications(false));
+      ).finally(() => setLoadingApplications(false));
   }, []);
 
   useEffect(() => {
@@ -125,17 +136,24 @@ export default function ApplicationsPage() {
     setExpandedId(null);
   };
 
-  const handleEditChange = (key: string, value: string | number | boolean) => {
+  const handleEditChange = (
+    key: string,
+    value: string | number | boolean | File | undefined
+  ) => {
     if (editingApp) {
+      const updatedData = { ...editingApp.data };
+      if (value !== undefined) {
+        updatedData[key] = value;
+      }
+
       setEditingApp({
         ...editingApp,
-        data: {
-          ...editingApp.data,
-          [key]: value,
-        },
+        data: updatedData,
       });
     }
   };
+
+
 
   const handleUpdate = async () => {
     if (!editingApp) return;
@@ -240,6 +258,56 @@ export default function ApplicationsPage() {
     setFormStructureDraft(updated);
   };
 
+  const exportToExcel = () => {
+  const formattedData = applications.map((app) => {
+    const entry: Record<string, any> = {
+      Submitted: new Date(app.createdAt).toLocaleDateString(),
+      Grade: app.data?.grade_applying_for || "N/A",
+    };
+
+    formFields.forEach((field) => {
+      const rawValue = app.data?.[field.field_name];
+
+      entry[field.label] =
+        typeof rawValue === "object"
+          ? JSON.stringify(rawValue)
+          : rawValue?.toString().trim() || "Not provided";
+    });
+
+    // Handle files
+    if (Array.isArray(app.files) && app.files.length > 0) {
+      entry["Uploaded Files"] = app.files
+        .map((file) =>
+          file?.path
+            ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
+            : "Invalid file"
+        )
+        .join(", ");
+    } else {
+      entry["Uploaded Files"] = "No files uploaded";
+    }
+
+    return entry;
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Applicants");
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(blob, "applicants.xlsx");
+};
+
+
+
   return (
     <>
       <AdminHeader />
@@ -265,9 +333,8 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -349,163 +416,179 @@ export default function ApplicationsPage() {
                         gap: "1.5rem",
                       }}
                     >
-                      {applications.map((app) => (
-                        <div
-                          key={app._id}
-                          style={{
-                            background: "#fff",
-                            borderRadius: "10px",
-                            padding: "1.5rem",
-                            width: "100%",
-                            maxWidth: "600px",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                          }}
-                        >
-                          <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold">
-                              {renderFieldValue(
-                                app.student_name ||
-                                  app.data?.student_name ||
-                                  "Unnamed Applicant"
-                              )}
-                            </h3>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleExpand(app._id)}
-                                className="icon-button"
-                              >
-                                {expandedId === app._id ? <EyeOff /> : <Eye />}
-                              </button>
-                              <button
-                                onClick={() => handleDelete(app._id)}
-                                className="icon-button text-red-600"
-                              >
-                                <Trash2 />
-                              </button>
+
+                      <div className="flex justify-end mb-4">
+                        <button onClick={exportToExcel} className="btn-primary">
+                          📤 Export to Excel
+                        </button>
+                      </div>
+
+                      {Array.isArray(applications) && applications.map((app) => {
+                        const displayName =
+                          Object.entries(app?.data || {}).find(
+                            ([key, val]) =>
+                              key.toLowerCase().includes("name") &&
+                              typeof val === "string" &&
+                              val.trim() !== ""
+                          )?.[1] || "Unnamed Applicant";
+
+                        return (
+                          <div
+                            key={app._id}
+                            style={{
+                              background: "#fff",
+                              borderRadius: "10px",
+                              padding: "1.5rem",
+                              width: "100%",
+                              maxWidth: "600px",
+                              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                            }}
+                          >
+                            <div className="flex justify-between items-center">
+                              <h3 className="text-lg font-semibold text-blue-700">
+                                {renderFieldValue(displayName)}
+                              </h3>
+
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleExpand(app._id)}
+                                  className="icon-button"
+                                >
+                                  {expandedId === app._id ? <EyeOff /> : <Eye />}
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(app._id)}
+                                  className="icon-button text-red-600"
+                                >
+                                  <Trash2 />
+                                </button>
+                              </div>
                             </div>
-                          </div>
 
-                          <p className="text-sm text-gray-600 mb-2">
-                            <strong>Grade:</strong>{" "}
-                            {renderFieldValue(
-                              app.grade_applying_for ||
-                                app.data?.grade_applying_for ||
-                                "N/A"
-                            )}
-                          </p>
-                          <p className="text-sm text-gray-600 mb-4">
-                            <strong>Submitted:</strong>{" "}
-                            {app.createdAt
-                              ? new Date(
-                                  String(app.createdAt)
-                                ).toLocaleDateString()
-                              : "N/A"}
-                          </p>
+                            <p className="text-sm text-gray-600 mb-2">
+                              <strong>Grade:</strong>{" "}
+                              {renderFieldValue(app.data?.grade_applying_for || "N/A")}
+                            </p>
 
-                          {expandedId === app._id && (
-                            <>
-                              {!expandedData[app._id] ? (
-                                <p>Loading full data...</p>
-                              ) : !editingApp || editingApp._id !== app._id ? (
-                                <>
-                                  {formFields.map((field) => (
-                                    <p key={field.field_name}>
-                                      <strong>{field.label}:</strong>{" "}
-                                      {renderFieldValue(
-                                        expandedData[app._id]?.[
-                                          field.field_name
-                                        ] ??
-                                          expandedData[app._id]?.data?.[
-                                            field.field_name
-                                          ]
-                                      )}
-                                    </p>
-                                  ))}
+                            <p className="text-sm text-gray-600 mb-2">
+                              <strong>Submitted:</strong>{" "}
+                              {app.createdAt
+                                ? new Date(String(app.createdAt)).toLocaleDateString()
+                                : "N/A"}
+                            </p>
 
-                                  <button
-                                    onClick={() =>
-                                      setEditingApp(expandedData[app._id])
-                                    }
-                                    className="btn-secondary mt-3"
-                                  >
-                                    <PencilLine
-                                      className="inline mr-1"
-                                      size={18}
-                                    />{" "}
-                                    Edit
-                                  </button>
-                                </>
-                              ) : (
-                                <div className="mt-4 space-y-3">
-                                  {formFields.map((field) => (
-                                    <div key={field.field_name}>
-                                      {field.type === "select" ? (
-                                        <select
-                                          value={getSafeInputValue(
-                                            editingApp?.data?.[field.field_name]
-                                          )}
-                                          onChange={(e) =>
-                                            handleEditChange(
-                                              field.field_name,
-                                              e.target.value
-                                            )
-                                          }
-                                          className="form-input"
+                            {Array.isArray(app.files) && app.files.length > 0 && (
+                              <div className="text-sm text-gray-600 mb-4">
+                                <strong>Files:</strong>
+                                <ul className="list-disc ml-5">
+                                  {app.files.map((file, idx) => (
+                                    file?.path ? (
+                                      <li key={idx}>
+                                        <a
+                                          href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 underline"
                                         >
-                                          <option value="" disabled>
-                                            Select {field.label}
-                                          </option>
-                                          {field.options?.map((opt) => (
-                                            <option key={opt} value={opt}>
-                                              {opt}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      ) : (
-                                        <input
-                                          type={field.type}
-                                          value={getSafeInputValue(
-                                            editingApp?.data?.[field.field_name]
-                                          )}
-                                          onChange={(e) =>
-                                            handleEditChange(
-                                              field.field_name,
-                                              e.target.value
-                                            )
-                                          }
-                                          className="form-input"
-                                          placeholder={field.label}
-                                        />
-                                      )}
-                                    </div>
+                                          {file.originalname || "Download file"}
+                                        </a>
+                                      </li>
+                                    ) : (
+                                      <li key={idx} className="text-red-500">
+                                        Invalid file reference
+                                      </li>
+                                    )
                                   ))}
-                                  <div className="flex gap-2 mt-3">
+                                </ul>
+                              </div>
+                            )}
+
+
+                            {expandedId === app._id && (
+                              <>
+                                {!expandedData[app._id] ? (
+                                  <p>Loading full data...</p>
+                                ) : !editingApp || editingApp._id !== app._id ? (
+                                  <>
+                                    {formFields.map((field) => (
+                                      <p key={field.field_name}>
+                                        <strong>{field.label}:</strong>{" "}
+                                        {renderFieldValue(
+                                          expandedData[app._id]?.data?.[field.field_name]
+                                        )}
+                                      </p>
+                                    ))}
                                     <button
-                                      onClick={handleUpdate}
-                                      className="btn-success"
+                                      onClick={() => setEditingApp(expandedData[app._id])}
+                                      className="btn-secondary mt-3"
                                     >
-                                      <Save className="inline mr-1" size={16} />{" "}
-                                      Save
+                                      <PencilLine className="inline mr-1" size={18} /> Edit
                                     </button>
-                                    <button
-                                      onClick={() => setEditingApp(null)}
-                                      className="btn-danger"
-                                    >
-                                      <XCircle
-                                        className="inline mr-1"
-                                        size={16}
-                                      />{" "}
-                                      Cancel
-                                    </button>
+                                  </>
+                                ) : (
+                                  <div className="mt-4 space-y-3">
+                                    {formFields.map((field) => (
+                                      <div key={field.field_name}>
+                                        {field.type === "select" ? (
+                                          <select
+                                            value={
+                                              getSafeInputValue(editingApp?.data?.[field.field_name]) || ""
+                                            }
+                                            onChange={(e) =>
+                                              handleEditChange(field.field_name, e.target.value)
+                                            }
+                                            className="form-input border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                          >
+                                            <option value="" disabled>
+                                              Select {field.label}
+                                            </option>
+
+                                            {Array.isArray(field.options) &&
+                                              field.options.map((opt) => (
+                                                <option key={opt} value={opt}>
+                                                  {opt}
+                                                </option>
+                                              ))}
+                                          </select>
+
+                                        ) : (
+                                          <input
+                                            type={field.type}
+                                            value={getSafeInputValue(
+                                              editingApp?.data?.[field.field_name]
+                                            )}
+                                            onChange={(e) =>
+                                              handleEditChange(field.field_name, e.target.value)
+                                            }
+                                            className="form-input"
+                                            placeholder={field.label}
+                                          />
+                                        )}
+                                      </div>
+                                    ))}
+                                    <div className="flex gap-2 mt-3">
+                                      <button onClick={handleUpdate} className="btn-success">
+                                        <Save className="inline mr-1" size={16} /> Save
+                                      </button>
+                                      <button
+                                        onClick={() => setEditingApp(null)}
+                                        className="btn-danger"
+                                      >
+                                        <XCircle className="inline mr-1" size={16} /> Cancel
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      ))}
+                                )}
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+
+
                     </div>
                   )}
+
                 </>
               )}
             </>
@@ -560,7 +643,9 @@ export default function ApplicationsPage() {
                     <option value="tel">Phone</option>
                     <option value="date">Date</option>
                     <option value="select">Select</option>
+                    <option value="file">File Upload</option> {/* ✅ New option */}
                   </select>
+
                   <label className="form-check">
                     <input
                       type="checkbox"
@@ -571,6 +656,17 @@ export default function ApplicationsPage() {
                     />{" "}
                     Required
                   </label>
+
+                  {field.type === "file" && (
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        handleEditChange(field.field_name, e.target.files?.[0])
+                      }
+                      className="form-input"
+                    />
+                  )}
+
 
                   {field.type === "select" && (
                     <input

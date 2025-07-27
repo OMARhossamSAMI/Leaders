@@ -21,7 +21,12 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '2000mb' }));
   app.use(bodyParser.urlencoded({ limit: '2000mb', extended: true }));
 
-  app.enableCors();
+  // ✅ Enable CORS for local frontend
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'], // add both ports if needed
+    credentials: true, // if cookies or auth headers are used
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

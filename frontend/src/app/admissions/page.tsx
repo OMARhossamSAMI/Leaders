@@ -61,23 +61,15 @@ export default function AdmissionsPage() {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const data: Record<string, string | File> = {};
-
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+    const formData = new FormData(form); // ✅ Keep FormData
 
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/applications`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data), // ✅ Send data directly, NOT { data }
+          body: formData, // ✅ Send FormData directly
+          // ❌ DO NOT set Content-Type manually; let browser set it
         }
       );
 
@@ -94,6 +86,7 @@ export default function AdmissionsPage() {
       alert("❌ An error occurred while submitting the form.");
     }
   };
+
 
   return (
     <>
@@ -128,33 +121,29 @@ export default function AdmissionsPage() {
           <div className="container mt-5 text-center">
             <div className="btn-group">
               <button
-                className={`btn custom-tab ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "apply" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("apply")}
               >
                 <i className="bi bi-pencil-square me-2"></i> How to Apply
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "form" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "form" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("form")}
               >
                 <i className="bi bi-file-earmark-text me-2"></i> Apply Now
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("requirements")}
               >
                 <i className="bi bi-people me-2"></i> Age Acceptance Guide
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("deadlines")}
               >
                 <i className=" bi bi-camera-video me-2"></i> Virtual Tour
@@ -440,23 +429,12 @@ export default function AdmissionsPage() {
                                   const required = field.required ?? false;
 
                                   // RADIO BUTTONS
-                                  if (
-                                    field.type === "radio" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "radio" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label d-block">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label d-block">{label}</label>
                                         {field.options.map((opt, i) => (
-                                          <div
-                                            className="form-check form-check-inline"
-                                            key={i}
-                                          >
+                                          <div className="form-check form-check-inline" key={i}>
                                             <input
                                               className="form-check-input"
                                               type="radio"
@@ -464,9 +442,7 @@ export default function AdmissionsPage() {
                                               value={opt}
                                               required={required}
                                             />
-                                            <label className="form-check-label">
-                                              {opt}
-                                            </label>
+                                            <label className="form-check-label">{opt}</label>
                                           </div>
                                         ))}
                                       </div>
@@ -474,18 +450,10 @@ export default function AdmissionsPage() {
                                   }
 
                                   // SELECT DROPDOWN
-                                  if (
-                                    field.type === "select" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "select" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
                                         <select
                                           name={field.field_name}
                                           className="form-select"
@@ -508,22 +476,28 @@ export default function AdmissionsPage() {
                                   // DATE INPUT
                                   if (field.type === "date") {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
                                         <input
                                           type="date"
                                           name={field.field_name}
                                           className="form-control"
-                                          max={
-                                            new Date()
-                                              .toISOString()
-                                              .split("T")[0]
-                                          }
+                                          max={new Date().toISOString().split("T")[0]}
+                                          required={required}
+                                        />
+                                      </div>
+                                    );
+                                  }
+
+                                  // FILE INPUT
+                                  if (field.type === "file") {
+                                    return (
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
+                                        <input
+                                          type="file"
+                                          name="files" // ✅ MUST match backend FilesInterceptor('files')
+                                          className="form-control"
                                           required={required}
                                         />
                                       </div>
@@ -533,9 +507,7 @@ export default function AdmissionsPage() {
                                   // DEFAULT INPUTS (text, email, number, etc.)
                                   return (
                                     <div className="col-md-6 mb-3" key={index}>
-                                      <label className="form-label">
-                                        {label}
-                                      </label>
+                                      <label className="form-label">{label}</label>
                                       <input
                                         type={field.type}
                                         name={field.field_name}
@@ -549,15 +521,12 @@ export default function AdmissionsPage() {
                             </div>
 
                             <div className="text-center mt-4">
-                              <button
-                                type="submit"
-                                className="btn-submit-application"
-                              >
-                                <i className="bi bi-file-earmark-text"></i>{" "}
-                                Submit Application
+                              <button type="submit" className="btn-submit-application">
+                                <i className="bi bi-file-earmark-text"></i> Submit Application
                               </button>
                             </div>
                           </form>
+
                         </div>
                       </div>
                     </div>

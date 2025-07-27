@@ -5,8 +5,19 @@ export type StudentApplicationDocument = StudentApplication & Document;
 
 @Schema({ timestamps: true })
 export class StudentApplication {
-  @Prop({ type: Object }) data: Record<string, any>; // all submitted form fields
+  @Prop({ type: Object }) 
+  data: Record<string, any>; // All submitted form fields
+
+  @Prop({
+    type: [
+      {
+        originalname: { type: String },
+        path: { type: String },
+      },
+    ],
+    default: [],
+  })
+  files?: { originalname: string; path: string }[];
 }
 
 export const StudentApplicationSchema = SchemaFactory.createForClass(StudentApplication);
-

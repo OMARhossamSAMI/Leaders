@@ -1,0 +1,31 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/app/admissions/page.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************/
+.form-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.btn-submit-application {
+  background-color: #00bff3; /* Exact light blue */
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit-application:hover {
+  background-color: #00a6d9; /* Slightly darker on hover */
+}
+
+.btn-submit-application i {
+  font-size: 18px;
+}
+
+
