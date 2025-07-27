@@ -27,7 +27,9 @@ export default function UpdateTestimonial() {
           role: string;
           description: string;
           profilePhoto: string;
-        }>(`${process.env.NEXT_PUBLIC_API_URL}/testimonials/${safeId}`)
+        }>(
+          `https://backend-leaders-production.up.railway.app/testimonials/${safeId}`
+        )
         .then((res) => {
           setForm(res.data);
         })

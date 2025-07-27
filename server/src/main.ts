@@ -23,7 +23,11 @@ async function bootstrap() {
 
   // ✅ Enable CORS for local frontend
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // add both ports if needed
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://backend-leaders-production.up.railway.app',
+    ], // add both ports if needed
     credentials: true, // if cookies or auth headers are used
   });
 
