@@ -1,3 +1,13 @@
 {
-  "/login/page": "app/login/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/Admin/events/page": "app/login/Admin/events/page.js",
+  "/login/Admin/events/edit/[title]/page": "app/login/Admin/events/edit/[title]/page.js",
+  "/login/Admin/popup/page": "app/login/Admin/popup/page.js",
+  "/login/Admin/contactus/page": "app/login/Admin/contactus/page.js",
+  "/login/Admin/testimonials/page": "app/login/Admin/testimonials/page.js",
+  "/login/Admin/Vacancy/page": "app/login/Admin/Vacancy/page.js",
+  "/login/Admin/school_app/page": "app/login/Admin/school_app/page.js",
+  "/login/Admin/Internship/page": "app/login/Admin/Internship/page.js",
+  "/login/Admin/page": "app/login/Admin/page.js",
+  "/hiring/internship_apply/page": "app/hiring/internship_apply/page.js"
 }
