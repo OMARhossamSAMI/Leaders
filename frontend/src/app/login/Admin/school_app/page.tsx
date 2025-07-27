@@ -6,17 +6,18 @@ import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
-// import * as XLSX from "xlsx";
-// import { saveAs } from "file-saver";
+
 
 type FieldValue = string | number | boolean | string[] | File | null;
 
 interface Application {
   _id: string;
   createdAt: string;
+  updatedAt: string; // ✅ Add this to fix the error
   data: Record<string, FieldValue>; // all dynamic fields stored here
   files?: { originalname: string; path: string }[];
 }
+
 
 interface FormField {
   field_name: string;
@@ -66,31 +67,30 @@ export default function ApplicationsPage() {
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`)
       .then((res) => res.json())
-      .then((data: FormField[]) => setFormFields(data))
-      .catch((err: unknown) =>
-        console.error("Failed to fetch form fields", err)
-      );
+      .then((data: FormField[]) => {
+        console.log("✅ Loaded form fields:", data);
+        setFormFields(data);
+      })
+      .catch((err: unknown) => console.error("Failed to fetch form fields", err));
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
       .then((res) => res.json())
       .then((apps: Application[]) => {
-        const normalized = apps.map((app) => {
-          const flattened =
-            app.data && typeof app.data === "object"
-              ? { ...app, ...app.data }
-              : app;
+        console.log("📦 Raw applications response:", apps);
 
-          return {
-            ...flattened,
-            files: app.files ?? [],
-          };
+        const normalized = apps.map((app) => ({
+          ...app,
+          files: app.files ?? [],
+        }));
+
+        console.log("✅ Normalized apps:", normalized);
+        normalized.forEach((app, idx) => {
+          console.log(`📄 Application #${idx} data keys:`, Object.keys(app.data || {}));
         });
 
         setApplications(normalized);
       })
-      .catch((err: unknown) =>
-        console.error("Failed to fetch applications", err)
-      )
+      .catch((err: unknown) => console.error("Failed to fetch applications", err))
       .finally(() => setLoadingApplications(false));
   }, []);
 
@@ -255,54 +255,74 @@ export default function ApplicationsPage() {
     setFormStructureDraft(updated);
   };
 
-  // const exportToExcel = async () => {
-  //   const XLSX = await import("xlsx"); // ✅ Dynamically import only when needed
-  //   const { saveAs } = await import("file-saver");
 
-  //   const formattedData = applications.map((app) => {
-  //     const entry: Record<string, any> = {
-  //       Submitted: new Date(app.createdAt).toLocaleDateString(),
-  //       Grade: app.data?.grade_applying_for || "N/A",
-  //     };
+  // ✅ Export to CSV function
+  const exportToExcel = () => {
+    const csvRows: string[] = [];
 
-  //     formFields.forEach((field) => {
-  //       const rawValue = app.data?.[field.field_name];
-  //       entry[field.label] =
-  //         typeof rawValue === "object"
-  //           ? JSON.stringify(rawValue)
-  //           : rawValue?.toString().trim() || "Not provided";
-  //     });
+    const headers = [...formFields.map((f) => f.label), "Submitted", "Last Updated", "Uploaded Files"];
+    csvRows.push(headers.join(","));
 
-  //     if (Array.isArray(app.files) && app.files.length > 0) {
-  //       entry["Uploaded Files"] = app.files
-  //         .map((file) =>
-  //           file?.path
-  //             ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
-  //             : "Invalid file"
-  //         )
-  //         .join(", ");
-  //     } else {
-  //       entry["Uploaded Files"] = "No files uploaded";
-  //     }
+    console.log("📋 Exporting CSV...");
+    console.log("📂 Form field names:", formFields.map(f => f.field_name));
 
-  //     return entry;
-  //   });
+    applications.forEach((app, appIndex) => {
+      const row: string[] = [];
+      console.log(`📄 Processing Application #${appIndex} (ID: ${app._id})`);
+      console.log("↳ app.data keys:", Object.keys(app.data || {}));
 
-  //   const worksheet = XLSX.utils.json_to_sheet(formattedData);
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Applicants");
+      formFields.forEach((field) => {
+        const val = app?.data?.[field.field_name];
+        console.log(`   🔎 Field "${field.field_name}" →`, val);
 
-  //   const excelBuffer = XLSX.write(workbook, {
-  //     bookType: "xlsx",
-  //     type: "array",
-  //   });
+        if (field.type === "date" && typeof val === "string" && val.trim() !== "") {
+          try {
+            const formattedDate = new Date(val).toLocaleDateString("en-GB"); // → DD/MM/YYYY
+            row.push(`"${formattedDate}"`);
+          } catch (e) {
+            row.push(`"${val}"`); // fallback
+          }
+        }
+        else if (Array.isArray(val)) {
+          row.push(`"${val.join(",").replace(/"/g, '""')}"`);
+        } else if (typeof val === "object" && val !== null) {
+          row.push(`"${JSON.stringify(val).replace(/"/g, '""')}"`);
+        } else {
+          row.push(`"${String(val ?? "Not provided").replace(/"/g, '""')}"`);
+        }
+      });
 
-  //   const blob = new Blob([excelBuffer], {
-  //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  //   });
 
-  //   saveAs(blob, "applicants.xlsx");
-  // };
+      row.push(`"${new Date(app.createdAt).toISOString()}"`);
+      row.push(`"${new Date(app.updatedAt).toISOString()}"`);
+
+      if (Array.isArray(app.files) && app.files.length > 0) {
+        const fileLinks = app.files
+          .map((file) =>
+            file?.path
+              ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
+              : "Invalid file"
+          )
+          .join(", ");
+        row.push(`"${fileLinks.replace(/"/g, '""')}"`);
+      } else {
+        row.push(`"No files uploaded"`);
+      }
+
+      csvRows.push(row.join(","));
+    });
+
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "school_applications.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+
+
 
   return (
     <>
@@ -329,9 +349,8 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -358,7 +377,16 @@ export default function ApplicationsPage() {
           {activeTab === "applications" && (
             <>
               {loadingApplications ? (
+
+
                 <>
+                  <button
+                    onClick={exportToExcel}
+                    className="btn-primary mb-4"
+                    style={{ display: "block", marginLeft: "auto" }}
+                  >
+                    📥 Export All as CSV
+                  </button>
                   <div className="loader-container">
                     <div className="spinner" />
                     <p className="loading-text">
@@ -406,225 +434,230 @@ export default function ApplicationsPage() {
                       No internship applications submitted yet.
                     </p>
                   ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "1.5rem",
-                      }}
-                    >
-                      {/* <div className="flex justify-end mb-4">
-                        <button onClick={exportToExcel} className="btn-primary">
-                          📤 Export to Excel
-                        </button>
-                      </div> */}
+                    <>
+                      <button
+                        onClick={exportToExcel}
+                        className="btn-primary mb-4"
+                        style={{ display: "block", marginLeft: "auto" }}
+                      >
+                        📥 Export All as CSV
+                      </button>
 
-                      {Array.isArray(applications) &&
-                        applications.map((app) => {
-                          const displayName =
-                            Object.entries(app?.data || {}).find(
-                              ([key, val]) =>
-                                key.toLowerCase().includes("name") &&
-                                typeof val === "string" &&
-                                val.trim() !== ""
-                            )?.[1] || "Unnamed Applicant";
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "1.5rem",
+                        }}
+                      >
 
-                          return (
-                            <div
-                              key={app._id}
-                              style={{
-                                background: "#fff",
-                                borderRadius: "10px",
-                                padding: "1.5rem",
-                                width: "100%",
-                                maxWidth: "600px",
-                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                              }}
-                            >
-                              <div className="flex justify-between items-center">
-                                <h3 className="text-lg font-semibold text-blue-700">
-                                  {renderFieldValue(displayName)}
-                                </h3>
+                        {Array.isArray(applications) &&
+                          applications.map((app) => {
+                            const displayName =
+                              Object.entries(app?.data || {}).find(
+                                ([key, val]) =>
+                                  key.toLowerCase().includes("name") &&
+                                  typeof val === "string" &&
+                                  val.trim() !== ""
+                              )?.[1] || "Unnamed Applicant";
 
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={() => handleExpand(app._id)}
-                                    className="icon-button"
-                                  >
-                                    {expandedId === app._id ? (
-                                      <EyeOff />
-                                    ) : (
-                                      <Eye />
-                                    )}
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(app._id)}
-                                    className="icon-button text-red-600"
-                                  >
-                                    <Trash2 />
-                                  </button>
+                            return (
+                              <div
+                                key={app._id}
+                                style={{
+                                  background: "#fff",
+                                  borderRadius: "10px",
+                                  padding: "1.5rem",
+                                  width: "100%",
+                                  maxWidth: "600px",
+                                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                }}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <h3 className="text-lg font-semibold text-blue-700">
+                                    {renderFieldValue(displayName)}
+                                  </h3>
+
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => handleExpand(app._id)}
+                                      className="icon-button"
+                                    >
+                                      {expandedId === app._id ? (
+                                        <EyeOff />
+                                      ) : (
+                                        <Eye />
+                                      )}
+                                    </button>
+                                    <button
+                                      onClick={() => handleDelete(app._id)}
+                                      className="icon-button text-red-600"
+                                    >
+                                      <Trash2 />
+                                    </button>
+                                  </div>
                                 </div>
-                              </div>
 
-                              <p className="text-sm text-gray-600 mb-2">
-                                <strong>Grade:</strong>{" "}
-                                {renderFieldValue(
-                                  app.data?.grade_applying_for || "N/A"
-                                )}
-                              </p>
+                                <p className="text-sm text-gray-600 mb-2">
+                                  <strong>Grade:</strong>{" "}
+                                  {renderFieldValue(
+                                    app.data?.grade_applying_for || "N/A"
+                                  )}
+                                </p>
 
-                              <p className="text-sm text-gray-600 mb-2">
-                                <strong>Submitted:</strong>{" "}
-                                {app.createdAt
-                                  ? new Date(
+                                <p className="text-sm text-gray-600 mb-2">
+                                  <strong>Submitted:</strong>{" "}
+                                  {app.createdAt
+                                    ? new Date(
                                       String(app.createdAt)
                                     ).toLocaleDateString()
-                                  : "N/A"}
-                              </p>
+                                    : "N/A"}
+                                </p>
 
-                              {Array.isArray(app.files) &&
-                                app.files.length > 0 && (
-                                  <div className="text-sm text-gray-600 mb-4">
-                                    <strong>Files:</strong>
-                                    <ul className="list-disc ml-5">
-                                      {app.files.map((file, idx) =>
-                                        file?.path ? (
-                                          <li key={idx}>
-                                            <a
-                                              href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-600 underline"
-                                            >
-                                              {file.originalname ||
-                                                "Download file"}
-                                            </a>
-                                          </li>
-                                        ) : (
-                                          <li
-                                            key={idx}
-                                            className="text-red-500"
-                                          >
-                                            Invalid file reference
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  </div>
-                                )}
-
-                              {expandedId === app._id && (
-                                <>
-                                  {!expandedData[app._id] ? (
-                                    <p>Loading full data...</p>
-                                  ) : !editingApp ||
-                                    editingApp._id !== app._id ? (
-                                    <>
-                                      {formFields.map((field) => (
-                                        <p key={field.field_name}>
-                                          <strong>{field.label}:</strong>{" "}
-                                          {renderFieldValue(
-                                            expandedData[app._id]?.data?.[
-                                              field.field_name
-                                            ]
-                                          )}
-                                        </p>
-                                      ))}
-                                      <button
-                                        onClick={() =>
-                                          setEditingApp(expandedData[app._id])
-                                        }
-                                        className="btn-secondary mt-3"
-                                      >
-                                        <PencilLine
-                                          className="inline mr-1"
-                                          size={18}
-                                        />{" "}
-                                        Edit
-                                      </button>
-                                    </>
-                                  ) : (
-                                    <div className="mt-4 space-y-3">
-                                      {formFields.map((field) => (
-                                        <div key={field.field_name}>
-                                          {field.type === "select" ? (
-                                            <select
-                                              value={
-                                                getSafeInputValue(
-                                                  editingApp?.data?.[
-                                                    field.field_name
-                                                  ]
-                                                ) || ""
-                                              }
-                                              onChange={(e) =>
-                                                handleEditChange(
-                                                  field.field_name,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="form-input border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            >
-                                              <option value="" disabled>
-                                                Select {field.label}
-                                              </option>
-
-                                              {Array.isArray(field.options) &&
-                                                field.options.map((opt) => (
-                                                  <option key={opt} value={opt}>
-                                                    {opt}
-                                                  </option>
-                                                ))}
-                                            </select>
+                                {Array.isArray(app.files) &&
+                                  app.files.length > 0 && (
+                                    <div className="text-sm text-gray-600 mb-4">
+                                      <strong>Files:</strong>
+                                      <ul className="list-disc ml-5">
+                                        {app.files.map((file, idx) =>
+                                          file?.path ? (
+                                            <li key={idx}>
+                                              <a
+                                                href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 underline"
+                                              >
+                                                {file.originalname ||
+                                                  "Download file"}
+                                              </a>
+                                            </li>
                                           ) : (
-                                            <input
-                                              type={field.type}
-                                              value={getSafeInputValue(
-                                                editingApp?.data?.[
-                                                  field.field_name
-                                                ]
-                                              )}
-                                              onChange={(e) =>
-                                                handleEditChange(
-                                                  field.field_name,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="form-input"
-                                              placeholder={field.label}
-                                            />
-                                          )}
-                                        </div>
-                                      ))}
-                                      <div className="flex gap-2 mt-3">
-                                        <button
-                                          onClick={handleUpdate}
-                                          className="btn-success"
-                                        >
-                                          <Save
-                                            className="inline mr-1"
-                                            size={16}
-                                          />{" "}
-                                          Save
-                                        </button>
-                                        <button
-                                          onClick={() => setEditingApp(null)}
-                                          className="btn-danger"
-                                        >
-                                          <XCircle
-                                            className="inline mr-1"
-                                            size={16}
-                                          />{" "}
-                                          Cancel
-                                        </button>
-                                      </div>
+                                            <li
+                                              key={idx}
+                                              className="text-red-500"
+                                            >
+                                              Invalid file reference
+                                            </li>
+                                          )
+                                        )}
+                                      </ul>
                                     </div>
                                   )}
-                                </>
-                              )}
-                            </div>
-                          );
-                        })}
-                    </div>
+
+                                {expandedId === app._id && (
+                                  <>
+                                    {!expandedData[app._id] ? (
+                                      <p>Loading full data...</p>
+                                    ) : !editingApp ||
+                                      editingApp._id !== app._id ? (
+                                      <>
+                                        {formFields.map((field) => (
+                                          <p key={field.field_name}>
+                                            <strong>{field.label}:</strong>{" "}
+                                            {renderFieldValue(
+                                              expandedData[app._id]?.data?.[
+                                              field.field_name
+                                              ]
+                                            )}
+                                          </p>
+                                        ))}
+                                        <button
+                                          onClick={() =>
+                                            setEditingApp(expandedData[app._id])
+                                          }
+                                          className="btn-secondary mt-3"
+                                        >
+                                          <PencilLine
+                                            className="inline mr-1"
+                                            size={18}
+                                          />{" "}
+                                          Edit
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <div className="mt-4 space-y-3">
+                                        {formFields.map((field) => (
+                                          <div key={field.field_name}>
+                                            {field.type === "select" ? (
+                                              <select
+                                                value={
+                                                  getSafeInputValue(
+                                                    editingApp?.data?.[
+                                                    field.field_name
+                                                    ]
+                                                  ) || ""
+                                                }
+                                                onChange={(e) =>
+                                                  handleEditChange(
+                                                    field.field_name,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="form-input border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                              >
+                                                <option value="" disabled>
+                                                  Select {field.label}
+                                                </option>
+
+                                                {Array.isArray(field.options) &&
+                                                  field.options.map((opt) => (
+                                                    <option key={opt} value={opt}>
+                                                      {opt}
+                                                    </option>
+                                                  ))}
+                                              </select>
+                                            ) : (
+                                              <input
+                                                type={field.type}
+                                                value={getSafeInputValue(
+                                                  editingApp?.data?.[
+                                                  field.field_name
+                                                  ]
+                                                )}
+                                                onChange={(e) =>
+                                                  handleEditChange(
+                                                    field.field_name,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="form-input"
+                                                placeholder={field.label}
+                                              />
+                                            )}
+                                          </div>
+                                        ))}
+                                        <div className="flex gap-2 mt-3">
+                                          <button
+                                            onClick={handleUpdate}
+                                            className="btn-success"
+                                          >
+                                            <Save
+                                              className="inline mr-1"
+                                              size={16}
+                                            />{" "}
+                                            Save
+                                          </button>
+                                          <button
+                                            onClick={() => setEditingApp(null)}
+                                            className="btn-danger"
+                                          >
+                                            <XCircle
+                                              className="inline mr-1"
+                                              size={16}
+                                            />{" "}
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </>
                   )}
                 </>
               )}

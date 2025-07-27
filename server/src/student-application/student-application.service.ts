@@ -23,40 +23,40 @@ export class StudentApplicationService {
     private appModel: Model<StudentApplicationDocument>,
   ) {}
 
- async submitApplication(
-  formData: Record<string, any>,
-  files?: Express.Multer.File[],
-): Promise<any> {
-  console.log('📥 Incoming application data:', formData);
+  async submitApplication(
+    formData: Record<string, any>,
+    files?: Express.Multer.File[],
+  ): Promise<any> {
+    console.log('📥 Incoming application data:', formData);
 
-  const fileMetadata = Array.isArray(files)
-    ? files.map((file) => ({
-        originalname: file.originalname,
-        // ✅ Save relative URL, not absolute system path
-        path: `uploads/${file.filename}`,
-      }))
-    : [];
+    const fileMetadata = Array.isArray(files)
+      ? files.map((file) => ({
+          originalname: file.originalname,
+          // ✅ Save relative URL, not absolute system path
+          path: `uploads/${file.filename}`,
+        }))
+      : [];
 
-  const createdApp = new this.appModel({
-    data: formData,
-    files: fileMetadata,
-  });
+    const createdApp = new this.appModel({
+      data: formData,
+      files: fileMetadata,
+    });
 
-  await createdApp.save();
+    await createdApp.save();
 
-  const applicationHtmlRows = Object.entries(formData)
-    .map(([key, value]) => {
-      const safeValue =
-        value === null || value === undefined
-          ? ''
-          : typeof value === 'object'
-            ? JSON.stringify(value)
-            : String(value);
-      return `<tr><td><strong>${key}</strong></td><td>${safeValue}</td></tr>`;
-    })
-    .join('');
+    const applicationHtmlRows = Object.entries(formData)
+      .map(([key, value]) => {
+        const safeValue =
+          value === null || value === undefined
+            ? ''
+            : typeof value === 'object'
+              ? JSON.stringify(value)
+              : String(value);
+        return `<tr><td><strong>${key}</strong></td><td>${safeValue}</td></tr>`;
+      })
+      .join('');
 
-  const fullApplicationHtml = `
+    const fullApplicationHtml = `
     <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; width: 100%;">
       <thead>
         <tr style="background-color: #f2f2f2;">
@@ -70,37 +70,34 @@ export class StudentApplicationService {
     </table>
   `;
 
-  const hrMail = {
-    to: 'youssefsahhar2406@gmail.com',
-    from: 'youssefsahhar2406@gmail.com',
-    subject: `📥 New Application from ${formData.student_name}`,
-    html: `
+    const hrMail = {
+      to: 'youssefsahhar2406@gmail.com',
+      from: 'youssefsahhar2406@gmail.com',
+      subject: `📥 New Application from ${formData.student_name}`,
+      html: `
       <h3>Full Student Application</h3>
       ${fullApplicationHtml}
       <p>Attached files:</p>
       <ul>
-        ${fileMetadata
-          .map((file) => `<li>${file.originalname}</li>`)
-          .join('')}
+        ${fileMetadata.map((file) => `<li>${file.originalname}</li>`).join('')}
       </ul>
       <p>Login to the admin dashboard for more actions.</p>
     `,
-  };
-
-  try {
-    await sgMail.send(hrMail);
-    return {
-      message: '✅ Application saved and full data sent via email.',
     };
-  } catch (err) {
-    console.error(
-      '❌ SendGrid Email Error:',
-      err.response?.body || err.message,
-    );
-    throw new Error('Application saved but failed to send emails.');
-  }
-}
 
+    try {
+      await sgMail.send(hrMail);
+      return {
+        message: '✅ Application saved and full data sent via email.',
+      };
+    } catch (err) {
+      console.error(
+        '❌ SendGrid Email Error:',
+        err.response?.body || err.message,
+      );
+      throw new Error('Application saved but failed to send emails.');
+    }
+  }
 
   async getAllApplications() {
     const applications = await this.appModel
@@ -111,9 +108,10 @@ export class StudentApplicationService {
 
     return applications.map((app) => {
       const { data = {}, ...rest } = app;
+
       return {
         ...rest,
-        ...data,
+        data, // ✅ put data back as its own field
       };
     });
   }
