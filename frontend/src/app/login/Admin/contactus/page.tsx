@@ -59,9 +59,12 @@ export default function ContactUsAdminPage() {
   if (loading || !authenticated) return null; // prevent flashing
   const handleReviewToggle = async (id: string, reviewed: boolean) => {
     try {
-      await axios.patch(`http://localhost:3000/contactus/${id}/reviewed`, {
-        reviewed: !reviewed,
-      });
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/contactus/${id}/reviewed`,
+        {
+          reviewed: !reviewed,
+        }
+      );
       fetchMessages();
     } catch (err) {
       console.error("Failed to update review status", err);
@@ -71,7 +74,9 @@ export default function ContactUsAdminPage() {
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this message?")) {
       try {
-        await axios.delete(`http://localhost:3000/contactus/${id}`);
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_URL}/contactus/${id}`
+        );
         fetchMessages();
       } catch (err) {
         console.error("Failed to delete message", err);

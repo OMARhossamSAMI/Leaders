@@ -11,16 +11,71 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/login/page": [
+    "/login/Admin/school_app/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
+      "static/css/app/login/Admin/school_app/page.css",
+      "static/chunks/app/login/Admin/school_app/page.js"
     ],
-    "/_not-found/page": [
+    "/login/Admin/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/css/app/login/Admin/page.css",
+      "static/chunks/app/login/Admin/page.js"
+    ],
+    "/login/Admin/Internship/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/Internship/page.css",
+      "static/chunks/app/login/Admin/Internship/page.js"
+    ],
+    "/login/Admin/Vacancy/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/Vacancy/page.css",
+      "static/chunks/app/login/Admin/Vacancy/page.js"
+    ],
+    "/login/Admin/events/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/events/page.css",
+      "static/chunks/app/login/Admin/events/page.js"
+    ],
+    "/login/Admin/events/create/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/events/create/page.css",
+      "static/chunks/app/login/Admin/events/create/page.js"
+    ],
+    "/login/Admin/testimonials/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/testimonials/page.css",
+      "static/chunks/app/login/Admin/testimonials/page.js"
+    ],
+    "/login/Admin/events/edit/[title]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/events/edit/[title]/page.css",
+      "static/chunks/app/login/Admin/events/edit/[title]/page.js"
+    ],
+    "/login/Admin/popup/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/popup/page.css",
+      "static/chunks/app/login/Admin/popup/page.js"
+    ],
+    "/login/Admin/contactus/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/Admin/contactus/page.css",
+      "static/chunks/app/login/Admin/contactus/page.js"
+    ],
+    "/hiring/internship_apply/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/hiring/internship_apply/page.css",
+      "static/chunks/app/hiring/internship_apply/page.js"
     ]
   }
 }
