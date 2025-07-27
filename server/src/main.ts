@@ -20,21 +20,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '2000mb' }));
   app.use(bodyParser.urlencoded({ limit: '2000mb', extended: true }));
 
-  // ✅ TEMP: Universal CORS handling for Railway (add this first)
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204); // Respond to preflight
-    }
-    next();
-  });
-
   // ✅ Optionally keep this if you want fine control later
   app.enableCors({
     origin: [
@@ -43,11 +28,13 @@ async function bootstrap() {
       'https://backend-leaders-production.up.railway.app',
     ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   const port = process.env.PORT || 3000;
   await app.listen(port, () => {
-  console.log(`✅ Server running on port ${port}`);
+    console.log(`✅ Server running on port ${port}`);
   });
 }
 bootstrap();
