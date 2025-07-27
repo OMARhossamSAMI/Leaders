@@ -8,6 +8,9 @@ export class StudentApplication {
   @Prop({ type: Object }) 
   data: Record<string, any>; // All submitted form fields
 
+  createdAt?: Date;
+  updatedAt?: Date;
+
   @Prop({
     type: [
       {

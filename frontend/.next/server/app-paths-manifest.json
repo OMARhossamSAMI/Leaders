@@ -1,1 +1,7 @@
-{}
+{
+  "/page": "app/page.js",
+  "/login/Admin/testimonials/update/page": "app/login/Admin/testimonials/update/page.js",
+  "/login/Admin/Vacancy/page": "app/login/Admin/Vacancy/page.js",
+  "/admissions/page": "app/admissions/page.js",
+  "/login/Admin/school_app/page": "app/login/Admin/school_app/page.js"
+}
