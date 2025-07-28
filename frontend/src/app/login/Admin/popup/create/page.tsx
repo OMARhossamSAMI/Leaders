@@ -15,10 +15,14 @@ export default function CreatePopupPage() {
   });
   const [buttons, setButtons] = useState<string[]>([]);
   const [paths, setPaths] = useState<string[]>([]);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
 
@@ -28,7 +32,9 @@ export default function CreatePopupPage() {
       setAuthenticated(true);
     }
   }, [router]);
+
   if (!authenticated) return null; // prevent flashing
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -41,22 +47,39 @@ export default function CreatePopupPage() {
     e.preventDefault();
     setError("");
     setSuccess(false);
+    setLoading(true); // 👈 show loading state
+    if (!image) {
+      setError("Image is required.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/popup`, {
-        ...form,
-        category: form.category || customCategory,
-        buttons,
-        paths,
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("title", form.title);
+      formData.append("category", form.category || customCategory);
+      formData.append("message", form.message);
+      formData.append("status", form.status);
+      buttons.forEach((btn, index) => {
+        formData.append(`buttons[${index}]`, btn);
       });
-      setSuccess(true);
+      paths.forEach((path, index) => {
+        formData.append(`paths[${index}]`, path);
+      });
 
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/popup`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setSuccess(true);
       setTimeout(() => {
         router.push("/login/Admin/popup");
       }, 2000);
     } catch (err: unknown) {
       let message = "Something went wrong.";
-
       if (
         typeof err === "object" &&
         err !== null &&
@@ -68,7 +91,6 @@ export default function CreatePopupPage() {
             response?: { data?: { message?: unknown } };
           }
         ).response;
-
         const rawMessage = response?.data?.message;
         if (typeof rawMessage === "string") {
           message = rawMessage;
@@ -76,8 +98,9 @@ export default function CreatePopupPage() {
           message = rawMessage.join(" \n ");
         }
       }
-
       setError(message);
+    } finally {
+      setLoading(false); // ✅ reset loading after success or error
     }
   };
 
@@ -110,7 +133,37 @@ export default function CreatePopupPage() {
       <div className="form-container slide-in">
         <h1 className="form-title">Create New Popup</h1>
 
-        <form className="popup-form" onSubmit={handleSubmit}>
+        <form
+          className="popup-form"
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+        >
+          <div className="image-upload-wrapper">
+            <label htmlFor="popup-image" className="image-upload-label">
+              {preview ? (
+                <img src={preview} alt="Preview" className="image-preview" />
+              ) : (
+                <div className="image-placeholder">
+                  📷 Click to upload popup image
+                </div>
+              )}
+            </label>
+            <input
+              id="popup-image"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImage(file);
+                  setPreview(URL.createObjectURL(file));
+                }
+              }}
+              required
+              className="hidden-input"
+            />
+          </div>
+
           <input
             className="form-input"
             type="text"
@@ -118,7 +171,6 @@ export default function CreatePopupPage() {
             placeholder="Popup Title"
             value={form.title}
             onChange={handleChange}
-            required
           />
 
           <select
@@ -130,7 +182,6 @@ export default function CreatePopupPage() {
               setForm({ ...form, category: val === "other" ? "" : val });
               if (val !== "other") setCustomCategory("");
             }}
-            required={form.category !== ""}
           >
             <option value="">-- Select Category --</option>
             <option value="admission">Admission</option>
@@ -149,7 +200,6 @@ export default function CreatePopupPage() {
               placeholder="Enter custom category"
               value={customCategory}
               onChange={(e) => setCustomCategory(e.target.value)}
-              required
             />
           )}
 
@@ -159,7 +209,6 @@ export default function CreatePopupPage() {
             placeholder="Popup Message"
             value={form.message}
             onChange={handleChange}
-            required
           ></textarea>
 
           <div className="buttons-section">
@@ -200,12 +249,22 @@ export default function CreatePopupPage() {
               </button>
             )}
           </div>
+
           {error && <div className="error-box">{error}</div>}
           {success && (
             <div className="success-toast">Popup created successfully!</div>
           )}
-          <button type="submit" className="form-button">
-            Create Popup
+
+          <button
+            type="submit"
+            className="form-button"
+            disabled={loading}
+            style={{
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Creating..." : "Create Popup"}
           </button>
         </form>
       </div>

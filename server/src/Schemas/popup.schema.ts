@@ -8,10 +8,10 @@ export class Popup {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   category: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   message: string;
 
   @Prop({ type: [String], default: [] })
@@ -25,6 +25,8 @@ export class Popup {
     validate: [(val) => val.length <= 3, 'Maximum 3 buttons allowed'],
   })
   buttons: string[];
+  @Prop({ required: false })
+  imagePath?: string;
 }
 
 export const PopupSchema = SchemaFactory.createForClass(Popup);

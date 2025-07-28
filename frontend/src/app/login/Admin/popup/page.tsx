@@ -29,6 +29,7 @@ interface Popup {
   path: string;
   status: "on" | "off";
   buttons?: string[];
+  imagePath?: string;
 }
 
 export default function PopupPage() {
@@ -210,6 +211,9 @@ export default function PopupPage() {
               ) : (
                 popups.map((popup) => (
                   <div className="notificationCard" key={popup._id}>
+                    {/* Image Banner if exists */}
+
+                    {/* Top Controls */}
                     <div className="popup-top-bar">
                       <div className="card-actions">
                         <button
@@ -248,11 +252,24 @@ export default function PopupPage() {
                         </button>
                       </div>
                     </div>
-
                     <p className="notificationHeading">{popup.title}</p>
+
+                    {popup.imagePath && (
+                      <div className="popupImageWrapper">
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL}/${popup.imagePath}`}
+                          alt="Popup"
+                          className="popupImage"
+                        />
+                      </div>
+                    )}
+
+                    {/* Text Content */}
+
                     <div className="popup-icon-wrapper">
                       {getCategoryIcon(popup.category)}
                     </div>
+
                     <p className="notificationPara">{popup.message}</p>
 
                     <div className="buttonContainer">
