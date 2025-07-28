@@ -414,7 +414,7 @@ export default function CampusFacilitiesPage() {
                               }}
                             >
                               <Image
-                                src="/assets/img/education/Bas.PNG"
+                                src="/assets/img/education/Bas.png"
                                 alt="Library"
                                 className="img-fluid rounded"
                                 layout="fill"

@@ -562,7 +562,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/Students.jpg"
+                              src="/assets/img/education/Students.JPG"
                               alt="Academic Sessions"
                               width={800}
                               height={600}
@@ -601,7 +601,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/dismissal.jpg"
+                              src="/assets/img/education/dismissal.JPG"
                               alt="Afternoon Classes"
                               width={800}
                               height={600}
@@ -710,7 +710,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/counseling.jpg"
+                              src="/assets/img/education/counseling.JPG"
                               alt="Counseling Services"
                               width={800}
                               height={600}
@@ -730,7 +730,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/psychology.jpg"
+                              src="/assets/img/education/psychology.JPG"
                               alt="Psychological Support"
                               width={800}
                               height={600}
