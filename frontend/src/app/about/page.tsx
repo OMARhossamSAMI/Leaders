@@ -1,10 +1,20 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import Link from "next/link";
 import Image from "next/image";
+
+const carouselImages = [
+  "/assets/img/education/A2.jpeg",
+  "/assets/img/education/A1.jpeg",
+  "/assets/img/education/A5.jpeg",
+  "/assets/img/education/A3.jpeg",
+  "/assets/img/education/A4.jpeg",
+  "/assets/img/education/A6.jpeg",
+];
 export default function AboutPage() {
   const { aboutTab, setAboutTab } = useAboutTabs();
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -12,11 +22,24 @@ export default function AboutPage() {
       if (preloader) {
         preloader.style.display = "none";
       }
-    }, 150); // 1.5 seconds
-
+    }, 150);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const carouselElement = document.getElementById("educationCarousel");
+    if (!carouselElement) return;
+
+    const handleSlide = (e: any) => {
+      setActiveIndex(e.to);
+    };
+
+    carouselElement.addEventListener("slide.bs.carousel", handleSlide);
+
+    return () => {
+      carouselElement.removeEventListener("slide.bs.carousel", handleSlide);
+    };
+  }, []);
   return (
     <>
       <div>
@@ -52,6 +75,7 @@ export default function AboutPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
+              <div className="tab-scroll-wrapper">
                 <ul className="nav nav-tabs" role="tablist">
                   <li className="nav-item">
                     <button
@@ -124,7 +148,7 @@ export default function AboutPage() {
                     </button>
                   </li>
                 </ul>
-
+              </div>
                 <div className="tab-content">
                   {/* === Who We Are === */}
                   <div
@@ -209,7 +233,7 @@ export default function AboutPage() {
                                   (window.location.href = "/curriculum")
                                 }
                               >
-                                Primary Years Programme (PYP)
+                                _Primary Years Programme (PYP)
                               </button>
                               <button
                                 style={{
@@ -396,138 +420,85 @@ export default function AboutPage() {
                       >
                         <div className="row align-items-center">
                           {/* Carousel Left */}
-                          <div className="col-md-5">
-                            <div
-                              id="accreditationCarousel"
-                              className="carousel slide rounded"
-                              data-bs-ride="carousel"
+                         <div className="col-md-5">
+                          <div
+                            id="educationCarousel"
+                            className="carousel slide rounded"
+                            data-bs-ride="carousel"
+                            data-bs-interval="2000"
+                          >
+                            {/* Main Carousel */}
+                            <div className="carousel-inner">
+                            {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => {
+                              const isWide = ["A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].includes(file);
+                              const isSmall = ["A1.jpeg", "A2.jpeg"].includes(file);
+
+                              return (
+                                <div
+                                  key={file}
+                                  className={`carousel-item ${idx === 0 ? "active" : ""}`}
+                                >
+                                  <div style={{ position: "relative", height: "400px" }}>
+                                    <Image
+                                      src={`/assets/img/education/${file}`}
+                                      alt={`Accreditation Slide ${idx + 1}`}
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit={isWide ? "contain" : "cover"}
+                                      priority={idx === 0}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+
+                            {/* Carousel Controls */}
+                            <button
+                              className="carousel-control-prev"
+                              type="button"
+                              data-bs-target="#educationCarousel"
+                              data-bs-slide="prev"
                             >
-                              <div className="carousel-inner">
-                                <div className="carousel-item active">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "500px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A2.jpeg"
-                                      alt="Accreditation Slide 1"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "500px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A1.jpeg"
-                                      alt="Accreditation Slide 2"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A5.jpeg"
-                                      alt="Accreditation Slide 5"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A3.jpeg"
-                                      alt="Accreditation Slide 3"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "200px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A4.jpeg"
-                                      alt="Accreditation Slide 4"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A6.jpeg"
-                                      alt="Accreditation Slide 6"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              {/* Optional Carousel Controls */}
+                              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                              <span className="visually-hidden">Previous</span>
+                            </button>
+                            <button
+                              className="carousel-control-next"
+                              type="button"
+                              data-bs-target="#educationCarousel"
+                              data-bs-slide="next"
+                            >
+                              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                              <span className="visually-hidden">Next</span>
+                            </button>
+
+                            {/* Thumbnails */}
+                            <div className="thumb-container d-flex gap-2 mt-3">
+                            {carouselImages.map((file, idx) => (
                               <button
-                                className="carousel-control-prev"
+                                key={file}
                                 type="button"
-                                data-bs-target="#accreditationCarousel"
-                                data-bs-slide="prev"
+                                data-bs-target="#educationCarousel"
+                                data-bs-slide-to={idx}
+                                className={`thumb-btn border rounded ${
+                                  activeIndex === idx ? "active border-accent" : "border-secondary"
+                                }`}
+                                aria-current={activeIndex === idx ? "true" : undefined}
+                                aria-label={`Slide ${idx + 1}`}
+                                style={{ padding: 0 }}
                               >
-                                <span
-                                  className="carousel-control-prev-icon"
-                                  aria-hidden="true"
-                                ></span>
-                                <span className="visually-hidden">
-                                  Previous
-                                </span>
+                                <img
+                                  src={file}
+                                  alt={`Thumbnail ${idx + 1}`}
+                                  style={{ width: "55px", height: "auto", borderRadius: "4px" }}
+                                />
                               </button>
-                              <button
-                                className="carousel-control-next"
-                                type="button"
-                                data-bs-target="#accreditationCarousel"
-                                data-bs-slide="next"
-                              >
-                                <span
-                                  className="carousel-control-next-icon"
-                                  aria-hidden="true"
-                                ></span>
-                                <span className="visually-hidden">Next</span>
-                              </button>
+                                )
+                              )}
                             </div>
+                          </div>
                           </div>
 
                           {/* Text Right */}
