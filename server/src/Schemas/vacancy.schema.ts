@@ -8,6 +8,17 @@ export class Vacancy {
   @Prop({ type: Object })
   data: Record<string, any>;
 
+  @Prop({
+    type: [
+      {
+        originalname: { type: String },
+        path: { type: String },
+      },
+    ],
+    default: [],
+  })
+  files: { originalname: string; path: string }[];
+
   createdAt?: Date;
   updatedAt?: Date;
 }
