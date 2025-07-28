@@ -540,7 +540,7 @@ export default function Home() {
                       <div className="col-md-4">
                         <div className="program-image-wrapper">
                           <Image
-                            src="/assets/img/education/CB.png"
+                            src="/assets/img/education/cb.png"
                             alt="Program"
                             className="img-fluid"
                             width={600}
@@ -669,7 +669,7 @@ export default function Home() {
               >
                 <div className="students-life-img position-relative">
                   <Image
-                    src="/assets/img/education/SL3.PNG"
+                    src="/assets/img/education/SL3.png"
                     alt="Students Life"
                     className="img-fluid rounded-4 shadow-sm"
                     width={600}
