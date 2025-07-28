@@ -195,14 +195,14 @@ export default function AboutPage() {
                               excellence, with a rich history spanning over a
                               decade. Founded 10 years ago, LIC is among the
                               first schools to be fully accredited for all
-                              stages of the International Baccalaureate
+                              stages of the International Baccalaureate 
                               <button
                                 style={{
                                   background: "none",
                                   border: "none",
                                   padding: 0,
                                   textDecoration: "underline",
-                                  color: "#007bff",
+                                  color: "var(--accent-color)",
                                   cursor: "pointer",
                                 }}
                                 onClick={() =>
@@ -217,15 +217,14 @@ export default function AboutPage() {
                                   border: "none",
                                   padding: 0,
                                   textDecoration: "underline",
-                                  color: "#007bff",
+                                  color: "var(--accent-color)",
                                   cursor: "pointer",
                                 }}
-                                onClick={() =>
-                                  (window.location.href = "/curriculum")
-                                }
+                                onClick={() => (window.location.href = "/curriculum?p=myp")}
                               >
-                                ,Middle Years Programme (MYP)
+                                , Middle Years Programme (MYP)
                               </button>
+
                               , and
                               <button
                                 style={{
@@ -233,15 +232,14 @@ export default function AboutPage() {
                                   border: "none",
                                   padding: 0,
                                   textDecoration: "underline",
-                                  color: "#007bff",
+                                  color: "var(--accent-color)",
                                   cursor: "pointer",
                                 }}
-                                onClick={() =>
-                                  (window.location.href = "/curriculum")
-                                }
+                                onClick={() => (window.location.href = "/curriculum?p=dp")}
                               >
                                 Diploma Programme (DP)
                               </button>
+
                               . This prestigious recognition places us at the
                               forefront of international education, as one of
                               the oldest and most experienced IB World Schools.
