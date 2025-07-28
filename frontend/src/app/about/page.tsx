@@ -191,7 +191,9 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Who We Are</h3>
+                             <div className="container section-title" data-aos="fade-up">
+                              <h2>Who We Are</h2> 
+                            </div>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -233,8 +235,10 @@ export default function AboutPage() {
                                   (window.location.href = "/curriculum")
                                 }
                               >
+                                
                                 _Primary Years Programme (PYP)
                               </button>
+                              , 
                               <button
                                 style={{
                                   background: "none",
@@ -246,7 +250,7 @@ export default function AboutPage() {
                                 }}
                                 onClick={() => (window.location.href = "/curriculum?p=myp")}
                               >
-                                , Middle Years Programme (MYP)
+                                 _Middle Years Programme (MYP)
                               </button>
 
                               , and
@@ -261,7 +265,7 @@ export default function AboutPage() {
                                 }}
                                 onClick={() => (window.location.href = "/curriculum?p=dp")}
                               >
-                                Diploma Programme (DP)
+                                _Diploma Programme (DP)
                               </button>
 
                               . This prestigious recognition places us at the
@@ -349,8 +353,10 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Governance</h3>
-                            <p
+                              <div className="container section-title" data-aos="fade-up">
+                              <h2>Governance</h2> 
+                            </div>
+                           <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -438,13 +444,20 @@ export default function AboutPage() {
                                   key={file}
                                   className={`carousel-item ${idx === 0 ? "active" : ""}`}
                                 >
-                                  <div style={{ position: "relative", height: "400px" }}>
+                                  <div
+                                    style={{
+                                      position: "relative",
+                                      height: "400px",
+                                      transform: isSmall ? "scale(0.9)" : "none",
+                                      transition: "transform 0.3s ease-in-out",
+                                    }}
+                                  >
                                     <Image
                                       src={`/assets/img/education/${file}`}
                                       alt={`Accreditation Slide ${idx + 1}`}
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
-                                      objectFit={isWide ? "contain" : "cover"}
+                                      objectFit="contain"
                                       priority={idx === 0}
                                     />
                                   </div>
@@ -475,26 +488,26 @@ export default function AboutPage() {
                             </button>
 
                             {/* Thumbnails */}
-                            <div className="thumb-container d-flex gap-2 mt-3">
-                            {carouselImages.map((file, idx) => (
-                              <button
-                                key={file}
-                                type="button"
-                                data-bs-target="#educationCarousel"
-                                data-bs-slide-to={idx}
-                                className={`thumb-btn border rounded ${
-                                  activeIndex === idx ? "active border-accent" : "border-secondary"
-                                }`}
-                                aria-current={activeIndex === idx ? "true" : undefined}
-                                aria-label={`Slide ${idx + 1}`}
-                                style={{ padding: 0 }}
-                              >
-                                <img
-                                  src={file}
-                                  alt={`Thumbnail ${idx + 1}`}
-                                  style={{ width: "55px", height: "auto", borderRadius: "4px" }}
-                                />
-                              </button>
+                            <div className="thumb-container d-flex justify-content-center gap-2 mt-3">
+  {carouselImages.map((file, idx) => (
+    <button
+      key={file}
+      type="button"
+      data-bs-target="#educationCarousel"
+      data-bs-slide-to={idx}
+      className={`thumb-btn border rounded ${
+        activeIndex === idx ? "active border-accent" : "border-secondary"
+      }`}
+      aria-current={activeIndex === idx ? "true" : undefined}
+      aria-label={`Slide ${idx + 1}`}
+      style={{ padding: 0 }}
+    >
+      <img
+        src={file}
+        alt={`Thumbnail ${idx + 1}`}
+        style={{ width: "55px", height: "auto", borderRadius: "4px" }}
+      />
+    </button>
                                 )
                               )}
                             </div>
@@ -503,8 +516,9 @@ export default function AboutPage() {
 
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Accreditation</h3>
-                            <p
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Accreditation</h2> 
+                            </div>                            <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -598,7 +612,9 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">IB Learner Profile</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>IB Learner Profile</h2> 
+                            </div>                            
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -748,7 +764,9 @@ export default function AboutPage() {
                           </div>
                           {/* Mission Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Mission</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Mission</h2> 
+                            </div>                           
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -802,8 +820,9 @@ export default function AboutPage() {
                           </div>
                           {/* Vision Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Vision</h3>
-                            <p
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Vision</h2> 
+                            </div>                            <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -888,7 +907,9 @@ export default function AboutPage() {
 
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Campus & Location</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Campus & Location</h2> 
+                            </div>                            
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1058,9 +1079,12 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Strategies</h3>
-
-                            <h5>Highly Selective Strategy</h5>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Strategies</h2> 
+                            </div>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                              Highly Selective Strategy
+                            </h5>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1080,7 +1104,7 @@ export default function AboutPage() {
                               commitment to excellence.
                             </p>
 
-                            <h5>High Achievers Support Strategy</h5>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>High Achievers Support Strategy</h5>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1100,7 +1124,7 @@ export default function AboutPage() {
                               sector.
                             </p>
 
-                            <h5>Blue Ocean Strategy</h5>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>Blue Ocean Strategy</h5>
                             <p
                               style={{
                                 lineHeight: "1.8",

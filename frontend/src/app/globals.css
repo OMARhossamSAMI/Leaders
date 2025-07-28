@@ -52,3 +52,8 @@ body {
   opacity: 1;
   transform: scale(1.05);
 }
+.carousel-item,
+.logo-container,
+.intro-image {
+  overflow: visible !important;
+}
