@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,33 +13,37 @@ interface Popup {
   paths?: string[];
 }
 
-export default function EditForm() {
+export default function EditPopupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const popupId = searchParams.get("id");
 
   const [customCategory, setCustomCategory] = useState("");
-  const [buttons, setButtons] = useState<string[]>([]);
-  const [paths, setPaths] = useState<string[]>([]);
   const [form, setForm] = useState({
     title: "",
     category: "",
     message: "",
     status: "off",
   });
+  const [buttons, setButtons] = useState<string[]>([]);
+  const [paths, setPaths] = useState<string[]>([]);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
-
     if (!token) {
       router.push("/login");
     } else {
       setAuthenticated(true);
     }
   }, [router]);
+
   useEffect(() => {
     const fetchPopup = async () => {
       try {
@@ -56,9 +59,13 @@ export default function EditForm() {
       }
     };
 
-    fetchPopup();
+    if (popupId) {
+      fetchPopup();
+    }
   }, [popupId]);
-  if (!authenticated) return null; // prevent flashing
+
+  if (!authenticated) return null;
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -71,14 +78,31 @@ export default function EditForm() {
     e.preventDefault();
     setError("");
     setSuccess(false);
+    setLoading(true);
 
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/popup/${popupId}`, {
-        ...form,
-        category: form.category || customCategory,
-        buttons,
-        paths,
+      const formData = new FormData();
+      if (image) formData.append("image", image);
+      formData.append("title", form.title);
+      formData.append("category", form.category || customCategory);
+      formData.append("message", form.message);
+      formData.append("status", form.status);
+      buttons.forEach((btn, index) => {
+        formData.append(`buttons[${index}]`, btn);
       });
+      paths.forEach((path, index) => {
+        formData.append(`paths[${index}]`, path);
+      });
+
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/popup/${popupId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       setSuccess(true);
       setTimeout(() => {
@@ -86,7 +110,6 @@ export default function EditForm() {
       }, 2000);
     } catch (err: unknown) {
       let message = "Something went wrong.";
-
       if (
         typeof err === "object" &&
         err !== null &&
@@ -94,11 +117,8 @@ export default function EditForm() {
         typeof (err as Record<string, unknown>).response === "object"
       ) {
         const response = (
-          err as {
-            response?: { data?: { message?: unknown } };
-          }
+          err as { response?: { data?: { message?: unknown } } }
         ).response;
-
         const rawMessage = response?.data?.message;
         if (typeof rawMessage === "string") {
           message = rawMessage;
@@ -106,21 +126,10 @@ export default function EditForm() {
           message = rawMessage.join(" \n ");
         }
       }
-
       setError(message);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleButtonChange = (index: number, value: string) => {
-    const updated = [...buttons];
-    updated[index] = value;
-    setButtons(updated);
-  };
-
-  const handlePathChange = (index: number, value: string) => {
-    const updated = [...paths];
-    updated[index] = value;
-    setPaths(updated);
   };
 
   const addButtonField = () => {
@@ -135,12 +144,53 @@ export default function EditForm() {
     setPaths(paths.filter((_, i) => i !== index));
   };
 
+  const handleButtonChange = (index: number, value: string) => {
+    const updated = [...buttons];
+    updated[index] = value;
+    setButtons(updated);
+  };
+
+  const handlePathChange = (index: number, value: string) => {
+    const updated = [...paths];
+    updated[index] = value;
+    setPaths(updated);
+  };
+
   return (
     <div className="page-wrapper">
       <div className="form-container slide-in">
         <h1 className="form-title">Edit Popup</h1>
 
-        <form className="popup-form" onSubmit={handleSubmit}>
+        <form
+          className="popup-form"
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+        >
+          <div className="image-upload-wrapper">
+            <label htmlFor="popup-image" className="image-upload-label">
+              {preview ? (
+                <img src={preview} alt="Preview" className="image-preview" />
+              ) : (
+                <div className="image-placeholder">
+                  📷 Click to upload new popup image (optional)
+                </div>
+              )}
+            </label>
+            <input
+              id="popup-image"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImage(file);
+                  setPreview(URL.createObjectURL(file));
+                }
+              }}
+              className="hidden-input"
+            />
+          </div>
+
           <input
             className="form-input"
             type="text"
@@ -148,7 +198,6 @@ export default function EditForm() {
             placeholder="Popup Title"
             value={form.title}
             onChange={handleChange}
-            required
           />
 
           <select
@@ -160,7 +209,6 @@ export default function EditForm() {
               setForm({ ...form, category: val === "other" ? "" : val });
               if (val !== "other") setCustomCategory("");
             }}
-            required
           >
             <option value="">-- Select Category --</option>
             <option value="admission">Admission</option>
@@ -179,7 +227,6 @@ export default function EditForm() {
               placeholder="Enter custom category"
               value={customCategory}
               onChange={(e) => setCustomCategory(e.target.value)}
-              required
             />
           )}
 
@@ -189,7 +236,6 @@ export default function EditForm() {
             placeholder="Popup Message"
             value={form.message}
             onChange={handleChange}
-            required
           ></textarea>
 
           <div className="buttons-section">
@@ -234,8 +280,17 @@ export default function EditForm() {
           {success && (
             <div className="success-toast">Popup updated successfully!</div>
           )}
-          <button type="submit" className="form-button">
-            Update Popup
+
+          <button
+            type="submit"
+            className="form-button"
+            disabled={loading}
+            style={{
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Updating..." : "Update Popup"}
           </button>
         </form>
       </div>

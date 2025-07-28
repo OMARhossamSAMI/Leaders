@@ -15,6 +15,10 @@ export class PopupService {
   ) {}
 
   async createPopup(data: CreatePopupDto): Promise<Popup> {
+    if (!data.title) {
+      throw new BadRequestException('Popup title is required.');
+    }
+
     const exists = await this.popupModel.findOne({ title: data.title });
     if (exists) {
       throw new BadRequestException('A popup with this title already exists.');
