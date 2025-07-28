@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["localhost", "leaderscollege.up.railway.app"], // Add any external hosts you're using
+  },
 };
 
 export default nextConfig;

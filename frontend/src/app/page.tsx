@@ -21,7 +21,8 @@ interface LivePopup {
   category: string;
   message: string;
   buttons?: string[];
-  path?: string[];
+  paths?: string[];
+  imagePath?: string;
 }
 interface Testimonial {
   _id: string;
@@ -47,6 +48,8 @@ export default function Home() {
   // New state for the live popup
   const [livePopup, setLivePopup] = useState<LivePopup | null>(null);
   const [showPopup, setShowPopup] = useState(true); // Controls visibility
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const router = useRouter();
 
   // First useEffect: Preloader
@@ -156,10 +159,36 @@ export default function Home() {
                   <X size={18} />
                 </button>
               </div>
+
               <p className="notificationHeading">{livePopup.title}</p>
+
+              {/* Spinner or Image */}
+              <div className="popupImageWrapper">
+                {!imageLoaded ? (
+                  <div className="image-loading-spinner">
+                    <div className="spinner" />
+                  </div>
+                ) : (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${livePopup.imagePath}`}
+                    alt="Popup"
+                    className="popupImage"
+                    onLoad={() => setImageLoaded(true)}
+                  />
+                )}
+                {/* 🔁 This ensures setImageLoaded triggers when ready */}
+                <img
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${livePopup.imagePath}`}
+                  alt=""
+                  onLoad={() => setImageLoaded(true)}
+                  style={{ display: "none" }}
+                />
+              </div>
+
               <div className="popup-icon-wrapper">
                 {getCategoryIcon(livePopup.category)}
               </div>
+
               <p className="notificationPara">{livePopup.message}</p>
 
               <div className="buttonContainer">
@@ -168,7 +197,7 @@ export default function Home() {
                     key={i}
                     className={i === 0 ? "AllowBtn" : "NotnowBtn"}
                     onClick={() => {
-                      const path = livePopup.path?.[i];
+                      const path = livePopup.paths?.[i];
                       if (!path) return;
                       if (path === "/") {
                         window.location.href = "/";
@@ -446,8 +475,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Primary Years Programme</h3>
                           <p>
-                            A nurturing, inquiry-based program for ages 3–12 that builds
-                            foundational skills, curiosity, and global awareness.
+                            A nurturing, inquiry-based program for ages 3–12
+                            that builds foundational skills, curiosity, and
+                            global awareness.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -483,8 +513,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Middle Years Programme</h3>
                           <p>
-                            A dynamic framework for students aged 11–16 that connects academic
-                            learning with real-world application and personal development.
+                            A dynamic framework for students aged 11–16 that
+                            connects academic learning with real-world
+                            application and personal development.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -493,7 +524,6 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-
                 </div>
                 {/* End Program Item */}
                 <div
@@ -521,7 +551,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Diploma Programme</h3>
                           <p>
-                            A rigorous, university-preparatory curriculum for ages 16–19 that fosters critical thinking, research skills, and global citizenship.
+                            A rigorous, university-preparatory curriculum for
+                            ages 16–19 that fosters critical thinking, research
+                            skills, and global citizenship.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -530,7 +562,6 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-
                 </div>
 
                 {/* End Program Item */}
@@ -559,7 +590,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>American Diploma</h3>
                           <p>
-                            A flexible, standards-based program for Grades 11–12 offering a well-rounded education tailored to individual student goals.
+                            A flexible, standards-based program for Grades 11–12
+                            offering a well-rounded education tailored to
+                            individual student goals.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -596,7 +629,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>British Program</h3>
                           <p>
-                            An internationally respected curriculum for Years 10–12 that emphasizes academic excellence and readiness for higher education worldwide.
+                            An internationally respected curriculum for Years
+                            10–12 that emphasizes academic excellence and
+                            readiness for higher education worldwide.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -632,7 +667,9 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Character Building</h3>
                           <p>
-                            A dedicated character education program that builds moral integrity, respect, responsibility, and empathy to shape principled, ethical future leaders.
+                            A dedicated character education program that builds
+                            moral integrity, respect, responsibility, and
+                            empathy to shape principled, ethical future leaders.
                           </p>
                           <span className="program-btn">
                             Learn More <i className="bi bi-arrow-right" />
@@ -1043,9 +1080,7 @@ export default function Home() {
         {/* Events Section */}
         <section id="events" className="events section">
           <div className="container section-title" data-aos="fade-up">
-            <h2 className="events-type-title">
-              Upcoming School Events
-            </h2>
+            <h2 className="events-type-title">Upcoming School Events</h2>
             <p>
               Stay updated on the latest academic, sports, and community events
               happening soon!
