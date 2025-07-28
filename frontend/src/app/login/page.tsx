@@ -16,16 +16,13 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch(
-        `https://backend-leaders-production.up.railway.app/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const res = await fetch(`http://localhost:3000/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       if (!res.ok) {
         throw new Error("Invalid credentials");
