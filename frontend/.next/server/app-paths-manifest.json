@@ -1,4 +1,6 @@
 {
-  "/campus-facilities/page": "app/campus-facilities/page.js",
-  "/admissions/page": "app/admissions/page.js"
+  "/admissions/page": "app/admissions/page.js",
+  "/curriculum/page": "app/curriculum/page.js",
+  "/page": "app/page.js",
+  "/about/page": "app/about/page.js"
 }

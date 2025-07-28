@@ -264,7 +264,7 @@ export default function AdmissionsPage() {
                 {activeSection === "requirements" && (
                   <div className="col-lg-12">
                     <div className="admissions-requirements">
-                      <h3>Age Acceptance Guide</h3>
+                      <h2>Age Acceptance Guide</h2>
 
                       <div className="requirements-list mt-4">
                         <div className="requirement-item">
@@ -310,48 +310,9 @@ export default function AdmissionsPage() {
                         {/* COLUMN 1: Fall Semester */}
                         <div className="col-lg-6">
                           <div className="deadline-item mb-4">
-                            <h4>Virtual Tour</h4>
+                            <h2>Virtual Tour</h2>
                             <p>
-                              Explore Leaders International College from the
-                              comfort of your home! Our virtual tour provides
-                              you with a unique opportunity to experience our
-                              campus as if you were here in person. Navigate
-                              through our state-of-the-art facilities, including
-                              classrooms, labs, sports complexes, and more, to
-                              see where our students learn, play, and grow. If
-                              you have any questions or would like more
-                              information about specific areas of our campus,
-                              please do not hesitate to contact our admissions
-                              team.
-                            </p>
-                            <p>
-                              Take this chance to discover every corner of
-                              Leaders International College without leaving your
-                              living room. Our immersive virtual tour lets you
-                              walk through our vibrant learning spaces, modern
-                              laboratories, creative studios, sports areas, and
-                              welcoming common spaces. See for yourself how our
-                              students thrive academically and socially in a
-                              safe, inspiring environment. Should you need
-                              further details or wish to explore particular
-                              parts of our campus in more depth, our friendly
-                              admissions team is ready to assist and guide you
-                              every step of the way.
-                            </p>
-                            <p>
-                              We invite you to embark on this virtual journey
-                              and get a true feel for what makes Leaders
-                              International College exceptional. Witness
-                              firsthand how our carefully designed campus
-                              supports academic achievement, personal growth,
-                              and community spirit. Explore the innovative
-                              classrooms where curiosity is sparked, the sports
-                              areas where teamwork is strengthened, and the
-                              communal spaces where friendships are built.
-                              Whenever you’re ready to learn more or take the
-                              next step, our dedicated admissions team is eager
-                              to connect with you and make sure you have all the
-                              information you need.
+                              Explore Leaders International College from the comfort of your home! Our virtual tour provides you with a unique opportunity to experience our campus as if you were here in person. Navigate through our state-of-the-art facilities, including classrooms, labs, sports complexes, and more, to see where our students learn, play, and grow. If you have any questions or would like more information about specific areas of our campus, please do not hesitate to contact our team.
                             </p>
                           </div>
                         </div>
@@ -361,20 +322,28 @@ export default function AdmissionsPage() {
                           <div className="deadline-item mb-4">
                             <div className="intro-image-container">
                               <div className="intro-image main-image">
-                                <h4>Press And Visit</h4>
-                                <Link
+                                <h2>Press And Visit</h2>
+                                <p>
+                                  Take a step into our world from the comfort of your home. Our virtual tour offers a detailed look at the vibrant learning spaces, cutting-edge technology, and welcoming community that define Leaders International College. Explore classrooms, labs, sports facilities, and more — all in just a few clicks
+                                </p>
+                                <a
                                   href="http://vrtour.leadersintcollege.com/"
                                   target="_blank"
                                   rel="noopener noreferrer"
+                                  className="btn btn-accent"
+                                  style={{
+                                    backgroundColor: "var(--accent-color)",
+                                    color: "#fff",
+                                    padding: "12px 24px",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    display: "inline-block",
+                                    textDecoration: "none",
+                                  }}
                                 >
-                                  <Image
-                                    src="/assets/img/education/VrtualFinal.png"
-                                    alt="Main Campus"
-                                    width={600}
-                                    height={580}
-                                    className="img-fluid rounded"
-                                  />
-                                </Link>
+                                  Explore Virtual Tour
+                                </a>
+
                               </div>
                             </div>
                           </div>
@@ -405,9 +374,9 @@ export default function AdmissionsPage() {
                     <div className="form-wrapper mt-5">
                       <div className="card w-100">
                         <div className="card-body">
-                          <h3 className="card-title">
+                          <h2 className="card-title">
                             Admission Application Form
-                          </h3>
+                          </h2>
                           <p>
                             Please complete the form below to apply for
                             admission at Leaders International College.
