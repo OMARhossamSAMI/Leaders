@@ -1,10 +1,20 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAboutTabs } from "../components/AboutTabsContext";
 import Link from "next/link";
 import Image from "next/image";
+
+const carouselImages = [
+  "/assets/img/education/A2.jpeg",
+  "/assets/img/education/A1.jpeg",
+  "/assets/img/education/A5.jpeg",
+  "/assets/img/education/A3.jpeg",
+  "/assets/img/education/A4.jpeg",
+  "/assets/img/education/A6.jpeg",
+];
 export default function AboutPage() {
   const { aboutTab, setAboutTab } = useAboutTabs();
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -12,10 +22,25 @@ export default function AboutPage() {
       if (preloader) {
         preloader.style.display = "none";
       }
-    }, 150); // 1.5 seconds
-
+    }, 150);
     return () => clearTimeout(timer);
   }, []);
+
+useEffect(() => {
+  const carouselElement = document.getElementById("educationCarousel");
+  if (!carouselElement) return;
+
+  const onSlide = (e: Event) => {
+    const customEvent = e as CustomEvent<{ to: number }>;
+    setActiveIndex(customEvent.detail.to);
+  };
+
+  carouselElement.addEventListener("slide.bs.carousel", onSlide);
+
+  return () => {
+    carouselElement.removeEventListener("slide.bs.carousel", onSlide);
+  };
+}, []);
 
   return (
     <>
@@ -52,6 +77,7 @@ export default function AboutPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
+              <div className="tab-scroll-wrapper">
                 <ul className="nav nav-tabs" role="tablist">
                   <li className="nav-item">
                     <button
@@ -124,7 +150,7 @@ export default function AboutPage() {
                     </button>
                   </li>
                 </ul>
-
+              </div>
                 <div className="tab-content">
                   {/* === Who We Are === */}
                   <div
@@ -167,7 +193,9 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Who We Are</h3>
+                             <div className="container section-title" data-aos="fade-up">
+                              <h2>Who We Are</h2> 
+                            </div>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -209,8 +237,10 @@ export default function AboutPage() {
                                   (window.location.href = "/curriculum")
                                 }
                               >
-                                Primary Years Programme (PYP)
+                                
+                                _Primary Years Programme (PYP)
                               </button>
+                              , 
                               <button
                                 style={{
                                   background: "none",
@@ -222,7 +252,7 @@ export default function AboutPage() {
                                 }}
                                 onClick={() => (window.location.href = "/curriculum?p=myp")}
                               >
-                                , Middle Years Programme (MYP)
+                                 _Middle Years Programme (MYP)
                               </button>
 
                               , and
@@ -237,7 +267,7 @@ export default function AboutPage() {
                                 }}
                                 onClick={() => (window.location.href = "/curriculum?p=dp")}
                               >
-                                Diploma Programme (DP)
+                                _Diploma Programme (DP)
                               </button>
 
                               . This prestigious recognition places us at the
@@ -325,8 +355,10 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Governance</h3>
-                            <p
+                              <div className="container section-title" data-aos="fade-up">
+                              <h2>Governance</h2> 
+                            </div>
+                           <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -396,144 +428,98 @@ export default function AboutPage() {
                       >
                         <div className="row align-items-center">
                           {/* Carousel Left */}
-                          <div className="col-md-5">
-                            <div
-                              id="accreditationCarousel"
-                              className="carousel slide rounded"
-                              data-bs-ride="carousel"
+                         <div className="col-md-5">
+                          <div
+                            id="educationCarousel"
+                            className="carousel slide rounded"
+                            data-bs-ride="carousel"
+                            data-bs-interval="2000"
+                          >
+                            {/* Main Carousel */}
+                            <div className="carousel-inner">
+                            {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => {
+                              const isSmall = ["A1.jpeg", "A2.jpeg"].includes(file);
+
+                              return (
+                                <div
+                                  key={file}
+                                  className={`carousel-item ${idx === 0 ? "active" : ""}`}
+                                >
+                                  <div
+                                    style={{
+                                      position: "relative",
+                                      height: "400px",
+                                      transform: isSmall ? "scale(0.9)" : "none",
+                                      transition: "transform 0.3s ease-in-out",
+                                    }}
+                                  >
+                                    <Image
+                                      src={`/assets/img/education/${file}`}
+                                      alt={`Accreditation Slide ${idx + 1}`}
+                                      className="d-block w-100 img-fluid rounded"
+                                      layout="fill"
+                                      objectFit="contain"
+                                      priority={idx === 0}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+
+                            {/* Carousel Controls */}
+                            <button
+                              className="carousel-control-prev"
+                              type="button"
+                              data-bs-target="#educationCarousel"
+                              data-bs-slide="prev"
                             >
-                              <div className="carousel-inner">
-                                <div className="carousel-item active">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "500px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A2.jpeg"
-                                      alt="Accreditation Slide 1"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "500px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A1.jpeg"
-                                      alt="Accreditation Slide 2"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A5.jpeg"
-                                      alt="Accreditation Slide 5"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A3.jpeg"
-                                      alt="Accreditation Slide 3"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "200px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A4.jpeg"
-                                      alt="Accreditation Slide 4"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="carousel-item">
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "100px",
-                                    }}
-                                  >
-                                    <Image
-                                      src="/assets/img/education/A6.jpeg"
-                                      alt="Accreditation Slide 6"
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="cover"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              {/* Optional Carousel Controls */}
-                              <button
-                                className="carousel-control-prev"
-                                type="button"
-                                data-bs-target="#accreditationCarousel"
-                                data-bs-slide="prev"
-                              >
-                                <span
-                                  className="carousel-control-prev-icon"
-                                  aria-hidden="true"
-                                ></span>
-                                <span className="visually-hidden">
-                                  Previous
-                                </span>
-                              </button>
-                              <button
-                                className="carousel-control-next"
-                                type="button"
-                                data-bs-target="#accreditationCarousel"
-                                data-bs-slide="next"
-                              >
-                                <span
-                                  className="carousel-control-next-icon"
-                                  aria-hidden="true"
-                                ></span>
-                                <span className="visually-hidden">Next</span>
-                              </button>
+                              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                              <span className="visually-hidden">Previous</span>
+                            </button>
+                            <button
+                              className="carousel-control-next"
+                              type="button"
+                              data-bs-target="#educationCarousel"
+                              data-bs-slide="next"
+                            >
+                              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                              <span className="visually-hidden">Next</span>
+                            </button>
+
+                            {/* Thumbnails */}
+                            <div className="thumb-container d-flex justify-content-center gap-2 mt-3">
+  {carouselImages.map((file, idx) => (
+    <button
+      key={file}
+      type="button"
+      data-bs-target="#educationCarousel"
+      data-bs-slide-to={idx}
+      className={`thumb-btn border rounded ${
+        activeIndex === idx ? "active border-accent" : "border-secondary"
+      }`}
+      aria-current={activeIndex === idx ? "true" : undefined}
+      aria-label={`Slide ${idx + 1}`}
+      style={{ padding: 0 }}
+    >
+      <img
+        src={file}
+        alt={`Thumbnail ${idx + 1}`}
+        style={{ width: "55px", height: "auto", borderRadius: "4px" }}
+      />
+    </button>
+                                )
+                              )}
                             </div>
+                          </div>
                           </div>
 
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Accreditation</h3>
-                            <p
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Accreditation</h2> 
+                            </div>                            <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -627,7 +613,9 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">IB Learner Profile</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>IB Learner Profile</h2> 
+                            </div>                            
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -777,7 +765,9 @@ export default function AboutPage() {
                           </div>
                           {/* Mission Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Mission</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Mission</h2> 
+                            </div>                           
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -831,8 +821,9 @@ export default function AboutPage() {
                           </div>
                           {/* Vision Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Vision</h3>
-                            <p
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Vision</h2> 
+                            </div>                            <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -917,7 +908,9 @@ export default function AboutPage() {
 
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Campus & Location</h3>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Campus & Location</h2> 
+                            </div>                            
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -941,7 +934,7 @@ export default function AboutPage() {
                               .
                             </p>
 
-                            <h4 className="mt-4">Campus Features</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
                             <ul
                               style={{
                                 lineHeight: "1.8",
@@ -994,7 +987,7 @@ export default function AboutPage() {
                               </li>
                             </ul>
 
-                            <h4 className="mt-4">Access and Transportation</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Access and Transportation</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1008,7 +1001,7 @@ export default function AboutPage() {
                               available for families and visitors.
                             </p>
 
-                            <h4 className="mt-4">Safety and Security</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Safety and Security</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1022,7 +1015,7 @@ export default function AboutPage() {
                               maintain a secure learning environment.
                             </p>
 
-                            <h4 className="mt-4">Virtual Tour</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Virtual Tour</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1087,9 +1080,12 @@ export default function AboutPage() {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7">
-                            <h3 className="mb-3">Strategies</h3>
-
-                            <h5>Highly Selective Strategy</h5>
+                            <div className="container section-title" data-aos="fade-up">
+                              <h2>Strategies</h2> 
+                            </div>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                              Highly Selective Strategy
+                            </h5>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1109,7 +1105,7 @@ export default function AboutPage() {
                               commitment to excellence.
                             </p>
 
-                            <h5>High Achievers Support Strategy</h5>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>High Achievers Support Strategy</h5>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1129,7 +1125,7 @@ export default function AboutPage() {
                               sector.
                             </p>
 
-                            <h5>Blue Ocean Strategy</h5>
+                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>Blue Ocean Strategy</h5>
                             <p
                               style={{
                                 lineHeight: "1.8",

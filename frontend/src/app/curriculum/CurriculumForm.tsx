@@ -24,7 +24,9 @@ export default function CurriculumForm() {
     if (tabFromQuery && tabMap[tabFromQuery]) {
       setCurriculumTab(tabMap[tabFromQuery]);
     }
+
   }, [tabFromQuery,setCurriculumTab]);
+
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
