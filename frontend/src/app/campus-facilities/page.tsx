@@ -120,24 +120,20 @@ export default function CampusFacilitiesPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                <div className="tab-scroll-wrapper">
+                <div className="tab-scroll-wrapper d-flex justify-content-center">
                   <ul className="nav nav-tabs" role="tablist">
                     <li className="nav-item" role="presentation">
                       <button
-                        className={`nav-link ${
-                          campusTab === "academic" ? "active" : ""
-                        }`}
+                        className={`nav-link ${campusTab === "academic" ? "active" : ""}`}
                         type="button"
                         onClick={() => setCampusTab("academic")}
                       >
-                        <i className="bi bi-book" /> Academic Environments
+                        <i className="bi bi-book" /> Academic Environment
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
                       <button
-                        className={`nav-link ${
-                          campusTab === "athletic" ? "active" : ""
-                        }`}
+                        className={`nav-link ${campusTab === "athletic" ? "active" : ""}`}
                         type="button"
                         onClick={() => setCampusTab("athletic")}
                       >
@@ -146,9 +142,7 @@ export default function CampusFacilitiesPage() {
                     </li>
                     <li className="nav-item" role="presentation">
                       <button
-                        className={`nav-link ${
-                          campusTab === "technology" ? "active" : ""
-                        }`}
+                        className={`nav-link ${campusTab === "technology" ? "active" : ""}`}
                         type="button"
                         onClick={() => setCampusTab("technology")}
                       >
@@ -157,9 +151,7 @@ export default function CampusFacilitiesPage() {
                     </li>
                     <li className="nav-item" role="presentation">
                       <button
-                        className={`nav-link ${
-                          campusTab === "arts" ? "active" : ""
-                        }`}
+                        className={`nav-link ${campusTab === "arts" ? "active" : ""}`}
                         type="button"
                         onClick={() => setCampusTab("arts")}
                       >
@@ -168,6 +160,8 @@ export default function CampusFacilitiesPage() {
                     </li>
                   </ul>
                 </div>
+
+
                 <div className="tab-content">
                   {/* Academic Facilities Tab */}
                   <div
@@ -193,11 +187,11 @@ export default function CampusFacilitiesPage() {
                                 width={1200}
                                 height={800}
                               />
-                              <div className="slide-caption">Class Room</div>
+                              <div className="slide-caption">Classroom</div>
                             </div>
                           </div>
                           <div className="facility-description">
-                            <h3>Academic and Learning Environments</h3>
+                            <h3>Academic and Learning Environment</h3>
                             <p>
                               Our classrooms are equipped with the latest
                               interactive panels to foster a modern and
@@ -777,55 +771,7 @@ export default function CampusFacilitiesPage() {
                         Navigate our expansive campus with ease using our
                         interactive map. Locate buildings, facilities, and
                         services to find your way around.
-                      </p>
-                      <div className="map-legend">
-                        <div className="legend-item">
-                          <span className="marker academic" />
-                          <span>
-                            Main School Building – “teachers take perfect care
-                            of students”
-                          </span>
-                        </div>
-                        <div className="legend-item">
-                          <span className="marker athletic" />
-                          <span>
-                            Playgrounds & Sports Areas – “great atmosphere”
-                          </span>
-                        </div>
-                        <div className="legend-item">
-                          <span className="marker dining" />
-                          <span>
-                            Cafeteria & Dining – facilities praised for growth
-                            and learning
-                          </span>
-                        </div>
-                        <div className="legend-item">
-                          <span className="marker parking" />
-                          <span>
-                            Visitor Parking – convenient access for parents
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="map-highlights">
-                        <p>
-                          🌟{" "}
-                          <em>
-                            “This school is so nice … teachers take perfect care
-                            of student – I totally recommend putting your child
-                            in this school.”
-                          </em>
-                        </p>
-                        <p>
-                          🌟{" "}
-                          <em>
-                            “I love the facilities in the school! … there is a
-                            lot of room to learn and grow in a great
-                            atmosphere.”
-                          </em>
-                        </p>
-                      </div>
-
+                      </p>                   
                       <Link
                         href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
                         className="btn-map"

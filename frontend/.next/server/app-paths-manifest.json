@@ -1,4 +1,4 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/about/page": "app/about/page.js"
+  "/campus-facilities/page": "app/campus-facilities/page.js",
+  "/admissions/page": "app/admissions/page.js"
 }

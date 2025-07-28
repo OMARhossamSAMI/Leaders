@@ -57,3 +57,8 @@ body {
 .intro-image {
   overflow: visible !important;
 }
+
+.tab-scroll-wrapper {
+  display: flex;
+  justify-content: center;
+}
