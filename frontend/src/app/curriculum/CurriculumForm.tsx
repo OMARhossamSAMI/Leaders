@@ -179,11 +179,28 @@ export default function CurriculumForm() {
                               <span className="text">Character Building</span>
                             </button>
                           </li>
+                          <li className="nav-item" role="presentation">
+                            <button
+                              className={`nav-link ${
+                                curriculumTab === "academic" ? "active" : ""
+                              }`}
+                              onClick={() => setCurriculumTab("academic")}
+                              type="button"
+                              role="tab"
+                            >
+                              <span className="icon">
+                                <i className="bi bi-mortarboard" />
+                              </span>
+                              <span className="text">Academic</span>
+                            </button>
+                          </li>
                         </ul>
                       </div>
                     </div>
                   </div>
                 </div>
+
+
               </div>
 
               <div
@@ -1592,129 +1609,107 @@ export default function CurriculumForm() {
                   </div>
                 </div>
               </div>
+              {curriculumTab === "academic" && (
+                <div className="stats-wrapper" data-aos="fade-up">
+                  <div className="row align-items-start">
+                    {/* Left Column: Academic Support */}
+                    <div
+                      className="col-lg-6 mb-4 mb-lg-0"
+                      data-aos="fade-right"
+                      data-aos-delay={100}
+                    >
+                      <div className="stats-content text-start">
+                        <span className="subtitle">Academic Support</span>
+                        <h2>Empowering Every Learner</h2>
+                        <p>
+                          At Leaders International College, we believe in empowering all students to reach their full potential.
+                          Our Learning and Teaching Center (LTC) and Special Educational Needs (SEN) programs are designed to support
+                          students who need extra help as well as those who are excelling and require advanced challenges.
+                        </p>
 
-              <div className="stats-wrapper" data-aos="fade-up">
-                <div className="row align-items-start">
-                  {/* Left Column: Academic Support */}
-                  <div
-                    className="col-lg-6 mb-4 mb-lg-0"
-                    data-aos="fade-right"
-                    data-aos-delay={100}
-                  >
-                    <div className="stats-content">
-                      <span className="subtitle">Academic Support</span>
-                      <h2>Empowering Every Learner</h2>
-                      <p>
-                        At Leaders International College, we believe in
-                        empowering all students to reach their full potential.
-                        Our Learning and Teaching Center (LTC) and Special
-                        Educational Needs (SEN) programs are designed to support
-                        students who need extra help as well as those who are
-                        excelling and require advanced challenges.
-                      </p>
-                      <h5>What are LTC and SEN?</h5>
-                      <ul>
-                        <li>
-                          <strong>Learning and Teaching Center (LTC):</strong>{" "}
-                          This center provides support to enhance learning
-                          outcomes for all students. It offers personalized
-                          academic assistance to students who are struggling
-                          with their studies and also develops special programs
-                          for students who excel academically and need more
-                          advanced coursework to stay engaged and challenged.
-                        </li>
-                        <li>
-                          <strong>Special Educational Needs (SEN):</strong> Our
-                          SEN program caters to students who have different
-                          learning needs that require specific educational
-                          adjustments and resources. This includes students with
-                          learning disabilities, physical disabilities, and
-                          those who need modifications to access the curriculum
-                          effectively.
-                        </li>
-                      </ul>
-                      <h5>Role of Our Centers</h5>
-                      <ul>
-                        <li>
-                          <strong>Support for Struggling Students:</strong> Both
-                          LTC and SEN are crucial in identifying students who
-                          face academic difficulties and providing them with the
-                          necessary support to improve their learning
-                          experiences. This includes tutoring, specialized
-                          teaching strategies, and modifications to the learning
-                          environment.
-                        </li>
-                        <li>
-                          <strong>Enhancements for Advanced Learners:</strong>{" "}
-                          For students who are ahead of their peers, these
-                          centers offer enrichment programs that present more
-                          complex material and opportunities for deeper
-                          exploration of subjects that interest them.
-                        </li>
-                      </ul>
-                      <p>
-                        The LTC and SEN at Leaders International College play a
-                        pivotal role in our educational approach, supporting a
-                        diverse range of learning needs and ensuring that all
-                        students have the opportunities they need to succeed
-                        both academically and personally.
-                      </p>
+                        <h5>What are LTC and SEN?</h5>
+                        <ul>
+                          <li>
+                            <strong>Learning and Teaching Center (LTC):</strong> This center provides support to enhance learning
+                            outcomes for all students. It offers personalized academic assistance to students who are struggling
+                            with their studies and also develops special programs for students who excel academically and need more
+                            advanced coursework to stay engaged and challenged.
+                          </li>
+                          <li>
+                            <strong>Special Educational Needs (SEN):</strong> Our SEN program caters to students who have different
+                            learning needs that require specific educational adjustments and resources. This includes students with
+                            learning disabilities, physical disabilities, and those who need modifications to access the curriculum
+                            effectively.
+                          </li>
+                        </ul>
+
+                        <h5>Role of Our Centers</h5>
+                        <ul>
+                          <li>
+                            <strong>Support for Struggling Students:</strong> Both LTC and SEN are crucial in identifying students
+                            who face academic difficulties and providing them with the necessary support to improve their learning
+                            experiences. This includes tutoring, specialized teaching strategies, and modifications to the learning
+                            environment.
+                          </li>
+                          <li>
+                            <strong>Enhancements for Advanced Learners:</strong> For students who are ahead of their peers, these
+                            centers offer enrichment programs that present more complex material and opportunities for deeper
+                            exploration of subjects that interest them.
+                          </li>
+                        </ul>
+
+                        <p>
+                          The LTC and SEN at Leaders International College play a pivotal role in our educational approach,
+                          supporting a diverse range of learning needs and ensuring that all students have the opportunities they
+                          need to succeed both academically and personally.
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Right Column: Digital Learning */}
-                  <div
-                    className="col-lg-6"
-                    data-aos="fade-left"
-                    data-aos-delay={200}
-                  >
-                    <div className="stats-content">
-                      <span className="subtitle">Digital Learning</span>
-                      <h2>Innovative & Interactive Education</h2>
-                      <p>
-                        At Leaders International College, we integrate advanced
-                        technology into our learning environments to enhance
-                        educational outcomes and prepare our students for a
-                        digital future.
-                      </p>
-                      <h5>Interactive Learning Environments</h5>
-                      <p>
-                        Our classrooms are equipped with interactive smart
-                        screens, which facilitate dynamic and engaging teaching
-                        methods. These tools allow teachers to deliver lessons
-                        in a visually enriched format that captures
-                        students&apos; attention and encourages interactive
-                        learning experiences.
-                      </p>
-                      <h5>Guided Education System: ManageBac</h5>
-                      <p>
-                        To streamline our educational processes and enhance
-                        communication, we utilize ManageBac, a leading learning
-                        management system tailored for International
-                        Baccalaureate (IB) schools. ManageBac supports our
-                        teachers and students by providing an organized platform
-                        for lesson planning, assignments, and assessments, and
-                        it enables parents to keep track of their child’s
-                        academic progress and school activities in real-time.
-                      </p>
-                      <p>
-                        At Leaders International College, our commitment to
-                        digital learning extends beyond interactive classrooms
-                        and management systems. We employ a variety of digital
-                        resources, software, and tools designed to enhance
-                        educational delivery and accommodate the diverse
-                        learning needs of our students. These technologies
-                        support personalized learning experiences, enabling each
-                        student to thrive in a nurturing, technologically
-                        advanced environment. By integrating these resources, we
-                        ensure our students are well-prepared to navigate and
-                        succeed in a digital-centric world.
-                      </p>
+                    {/* Right Column: Digital Learning */}
+                    <div
+                      className="col-lg-6"
+                      data-aos="fade-left"
+                      data-aos-delay={200}
+                    >
+                      <div className="stats-content text-start">
+                        <span className="subtitle">Digital Learning</span>
+                        <h2>Innovative & Interactive Education</h2>
+                        <p>
+                          At Leaders International College, we integrate advanced technology into our learning environments to
+                          enhance educational outcomes and prepare our students for a digital future.
+                        </p>
+
+                        <h5>Interactive Learning Environments</h5>
+                        <p>
+                          Our classrooms are equipped with interactive smart screens, which facilitate dynamic and engaging
+                          teaching methods. These tools allow teachers to deliver lessons in a visually enriched format that captures
+                          students&apos; attention and encourages interactive learning experiences.
+                        </p>
+
+                        <h5>Guided Education System: ManageBac</h5>
+                        <p>
+                          To streamline our educational processes and enhance communication, we utilize ManageBac, a leading
+                          learning management system tailored for International Baccalaureate (IB) schools. ManageBac supports
+                          our teachers and students by providing an organized platform for lesson planning, assignments, and
+                          assessments, and it enables parents to keep track of their child’s academic progress and school
+                          activities in real-time.
+                        </p>
+
+                        <p>
+                          At Leaders International College, our commitment to digital learning extends beyond interactive classrooms
+                          and management systems. We employ a variety of digital resources, software, and tools designed to enhance
+                          educational delivery and accommodate the diverse learning needs of our students. These technologies support
+                          personalized learning experiences, enabling each student to thrive in a nurturing, technologically advanced
+                          environment. By integrating these resources, we ensure our students are well-prepared to navigate and
+                          succeed in a digital-centric world.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+           </div>
           </section>
           {/* /Academics Section */}
         </main>

@@ -118,41 +118,34 @@ export default function AdmissionsPage() {
 
           {/* Buttons Styled Like Example */}
           <div className="container mt-5 text-center">
-            <div className="btn-group">
-              <button
-                className={`btn custom-tab ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
-                onClick={() => setActiveSection("apply")}
-              >
-                <i className="bi bi-pencil-square me-2"></i> How to Apply
-              </button>
-              <button
-                className={`btn custom-tab ${
-                  activeSection === "form" ? "active" : ""
-                }`}
-                onClick={() => setActiveSection("form")}
-              >
-                <i className="bi bi-file-earmark-text me-2"></i> Apply Now
-              </button>
-              <button
-                className={`btn custom-tab ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
-                onClick={() => setActiveSection("requirements")}
-              >
-                <i className="bi bi-people me-2"></i> Age Acceptance Guide
-              </button>
-              <button
-                className={`btn custom-tab ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
-                onClick={() => setActiveSection("deadlines")}
-              >
-                <i className=" bi bi-camera-video me-2"></i> Virtual Tour
-              </button>
-            </div>
-          </div>
+  <div className="responsive-btn-group d-flex flex-wrap justify-content-center gap-2">
+    <button
+      className={`btn custom-tab ${activeSection === "apply" ? "active" : ""}`}
+      onClick={() => setActiveSection("apply")}
+    >
+      <i className="bi bi-pencil-square me-2"></i> How to Apply
+    </button>
+    <button
+      className={`btn custom-tab ${activeSection === "form" ? "active" : ""}`}
+      onClick={() => setActiveSection("form")}
+    >
+      <i className="bi bi-file-earmark-text me-2"></i> Apply Now
+    </button>
+    <button
+      className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""}`}
+      onClick={() => setActiveSection("requirements")}
+    >
+      <i className="bi bi-people me-2"></i> Age Acceptance Guide
+    </button>
+    <button
+      className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""}`}
+      onClick={() => setActiveSection("deadlines")}
+    >
+      <i className="bi bi-camera-video me-2"></i> Virtual Tour
+    </button>
+  </div>
+</div>
+
 
           <section id="admissions" className="admissions section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>

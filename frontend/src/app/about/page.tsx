@@ -4,14 +4,7 @@ import { useAboutTabs } from "../components/AboutTabsContext";
 import Link from "next/link";
 import Image from "next/image";
 
-const carouselImages = [
-  "/assets/img/education/A2.jpeg",
-  "/assets/img/education/A1.jpeg",
-  "/assets/img/education/A5.jpeg",
-  "/assets/img/education/A3.jpeg",
-  "/assets/img/education/A4.jpeg",
-  "/assets/img/education/A6.jpeg",
-];
+
 export default function AboutPage() {
   const { aboutTab, setAboutTab } = useAboutTabs();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -173,8 +166,8 @@ useEffect(() => {
                         }}
                       >
                         <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
+                          {/* Image Left (but shown last on mobile) */}
+                          <div className="col-md-5 order-1 order-md-0">
                             <div
                               style={{
                                 position: "relative",
@@ -192,8 +185,8 @@ useEffect(() => {
                             </div>
                           </div>
                           {/* Text Right */}
-                          <div className="col-md-7">
-                             <div className="container section-title" data-aos="fade-up">
+                          <div className="col-md-7 order-0 order-md-1">
+                            <div className="container section-title" data-aos="fade-up">
                               <h2>Who We Are</h2> 
                             </div>
                             <p
@@ -408,13 +401,11 @@ useEffect(() => {
 
                   {/* === Accreditation === */}
                   <div
-                    className={`tab-pane fade ${
-                      aboutTab === "accreditation" ? "show active" : ""
-                    }`}
+                    className={`tab-pane fade ${aboutTab === "accreditation" ? "show active" : ""}`}
                     id="accreditation"
                     role="tabpanel"
                   >
-                    <div className="row gy-4 align-items-center">
+                    <div className="row gy-4">
                       <div
                         className="col-lg-12"
                         data-aos="fade-up"
@@ -426,161 +417,114 @@ useEffect(() => {
                           padding: "30px",
                         }}
                       >
-                        <div className="row align-items-center">
-                          {/* Carousel Left */}
-                         <div className="col-md-5">
+                        {/* Title */}
+                        <div className="container section-title text-center mb-4" data-aos="fade-up">
+                          <h2>Accreditation</h2>
+                        </div>
+
+                        {/* Carousel */}
+                        <div className="col-12 mb-4">
                           <div
                             id="educationCarousel"
                             className="carousel slide rounded"
                             data-bs-ride="carousel"
                             data-bs-interval="2000"
                           >
-                            {/* Main Carousel */}
                             <div className="carousel-inner">
-                            {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => {
-                              const isSmall = ["A1.jpeg", "A2.jpeg"].includes(file);
-
-                              return (
-                                <div
-                                  key={file}
-                                  className={`carousel-item ${idx === 0 ? "active" : ""}`}
-                                >
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      height: "400px",
-                                      transform: isSmall ? "scale(0.9)" : "none",
-                                      transition: "transform 0.3s ease-in-out",
-                                    }}
-                                  >
-                                    <Image
-                                      src={`/assets/img/education/${file}`}
-                                      alt={`Accreditation Slide ${idx + 1}`}
-                                      className="d-block w-100 img-fluid rounded"
-                                      layout="fill"
-                                      objectFit="contain"
-                                      priority={idx === 0}
-                                    />
+                              {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => {
+                                const isSmall = ["A1.jpeg", "A2.jpeg"].includes(file);
+                                return (
+                                  <div key={file} className={`carousel-item ${idx === 0 ? "active" : ""}`}>
+                                    <div
+                                      style={{
+                                        position: "relative",
+                                        height: "400px",
+                                        transform: isSmall ? "scale(0.9)" : "none",
+                                        transition: "transform 0.3s ease-in-out",
+                                      }}
+                                    >
+                                      <Image
+                                        src={`/assets/img/education/${file}`}
+                                        alt={`Accreditation Slide ${idx + 1}`}
+                                        className="d-block w-100 img-fluid rounded"
+                                        layout="fill"
+                                        objectFit="contain"
+                                        priority={idx === 0}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                                );
+                              })}
+                            </div>
 
-
-                            {/* Carousel Controls */}
-                            <button
-                              className="carousel-control-prev"
-                              type="button"
-                              data-bs-target="#educationCarousel"
-                              data-bs-slide="prev"
-                            >
+                            {/* Controls */}
+                            <button className="carousel-control-prev" type="button" data-bs-target="#educationCarousel" data-bs-slide="prev">
                               <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                               <span className="visually-hidden">Previous</span>
                             </button>
-                            <button
-                              className="carousel-control-next"
-                              type="button"
-                              data-bs-target="#educationCarousel"
-                              data-bs-slide="next"
-                            >
+                            <button className="carousel-control-next" type="button" data-bs-target="#educationCarousel" data-bs-slide="next">
                               <span className="carousel-control-next-icon" aria-hidden="true"></span>
                               <span className="visually-hidden">Next</span>
                             </button>
 
                             {/* Thumbnails */}
                             <div className="thumb-container d-flex justify-content-center gap-2 mt-3">
-  {carouselImages.map((file, idx) => (
-    <button
-      key={file}
-      type="button"
-      data-bs-target="#educationCarousel"
-      data-bs-slide-to={idx}
-      className={`thumb-btn border rounded ${
-        activeIndex === idx ? "active border-accent" : "border-secondary"
-      }`}
-      aria-current={activeIndex === idx ? "true" : undefined}
-      aria-label={`Slide ${idx + 1}`}
-      style={{ padding: 0 }}
-    >
-      <img
-        src={file}
-        alt={`Thumbnail ${idx + 1}`}
-        style={{ width: "55px", height: "auto", borderRadius: "4px" }}
-      />
-    </button>
-                                )
-                              )}
+                              {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => (
+                                <button
+                                  key={file}
+                                  type="button"
+                                  data-bs-target="#educationCarousel"
+                                  data-bs-slide-to={idx}
+                                  className={`thumb-btn border rounded ${activeIndex === idx ? "active border-accent" : "border-secondary"}`}
+                                  aria-current={activeIndex === idx ? "true" : undefined}
+                                  aria-label={`Slide ${idx + 1}`}
+                                  style={{ padding: 0 }}
+                                >
+                                  <img
+                                    src={`/assets/img/education/${file}`}
+                                    alt={`Thumbnail ${idx + 1}`}
+                                    style={{ width: "55px", height: "auto", borderRadius: "4px" }}
+                                  />
+                                </button>
+                              ))}
                             </div>
                           </div>
-                          </div>
+                        </div>
 
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>Accreditation</h2> 
-                            </div>                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              We are proud to be recognized as an IB World
-                              School, fully accredited to deliver all stages of
-                              the International Baccalaureate (IB) programs: the
-                              Primary Years Programme (PYP), Middle Years
-                              Programme (MYP), and the Diploma Programme (DP).
-                              Our commitment to providing a rigorous and
-                              internationally acknowledged education is further
-                              demonstrated by our accreditation from Cognia for
-                              the American diploma.
-                            </p>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Understanding the diverse educational needs of our
-                              students, we have expanded our curriculum
-                              offerings to include the International General
-                              Certificate of Secondary Education (IGCSE). We are
-                              accredited by the British Council and hold
-                              certifications from prestigious educational
-                              organizations including Cambridge, Pearson, and
-                              Oxford for the IGCSE program. This allows us to
-                              offer a broad range of curricula, catering to
-                              students seeking various academic pathways.
-                            </p>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              These accreditations underscore our dedication to
-                              excellence in global education standards and
-                              affirm our commitment to providing top-tier
-                              educational opportunities to our students. At LIC,
-                              we ensure that every program we offer meets the
-                              highest international standards, preparing our
-                              students for success in an interconnected world.
-                            </p>
-                          </div>
+                        {/* Text */}
+                        <div className="text-content px-2">
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            We are proud to be recognized as an IB World School, fully accredited to deliver all stages of
+                            the International Baccalaureate (IB) programs: the Primary Years Programme (PYP), Middle Years
+                            Programme (MYP), and the Diploma Programme (DP). Our commitment to providing a rigorous and
+                            internationally acknowledged education is further demonstrated by our accreditation from Cognia
+                            for the American diploma.
+                          </p>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Understanding the diverse educational needs of our students, we have expanded our curriculum
+                            offerings to include the International General Certificate of Secondary Education (IGCSE). We are
+                            accredited by the British Council and hold certifications from prestigious educational
+                            organizations including Cambridge, Pearson, and Oxford for the IGCSE program.
+                          </p>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            These accreditations underscore our dedication to excellence in global education standards and
+                            affirm our commitment to providing top-tier educational opportunities to our students. At LIC,
+                            we ensure that every program we offer meets the highest international standards, preparing our
+                            students for success in an interconnected world.
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
+
                   {/* === IB Learner === */}
                   <div
-                    className={`tab-pane fade ${
-                      aboutTab === "learner" ? "show active" : ""
-                    }`}
+                    className={`tab-pane fade ${aboutTab === "learner" ? "show active" : ""}`}
                     id="learner"
                     role="tabpanel"
                   >
-                    <div className="row gy-4 align-items-center">
+                    <div className="row gy-4">
                       <div
                         className="col-lg-12"
                         data-aos="fade-up"
@@ -592,134 +536,56 @@ useEffect(() => {
                           padding: "30px",
                         }}
                       >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
-                            <div
-                              style={{
-                                position: "relative",
-                                height: "1000px",
-                                marginBottom: "1rem",
-                              }}
-                            >
-                              <Image
-                                src="/assets/img/education/LearnerProfile.JPG"
-                                alt="IB Learner Profile"
-                                className="img-fluid rounded"
-                                layout="fill"
-                                objectFit="cover"
-                              />
-                            </div>
-                          </div>
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>IB Learner Profile</h2> 
-                            </div>                            
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Our adoption of the International Baccalaureate
-                              (IB) framework is central to our educational
-                              philosophy. The IB Learner Profile represents a
-                              broad range of human capacities and
-                              responsibilities that go beyond academic success.
-                              These are the qualities that we nurture in our
-                              students to prepare them for personal and
-                              professional success in a global society.
-                            </p>
-                            <ul
-                              style={{
-                                lineHeight: "1.8",
-                                paddingLeft: "20px",
-                              }}
-                            >
-                              <li>
-                                <strong>Inquirers:</strong> Curious and
-                                enthusiastic about learning, our students are
-                                taught to nurture their love for discovery and
-                                the skills needed to conduct inquiry and
-                                research.
-                              </li>
-                              <li>
-                                <strong>Knowledgeable:</strong> Students gain a
-                                deep understanding of important concepts, ideas,
-                                and issues that span traditional academic
-                                boundaries and civilizations.
-                              </li>
-                              <li>
-                                <strong>Thinkers:</strong> We encourage students
-                                to apply thinking skills critically and
-                                creatively to recognize and approach complex
-                                problems, and to make reasoned, ethical
-                                decisions.
-                              </li>
-                              <li>
-                                <strong>Communicators:</strong> Students learn
-                                to express themselves confidently and creatively
-                                in multiple languages and forms. They also learn
-                                to listen carefully to the perspectives of other
-                                individuals and groups.
-                              </li>
-                              <li>
-                                <strong>Principled:</strong> Our students act
-                                with integrity and honesty, with a strong sense
-                                of fairness and justice, and respect for the
-                                dignity and rights of people everywhere.
-                              </li>
-                              <li>
-                                <strong>Open-minded:</strong> Students
-                                appreciate their own cultures and personal
-                                histories, as well as the values and traditions
-                                of others. They seek to evaluate a range of
-                                points of view and are willing to grow from the
-                                experience.
-                              </li>
-                              <li>
-                                <strong>Caring:</strong> Our community
-                                encourages students to show empathy, compassion,
-                                and respect. They have a commitment to service
-                                and act to make a positive difference in the
-                                lives of others and in the world around them.
-                              </li>
-                              <li>
-                                <strong>Risk-takers:</strong> Students approach
-                                uncertainty with forethought and determination;
-                                they work independently and cooperatively to
-                                explore new ideas and innovative strategies.
-                              </li>
-                              <li>
-                                <strong>Balanced:</strong> Students understand
-                                the importance of balancing different aspects of
-                                their lives—intellectual, physical, and
-                                emotional—to achieve well-being for themselves
-                                and others.
-                              </li>
-                              <li>
-                                <strong>Reflective:</strong> They thoughtfully
-                                consider the world and their own ideas and
-                                experiences. Students work to understand their
-                                strengths and weaknesses in order to support
-                                their learning and personal development.
-                              </li>
-                            </ul>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Through the IB Learner Profile, LIC fosters a
-                              dynamic educational environment that encourages
-                              not only academic excellence but also a thriving,
-                              holistic personal development. We are committed to
-                              shaping global citizens who are well-prepared to
-                              contribute to a more peaceful and sustainable
-                              world.
-                            </p>
+                        {/* Title */}
+                        <div className="container section-title text-center mb-4" data-aos="fade-up">
+                          <h2>IB Learner Profile</h2>
+                        </div>
+
+                        {/* Text Section */}
+                        <div className="col-12 mb-4">
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Our adoption of the International Baccalaureate (IB) framework is central to our educational philosophy.
+                            The IB Learner Profile represents a broad range of human capacities and responsibilities that go beyond
+                            academic success. These are the qualities that we nurture in our students to prepare them for personal and
+                            professional success in a global society.
+                          </p>
+
+                          <ul style={{ lineHeight: "1.8", paddingLeft: "20px" }}>
+                            <li><strong>Inquirers:</strong> Curious and enthusiastic about learning...</li>
+                            <li><strong>Knowledgeable:</strong> Students gain a deep understanding...</li>
+                            <li><strong>Thinkers:</strong> We encourage critical and creative thinking...</li>
+                            <li><strong>Communicators:</strong> Confidently express and listen in multiple languages...</li>
+                            <li><strong>Principled:</strong> Act with integrity, fairness, and respect...</li>
+                            <li><strong>Open-minded:</strong> Appreciate diverse cultures and values...</li>
+                            <li><strong>Caring:</strong> Show empathy, compassion, and commitment to service...</li>
+                            <li><strong>Risk-takers:</strong> Approach uncertainty with courage and independence...</li>
+                            <li><strong>Balanced:</strong> Understand the importance of well-being...</li>
+                            <li><strong>Reflective:</strong> Thoughtfully evaluate their learning and growth...</li>
+                          </ul>
+
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Through the IB Learner Profile, LIC fosters a dynamic educational environment that encourages not only
+                            academic excellence but also a thriving, holistic personal development. We are committed to shaping global
+                            citizens who are well-prepared to contribute to a more peaceful and sustainable world.
+                          </p>
+                        </div>
+
+                        {/* Image Section */}
+                        <div className="col-12">
+                          <div
+                            style={{
+                              position: "relative",
+                              height: "700px",
+                              marginTop: "1rem",
+                            }}
+                          >
+                            <Image
+                              src="/assets/img/education/LearnerProfile.JPG"
+                              alt="IB Learner Profile"
+                              className="img-fluid rounded"
+                              layout="fill"
+                              objectFit="cover"
+                            />
                           </div>
                         </div>
                       </div>
@@ -868,13 +734,11 @@ useEffect(() => {
 
                   {/* === Campus === */}
                   <div
-                    className={`tab-pane fade ${
-                      aboutTab === "campus" ? "show active" : ""
-                    }`}
+                    className={`tab-pane fade ${aboutTab === "campus" ? "show active" : ""}`}
                     id="campus"
                     role="tabpanel"
                   >
-                    <div className="row gy-4 align-items-center">
+                    <div className="row gy-4">
                       <div
                         className="col-lg-12"
                         data-aos="fade-up"
@@ -886,170 +750,94 @@ useEffect(() => {
                           padding: "30px",
                         }}
                       >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
-                            <div
-                              style={{
-                                position: "relative",
-                                height: "1000px",
-                                marginBottom: "1rem",
-                              }}
-                            >
-                              <Image
-                                src="/assets/img/education/Rec.png"
-                                alt="Who We Are"
-                                className="img-fluid rounded"
-                                layout="fill"
-                                objectFit="cover"
-                              />
-                            </div>
-                          </div>
+                        {/* Title */}
+                        <div className="container section-title text-center mb-4" data-aos="fade-up">
+                          <h2>Campus & Location</h2>
+                        </div>
 
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>Campus & Location</h2> 
-                            </div>                            
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
+                        {/* Text First */}
+                        <div className="col-12">
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            LIC campus is designed to foster an environment of learning and personal growth.
+                            Located in the heart of New Cairo, our school is situated in a vibrant community
+                            that enriches the educational experience of our students with a mix of cultural,
+                            historical, and modern influences.
+                            <a
+                              href="https://yourlocationlink.com"
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              LIC campus is designed to foster an environment of
-                              learning and personal growth. Located in the heart
-                              of New Cairo, our school is situated in a vibrant
-                              community that enriches the educational experience
-                              of our students with a mix of cultural,
-                              historical, and modern influences.
-                              <a
-                                href="https://yourlocationlink.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {" "}
-                                View on Map
-                              </a>
-                              .
-                            </p>
+                              {" "}View on Map
+                            </a>.
+                          </p>
 
-                            <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
-                            <ul
-                              style={{
-                                lineHeight: "1.8",
-                                paddingLeft: "0",
-                                listStyle: "none",
-                              }}
-                            >
-                              <li>
-                                <i className="bi bi-building text-primary me-2"></i>
-                                <strong>Modern Classrooms:</strong> Equipped
-                                with the latest educational technology to
-                                enhance learning and engagement.
-                              </li>
-                              <li>
-                                <i className="bi bi-flask text-primary me-2"></i>
-                                <strong>Science and IT Labs:</strong> Advanced
-                                facilities for hands-on experiments and
-                                technology integration.
-                              </li>
-                              <li>
-                                <i className="bi bi-book text-primary me-2"></i>
-                                <strong>Library:</strong> A comprehensive
-                                resource center that supports research and
-                                learning across all subjects and age groups.
-                              </li>
-                              <li>
-                                <i className="bi bi-brush text-primary me-2"></i>
-                                <strong>Art Studios and Music Rooms:</strong>{" "}
-                                Dedicated spaces for students to explore their
-                                creative talents in visual and performing arts.
-                              </li>
-                              <li>
-                                <i className="bi bi-trophy text-primary me-2"></i>
-                                <strong>Sports Facilities:</strong> Including a
-                                swimming pool, gymnasium, sports fields, and
-                                courts, accommodating a wide range of athletic
-                                activities.
-                              </li>
-                              <li>
-                                <i className="bi bi-tree text-primary me-2"></i>
-                                <strong>Outdoor Learning Areas:</strong> Spaces
-                                that encourage ecological learning and outdoor
-                                activities.
-                              </li>
-                              <li>
-                                <i className="bi bi-cup-straw text-primary me-2"></i>
-                                <strong>Cafeteria:</strong> Offering healthy and
-                                nutritious meal options in a comfortable dining
-                                environment.
-                              </li>
-                            </ul>
+                          <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
+                          <ul style={{ lineHeight: "1.8", paddingLeft: "0", listStyle: "none" }}>
+                            <li><i className="bi bi-building text-primary me-2"></i><strong>Modern Classrooms:</strong> Equipped with the latest educational technology.</li>
+                            <li><i className="bi bi-flask text-primary me-2"></i><strong>Science and IT Labs:</strong> Hands-on experiments and tech learning.</li>
+                            <li><i className="bi bi-book text-primary me-2"></i><strong>Library:</strong> Comprehensive research and learning resources.</li>
+                            <li><i className="bi bi-brush text-primary me-2"></i><strong>Art & Music Rooms:</strong> Explore creative talents in dedicated studios.</li>
+                            <li><i className="bi bi-trophy text-primary me-2"></i><strong>Sports Facilities:</strong> Pool, gymnasium, courts, and more.</li>
+                            <li><i className="bi bi-tree text-primary me-2"></i><strong>Outdoor Learning Areas:</strong> Nature-based and ecological education.</li>
+                            <li><i className="bi bi-cup-straw text-primary me-2"></i><strong>Cafeteria:</strong> Healthy and comfortable meal spaces.</li>
+                          </ul>
 
-                            <h4 style={{ color: "var(--accent-color)" }}>Access and Transportation</h4>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Our campus is easily accessible via major roadways
-                              and is supported by a network of bus services that
-                              ensure convenient commutes for our students and
-                              staff from surrounding areas. Ample parking is
-                              available for families and visitors.
-                            </p>
+                          <h4 style={{ color: "var(--accent-color)" }}>Access and Transportation</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Our campus is easily accessible via major roadways and is supported by a network
+                            of bus services. Ample parking is available for families and visitors.
+                          </p>
 
-                            <h4 style={{ color: "var(--accent-color)" }}>Safety and Security</h4>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Safety is paramount at LIC. Our campus is equipped
-                              with comprehensive security measures, including
-                              surveillance systems and controlled gate access.
-                              Our dedicated security team is on-site 24/7 to
-                              maintain a secure learning environment.
-                            </p>
+                          <h4 style={{ color: "var(--accent-color)" }}>Safety and Security</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Our campus includes surveillance systems, gate control, and a 24/7 on-site
+                            security team to ensure student safety.
+                          </p>
 
-                            <h4 style={{ color: "var(--accent-color)" }}>Virtual Tour</h4>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
+                          <h4 style={{ color: "var(--accent-color)" }}>Virtual Tour</h4>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Experience our campus virtually — 
+                            <a
+                              href="http://vrtour.leadersintcollege.com/"
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              We invite you to experience our campus virtually —
-                              <a
-                                href="http://vrtour.leadersintcollege.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {" "}
-                                Take a Virtual Tour
-                              </a>{" "}
-                              — to explore the dynamic and supportive
-                              environment that makes LIC a unique place to learn
-                              and grow.
-                            </p>
+                              {" "}Take a Virtual Tour
+                            </a>
+                            — and explore our dynamic environment.
+                          </p>
+                        </div>
+
+                        {/* Image Last */}
+                        <div className="col-12 mt-4">
+                          <div
+                            style={{
+                              position: "relative",
+                              height: "700px",
+                              marginBottom: "1rem",
+                            }}
+                          >
+                            <Image
+                              src="/assets/img/education/Rec.png"
+                              alt="Campus & Location"
+                              className="img-fluid rounded"
+                              layout="fill"
+                              objectFit="cover"
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
 
                   {/* === Strategies === */}
                   <div
-                    className={`tab-pane fade ${
-                      aboutTab === "strategies" ? "show active" : ""
-                    }`}
+                    className={`tab-pane fade ${aboutTab === "strategies" ? "show active" : ""}`}
                     id="strategies"
                     role="tabpanel"
                   >
-                    <div className="row gy-4 align-items-center">
+                    <div className="row gy-4">
                       <div
                         className="col-lg-12"
                         data-aos="fade-up"
@@ -1061,99 +849,79 @@ useEffect(() => {
                           padding: "30px",
                         }}
                       >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
-                            <Image
-                              src="/assets/img/education/Accr.JPG"
-                              alt="Strategies"
-                              className="img-fluid rounded"
-                              width={1200}
-                              height={800}
-                              style={{
-                                objectFit: "cover",
-                                width: "100%",
-                                height: "auto",
-                                marginBottom: "1rem",
-                              }}
-                            />
-                          </div>
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>Strategies</h2> 
-                            </div>
-                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
-                              Highly Selective Strategy
-                            </h5>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              At LIC, our first strategic pillar is the Highly
-                              Selective Strategy. This approach focuses on the
-                              meticulous selection of the finest aspects within
-                              the educational sector. We choose only the best
-                              learning programs and resources, ensuring our
-                              school campus and facilities meet the highest
-                              standards. Similarly, we carefully select our
-                              employees, staff, students, families, vendors, and
-                              suppliers to cultivate an elite educational
-                              community that stands out for its quality and
-                              commitment to excellence.
-                            </p>
+                        {/* Title */}
+                        <div className="container section-title text-center mb-4" data-aos="fade-up">
+                          <h2>Strategies</h2>
+                        </div>
 
-                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>High Achievers Support Strategy</h5>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Our second strategic initiative is the High
-                              Achievers Support Strategy. This strategy is
-                              designed to inspire and empower our staff and
-                              students, as well as all members of our team, to
-                              attain exceptional levels of achievement. By
-                              fostering an environment that encourages peak
-                              performance, we continuously enhance the quality
-                              of our educational offerings and reinforce Leaders
-                              International School&apos;s position as a
-                              benchmark within the education&apos;al services
-                              sector.
-                            </p>
+                        {/* Text Content */}
+                        <div className="col-12">
+                          <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                            Highly Selective Strategy
+                          </h5>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            At LIC, our first strategic pillar is the Highly Selective Strategy.
+                            This approach focuses on the meticulous selection of the finest aspects
+                            within the educational sector. We choose only the best learning programs
+                            and resources, ensuring our school campus and facilities meet the highest
+                            standards. Similarly, we carefully select our employees, staff, students,
+                            families, vendors, and suppliers to cultivate an elite educational
+                            community that stands out for its quality and commitment to excellence.
+                          </p>
 
-                            <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>Blue Ocean Strategy</h5>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              The third cornerstone of our strategic framework
-                              is the Blue Ocean Strategy. This approach
-                              positions our schools uniquely, focusing on
-                              collaboration over competition within the
-                              educational market. By adopting this strategy,
-                              Leaders International School distinguishes itself
-                              as the sole institution in Egypt to offer students
-                              a dual certification—the IB and American
-                              Diploma—through a singular, accredited curriculum.
-                              This innovative offering not only sets our
-                              students apart but also reinforces our
-                              school&apos;s unique status in the education
-                              landscape.
-                            </p>
-                          </div>
+                          <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                            High Achievers Support Strategy
+                          </h5>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            Our second strategic initiative is the High Achievers Support Strategy.
+                            This strategy is designed to inspire and empower our staff and students,
+                            as well as all members of our team, to attain exceptional levels of
+                            achievement. By fostering an environment that encourages peak performance,
+                            we continuously enhance the quality of our educational offerings and
+                            reinforce Leaders International School&apos;s position as a benchmark
+                            within the education&apos;al services sector.
+                          </p>
+
+                          <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                            Blue Ocean Strategy
+                          </h5>
+                          <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                            The third cornerstone of our strategic framework is the Blue Ocean Strategy.
+                            This approach positions our schools uniquely, focusing on collaboration
+                            over competition within the educational market. By adopting this strategy,
+                            Leaders International School distinguishes itself as the sole institution
+                            in Egypt to offer students a dual certification—the IB and American
+                            Diploma—through a singular, accredited curriculum. This innovative offering
+                            not only sets our students apart but also reinforces our school&apos;s
+                            unique status in the education landscape.
+                          </p>
+                        </div>
+
+                        {/* Image at the End */}
+                        <div className="col-12 mt-4">
+                          <Image
+                            src="/assets/img/education/Accr.JPG"
+                            alt="Strategies"
+                            className="img-fluid rounded"
+                            width={1200}
+                            height={800}
+                            style={{
+                              objectFit: "cover",
+                              width: "100%",
+                              height: "auto",
+                              marginBottom: "1rem",
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
                   </div>
+
+
+                    
+                  </div>
                 </div>
               </div>
-            </div>
           </section>
         </main>
 
