@@ -9,18 +9,21 @@ import {
 export class CreatePopupDto {
   @IsString()
   title: string;
-
+  @IsOptional()
   @IsString()
   category: string;
-
+  @IsOptional()
   @IsString()
   message: string;
-
+  @IsOptional()
   @IsString()
   path: string;
 
   @IsIn(['on', 'off'])
   status: string;
+  @IsOptional()
+  @IsString()
+  imagePath?: string;
 }
 
 export class UpdatePopupDto {
@@ -48,4 +51,7 @@ export class UpdatePopupDto {
   @ArrayMaxSize(3)
   @IsString({ each: true })
   buttons?: string[];
+  @IsOptional()
+  @IsString()
+  imagePath?: string;
 }

@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import * as express from 'express';
+import { ValidationPipe } from '@nestjs/common';
 
 console.log('✅ Loaded SENDGRID API KEY:', process.env.SENDGRID_API_KEY);
 
@@ -19,6 +20,12 @@ async function bootstrap() {
 
   app.use(bodyParser.json({ limit: '2000mb' }));
   app.use(bodyParser.urlencoded({ limit: '2000mb', extended: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // 👈 transforms plain object to class instance
+      whitelist: true, // removes unwanted fields
+    }),
+  );
 
   // ✅ Optionally keep this if you want fine control later
   app.enableCors({
