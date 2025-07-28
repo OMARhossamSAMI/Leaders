@@ -16,52 +16,26 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/login/Admin/page": [
+    "/contact/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/Admin/page.css",
-      "static/chunks/app/login/Admin/page.js"
-    ],
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
-    ],
-    "/login/Admin/Internship/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/Admin/Internship/page.css",
-      "static/chunks/app/login/Admin/Internship/page.js"
-    ],
-    "/login/Admin/Vacancy/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/Admin/Vacancy/page.css",
-      "static/chunks/app/login/Admin/Vacancy/page.js"
-    ],
-    "/login/Admin/school_app/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/Admin/school_app/page.css",
-      "static/chunks/app/login/Admin/school_app/page.js"
+      "static/chunks/app/contact/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
     ],
-    "/login/Admin/testimonials/page": [
+    "/hiring/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/Admin/testimonials/page.css",
-      "static/chunks/app/login/Admin/testimonials/page.js"
+      "static/chunks/app/hiring/page.js"
     ],
-    "/login/Admin/testimonials/update/page": [
+    "/hiring/apply/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/Admin/testimonials/update/page.css",
-      "static/chunks/app/login/Admin/testimonials/update/page.js"
+      "static/css/app/hiring/apply/page.css",
+      "static/chunks/app/hiring/apply/page.js"
     ],
     "/admissions/page": [
       "static/chunks/webpack.js",
