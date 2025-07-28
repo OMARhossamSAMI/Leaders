@@ -251,7 +251,7 @@ export default function CampusFacilitiesPage() {
                               }}
                             >
                               <Image
-                                src="/assets/img/education/Lib.PNG"
+                                src="/assets/img/education/Lib.png"
                                 alt="Library"
                                 className="img-fluid rounded"
                                 layout="fill"

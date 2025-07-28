@@ -413,7 +413,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A2.Jpeg"
+                                      src="/assets/img/education/A2.jpeg"
                                       alt="Accreditation Slide 1"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
@@ -429,7 +429,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A1.Jpeg"
+                                      src="/assets/img/education/A1.jpeg"
                                       alt="Accreditation Slide 2"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
@@ -445,7 +445,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A5.Jpeg"
+                                      src="/assets/img/education/A5.jpeg"
                                       alt="Accreditation Slide 5"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
@@ -461,7 +461,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A3.Jpeg"
+                                      src="/assets/img/education/A3.jpeg"
                                       alt="Accreditation Slide 3"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
@@ -477,7 +477,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A4.Jpeg"
+                                      src="/assets/img/education/A4.jpeg"
                                       alt="Accreditation Slide 4"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"
@@ -493,7 +493,7 @@ export default function AboutPage() {
                                     }}
                                   >
                                     <Image
-                                      src="/assets/img/education/A6.Jpeg"
+                                      src="/assets/img/education/A6.jpeg"
                                       alt="Accreditation Slide 6"
                                       className="d-block w-100 img-fluid rounded"
                                       layout="fill"

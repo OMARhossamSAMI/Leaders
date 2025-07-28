@@ -750,7 +750,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/fitness.jpg"
+                              src="/assets/img/education/fitness.JPG"
                               alt="Physical Fitness"
                               width={800}
                               height={600}
@@ -770,7 +770,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/nutrition.jpg"
+                              src="/assets/img/education/nutrition.JPG"
                               alt="Nutritional Services"
                               width={800}
                               height={600}
@@ -789,7 +789,7 @@ export default function StudentsLifePage() {
                         <article className="healthwellness-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/wellness-programs.jpg"
+                              src="/assets/img/education/wellness-programs.JPG"
                               alt="Wellness Programs"
                               width={800}
                               height={600}
@@ -891,7 +891,7 @@ export default function StudentsLifePage() {
                       <div className="clubs-grid">
                         <div className="club-card">
                           <Image
-                            src="/assets/img/education/art-club.jpg"
+                            src="/assets/img/education/art-club.JPG"
                             alt="Art Club"
                             width={400}
                             height={250}
@@ -905,7 +905,7 @@ export default function StudentsLifePage() {
 
                         <div className="club-card">
                           <Image
-                            src="/assets/img/education/science-club.jpg"
+                            src="/assets/img/education/science-club.JPG"
                             alt="Science Club"
                             width={400}
                             height={250}
