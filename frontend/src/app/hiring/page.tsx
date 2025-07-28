@@ -5,20 +5,33 @@ import axios from "axios";
 import { useHiringTabs } from "../components/HiringTabsContext";
 import Link from "next/link";
 import Image from "next/image";
+import './page.css';
 // ✅ Optional: define the structure of a Job
 interface Job {
-  careerLevel: string;
-  employmentType: string;
   _id: string;
   title: string;
-  level: string;
-  type: string;
+  careerLevel: string;
+  employmentType: string;
+  academicYear: string;    // e.g., "25/26"
+  startYear: number;       // e.g., 2025
+  endYear: number;         // e.g., 2026
+  createdAt: string;       // ISO date string
 }
+
 
 export default function WeAreHiringPage() {
   const { hiringSection, setHiringSection } = useHiringTabs();
 
   const [jobs, setJobs] = useState<Job[]>([]); // ✅ Add useState for jobs
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+  const baseYear = currentMonth >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
+
+  const currentAcademic = `${String(baseYear).slice(2)}/${String(baseYear + 1).slice(2)}`;
+  const nextAcademic = `${String(baseYear + 1).slice(2)}/${String(baseYear + 2).slice(2)}`;
+  const displayCurrentYear = `20${currentAcademic.split('/')[0]} / 20${currentAcademic.split('/')[1]}`;
+  const displayNextYear = `20${nextAcademic.split('/')[0]} / 20${nextAcademic.split('/')[1]}`;
+
 
   useEffect(() => {
     axios
@@ -66,27 +79,27 @@ export default function WeAreHiringPage() {
           </div>
 
           {/* ✅ Tabs */}
-         <div className="container mt-5 text-center">
-          <div className="btn-group-wrapper overflow-auto">
-            <div className="btn-group flex-nowrap" style={{ minWidth: "600px" }}>
-              {[
-                { id: "opening", label: "Opening", icon: "bi-door-open" },
-                { id: "development", label: "Professional Development", icon: "bi-award" },
-                { id: "working", label: "Working at LIC", icon: "bi-people-fill" },
-                { id: "internship", label: "Internship Program", icon: "bi-briefcase" },
-                { id: "vacancies", label: "Current Vacancies", icon: "bi-clipboard-check" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`btn custom-tab ${hiringSection === tab.id ? "active" : ""}`}
-                  onClick={() => setHiringSection(tab.id)}
-                >
-                  <i className={`bi ${tab.icon} me-2`}></i> {tab.label}
-                </button>
-              ))}
+          <div className="container mt-5 text-center">
+            <div className="btn-group-wrapper overflow-auto">
+              <div className="btn-group flex-nowrap" style={{ minWidth: "600px" }}>
+                {[
+                  { id: "opening", label: "Opening", icon: "bi-door-open" },
+                  { id: "development", label: "Professional Development", icon: "bi-award" },
+                  { id: "working", label: "Working at LIC", icon: "bi-people-fill" },
+                  { id: "internship", label: "Internship Program", icon: "bi-briefcase" },
+                  { id: "vacancies", label: "Current Vacancies", icon: "bi-clipboard-check" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    className={`btn custom-tab ${hiringSection === tab.id ? "active" : ""}`}
+                    onClick={() => setHiringSection(tab.id)}
+                  >
+                    <i className={`bi ${tab.icon} me-2`}></i> {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
 
           {/* ✅ Content Sections */}
@@ -445,7 +458,6 @@ export default function WeAreHiringPage() {
                   </div>
                 </div>
               )}
-
               {hiringSection === "vacancies" && (
                 <div className="upcoming-events">
                   <div
@@ -455,96 +467,156 @@ export default function WeAreHiringPage() {
                   >
                     <h3>Current Vacancies</h3>
                     <p>
-                      Explore exciting career opportunities currently open at
-                      Leaders International College.
+                      Explore exciting career opportunities currently open at Leaders
+                      International College.
                     </p>
                   </div>
 
+                  {/* Two-column layout for current and next academic year */}
                   <div
-                    className="events-wrapper"
+                    className="dual-columns-wrapper"
                     data-aos="fade-up"
                     data-aos-delay={300}
                   >
-                    {jobs.filter((job) => job.employmentType !== "Internship")
-                      .length === 0 ? (
-                      <p className="text-center text-muted">
-                        No current job openings available.
-                      </p>
-                    ) : (
-                      <>
-                        {jobs
-                          .filter((job) => job.employmentType !== "Internship")
+                    {/* Current Year Vacancies */}
+                    <div className="vacancy-column">
+                      <h4 className="vacancy-heading">Academic Year {displayCurrentYear}</h4>
+                      {jobs.filter(
+                        (job) =>
+                          job.employmentType !== "Internship" &&
+                          job.academicYear === currentAcademic
+                      ).length === 0 ? (
+                        <p className="text-muted">No openings for this year.</p>
+                      ) : (
+                        jobs
+                          .filter(
+                            (job) =>
+                              job.employmentType !== "Internship" &&
+                              job.academicYear === currentAcademic
+                          )
                           .map((job, index) => (
                             <div
-                              className="event"
+                              className="vacancy-card"
                               key={job._id}
                               data-aos="fade-up"
                               data-aos-delay={300 + index * 50}
                             >
-                              <div className="event-info">
+                              {/* Left: Job Info */}
+                              <div className="vacancy-info">
                                 <h4>{job.title}</h4>
-                                <div className="event-meta">
+                                <div className="vacancy-meta">
                                   <span>
-                                    <i className="bi bi-pin-map" /> Career
-                                    Level: {job.careerLevel}
+                                    <i className="bi bi-person" /> Career Level: {job.careerLevel}
                                   </span>
                                   <span>
-                                    <i className="bi bi-clock" />{" "}
-                                    {job.employmentType}
+                                    <i className="bi bi-clock" /> {job.employmentType}
                                   </span>
                                 </div>
                               </div>
-                              <div className="event-action">
+
+                              {/* Right: Apply Button */}
+                              <div className="vacancy-action">
                                 <Link
-                                  href={`/hiring/apply?position=${encodeURIComponent(
-                                    job.title
-                                  )}&employmentType=${encodeURIComponent(
-                                    job.employmentType
-                                  )}`}
+                                  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}&academicYear=${encodeURIComponent(job.academicYear)}`}
                                   className="btn-register"
                                 >
                                   Apply Now
                                 </Link>
                               </div>
                             </div>
-                          ))}
 
-                        {/* Static custom job application card */}
-                        <div
-                          className="event"
-                          data-aos="fade-up"
-                          data-aos-delay={jobs.length * 50 + 300}
-                        >
-                          <div className="event-info">
-                            <h4>Other Opportunities</h4>
-                            <div className="event-meta">
-                              <span>
-                                <i className="bi bi-pin-map" /> Custom Career
-                                Request
-                              </span>
-                              <span>
-                                <i className="bi bi-clock" /> Your Preferred
-                                Type
-                              </span>
-                            </div>
-                          </div>
-                          <div className="event-action">
-                            <Link
-                              href={`/hiring/apply?position=Other&employmentType=Custom`}
-                              className="btn-register"
+                          ))
+                      )}
+                    </div>
+
+                    {/* Next Year Vacancies */}
+                    <div className="vacancy-column">
+                      <h4 className="vacancy-heading">Academic Year {displayNextYear}</h4>
+                      {jobs.filter(
+                        (job) =>
+                          job.employmentType !== "Internship" &&
+                          job.academicYear === nextAcademic
+                      ).length === 0 ? (
+                        <p className="text-muted">No openings for next year.</p>
+                      ) : (
+                        jobs
+                          .filter(
+                            (job) =>
+                              job.employmentType !== "Internship" &&
+                              job.academicYear === nextAcademic
+                          )
+                          .map((job, index) => (
+                            <div
+                              className="vacancy-card"
+                              key={job._id}
+                              data-aos="fade-up"
+                              data-aos-delay={300 + index * 50}
                             >
-                              Apply Now
-                            </Link>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                              {/* Left: Job Info */}
+                              <div className="vacancy-info">
+                                <h4>{job.title}</h4>
+                                <div className="vacancy-meta">
+                                  <span>
+                                    <i className="bi bi-person" /> Career Level: {job.careerLevel}
+                                  </span>
+                                  <span>
+                                    <i className="bi bi-clock" /> {job.employmentType}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Right: Apply Button */}
+                              <div className="vacancy-action">
+                                <Link
+                                  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}&academicYear=${encodeURIComponent(job.academicYear)}`}
+                                  className="btn-register"
+                                >
+                                  Apply Now
+                                </Link>
+
+                              </div>
+                            </div>
+
+                          ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Standalone Other Opportunities Card */}
+                  <div
+                    className="vacancy-card mt-5"
+                    data-aos="fade-up"
+                    data-aos-delay={jobs.length * 50 + 300}
+                  >
+                    {/* Left: Info */}
+                    <div className="vacancy-info">
+                      <h4>Other Opportunities</h4>
+                      <div className="vacancy-meta">
+                        <span>
+                          <i className="bi bi-pin-map" /> Custom Career Request
+                        </span>
+                        <span>
+                          <i className="bi bi-clock" /> Your Preferred Type
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right: Button */}
+                    <div className="vacancy-action">
+                      <Link
+                        href={`/hiring/apply?position=Other&employmentType=Custom`}
+                        className="btn-register"
+                      >
+                        Apply Now
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
-          </section>
-        </main>
+
+            </div >
+          </section >
+        </main >
 
         <Link
           href="#"
@@ -571,7 +643,7 @@ export default function WeAreHiringPage() {
             border: 1px solid #00b4e6;
           }
         `}</style>
-      </div>
+      </div >
     </>
   );
 }

@@ -21,37 +21,43 @@ interface EmploymentFormField {
 export default function ApplyForm() {
   const [fields, setFields] = useState<EmploymentFormField[]>([]);
   const [positionFromURL, setPositionFromURL] = useState("");
-  const [employmentTypeFromURL, setEmploymentTypeFromURL] = useState("");
+  const [, setEmploymentTypeFromURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
+  const [academicYearFromURL, setAcademicYearFromURL] = useState("");
 
   useEffect(() => {
     const job = searchParams.get("position");
     const type = searchParams.get("employmentType");
+    const year = searchParams.get("academicYear");
 
     if (job) setPositionFromURL(decodeURIComponent(job));
     if (type) setEmploymentTypeFromURL(decodeURIComponent(type));
+    if (year) setAcademicYearFromURL(decodeURIComponent(year));
 
     axios
       .get<EmploymentFormField[]>(
         `${process.env.NEXT_PUBLIC_API_URL}/employment-form-fields`
       )
       .then((res) => setFields(res.data))
-      .catch((err) => console.error("Failed to fetch fields", err));
+      .catch((err) => console.error("❌ Failed to fetch form fields:", err));
   }, [searchParams]);
+
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Inject position and employment type from URL
-    if (positionFromURL) formData.set("position", positionFromURL);
-    if (employmentTypeFromURL) {
-      formData.delete("employment_type[]");
-      employmentTypeFromURL.split(",").forEach((type) => {
-        formData.append("employment_type[]", type.trim());
-      });
+    if (academicYearFromURL) {
+      formData.set("academic_year", academicYearFromURL);
+    }
+
+    if (positionFromURL && positionFromURL !== "Other") {
+      formData.set("position", positionFromURL);
+      // ✅ Don't include employment_type at all for non-"Other" positions
+      formData.delete("employment_type");
     }
 
     setIsLoading(true);
@@ -81,6 +87,11 @@ export default function ApplyForm() {
       setIsLoading(false);
     }
   };
+
+
+
+
+
 
   return (
     <>
@@ -142,158 +153,86 @@ export default function ApplyForm() {
 
                   <div className="row">
                     {fields.map((field, index) => {
-                      const label =
-                        field.label || field.field_name.replace(/_/g, " ");
+                      const label = field.label || field.field_name.replace(/_/g, " ");
                       const required = field.required ?? false;
 
-                      if (field.field_name === "position") {
-                        return (
-                          <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label">{label}</label>
-                            <input
-                              type="text"
-                              name={field.field_name}
-                              className="form-control"
-                              value={positionFromURL}
-                              readOnly
-                              required={required}
-                            />
-                          </div>
-                        );
+                      // ✅ Skip "academic_year" if position is not "Other"
+                      if (field.field_name === "academic_year" && positionFromURL !== "Other") {
+                        return null;
                       }
 
-                      if (
-                        field.field_name === "employment_type" &&
-                        field.options?.length
-                      ) {
-                        const selectedTypes = employmentTypeFromURL
-                          .split(",")
-                          .map((s) => s.replace(/\s+/g, "").toLowerCase());
+                      // ✅ Handle "position" field: show only if "Other"
+                      if (field.field_name === "position") {
+                        if (positionFromURL === "Other") {
+                          return (
+                            <div className="col-md-6 mb-3" key={index}>
+                              <label className="form-label">{label}</label>
+                              <input
+                                type="text"
+                                name={field.field_name}
+                                className="form-control"
+                                placeholder="Enter your preferred position"
+                                required={required}
+                              />
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <input
+                              key={index}
+                              type="hidden"
+                              name={field.field_name}
+                              value={positionFromURL}
+                            />
+                          );
+                        }
+                      }
 
-                        return (
-                          <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">
-                              {label}
-                            </label>
-                            {field.options.map((opt, i) => {
-                              const normalizedOpt = opt
-                                .replace(/\s+/g, "")
-                                .toLowerCase();
-                              const isChecked =
-                                selectedTypes.includes(normalizedOpt);
-                              return (
-                                <div
-                                  className="form-check form-check-inline"
-                                  key={i}
-                                >
+                      // ✅ Handle "employment_type" only if position is "Other"
+                      if (field.field_name === "employment_type") {
+                        if (positionFromURL === "Other" && field.options?.length) {
+                          return (
+                            <div className="col-md-6 mb-3" key={index}>
+                              <label className="form-label d-block">{label}</label>
+                              {field.options.map((opt, i) => (
+                                <div className="form-check form-check-inline" key={i}>
                                   <input
                                     className="form-check-input"
-                                    type="checkbox"
-                                    name={`${field.field_name}[]`}
+                                    type="radio"
+                                    name={field.field_name}
                                     value={opt}
-                                    checked={isChecked}
-                                    readOnly
-                                    disabled
+                                    required={required}
                                   />
-                                  <label className="form-check-label">
-                                    {opt}
-                                  </label>
+                                  <label className="form-check-label">{opt}</label>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        );
+                              ))}
+                            </div>
+                          );
+                        }
+                        return null; // Hide otherwise
                       }
 
-                      if (field.type === "radio" && field.options?.length) {
-                        return (
-                          <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">
-                              {label}
-                            </label>
-                            {field.options.map((opt, i) => (
-                              <div
-                                className="form-check form-check-inline"
-                                key={i}
-                              >
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name={field.field_name}
-                                  value={opt}
-                                  required={required}
-                                />
-                                <label className="form-check-label">
-                                  {opt}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      }
-
-                      if (field.type === "checkbox" && field.options?.length) {
-                        return (
-                          <div className="col-md-6 mb-3" key={index}>
-                            <label className="form-label d-block">
-                              {label}
-                            </label>
-                            {field.options.map((opt, i) => (
-                              <div
-                                className="form-check form-check-inline"
-                                key={i}
-                              >
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  name={`${field.field_name}[]`}
-                                  value={opt}
-                                />
-                                <label className="form-check-label">
-                                  {opt}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      }
-
+                      // ✅ Handle generic select
                       if (field.type === "select" && field.options?.length) {
                         return (
                           <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label">{label}</label>
                             <select
                               name={field.field_name}
                               className="form-select"
                               required={required}
                               defaultValue=""
                             >
-                              <option value="" disabled>
-                                {label}
-                              </option>
+                              <option value="" disabled>{label}</option>
                               {field.options.map((opt, i) => (
-                                <option key={i} value={opt}>
-                                  {opt}
-                                </option>
+                                <option key={i} value={opt}>{opt}</option>
                               ))}
                             </select>
                           </div>
                         );
                       }
 
-                      if (field.type === "date") {
-                        return (
-                          <div className="col-md-6 mb-3" key={index}>
-                            <input
-                              type="date"
-                              name={field.field_name}
-                              className="form-control"
-                              placeholder={label}
-                              required={required}
-                            />
-                          </div>
-                        );
-                      }
-
+                      // ✅ Handle file uploads
                       if (field.type === "file") {
                         return (
                           <div className="col-md-12 mb-3" key={index}>
@@ -302,17 +241,32 @@ export default function ApplyForm() {
                               type="file"
                               name={field.field_name}
                               className="form-control"
-                              multiple={field.field_name.includes(
-                                "certificates"
-                              )}
+                              multiple={field.field_name.includes("certificates")}
                               required={required}
                             />
                           </div>
                         );
                       }
 
+                      // ✅ Handle date input
+                      if (field.type === "date") {
+                        return (
+                          <div className="col-md-6 mb-3" key={index}>
+                            <label className="form-label">{label}</label>
+                            <input
+                              type="date"
+                              name={field.field_name}
+                              className="form-control"
+                              required={required}
+                            />
+                          </div>
+                        );
+                      }
+
+                      // ✅ Fallback: text, email, number...
                       return (
                         <div className="col-md-6 mb-3" key={index}>
+                          <label className="form-label">{label}</label>
                           <input
                             type={field.type}
                             name={field.field_name}
@@ -323,6 +277,7 @@ export default function ApplyForm() {
                         </div>
                       );
                     })}
+
                   </div>
 
                   <div className="event-action mt-4 text-center">

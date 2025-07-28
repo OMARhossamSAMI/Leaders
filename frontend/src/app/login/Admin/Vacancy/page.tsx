@@ -14,7 +14,12 @@ interface Job {
   title: string;
   careerLevel: string;
   employmentType: string;
+  academicYear: string;
+  startYear: number;
+  endYear: number;
+  createdAt: string;
 }
+
 
 interface Vacancy {
   _id: string;
@@ -29,7 +34,10 @@ interface FormField {
   label: string;
   type: string;
   required: boolean;
+  options?: string[]; // ✅ used for select, checkbox, radio
+  order: number;      // ✅ to support field ordering
 }
+
 type FormDataMap = {
   [key: string]: string | number | boolean | File | string[] | undefined;
 };
@@ -48,6 +56,23 @@ export default function JobManagementPage() {
   const pathname = usePathname();
   const isInternshipPage = pathname.includes("/Internship");
   const router = useRouter();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  const baseYear = currentMonth >= 6 ? currentYear : currentYear - 1;
+
+  const currentAcademic = `${String(baseYear).slice(2)}/${String(baseYear + 1).slice(2)}`;
+  const nextAcademic = `${String(baseYear + 1).slice(2)}/${String(baseYear + 2).slice(2)}`;
+
+  const academicYearOptions = [currentAcademic, nextAcademic];
+
+  const [academicYear, setAcademicYear] = useState(currentAcademic);
+  const [startYear, setStartYear] = useState(baseYear);
+  const [endYear, setEndYear] = useState(baseYear + 1);
+
+
+
 
   // Auth
   useEffect(() => {
@@ -111,11 +136,22 @@ export default function JobManagementPage() {
         title,
         careerLevel,
         employmentType,
+        academicYear,
+        startYear,
+        endYear,
       });
       alert("Job created successfully");
       setTitle("");
       setCareerLevel("Experienced (Non-Manager)");
       setEmploymentType(isInternshipPage ? "Internship" : "Full Time");
+
+      // Reset academic year selection (optional)
+      const currentDate = new Date();
+      const baseYear = currentDate.getMonth() + 1 >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
+      setAcademicYear(`${String(baseYear).slice(2)}/${String(baseYear + 1).slice(2)}`);
+      setStartYear(baseYear);
+      setEndYear(baseYear + 1);
+
       fetchJobs();
       setActiveTab("view");
     } catch (err) {
@@ -123,6 +159,7 @@ export default function JobManagementPage() {
       console.error(err);
     }
   };
+
 
   const handleDeleteJob = async (id: string) => {
     if (!confirm("Delete this job?")) return;
@@ -193,8 +230,32 @@ export default function JobManagementPage() {
         label: "",
         type: "text",
         required: false,
+        options: [], // optional, safe to default
+        order: prev.length, // add new field to the end
       },
     ]);
+  };
+
+
+  const addOption = (fieldIndex: number) => {
+    const updated = [...formFields];
+    if (!updated[fieldIndex].options) updated[fieldIndex].options = [];
+    updated[fieldIndex].options.push("");
+    setFormFields(updated);
+  };
+
+  const updateOption = (fieldIndex: number, optionIndex: number, value: string) => {
+    const updated = [...formFields];
+    if (!updated[fieldIndex].options) return;
+    updated[fieldIndex].options[optionIndex] = value;
+    setFormFields(updated);
+  };
+
+  const removeOption = (fieldIndex: number, optionIndex: number) => {
+    const updated = [...formFields];
+    if (!updated[fieldIndex].options) return;
+    updated[fieldIndex].options.splice(optionIndex, 1);
+    setFormFields(updated);
   };
 
   const saveFields = async () => {
@@ -273,17 +334,15 @@ export default function JobManagementPage() {
             View Vacancies
           </button>
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             View Applications
           </button>
           <button
-            className={`tab-btn ${
-              activeTab === "edit-structure" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "edit-structure" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("edit-structure")}
           >
             Edit Form Structure
@@ -297,6 +356,8 @@ export default function JobManagementPage() {
                 <Briefcase size={28} className="me-2" />
                 Create New Vacancy
               </h2>
+
+              {/* Job Title */}
               <div className="form-group">
                 <label>
                   <User size={16} className="me-2" /> Job Title
@@ -308,6 +369,8 @@ export default function JobManagementPage() {
                   required
                 />
               </div>
+
+              {/* Career Level */}
               <div className="form-group">
                 <label>
                   <User size={16} className="me-2" /> Career Level
@@ -319,6 +382,8 @@ export default function JobManagementPage() {
                   required
                 />
               </div>
+
+              {/* Employment Type */}
               <div className="form-group">
                 <label>
                   <Clock size={16} className="me-2" /> Employment Type
@@ -340,11 +405,47 @@ export default function JobManagementPage() {
                   )}
                 </select>
               </div>
+
+              {/* Academic Year */}
+              <div className="form-group">
+                <label>
+                  <Clock size={16} className="me-2" /> Academic Year
+                </label>
+                <select
+                  className="form-input"
+                  value={academicYear}
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    setAcademicYear(selected);
+
+                    const [shortStart, shortEnd] = selected.split('/');
+                    const start = 2000 + parseInt(shortStart);
+                    const end = 2000 + parseInt(shortEnd);
+
+                    setStartYear(start);
+                    setEndYear(end);
+                  }}
+                  required
+                >
+                  {academicYearOptions.map((year) => {
+                    const [start, end] = year.split('/');
+                    return (
+                      <option key={year} value={year}>
+                        {`20${start} / 20${end}`}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+
+
               <button type="submit" className="btn-primary mt-3">
                 Save Job
               </button>
             </form>
           )}
+
 
           {activeTab === "view" && (
             <>
@@ -357,9 +458,12 @@ export default function JobManagementPage() {
                   <div key={job._id} className="card">
                     <h5>{job.title}</h5>
                     <p>
-                      <strong>Career Level:</strong> {job.careerLevel}
-                      <br />
-                      <strong>Type:</strong> {job.employmentType}
+                      <strong>Career Level:</strong> {job.careerLevel}<br />
+                      <strong>Type:</strong> {job.employmentType}<br />
+                      <strong>Academic Year:</strong> {job.academicYear}<br />
+                      <strong>Start Year:</strong> {job.startYear}<br />
+                      <strong>End Year:</strong> {job.endYear}<br />
+                      <strong>Created At:</strong> {new Date(job.createdAt).toLocaleDateString()}
                     </p>
                     <button
                       className="btn-danger btn-sm"
@@ -474,7 +578,6 @@ export default function JobManagementPage() {
               </div>
             </>
           )}
-
           {activeTab === "edit-structure" && (
             <>
               <h2 className="section-heading">
@@ -489,6 +592,7 @@ export default function JobManagementPage() {
               ) : (
                 formFields.map((field, index) => (
                   <div key={field.id || index} className="form-structure-box">
+                    {/* Field name and label */}
                     <input
                       className="form-input"
                       value={field.field_name}
@@ -505,23 +609,25 @@ export default function JobManagementPage() {
                       }
                       placeholder="Field Label"
                     />
+
+                    {/* Type select */}
                     <select
                       className="form-input"
                       value={field.type}
-                      onChange={(e) =>
-                        updateField(index, "type", e.target.value)
-                      }
+                      onChange={(e) => updateField(index, "type", e.target.value)}
                     >
                       <option value="text">Text</option>
                       <option value="number">Number</option>
                       <option value="phone">Phone</option>
                       <option value="email">Email</option>
                       <option value="select">Select</option>
-                      <option value="checkbox">Checkbox</option>
+                      <option value="checkbox">Checkbox Group</option>
                       <option value="textarea">Textarea</option>
                       <option value="date">Date</option>
-                      <option value="file">File</option> {/* ✅ Added file */}
+                      <option value="file">File</option>
                     </select>
+
+                    {/* Required checkbox */}
                     <label className="ms-2">
                       <input
                         type="checkbox"
@@ -533,14 +639,44 @@ export default function JobManagementPage() {
                       Required
                     </label>
 
-                    {/* ✅ Optional: show message if file field */}
+                    {/* Info for file */}
                     {field.type === "file" && (
                       <div className="mt-2 text-info small">
                         📎 File upload field will allow users to attach a file.
                       </div>
                     )}
 
-                    <div className="btn-group mt-2">
+                    {/* Options field for select, checkbox group */}
+                    {(field.type === "select" || field.type === "checkbox") && (
+                      <div className="mt-3">
+                        <label className="fw-bold">Options</label>
+                        {(field.options || []).map((option: string, optIdx: number) => (
+                          <div key={optIdx} className="d-flex align-items-center mb-1">
+                            <input
+                              className="form-input me-2"
+                              value={option}
+                              onChange={(e) => updateOption(index, optIdx, e.target.value)}
+                              placeholder={`Option ${optIdx + 1}`}
+                            />
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => removeOption(index, optIdx)}
+                            >
+                              ✖
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          className="btn btn-sm btn-secondary mt-1"
+                          onClick={() => addOption(index)}
+                        >
+                          ➕ Add Option
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Field controls */}
+                    <div className="btn-group mt-3">
                       <button
                         className="btn-move"
                         onClick={() => moveFieldUp(index)}
@@ -575,6 +711,7 @@ export default function JobManagementPage() {
               </button>
             </>
           )}
+
         </div>
       </div>
 
