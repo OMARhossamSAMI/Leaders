@@ -933,7 +933,7 @@ export default function AboutPage() {
                               .
                             </p>
 
-                            <h4 className="mt-4">Campus Features</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
                             <ul
                               style={{
                                 lineHeight: "1.8",
@@ -986,7 +986,7 @@ export default function AboutPage() {
                               </li>
                             </ul>
 
-                            <h4 className="mt-4">Access and Transportation</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Access and Transportation</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1000,7 +1000,7 @@ export default function AboutPage() {
                               available for families and visitors.
                             </p>
 
-                            <h4 className="mt-4">Safety and Security</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Safety and Security</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
@@ -1014,7 +1014,7 @@ export default function AboutPage() {
                               maintain a secure learning environment.
                             </p>
 
-                            <h4 className="mt-4">Virtual Tour</h4>
+                            <h4 style={{ color: "var(--accent-color)" }}>Virtual Tour</h4>
                             <p
                               style={{
                                 lineHeight: "1.8",
