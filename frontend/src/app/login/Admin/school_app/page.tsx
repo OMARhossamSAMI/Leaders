@@ -7,7 +7,6 @@ import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
 
-
 type FieldValue = string | number | boolean | string[] | File | null;
 
 interface Application {
@@ -17,7 +16,6 @@ interface Application {
   data: Record<string, FieldValue>; // all dynamic fields stored here
   files?: { originalname: string; path: string }[];
 }
-
 
 interface FormField {
   field_name: string;
@@ -71,7 +69,9 @@ export default function ApplicationsPage() {
         console.log("✅ Loaded form fields:", data);
         setFormFields(data);
       })
-      .catch((err: unknown) => console.error("Failed to fetch form fields", err));
+      .catch((err: unknown) =>
+        console.error("Failed to fetch form fields", err)
+      );
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
       .then((res) => res.json())
@@ -85,12 +85,17 @@ export default function ApplicationsPage() {
 
         console.log("✅ Normalized apps:", normalized);
         normalized.forEach((app, idx) => {
-          console.log(`📄 Application #${idx} data keys:`, Object.keys(app.data || {}));
+          console.log(
+            `📄 Application #${idx} data keys:`,
+            Object.keys(app.data || {})
+          );
         });
 
         setApplications(normalized);
       })
-      .catch((err: unknown) => console.error("Failed to fetch applications", err))
+      .catch((err: unknown) =>
+        console.error("Failed to fetch applications", err)
+      )
       .finally(() => setLoadingApplications(false));
   }, []);
 
@@ -255,16 +260,23 @@ export default function ApplicationsPage() {
     setFormStructureDraft(updated);
   };
 
-
   // ✅ Export to CSV function
   const exportToExcel = () => {
     const csvRows: string[] = [];
 
-    const headers = [...formFields.map((f) => f.label), "Submitted", "Last Updated", "Uploaded Files"];
+    const headers = [
+      ...formFields.map((f) => f.label),
+      "Submitted",
+      "Last Updated",
+      "Uploaded Files",
+    ];
     csvRows.push(headers.join(","));
 
     console.log("📋 Exporting CSV...");
-    console.log("📂 Form field names:", formFields.map(f => f.field_name));
+    console.log(
+      "📂 Form field names:",
+      formFields.map((f) => f.field_name)
+    );
 
     applications.forEach((app, appIndex) => {
       const row: string[] = [];
@@ -275,15 +287,18 @@ export default function ApplicationsPage() {
         const val = app?.data?.[field.field_name];
         console.log(`   🔎 Field "${field.field_name}" →`, val);
 
-        if (field.type === "date" && typeof val === "string" && val.trim() !== "") {
+        if (
+          field.type === "date" &&
+          typeof val === "string" &&
+          val.trim() !== ""
+        ) {
           try {
             const formattedDate = new Date(val).toLocaleDateString("en-GB"); // → DD/MM/YYYY
             row.push(`"${formattedDate}"`);
-          } catch (e) {
+          } catch {
             row.push(`"${val}"`); // fallback
           }
-        }
-        else if (Array.isArray(val)) {
+        } else if (Array.isArray(val)) {
           row.push(`"${val.join(",").replace(/"/g, '""')}"`);
         } else if (typeof val === "object" && val !== null) {
           row.push(`"${JSON.stringify(val).replace(/"/g, '""')}"`);
@@ -291,7 +306,6 @@ export default function ApplicationsPage() {
           row.push(`"${String(val ?? "Not provided").replace(/"/g, '""')}"`);
         }
       });
-
 
       row.push(`"${new Date(app.createdAt).toISOString()}"`);
       row.push(`"${new Date(app.updatedAt).toISOString()}"`);
@@ -321,9 +335,6 @@ export default function ApplicationsPage() {
     URL.revokeObjectURL(url);
   };
 
-
-
-
   return (
     <>
       <AdminHeader />
@@ -349,8 +360,9 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
-              }`}
+            className={`tab-btn ${
+              activeTab === "applications" ? "active-tab" : ""
+            }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -377,8 +389,6 @@ export default function ApplicationsPage() {
           {activeTab === "applications" && (
             <>
               {loadingApplications ? (
-
-
                 <>
                   <button
                     onClick={exportToExcel}
@@ -450,7 +460,6 @@ export default function ApplicationsPage() {
                           gap: "1.5rem",
                         }}
                       >
-
                         {Array.isArray(applications) &&
                           applications.map((app) => {
                             const displayName =
@@ -509,8 +518,8 @@ export default function ApplicationsPage() {
                                   <strong>Submitted:</strong>{" "}
                                   {app.createdAt
                                     ? new Date(
-                                      String(app.createdAt)
-                                    ).toLocaleDateString()
+                                        String(app.createdAt)
+                                      ).toLocaleDateString()
                                     : "N/A"}
                                 </p>
 
@@ -557,7 +566,7 @@ export default function ApplicationsPage() {
                                             <strong>{field.label}:</strong>{" "}
                                             {renderFieldValue(
                                               expandedData[app._id]?.data?.[
-                                              field.field_name
+                                                field.field_name
                                               ]
                                             )}
                                           </p>
@@ -584,7 +593,7 @@ export default function ApplicationsPage() {
                                                 value={
                                                   getSafeInputValue(
                                                     editingApp?.data?.[
-                                                    field.field_name
+                                                      field.field_name
                                                     ]
                                                   ) || ""
                                                 }
@@ -602,7 +611,10 @@ export default function ApplicationsPage() {
 
                                                 {Array.isArray(field.options) &&
                                                   field.options.map((opt) => (
-                                                    <option key={opt} value={opt}>
+                                                    <option
+                                                      key={opt}
+                                                      value={opt}
+                                                    >
                                                       {opt}
                                                     </option>
                                                   ))}
@@ -612,7 +624,7 @@ export default function ApplicationsPage() {
                                                 type={field.type}
                                                 value={getSafeInputValue(
                                                   editingApp?.data?.[
-                                                  field.field_name
+                                                    field.field_name
                                                   ]
                                                 )}
                                                 onChange={(e) =>
