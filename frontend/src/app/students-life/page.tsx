@@ -252,7 +252,9 @@ export default function StudentsLifePage() {
                         data-aos="fade-right"
                         data-aos-delay={200}
                       >
-                        <h3>Athletics &amp; Recreation Programs</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>Athletics &amp; Recreation</h2>
+                        <h2>programs</h2>
                         <p>
                           Explore a wide range of Athletics &amp; Recreation
                           Programs that promote teamwork, fitness, and school
@@ -260,6 +262,7 @@ export default function StudentsLifePage() {
                           activities.
                         </p>
                       </div>
+                    </div>
                       <div
                         className="col-lg-6"
                         data-aos="fade-left"
@@ -297,7 +300,6 @@ export default function StudentsLifePage() {
                           />
                           <div className="sport-info">
                             <h5>Swimming</h5>
-                            <div className="badge">Varsity</div>
                           </div>
                         </div>
 
@@ -311,7 +313,6 @@ export default function StudentsLifePage() {
                           />
                           <div className="sport-info">
                             <h5>Football</h5>
-                            <div className="badge">Varsity</div>
                           </div>
                         </div>
 
@@ -325,7 +326,6 @@ export default function StudentsLifePage() {
                           />
                           <div className="sport-info">
                             <h5>Basketball</h5>
-                            <div className="badge">Varsity</div>
                           </div>
                         </div>
 
@@ -339,7 +339,6 @@ export default function StudentsLifePage() {
                           />
                           <div className="sport-info">
                             <h5>Volleyball</h5>
-                            <div className="badge">Varsity</div>
                           </div>
                         </div>
                       </div>
@@ -374,7 +373,6 @@ export default function StudentsLifePage() {
                             textAlign: "left",
                           }}
                         >
-                          <h4>Introduction</h4>
                           <p>
                             We believe in the power of extracurricular
                             activities to enhance student life and foster
@@ -384,7 +382,9 @@ export default function StudentsLifePage() {
                             development.
                           </p>
 
-                          <h4>Leadership and Skills Development</h4>
+                          <h4 style={{ color: "var(--accent-color)" }}>
+                            Leadership and Skills Development
+                          </h4>
                           <p>
                             Extracurricular activities at Leaders International
                             College are more than just hobbies; they are a
@@ -394,7 +394,7 @@ export default function StudentsLifePage() {
                             learn the value of teamwork and cooperation.
                           </p>
 
-                          <h4>Engaging Environment</h4>
+                          <h4 style={{ color: "var(--accent-color)" }}>Engaging Environment</h4>
                           <p>
                             Our school fosters an environment where students are
                             encouraged to try new things and explore their
@@ -435,7 +435,10 @@ export default function StudentsLifePage() {
                             padding: "40px",
                           }}
                         >
-                          <h3>Wide Range of Options</h3>
+                          <div className="container section-title" data-aos="fade-up">
+                            <h2>Wide</h2>
+                            <h2>Range Of Options</h2>
+                          </div>                          
                           <p>
                             Students at Leaders International College can choose
                             from a wide array of extracurricular options,
@@ -493,7 +496,7 @@ export default function StudentsLifePage() {
                             </div>
                           </div>
                           <Link
-                            href="#"
+                            href="/admissions"
                             className="btn btn-explore mt-3"
                             style={{
                               display: "inline-block",
@@ -505,7 +508,7 @@ export default function StudentsLifePage() {
                               fontWeight: 600,
                             }}
                           >
-                            Virtual Campus Tour{" "}
+                            Apply Now{" "}
                             <i className="bi bi-arrow-right ms-1" />
                           </Link>
                         </div>
@@ -531,12 +534,14 @@ export default function StudentsLifePage() {
                       }}
                     >
                       <header className="dayinlic-header">
-                        <h1>Day in the Life of an LIC Student</h1>
-                        <p>
+                        <div className="container section-title" data-aos="fade-up">
+                            <h2>Day in the Life of an LIC Student</h2>
+                            <p>
                           At Leaders International College, each day is
                           thoughtfully planned to balance academics, activities,
                           and personal growth.
                         </p>
+                          </div>    
                       </header>
                       <div className="dayinlic-cards">
                         {/* Morning Arrival */}
@@ -677,13 +682,15 @@ export default function StudentsLifePage() {
                       }}
                     >
                       <header className="healthwellness-header">
-                        <h1>Commitment to Student Well-being</h1>
-                        <p>
+                        <div className="container section-title" data-aos="fade-up">
+                            <h2>Commitment to Student Well-being</h2>
+                          <p>
                           At Leaders International College, student well-being
                           is at the heart of our mission — blending healthcare,
                           mental support, fitness, nutrition, and wellness
                           education.
                         </p>
+                        </div>  
                       </header>
                       <div className="healthwellness-cards">
                         {/* Health Center */}
@@ -807,7 +814,6 @@ export default function StudentsLifePage() {
                         </article>
                       </div>
                       <footer className="healthwellness-conclusion">
-                        <h4>Conclusion</h4>
                         <p>
                           Health and wellness are woven into the fabric of
                           student life at LIC. With medical care, counseling,
@@ -834,6 +840,9 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
+                      <div className="container section-title" data-aos="fade-up">
+                            <h2>Clubs</h2>
+                        </div>  
                       <div className="row justify-content-center align-items-start">
                         {/* COLUMN 1 */}
                         <div className="col-lg-5 mb-4 mb-lg-0">
@@ -845,7 +854,8 @@ export default function StudentsLifePage() {
                               borderRadius: "8px",
                             }}
                           >
-                            <h3>Clubs at Leaders International College</h3>
+                            
+                            <h4 style={{ color: "var(--accent-color)" }}>Clubs at Leaders International College</h4>
                             <p>
                               At Leaders International College, clubs play a
                               vital role in the holistic development of our
@@ -870,7 +880,7 @@ export default function StudentsLifePage() {
                               borderRadius: "8px",
                             }}
                           >
-                            <h4>Dynamic Club Offerings</h4>
+                           <h4 style={{ color: "var(--accent-color)" }}>Dynamic Club Offerings</h4>
                             <p>
                               Our selection of clubs is specially designed to
                               cater to the diverse interests of our young
@@ -953,10 +963,10 @@ export default function StudentsLifePage() {
 
                           <div className="club-card">
                             <Image
-                              src="/assets/img/education/CHESS2.png"
+                              src="/assets/img/education/CHESS5.png"
                               alt="Chess Club"
-                              width={400}
-                              height={200}
+                              width={200}
+                              height={100}
                               className="img-fluid rounded-top"
                               style={{
                                 objectFit: "cover",
@@ -973,54 +983,46 @@ export default function StudentsLifePage() {
                       </div>
 
                       {/* ✅ Benefits + Conclusion row stays the same */}
-                      <div className="clubs-info-row">
-                        <section className="clubs-benefits">
-                          <h4>Benefits of Participation</h4>
-                          <div className="text-start">
-                            <ul style={{ listStyle: "none", padding: 0 }}>
-                              <li className="mb-2">
-                                <i
-                                  className="bi bi-check-circle-fill me-2"
-                                  style={{ color: "hsl(193, 75%, 54%)" }}
-                                ></i>
-                                Explore interests in a structured, fun
-                                environment.
+                      <div className="clubs-info-row d-flex justify-content-center">
+                        <section className="clubs-benefits text-center" style={{ maxWidth: "600px" }}>
+                          <h4 style={{ color: "var(--accent-color)",  marginBottom: "1rem" }}>
+                            Benefits of Participation
+                          </h4>
+                          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                            {[
+                              {
+                                icon: "bi-check-circle-fill",
+                                text: "Explore interests in a structured, fun environment.",
+                              },
+                              {
+                                icon: "bi-people-fill",
+                                text: "Build social skills by engaging with peers.",
+                              },
+                              {
+                                icon: "bi-award-fill",
+                                text: "Gain a sense of belonging and achievement.",
+                              },
+                              {
+                                icon: "bi-person-check-fill",
+                                text: "Strengthen teamwork and leadership abilities.",
+                              },
+                            ].map(({ icon, text }, idx) => (
+                              <li key={idx} className="mb-2 d-flex align-items-center justify-content-center">
+                                <i className={`bi ${icon} me-2`} style={{ color: "var(--accent-color)" }}></i>
+                                <span>{text}</span>
                               </li>
-                              <li className="mb-2">
-                                <i
-                                  className="bi bi-people-fill me-2"
-                                  style={{ color: "hsl(193, 75%, 54%)" }}
-                                ></i>
-                                Build social skills by engaging with peers.
-                              </li>
-                              <li className="mb-2">
-                                <i
-                                  className="bi bi-award-fill me-2"
-                                  style={{ color: "hsl(193, 75%, 54%)" }}
-                                ></i>
-                                Gain a sense of belonging and achievement.
-                              </li>
-                              <li className="mb-2">
-                                <i
-                                  className="bi bi-person-check-fill me-2"
-                                  style={{ color: "hsl(193, 75%, 54%)" }}
-                                ></i>
-                                Strengthen teamwork and leadership abilities.
-                              </li>
-                            </ul>
-                          </div>
+                            ))}
+                          </ul>
                         </section>
-
-                        <section className="clubs-conclusion">
-                          <h4>Conclusion</h4>
-                          <p>
-                            Clubs at Leaders International College are a key
+                      </div>
+                      <footer className="healthwellness-conclusion">
+                        <p>
+                          Clubs at Leaders International College are a key
                             part of our educational mission. By offering
                             dynamic, interest-based clubs, we help students grow
                             both personally and academically.
-                          </p>
-                        </section>
-                      </div>
+                        </p>
+                      </footer>
                     </section>
                   </div>
 
@@ -1041,9 +1043,10 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <header className="trips-header text-center mb-4">
-                        <h3>Trips</h3>
-                      </header>
+                      
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>Trips</h2>
+                      </div>
 
                       <div className="trips-grid">
                         <div className="trip-card">
@@ -1090,8 +1093,7 @@ export default function StudentsLifePage() {
                           </p>
                         </div>
                       </div>
-
-                      <footer className="trips-conclusion mt-4">
+                      <footer className="healthwellness-conclusion">
                         <p>
                           Trips at Leaders International College are more than
                           just educational outings; they are pivotal experiences
@@ -1123,15 +1125,15 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <header className="council-header text-center mb-5">
-                        <h3>Student Council</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>Student Council</h2>
                         <p>
                           The Student Council at Leaders International College
                           plays a crucial role in our school community,
                           representing the student body and enhancing school
                           life through leadership and initiative.
                         </p>
-                      </header>
+                      </div>
 
                       <section className="council-functions mb-5">
                         <h4>Key Functions</h4>
@@ -1211,34 +1213,38 @@ export default function StudentsLifePage() {
                           </div>
                         </div>
                       </section>
-
-                      <section className="council-participation mb-5">
-                        <h4>Participation and Elections</h4>
-                        <p>
-                          Participation in the Student Council is open to all
-                          students through an annual democratic election
-                          process. This opportunity allows students to develop
-                          essential leadership skills, engage in school
-                          governance, and influence key aspects of their
-                          educational environment.
-                        </p>
-                      </section>
-
-                      <section className="council-impact mb-5">
-                        <h4>Impact</h4>
-                        <p>
-                          Serving on the Student Council helps students develop
-                          crucial skills like leadership, decision-making, and
-                          communication, preparing them for active participation
-                          in their communities and future careers.
-                        </p>
-                        <p>
-                          The Student Council is integral to student life at
-                          Leaders International College, empowering students to
-                          take on leadership roles and make a positive impact
-                          within and beyond the school.
-                        </p>
-                      </section>
+                      <div className="row justify-content-center g-4">
+                        {/* Impact Card */}
+                        <div className="col-md-6">
+                          <section
+                            className="council-impact p-4 shadow-sm rounded"
+                            style={{ backgroundColor: "#f9f9f9", height: "100%" }}
+                          >
+                            <h4 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                              Impact
+                            </h4>
+                            <p className="mt-3">
+                              Serving on the Student Council helps students develop essential skills such as leadership, decision-making, and communication, preparing them for active participation in their communities and future careers. At Leaders International College, the Student Council plays an integral role in student life, empowering learners to take on leadership positions and make a meaningful impact both within the school and beyond.
+                            </p>
+                          </section>
+                        </div>
+                        {/* Participation Card */}
+                        <div className="col-md-6">
+                          <section
+                            className="council-participation p-4 shadow-sm rounded"
+                            style={{ backgroundColor: "#f9f9f9", height: "100%" }}
+                          >
+                            <h4 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                              Participation and Elections
+                            </h4>
+                            <p className="mt-3">
+                              Participation in the Student Council is open to all students through an annual democratic
+                              election process. This opportunity allows students to develop essential leadership skills,
+                              engage in school governance, and influence key aspects of their educational environment.
+                            </p>
+                          </section>
+                        </div>
+                      </div>  
                     </section>
                   </div>
 
@@ -1259,8 +1265,8 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <header className="arts-header text-center mb-5">
-                        <h3>Arts Programs</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>Arts Programs</h2>
                         <p>
                           Our arts programs are dedicated to nurturing
                           creativity and artistic expression among students. We
@@ -1269,7 +1275,7 @@ export default function StudentsLifePage() {
                           develop their talents in music, drama, painting, and
                           more.
                         </p>
-                      </header>
+                      </div>
 
                       <div className="arts-grid">
                         <div className="arts-card">
@@ -1330,8 +1336,7 @@ export default function StudentsLifePage() {
                           </p>
                         </div>
                       </div>
-
-                      <footer className="arts-conclusion">
+                      <footer className="healthwellness-conclusion">
                         <p>
                           The arts programs at Leaders International College are
                           a cornerstone of our educational philosophy, providing
@@ -1364,8 +1369,8 @@ export default function StudentsLifePage() {
                       }}
                     >
                       {/* Header */}
-                      <header className="events-header text-center mb-5">
-                        <h3>School Events</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>School Events</h2>
                         <p>
                           At Leaders International College, our vibrant school
                           calendar is filled with a diverse array of events that
@@ -1374,11 +1379,15 @@ export default function StudentsLifePage() {
                           spirit, celebrate achievements, and bring together
                           students, staff, and families in meaningful ways.
                         </p>
-                      </header>
-
+                      </div>
                       {/* Highlight Events: Top 3 (PYP, MYP, DP) */}
                       <section className="events-highlights mb-5">
-                        <h4 className="text-center mb-4">Highlight Events</h4>
+                        <h4
+                          className="text-center mb-4"
+                          style={{ color: "var(--accent-color)" }}
+                        >
+                          Highlight Events
+                        </h4>
                         <div
                           className="event-grid"
                           style={{
@@ -1536,55 +1545,44 @@ export default function StudentsLifePage() {
                         </div>
                       </div>
 
-                      {/* Community Engagement */}
-                      <section className="events-community my-5">
-                        <h4>Community Engagement</h4>
-                        <p>
-                          We ensure our school calendar is packed with events
-                          that invite and bring together our entire school
-                          community. These occasions enrich the educational
-                          experience and strengthen bonds among students,
-                          teachers, and families.
-                        </p>
-                      </section>
+                      <div className="row g-4 justify-content-center">
+                      {/* First Card */}
+                      <div className="col-md-6">
+                        <div className="event-card p-4 rounded shadow-sm h-100">
+                          <h5
+                            className="fw-bold mb-3"
+                            style={{ color: "var(--accent-color)" }}
+                          >
+                            Science Fair
+                          </h5>
+                          <p>
+                            Our annual Science Fair encourages students to explore innovative ideas
+                            and present creative projects that showcase their understanding of
+                            scientific principles and real-world applications.
+                          </p>
+                        </div>
+                      </div>
 
-                      {/* Access Calendar */}
-                      <section className="events-community my-5">
-                        <h4>Access the School Calendar</h4>
-                        <p>
-                          To keep our community informed and engaged, a detailed
-                          school calendar is available for download. This
-                          calendar outlines all our scheduled events, allowing
-                          students and parents to plan ahead and participate
-                          fully. Check out the upcoming events and mark your
-                          calendars!
-                        </p>
-                        <p className="mt-4">
-                          Our school events play a crucial role in creating an
-                          enriching and inclusive atmosphere at Leaders
-                          International College. They are integral to our
-                          educational mission, providing dynamic learning
-                          experiences and fostering a strong, supportive
-                          community. Join us in celebrating and building lasting
-                          memories throughout the school year!
-                        </p>
-                        <Link
-                          href="#"
-                          className="btn-school-calendar"
-                          style={{
-                            display: "inline-block",
-                            backgroundColor: "hsl(193, 75%, 54%)",
-                            color: "#fff",
-                            padding: "12px 24px",
-                            borderRadius: "6px",
-                            textDecoration: "none",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Download School Calendar
-                        </Link>
-                      </section>
+                      {/* Second Card */}
+                      <div className="col-md-6">
+                        <div className="event-card p-4 rounded shadow-sm h-100">
+                          <h5
+                            className="fw-bold mb-3"
+                            style={{ color: "var(--accent-color)" }}
+                          >
+                            Leadership Conference
+                          </h5>
+                          <p>
+                            The Leadership Conference brings together student leaders to participate
+                            in workshops, team-building activities, and discussions that enhance
+                            their leadership skills and collaborative mindset.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                     </section>
+                    
                   </div>
 
                   {/* Dining Services */}
@@ -1604,8 +1602,8 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <header className="dining-header text-center mb-5">
-                        <h3>On-Campus Dining Services</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>On-Campus Dining Services</h2>
                         <p>
                           At Leaders International College, our on-campus dining
                           services provide nutritious and delicious meal options
@@ -1617,7 +1615,7 @@ export default function StudentsLifePage() {
                           peers, ensuring they have the energy to learn and
                           participate in school activities effectively.
                         </p>
-                      </header>
+                      </div>
 
                       <div className="dining-card">
                         <Image
@@ -1653,8 +1651,8 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <header className="transport-header text-center mb-5">
-                        <h3>Transportation</h3>
+                      <div className="container section-title" data-aos="fade-up">
+                        <h2>Transportation</h2>
                         <p>
                           Leaders International College offers a comprehensive
                           transportation service to ensure safe and convenient
@@ -1666,7 +1664,7 @@ export default function StudentsLifePage() {
                           overall well-being and daily convenience of our
                           students and their families.
                         </p>
-                      </header>
+                      </div>
 
                       <div className="transport-card">
                         <Image

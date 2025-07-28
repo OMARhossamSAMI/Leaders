@@ -26,20 +26,22 @@ export default function AboutPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const carouselElement = document.getElementById("educationCarousel");
-    if (!carouselElement) return;
+useEffect(() => {
+  const carouselElement = document.getElementById("educationCarousel");
+  if (!carouselElement) return;
 
-    const handleSlide = (e: any) => {
-      setActiveIndex(e.to);
-    };
+  const onSlide = (e: Event) => {
+    const customEvent = e as CustomEvent<{ to: number }>;
+    setActiveIndex(customEvent.detail.to);
+  };
 
-    carouselElement.addEventListener("slide.bs.carousel", handleSlide);
+  carouselElement.addEventListener("slide.bs.carousel", onSlide);
 
-    return () => {
-      carouselElement.removeEventListener("slide.bs.carousel", handleSlide);
-    };
-  }, []);
+  return () => {
+    carouselElement.removeEventListener("slide.bs.carousel", onSlide);
+  };
+}, []);
+
   return (
     <>
       <div>
@@ -436,7 +438,6 @@ export default function AboutPage() {
                             {/* Main Carousel */}
                             <div className="carousel-inner">
                             {["A2.jpeg", "A1.jpeg", "A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].map((file, idx) => {
-                              const isWide = ["A5.jpeg", "A3.jpeg", "A4.jpeg", "A6.jpeg"].includes(file);
                               const isSmall = ["A1.jpeg", "A2.jpeg"].includes(file);
 
                               return (
