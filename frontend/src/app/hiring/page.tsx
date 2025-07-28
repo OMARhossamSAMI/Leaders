@@ -66,36 +66,19 @@ export default function WeAreHiringPage() {
           </div>
 
           {/* ✅ Tabs */}
-          <div className="container mt-5 text-center">
-            <div className="btn-group">
+         <div className="container mt-5 text-center">
+          <div className="btn-group-wrapper overflow-auto">
+            <div className="btn-group flex-nowrap" style={{ minWidth: "600px" }}>
               {[
                 { id: "opening", label: "Opening", icon: "bi-door-open" },
-                {
-                  id: "development",
-                  label: "Professional Development",
-                  icon: "bi-award",
-                },
-                {
-                  id: "working",
-                  label: "Working at LIC",
-                  icon: "bi-people-fill",
-                },
-                {
-                  id: "internship",
-                  label: "Internship Program",
-                  icon: "bi-briefcase",
-                },
-                {
-                  id: "vacancies",
-                  label: "Current Vacancies",
-                  icon: "bi-clipboard-check",
-                },
+                { id: "development", label: "Professional Development", icon: "bi-award" },
+                { id: "working", label: "Working at LIC", icon: "bi-people-fill" },
+                { id: "internship", label: "Internship Program", icon: "bi-briefcase" },
+                { id: "vacancies", label: "Current Vacancies", icon: "bi-clipboard-check" },
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  className={`btn custom-tab ${
-                    hiringSection === tab.id ? "active" : ""
-                  }`}
+                  className={`btn custom-tab ${hiringSection === tab.id ? "active" : ""}`}
                   onClick={() => setHiringSection(tab.id)}
                 >
                   <i className={`bi ${tab.icon} me-2`}></i> {tab.label}
@@ -103,6 +86,8 @@ export default function WeAreHiringPage() {
               ))}
             </div>
           </div>
+        </div>
+
 
           {/* ✅ Content Sections */}
           {/* Alumni Section */}
@@ -431,6 +416,12 @@ export default function WeAreHiringPage() {
                           <Link
                             href="/hiring/internship_apply"
                             className="btn btn-primary d-inline-flex align-items-center gap-2 px-4 py-2"
+                            style={{
+                              backgroundColor: "hsl(193, 75%, 54%)",
+                              border: "none",
+                              color: "white",
+                              fontWeight: "500",
+                            }}
                           >
                             <i className="bi bi-clipboard-check" />
                             Apply Now

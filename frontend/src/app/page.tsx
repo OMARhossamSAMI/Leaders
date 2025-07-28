@@ -422,7 +422,13 @@ export default function Home() {
                   data-aos="zoom-in"
                   data-aos-delay={100}
                 >
-                  <div className="program-item">
+                  <div
+                    className="program-item"
+                    onClick={() => {
+                      router.push("/curriculum?pyp");
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <div className="program-badge">PYP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
@@ -440,14 +446,12 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Primary Years Programme</h3>
                           <p>
-                            A nurturing, inquiry-based program for ages 3–12
-                            that builds foundational skills, curiosity, and
-                            global awareness.
+                            A nurturing, inquiry-based program for ages 3–12 that builds
+                            foundational skills, curiosity, and global awareness.
                           </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -458,6 +462,8 @@ export default function Home() {
                   className="col-lg-6 isotope-item filter-bachelor"
                   data-aos="zoom-in"
                   data-aos-delay={200}
+                  onClick={() => router.push("/curriculum?p=myp")}
+                  style={{ cursor: "pointer" }}
                 >
                   <div className="program-item">
                     <div className="program-badge">MYP</div>
@@ -477,24 +483,25 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Middle Years Programme</h3>
                           <p>
-                            A dynamic framework for students aged 11–16 that
-                            connects academic learning with real-world
-                            application and personal development.{" "}
+                            A dynamic framework for students aged 11–16 that connects academic
+                            learning with real-world application and personal development.
                           </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
                 {/* End Program Item */}
                 <div
                   className="col-lg-6 isotope-item filter-bachelor"
                   data-aos="zoom-in"
                   data-aos-delay={300}
+                  onClick={() => router.push("/curriculum?p=dp")}
+                  style={{ cursor: "pointer" }}
                 >
                   <div className="program-item">
                     <div className="program-badge">DP</div>
@@ -514,62 +521,25 @@ export default function Home() {
                         <div className="program-content">
                           <h3>Diploma Programme</h3>
                           <p>
-                            A rigorous, university-preparatory curriculum for
-                            ages 16–19 that fosters critical thinking, research
-                            skills, and global citizenship.
+                            A rigorous, university-preparatory curriculum for ages 16–19 that fosters critical thinking, research skills, and global citizenship.
                           </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
 
                 {/* End Program Item */}
                 <div
                   className="col-lg-6 isotope-item filter-master"
                   data-aos="zoom-in"
-                  data-aos-delay={200}
-                >
-                  <div className="program-item">
-                    <div className="program-badge">CB</div>
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <div className="program-image-wrapper">
-                          <Image
-                            src="/assets/img/education/cb.png"
-                            alt="Program"
-                            className="img-fluid"
-                            width={600}
-                            height={400}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-8">
-                        <div className="program-content">
-                          <h3>Character Building</h3>
-                          <p>
-                            A dedicated character education program that builds
-                            moral integrity, respect, responsibility, and
-                            empathy to shape principled, ethical future leaders.{" "}
-                          </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* End Program Item */}
-                <div
-                  className="col-lg-6 isotope-item filter-master"
-                  data-aos="zoom-in"
                   data-aos-delay={100}
+                  onClick={() => router.push("/curriculum?p=adp")}
+                  style={{ cursor: "pointer" }}
                 >
                   <div className="program-item">
                     <div className="program-badge">ADP</div>
@@ -589,24 +559,24 @@ export default function Home() {
                         <div className="program-content">
                           <h3>American Diploma</h3>
                           <p>
-                            A flexible, standards-based program for Grades 11–12
-                            offering a well-rounded education tailored to
-                            individual student goals.
+                            A flexible, standards-based program for Grades 11–12 offering a well-rounded education tailored to individual student goals.
                           </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
                 {/* End Program Item */}
                 <div
                   className="col-lg-6 isotope-item filter-certificate"
                   data-aos="zoom-in"
                   data-aos-delay={100}
+                  onClick={() => router.push("/curriculum?p=igcse")}
+                  style={{ cursor: "pointer" }}
                 >
                   <div className="program-item">
                     <div className="program-badge">IGCSE</div>
@@ -626,14 +596,47 @@ export default function Home() {
                         <div className="program-content">
                           <h3>British Program</h3>
                           <p>
-                            An internationally respected curriculum for Years
-                            10–12 that emphasizes academic excellence and
-                            readiness for higher education worldwide.
+                            An internationally respected curriculum for Years 10–12 that emphasizes academic excellence and readiness for higher education worldwide.
                           </p>
-                          <Link href="#" className="program-btn">
-                            <span>Learn More</span>{" "}
-                            <i className="bi bi-arrow-right" />
-                          </Link>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* End Program Item */}
+                <div
+                  className="col-lg-6 isotope-item filter-master"
+                  data-aos="zoom-in"
+                  data-aos-delay={200}
+                  onClick={() => router.push("/curriculum?p=cb")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="program-item">
+                    <div className="program-badge">CB</div>
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <div className="program-image-wrapper">
+                          <Image
+                            src="/assets/img/education/cb.png"
+                            alt="Program"
+                            className="img-fluid"
+                            width={600}
+                            height={400}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-8">
+                        <div className="program-content">
+                          <h3>Character Building</h3>
+                          <p>
+                            A dedicated character education program that builds moral integrity, respect, responsibility, and empathy to shape principled, ethical future leaders.
+                          </p>
+                          <span className="program-btn">
+                            Learn More <i className="bi bi-arrow-right" />
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1040,7 +1043,7 @@ export default function Home() {
         {/* Events Section */}
         <section id="events" className="events section">
           <div className="container section-title" data-aos="fade-up">
-            <h2 className="events-type-title" style={{ color: "#007acc" }}>
+            <h2 className="events-type-title">
               Upcoming School Events
             </h2>
             <p>

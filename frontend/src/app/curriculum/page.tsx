@@ -3,10 +3,31 @@
 "use client"; // ✅ Needed for useEffect in App Router
 
 import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCurriculum } from "../components/CurriculumContext";
 
 export default function CurriculumPage() {
   const { curriculumTab, setCurriculumTab } = useCurriculum();
+  const searchParams = useSearchParams();
+  const tabFromQuery = searchParams.get("p");
+
+  useEffect(() => {
+    const tabMap: Record<string, string> = {
+  pyp: "pyp",
+  myp: "myp",
+  dp: "dp",
+  cb: "character",
+  adp: "american",
+  igcse: "igcse",
+};
+
+if (tabFromQuery && tabMap[tabFromQuery]) {
+  setCurriculumTab(tabMap[tabFromQuery]);
+}
+
+
+  }, [tabFromQuery]);
+
   useEffect(() => {
     const preloader = document.getElementById("preloader");
     if (preloader) {
@@ -57,10 +78,10 @@ export default function CurriculumPage() {
               >
                 <div className="row">
                   <div className="col-12">
-                    <div className="program-tabs-scroll-wrapper">
+                    <div className="d-flex justify-content-center my-4 overflow-auto">
                       <div className="program-tabs">
                         <ul
-                          className="nav nav-tabs justify-content-center"
+                          className="nav nav-tabs flex-wrap justify-content-center gap-2"
                           role="tablist"
                         >
                           <li className="nav-item" role="presentation">
