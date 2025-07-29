@@ -293,6 +293,18 @@ export default function Header() {
                     Character Building
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/academic"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCurriculumTab("academic");
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Academics
+                  </Link>
+                </li>
               </ul>
             </li>
             <li className="dropdown">
@@ -438,6 +450,14 @@ export default function Header() {
                     onClick={() => handleHiringTab("vacancies")}
                   >
                     Current Vacancies
+                  </Link>
+                </li>
+                 <li>
+                  <Link
+                    href="/hiring"
+                    onClick={() => handleHiringTab("other")}
+                  >
+                    Other Vacancies
                   </Link>
                 </li>
               </ul>
