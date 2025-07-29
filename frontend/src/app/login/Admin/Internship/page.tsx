@@ -88,6 +88,19 @@ export default function InternshipApplicationsPage() {
     }
   };
 
+  const countApplicationsPerDay = (applications: InternshipApplication[]): Record<string, number> => {
+  const counts: Record<string, number> = {};
+
+  applications.forEach((app) => {
+    const date = new Date(app.createdAt).toLocaleDateString(); // Format: MM/DD/YYYY
+    counts[date] = (counts[date] || 0) + 1;
+  });
+
+  return counts;
+};
+
+
+  const applicationCounts = countApplicationsPerDay(applications);
   const handleExport = async () => {
     try {
       const response = await axios.get(
@@ -153,6 +166,17 @@ export default function InternshipApplicationsPage() {
           </div>
         </div>
 
+        <div className="application-stats mt-4">
+          <h4>📊 Applications Submitted Per Day</h4>
+          <ul>
+            {Object.entries(applicationCounts).map(([date, count]) => (
+              <li key={date}>
+                <strong>{date}:</strong> {count} application{count > 1 ? "s" : ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="internship-box">
           {loadingApplications ? (
             <div className="loader-container">
@@ -212,7 +236,7 @@ export default function InternshipApplicationsPage() {
                                 className="form-input"
                                 value={
                                   editData[
-                                    key as keyof InternshipApplication
+                                  key as keyof InternshipApplication
                                   ] || ""
                                 }
                                 onChange={(e) =>
