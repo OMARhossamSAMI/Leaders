@@ -47,8 +47,9 @@ export default function Home() {
   const [events, setEvents] = useState<EventType[]>([]);
   // New state for the live popup
   const [livePopup, setLivePopup] = useState<LivePopup | null>(null);
-  const [showPopup, setShowPopup] = useState(true); // Controls visibility
-  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const [showPopup, setShowPopup] = useState(false); // Initially hidden
+  const [, setImageLoaded] = useState(false);
 
   const router = useRouter();
 
@@ -101,7 +102,17 @@ export default function Home() {
   useEffect(() => {
     axios
       .get<LivePopup>(`${process.env.NEXT_PUBLIC_API_URL}/popup/live/only`)
-      .then((res) => setLivePopup(res.data))
+      .then((res) => {
+        setLivePopup(res.data);
+
+        // Start preloading image
+        const img = new window.Image();
+        img.src = `${process.env.NEXT_PUBLIC_API_URL}/${res.data.imagePath}`;
+        img.onload = () => {
+          setImageLoaded(true);
+          setShowPopup(true); // Show popup only after image is ready
+        };
+      })
       .catch(() => console.error("No live popup found"));
   }, []);
 
@@ -162,26 +173,11 @@ export default function Home() {
 
               <p className="notificationHeading">{livePopup.title}</p>
 
-              {/* Spinner or Image */}
               <div className="popupImageWrapper">
-                {!imageLoaded ? (
-                  <div className="image-loading-spinner">
-                    <div className="spinner" />
-                  </div>
-                ) : (
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/${livePopup.imagePath}`}
-                    alt="Popup"
-                    className="popupImage"
-                    onLoad={() => setImageLoaded(true)}
-                  />
-                )}
-                {/* 🔁 This ensures setImageLoaded triggers when ready */}
                 <img
                   src={`${process.env.NEXT_PUBLIC_API_URL}/${livePopup.imagePath}`}
-                  alt=""
-                  onLoad={() => setImageLoaded(true)}
-                  style={{ display: "none" }}
+                  alt="Popup"
+                  className="popupImage"
                 />
               </div>
 
@@ -461,13 +457,24 @@ export default function Home() {
                     <div className="program-badge">PYP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <div className="program-image-wrapper">
+                        <div
+                          className="program-image-wrapper"
+                          style={{
+                            width: "100%",
+                            height: "250px",
+                            overflow: "hidden",
+                          }}
+                        >
                           <Image
-                            src="/assets/img/education/pyp.jpg"
+                            src="/assets/img/education/PYP_NEW.jpeg"
                             alt="Program"
-                            className="img-fluid"
                             width={600}
                             height={400}
+                            style={{
+                              objectFit: "contain",
+                              width: "100%",
+                              height: "100%",
+                            }}
                           />
                         </div>
                       </div>
@@ -499,13 +506,25 @@ export default function Home() {
                     <div className="program-badge">MYP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <div className="program-image-wrapper">
+                        <div
+                          className="program-image-wrapper"
+                          style={{
+                            width: "100%",
+                            height: "250px",
+                            overflow: "hidden",
+                          }}
+                        >
                           <Image
-                            src="/assets/img/education/myp.JPG"
+                            src="/assets/img/education/MYP_NEW.jpeg"
                             alt="Program"
                             className="img-fluid"
                             width={600}
                             height={400}
+                            style={{
+                              objectFit: "contain",
+                              width: "100%",
+                              height: "100%",
+                            }}
                           />
                         </div>
                       </div>
@@ -537,13 +556,25 @@ export default function Home() {
                     <div className="program-badge">DP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <div className="program-image-wrapper">
+                        <div
+                          className="program-image-wrapper"
+                          style={{
+                            width: "100%",
+                            height: "250px",
+                            overflow: "hidden",
+                          }}
+                        >
                           <Image
-                            src="/assets/img/education/dp.jpg"
+                            src="/assets/img/education/DP_NEW.jpeg"
                             alt="Program"
                             className="img-fluid"
                             width={600}
                             height={400}
+                            style={{
+                              objectFit: "contain",
+                              width: "100%",
+                              height: "100%",
+                            }}
                           />
                         </div>
                       </div>
@@ -576,13 +607,25 @@ export default function Home() {
                     <div className="program-badge">ADP</div>
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <div className="program-image-wrapper">
+                        <div
+                          className="program-image-wrapper"
+                          style={{
+                            width: "100%",
+                            height: "250px",
+                            overflow: "hidden",
+                          }}
+                        >
                           <Image
-                            src="/assets/img/education/A1.jpeg"
+                            src="/assets/img/education/AD_NEW.jpeg"
                             alt="Program"
                             className="img-fluid"
                             width={600}
                             height={400}
+                            style={{
+                              objectFit: "contain",
+                              width: "100%",
+                              height: "100%",
+                            }}
                           />
                         </div>
                       </div>
@@ -653,13 +696,25 @@ export default function Home() {
                     <div className="program-badge">CB</div>
                     <div className="row g-0">
                       <div className="col-md-4">
-                        <div className="program-image-wrapper">
+                        <div
+                          className="program-image-wrapper"
+                          style={{
+                            width: "100%",
+                            height: "210px",
+                            overflow: "hidden",
+                          }}
+                        >
                           <Image
-                            src="/assets/img/education/cb.png"
+                            src="/assets/img/education/CB_NEW.jpeg"
                             alt="Program"
                             className="img-fluid"
                             width={600}
                             height={400}
+                            style={{
+                              objectFit: "contain",
+                              width: "100%",
+                              height: "100%",
+                            }}
                           />
                         </div>
                       </div>
@@ -739,7 +794,10 @@ export default function Home() {
                         <div className="icon-box">
                           <i className="bi bi-people-fill" />
                         </div>
-                        <h4>Student Clubs</h4>
+                        <h4 className="fw-bold activity-title">
+                          Student Clubs
+                        </h4>
+
                         <p>
                           Our dynamic club offerings in the PYP stage help
                           students discover new interests, build friendships,
@@ -756,7 +814,9 @@ export default function Home() {
                         <div className="icon-box">
                           <i className="bi bi-easel-fill" />
                         </div>
-                        <h4>Academic & Learning Environments</h4>
+                        <h4 className="fw-bold activity-title">
+                          Academic & Learning Environments
+                        </h4>
                         <p>
                           Our state-of-the-art classrooms and labs provide safe,
                           interactive spaces that foster curiosity,
@@ -773,7 +833,9 @@ export default function Home() {
                         <div className="icon-box">
                           <i className="bi bi-palette-fill" />
                         </div>
-                        <h4>Arts & Innovation</h4>
+                        <h4 className="fw-bold activity-title">
+                          Arts & Innovation
+                        </h4>
                         <p>
                           We empower students to unlock their creative potential
                           through well-equipped arts rooms that encourage
@@ -790,7 +852,9 @@ export default function Home() {
                         <div className="icon-box">
                           <i className="bi bi-tree-fill" />
                         </div>
-                        <h4>Playgrounds and Green Spaces</h4>
+                        <h4 className="fw-bold activity-title">
+                          Playgrounds and Green Spaces
+                        </h4>
                         <p>
                           Safe, age-appropriate playgrounds and lush green areas
                           inspire our youngest learners to explore and grow
@@ -879,53 +943,20 @@ export default function Home() {
                   data-aos-delay={100}
                 >
                   <div className="map-info">
-                    <h2 className="campus-map-title">
-                      Campus Map
-                      <span className="title-underline"></span>
-                    </h2>
+                    <h2>Campus Map</h2>
                     <p>
                       Navigate our expansive campus with ease using our
                       interactive map. Locate buildings, facilities, and
                       services to find your way around.
                     </p>
-
-                    <div className="map-legend">
-                      <div className="legend-item">
-                        <span className="marker-square blue"></span>
-                        <span>
-                          Main School Building – “teachers take perfect care of
-                          students”
-                        </span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="marker-square green"></span>
-                        <span>
-                          Playgrounds & Sports Areas – “great atmosphere”
-                        </span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="marker-square orange"></span>
-                        <span>
-                          Cafeteria & Dining – facilities praised for growth and
-                          learning
-                        </span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="marker-square purple"></span>
-                        <span>
-                          Visitor Parking – convenient access for parents
-                        </span>
-                      </div>
-                    </div>
-
-                    <Link
-                      href="https://www.google.com/maps/dir/?api=1&destination=Leaders International College، 21 El Narges Services Region, Off 90th Road, Cairo Governorate 11835"
-                      className="btn btn-map"
+                    <a
+                      href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
+                      className="custom-direction-btn"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <i className="bi bi-geo-alt me-2"></i> Get Directions
-                    </Link>
+                      <i className="bi bi-geo-alt-fill"></i> Get Directions
+                    </a>
                   </div>
                 </div>
 
@@ -949,78 +980,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              <style jsx>{`
-                .campus-map-title {
-                  position: relative;
-                  font-weight: 700;
-                }
-
-                .title-underline {
-                  display: block;
-                  width: 40px;
-                  height: 3px;
-                  background: #00b4e6;
-                  margin-top: 5px;
-                }
-
-                .map-legend {
-                  margin-top: 20px;
-                }
-
-                .legend-item {
-                  display: flex;
-                  align-items: center;
-                  margin-bottom: 10px;
-                  font-size: 16px;
-                }
-
-                .marker-square {
-                  display: inline-block;
-                  width: 15px;
-                  height: 15px;
-                  border-radius: 3px;
-                  margin-right: 10px;
-                }
-
-                .marker-square.blue {
-                  background: #4285f4;
-                }
-                .marker-square.green {
-                  background: #34a853;
-                }
-                .marker-square.orange {
-                  background: #fbbc05;
-                }
-                .marker-square.purple {
-                  background: #673ab7;
-                }
-
-                .btn-map {
-                  display: inline-flex;
-                  align-items: center;
-                  background: #00b4e6;
-                  color: #fff;
-                  border: none;
-                  padding: 10px 25px;
-                  border-radius: 50px;
-                  text-decoration: none;
-                  font-weight: 600;
-                  margin-top: 20px;
-                  transition: background 0.3s ease;
-                }
-
-                .btn-map:hover {
-                  background: #019ac4;
-                  text-decoration: none;
-                  color: #fff;
-                }
-
-                .map-highlights p {
-                  margin-bottom: 10px;
-                  font-size: 15px;
-                }
-              `}</style>
             </div>
           </div>
         </section>

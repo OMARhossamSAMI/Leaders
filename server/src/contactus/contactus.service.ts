@@ -27,8 +27,7 @@ export class ContactUsService {
       role,
       grade,
       subject,
-      contactMethod,
-      bestTime,
+
       message,
     } = createDto;
 
@@ -45,8 +44,7 @@ export class ContactUsService {
       <p><strong>Email Address:</strong> ${email}</p>
       <p><strong>Phone Number:</strong> ${phone}</p>
       <p><strong>Role:</strong> ${role}${grade ? ` (${grade})` : ''}</p>
-      <p><strong>Preferred Contact Method:</strong> ${contactMethod}</p>
-      ${bestTime ? `<p><strong>Best Time to Contact:</strong> ${bestTime}</p>` : ''}
+      
       <p><strong>Subject:</strong> ${subject}</p>
       <p><strong>Message:</strong></p>
       <blockquote style="margin: 10px 0; padding: 12px 16px; background: #f0f4ff; border-left: 4px solid #007bff; white-space: pre-wrap;">
@@ -65,12 +63,8 @@ export class ContactUsService {
     </h2>
     <p style="font-size: 16px;">Dear <strong>${fullName}</strong>,</p>
     <p style="font-size: 16px;">We’ve received your message regarding "<strong>${subject}</strong>".</p>
-    <p style="font-size: 16px;">Our IT support team is currently reviewing your request and will get back to you using your preferred method of contact (${contactMethod}).</p>
-    ${
-      bestTime
-        ? `<p style="font-size: 16px;">We’ll aim to contact you around: <strong>${bestTime}</strong>.</p>`
-        : ''
-    }
+    
+    
     <p style="font-size: 16px;">Here is a copy of your message:</p>
     <blockquote style="margin: 10px 0; padding: 12px 16px; background: #ffffff; border-left: 4px solid #007bff; white-space: pre-wrap;">
       ${message}

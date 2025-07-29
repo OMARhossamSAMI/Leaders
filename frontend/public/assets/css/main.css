@@ -2054,8 +2054,10 @@ section,
   font-weight: 600;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Existing */
 .events .event-card .event-tag.academic {
   background-color: #e3f2fd;
   color: #0d47a1;
@@ -2074,6 +2076,57 @@ section,
 .events .event-card .event-tag.community {
   background-color: #fff3e0;
   color: #e65100;
+}
+
+/* New categories */
+.events .event-card .event-tag.talent {
+  background-color: #fce4ec;
+  color: #ad1457;
+}
+
+.events .event-card .event-tag.environment {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+.events .event-card .event-tag.science {
+  background-color: #ede7f6;
+  color: #4527a0;
+}
+
+.events .event-card .event-tag.music {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.events .event-card .event-tag.technology {
+  background-color: #e0f7fa;
+  color: #006064;
+}
+
+.events .event-card .event-tag.fundraiser {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.events .event-card .event-tag.drama {
+  background-color: #fbe9e7;
+  color: #bf360c;
+}
+
+.events .event-card .event-tag.wellness {
+  background-color: #f1f8e9;
+  color: #33691e;
+}
+
+.events .event-card .event-tag.cultural {
+  background-color: #ede7f6;
+  color: #4a148c;
+}
+
+.events .event-card .event-tag.innovation {
+  background-color: #e3f2fd;
+  color: #01579b;
 }
 
 .events .event-card .event-meta {
@@ -9874,4 +9927,47 @@ section,
   height: 180px;
   object-fit: cover;
   border-radius: 12px;
+}
+
+.custom-direction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #32bce2;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.custom-direction-btn:hover {
+  background-color: #28accf;
+  color: white;
+  text-decoration: none;
+}
+
+.custom-direction-btn i {
+  font-size: 18px;
+}
+.activity-title {
+  font-weight: 800;
+  font-size: 1.5rem; /* Adjust as needed */
+  color: #001f3f; /* Optional: Darker shade */
+}
+.contact-list {
+  padding-left: 1.2rem;
+  margin: 0.3rem 0;
+  list-style: disc;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.contact-list li {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
 }

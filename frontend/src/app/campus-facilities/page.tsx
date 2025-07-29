@@ -121,50 +121,59 @@ export default function CampusFacilitiesPage() {
                 data-aos-delay={200}
               >
                 <div className="tab-scroll-wrapper d-flex justify-content-center">
-
-                <div className="tab-scroll-wrapper">
-  <ul className="nav nav-tabs flex-nowrap overflow-auto" role="tablist" style={{ whiteSpace: "nowrap" }}>
-    <li className="nav-item" role="presentation">
-      <button
-        className={`nav-link ${campusTab === "academic" ? "active" : ""}`}
-        type="button"
-        onClick={() => setCampusTab("academic")}
-      >
-        <i className="bi bi-book" /> Academic Environment
-      </button>
-    </li>
-    <li className="nav-item" role="presentation">
-      <button
-        className={`nav-link ${campusTab === "athletic" ? "active" : ""}`}
-        type="button"
-        onClick={() => setCampusTab("athletic")}
-      >
-        <i className="bi bi-trophy" /> Sports Facilities
-      </button>
-    </li>
-    <li className="nav-item" role="presentation">
-      <button
-        className={`nav-link ${campusTab === "technology" ? "active" : ""}`}
-        type="button"
-        onClick={() => setCampusTab("technology")}
-      >
-        <i className="bi bi-laptop" /> Technology Integration
-      </button>
-    </li>
-    <li className="nav-item" role="presentation">
-      <button
-        className={`nav-link ${campusTab === "arts" ? "active" : ""}`}
-        type="button"
-        onClick={() => setCampusTab("arts")}
-      >
-        <i className="bi bi-people" /> Arts and Innovation
-      </button>
-    </li>
-  </ul>
-</div>
-</div>
-
-
+                  <div className="tab-scroll-wrapper">
+                    <ul
+                      className="nav nav-tabs flex-nowrap overflow-auto"
+                      role="tablist"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${
+                            campusTab === "academic" ? "active" : ""
+                          }`}
+                          type="button"
+                          onClick={() => setCampusTab("academic")}
+                        >
+                          <i className="bi bi-book" /> Academic Environment
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${
+                            campusTab === "athletic" ? "active" : ""
+                          }`}
+                          type="button"
+                          onClick={() => setCampusTab("athletic")}
+                        >
+                          <i className="bi bi-trophy" /> Sports Facilities
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${
+                            campusTab === "technology" ? "active" : ""
+                          }`}
+                          type="button"
+                          onClick={() => setCampusTab("technology")}
+                        >
+                          <i className="bi bi-laptop" /> Technology Integration
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${
+                            campusTab === "arts" ? "active" : ""
+                          }`}
+                          type="button"
+                          onClick={() => setCampusTab("arts")}
+                        >
+                          <i className="bi bi-people" /> Arts and Innovation
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
                 <div className="tab-content">
                   {/* Academic Facilities Tab */}
@@ -775,7 +784,7 @@ export default function CampusFacilitiesPage() {
                         Navigate our expansive campus with ease using our
                         interactive map. Locate buildings, facilities, and
                         services to find your way around.
-                      </p>                   
+                      </p>
                       <Link
                         href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
                         className="btn-map"

@@ -31,8 +31,7 @@ export class MailService {
         <p><strong>👤 Role:</strong> ${data.role}</p>
         <p><strong>🎓 Grade:</strong> ${data.grade || 'N/A'}</p>
         <p><strong>📝 Subject:</strong> ${data.subject}</p>
-        <p><strong>📱 Preferred Contact Method:</strong> ${data.contactMethod}</p>
-        <p><strong>🕑 Best Time to Contact:</strong> ${data.bestTime || 'N/A'}</p>
+       
         <p><strong>💬 Message:</strong></p>
         <div style="padding: 10px; background-color: #f8f9fa; border-left: 4px solid #007bff; margin-top: -8px; margin-bottom: 16px;">
           ${data.message}
