@@ -466,7 +466,7 @@ export default function Home() {
                           }}
                         >
                           <Image
-                            src="/assets/img/education/PYP_NEW.jpeg"
+                            src="/assets/img/education/PYP_New.jpeg"
                             alt="Program"
                             width={600}
                             height={400}
@@ -1085,7 +1085,17 @@ export default function Home() {
                               </div>
                             </div>
                             <div className="event-actions">
-                              <Link href="/events" className="btn-learn-more">
+                              <Link
+                                href="/events"
+                                className="btn-learn-more"
+                                style={{
+                                  display: "block",
+                                  width: "44%",
+                                  maxWidth: "320px",
+                                  margin: "0 auto",
+                                  textAlign: "center",
+                                }}
+                              >
                                 Learn More
                               </Link>
                             </div>

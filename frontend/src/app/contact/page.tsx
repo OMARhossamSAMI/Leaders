@@ -364,12 +364,16 @@ export default function ContactPage() {
                     <div className="info-content">
                       <h4>School Counselor Department:</h4>
                       <li>
-                        <i className="bi bi-envelope-fill me-1" />{" "}
-                        schoolcounselorpyp1_pyp8@leadersintcollege.com
+                        <i className="bi bi-envelope-fill me-1" />
+                        <span style={{ wordBreak: "break-word" }}>
+                          schoolcounselorpyp1_pyp8@leadersintcollege.com
+                        </span>
                       </li>
                       <li>
-                        <i className="bi bi-envelope-fill me-1" />{" "}
-                        schoolcounselormyp_dp@leadersintcollege.com
+                        <i className="bi bi-envelope-fill me-1" />
+                        <span style={{ wordBreak: "break-word" }}>
+                          schoolcounselormyp_dp@leadersintcollege.com
+                        </span>
                       </li>
                       {/* <p>02 26410003</p> */}
                     </div>
