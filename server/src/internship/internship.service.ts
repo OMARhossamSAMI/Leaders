@@ -42,7 +42,7 @@ export class InternshipService {
 
     if (cv_file_url) {
       try {
-        const baseUrl = process.env.BASE_URL || 'http://localhost:3000'; // ✅ your domain here
+        const baseUrl = 'https://backend-leaders-production.up.railway.app/'; // ✅ your domain here
         const fullCvUrl = `${baseUrl}${cv_file_url}`;
 
         const response = await axios.get(fullCvUrl, {
@@ -61,6 +61,34 @@ export class InternshipService {
         };
       } catch (err) {
         console.error('⚠️ Failed to fetch/encode CV PDF:', err.message);
+      }
+    }
+    let coverLetterAttachment: any = null;
+
+    if (cover_letter_url) {
+      try {
+        const baseUrl = 'https://backend-leaders-production.up.railway.app/';
+        const fullCoverUrl = `${baseUrl}${cover_letter_url}`;
+
+        const response = await axios.get(fullCoverUrl, {
+          responseType: 'arraybuffer',
+        });
+
+        const coverBase64 = Buffer.from(response.data as ArrayBuffer).toString(
+          'base64',
+        );
+
+        coverLetterAttachment = {
+          content: coverBase64,
+          filename: `${full_name.replace(/\s+/g, '_')}_Cover_Letter.pdf`,
+          type: 'application/pdf',
+          disposition: 'attachment',
+        };
+      } catch (err) {
+        console.error(
+          '⚠️ Failed to fetch/encode Cover Letter PDF:',
+          err.message,
+        );
       }
     }
 
@@ -119,7 +147,10 @@ export class InternshipService {
 
     // ✅ Step 2: Add attachment if available
     if (cvAttachment) {
-      hrNotification.attachments = [cvAttachment];
+      hrNotification.attachments = [
+        cvAttachment,
+        ...(coverLetterAttachment ? [coverLetterAttachment] : []),
+      ];
     }
 
     try {
