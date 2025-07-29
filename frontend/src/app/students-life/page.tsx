@@ -252,11 +252,13 @@ export default function StudentsLifePage() {
                         data-aos="fade-right"
                         data-aos-delay={200}
                       >
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>Athletics &amp; Recreation</h2>
-                        <h2>Programs</h2>
-
-                        <p>
+                     <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Athletics &amp; Recreation
+                                  <span className="d-block d-md-none"><br /></span>
+                                </h2>
+                                <p>
                           Explore a wide range of Athletics &amp; Recreation
                           Programs that promote teamwork, fitness, and school
                           spirit through competitive and recreational
@@ -436,15 +438,19 @@ export default function StudentsLifePage() {
                             padding: "40px",
                           }}
                         >
-                          <div className="container section-title" data-aos="fade-up">
-                            <h2>Wide</h2>
-                            <h2>Range Of Options</h2>
-                          </div>                          
-                          <p>
-                            Students at Leaders International College can choose
-                            from a wide array of extracurricular options,
-                            including:
-                          </p>
+                          <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Wide Range Of Options
+                                  <span className="d-block d-md-none"><br /></span>
+                                </h2>
+                                <p>
+                                  Explore a wide range of Athletics &amp; Recreation
+                                  Programs that promote teamwork, fitness, and school
+                                  spirit through competitive and recreational
+                                  activities.
+                                </p>
+                              </div>
                           <div className="facilities-list">
                             <div className="facility-item mb-3">
                               <i
@@ -535,8 +541,12 @@ export default function StudentsLifePage() {
                       }}
                     >
                       <header className="dayinlic-header">
-                        <div className="container section-title" data-aos="fade-up">
-                            <h2>Day in the Life of an LIC Student</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Day in the Life of an LIC Student
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                             <p>
                           At Leaders International College, each day is
                           thoughtfully planned to balance academics, activities,
@@ -683,8 +693,12 @@ export default function StudentsLifePage() {
                       }}
                     >
                       <header className="healthwellness-header">
-                        <div className="container section-title" data-aos="fade-up">
-                            <h2>Commitment to Student Well-being</h2>
+                        <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Commitment to Student Well-being
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                           <p>
                           At Leaders International College, student well-being
                           is at the heart of our mission — blending healthcare,
@@ -841,210 +855,164 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <div className="container section-title" data-aos="fade-up">
-                            <h2>Clubs</h2>
-                        </div>  
-                    <div className="container mt-5">
-  {/* Intro Header Row */}
-  <div className="row justify-content-center align-items-start mb-5">
-    {/* Clubs at LIC */}
-    <div className="col-12 col-lg-6 mb-4 mb-lg-0">
-      <header
-        className="clubs-header text-center h-100 d-flex flex-column justify-content-center"
-        style={{
-          background: "#f5f8f7",
-          padding: "40px",
-          borderRadius: "8px",
-        }}
-      >
-        <h4 style={{ color: "var(--accent-color)" }}>
-          Clubs at Leaders International College
-        </h4>
-        <p className="mt-3">
-          At Leaders International College, clubs play a vital role in the
-          holistic development of our students during the Primary Years
-          Programme (PYP). Engaging in clubs helps students develop new skills,
-          discover passions, and build meaningful friendships. Through a variety
-          of club activities, our students explore their interests, work
-          together, and enjoy learning beyond the classroom, helping them grow
-          in confidence and creativity.
-        </p>
-      </header>
-    </div>
+                      <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Clubs
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
+                            </div>
+                    <div className="container mt-5">                     
+                        <div className="row g-4 align-items-start">
+                          {/* Art Club */}
+                          <div className="col-12 col-md-6 col-lg-4">
+                            <div className="club-card text-center shadow-sm p-3 rounded h-100">
+                              <img
+                                src="/assets/img/education/art-club.JPG"
+                                alt="Art Club"
+                                style={{
+                                  width: "100%",
+                                  height: "180px",
+                                  objectFit: "cover",
+                                  borderRadius: "6px",
+                                }}
+                              />
+                              <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Art Club</h5>
+                              <p className="small">
+                                Encourages creativity through drawing, painting, and crafting.
+                              </p>
+                            </div>
+                          </div>
 
-    {/* Dynamic Club Offerings */}
-    <div className="col-12 col-lg-6">
-      <section
-        className="clubs-dynamic text-center h-100 d-flex flex-column justify-content-center"
-        style={{
-          background: "#f5f8f7",
-          padding: "40px",
-          borderRadius: "8px",
-        }}
-      >
-        <h4 style={{ color: "var(--accent-color)" }}>Dynamic Club Offerings</h4>
-        <p className="mt-3">
-          Our selection of clubs is specially designed to cater to the diverse
-          interests of our young learners in the PYP stage. Recognizing that
-          interests can vary significantly from year to year, the range of clubs
-          offered at Leaders International College is dynamic and responsive.
-          Each academic year, we assess the interests and preferences of our
-          students and adapt our club offerings accordingly. This ensures that
-          our clubs remain engaging, relevant, and exciting for students.
-        </p>
-      </section>
-    </div>
-  </div>
-  <div className="row g-4 align-items-start">
-    {/* Art Club */}
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="club-card text-center shadow-sm p-3 rounded h-100">
-        <img
-          src="/assets/img/education/art-club.JPG"
-          alt="Art Club"
-          style={{
-            width: "100%",
-            height: "180px",
-            objectFit: "cover",
-            borderRadius: "6px",
-          }}
-        />
-        <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Art Club</h5>
-        <p className="small">
-          Encourages creativity through drawing, painting, and crafting.
-        </p>
-      </div>
-    </div>
+                          {/* Science Club */}
+                          <div className="col-12 col-md-6 col-lg-4">
+                            <div className="club-card text-center shadow-sm p-3 rounded h-100">
+                              <img
+                                src="/assets/img/education/science-club.JPG"
+                                alt="Science Club"
+                                style={{
+                                  width: "100%",
+                                  height: "180px",
+                                  objectFit: "cover",
+                                  borderRadius: "6px",
+                                }}
+                              />
+                              <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Science Club</h5>
+                              <p className="small">
+                                Engage in fun and educational scientific experiments.
+                              </p>
+                            </div>
+                          </div>
 
-    {/* Science Club */}
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="club-card text-center shadow-sm p-3 rounded h-100">
-        <img
-          src="/assets/img/education/science-club.JPG"
-          alt="Science Club"
-          style={{
-            width: "100%",
-            height: "180px",
-            objectFit: "cover",
-            borderRadius: "6px",
-          }}
-        />
-        <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Science Club</h5>
-        <p className="small">
-          Engage in fun and educational scientific experiments.
-        </p>
-      </div>
-    </div>
+                          {/* Drama Club */}
+                          <div className="col-12 col-md-6 col-lg-4">
+                            <div className="club-card text-center shadow-sm p-3 rounded h-100">
+                              <img
+                                src="/assets/img/education/Drama.jpeg"
+                                alt="Drama Club"
+                                style={{
+                                  width: "100%",
+                                  height: "180px",
+                                  objectFit: "cover",
+                                  borderRadius: "6px",
+                                }}
+                              />
+                              <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Drama Club</h5>
+                              <p className="small">
+                                Gain confidence and express creativity through performance.
+                              </p>
+                            </div>
+                          </div>
 
-    {/* Drama Club */}
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="club-card text-center shadow-sm p-3 rounded h-100">
-        <img
-          src="/assets/img/education/Drama.jpeg"
-          alt="Drama Club"
-          style={{
-            width: "100%",
-            height: "180px",
-            objectFit: "cover",
-            borderRadius: "6px",
-          }}
-        />
-        <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Drama Club</h5>
-        <p className="small">
-          Gain confidence and express creativity through performance.
-        </p>
-      </div>
-    </div>
+                          {/* Eco Club */}
+                          <div className="col-12 col-md-6 col-lg-4">
+                            <div className="club-card text-center shadow-sm p-3 rounded h-100">
+                              <img
+                                src="/assets/img/education/shagarha.png"
+                                alt="Eco Club"
+                                style={{
+                                  width: "100%",
+                                  height: "180px",
+                                  objectFit: "cover",
+                                  borderRadius: "6px",
+                                }}
+                              />
+                              <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Eco Club</h5>
+                              <p className="small">
+                                Focuses on sustainability and environmental awareness.
+                              </p>
+                            </div>
+                          </div>
 
-    {/* Eco Club */}
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="club-card text-center shadow-sm p-3 rounded h-100">
-        <img
-          src="/assets/img/education/shagarha.png"
-          alt="Eco Club"
-          style={{
-            width: "100%",
-            height: "180px",
-            objectFit: "cover",
-            borderRadius: "6px",
-          }}
-        />
-        <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Eco Club</h5>
-        <p className="small">
-          Focuses on sustainability and environmental awareness.
-        </p>
-      </div>
-    </div>
+                          {/* Chess + Benefits Row */}
+                          <div className="col-12 col-lg-8">
+                            <div className="row g-4">
+                              {/* Chess Club */}
+                              <div className="col-12 col-md-6">
+                                <div className="club-card text-center shadow-sm p-3 rounded h-100">
+                                  <img
+                                    src="/assets/img/education/CHESS5.png"
+                                    alt="Chess Club"
+                                    style={{
+                                      width: "100%",
+                                      height: "180px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                  <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Chess Club</h5>
+                                  <p className="small">
+                                    Build strategic thinking and problem-solving skills.
+                                  </p>
+                                </div>
+                              </div>
 
-    {/* Chess + Benefits Row */}
-    <div className="col-12 col-lg-8">
-      <div className="row g-4">
-        {/* Chess Club */}
-        <div className="col-12 col-md-6">
-          <div className="club-card text-center shadow-sm p-3 rounded h-100">
-            <img
-              src="/assets/img/education/CHESS5.png"
-              alt="Chess Club"
-              style={{
-                width: "100%",
-                height: "180px",
-                objectFit: "cover",
-                borderRadius: "6px",
-              }}
-            />
-            <h5 className="mt-3" style={{ color: "var(--accent-color)" }}>Chess Club</h5>
-            <p className="small">
-              Build strategic thinking and problem-solving skills.
-            </p>
-          </div>
-        </div>
-
-        {/* Benefits Section */}
-        <div className="col-12 col-md-6">
-          <section
-            className="clubs-benefits text-start shadow-sm p-4 rounded h-100"
-            style={{ background: "#f5f8f7" }}
-          >
-            <h5 style={{ color: "var(--accent-color)", marginBottom: "1rem" }}>
-              Benefits of Participation
-            </h5>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {[
-                {
-                  icon: "bi-check-circle-fill",
-                  text: "Explore interests in a structured, fun environment.",
-                },
-                {
-                  icon: "bi-people-fill",
-                  text: "Build social skills by engaging with peers.",
-                },
-                {
-                  icon: "bi-award-fill",
-                  text: "Gain a sense of belonging and achievement.",
-                },
-                {
-                  icon: "bi-person-check-fill",
-                  text: "Strengthen teamwork and leadership abilities.",
-                },
-              ].map(({ icon, text }, idx) => (
-                <li
-                  key={idx}
-                  className="mb-2 d-flex align-items-start"
-                >
-                  <i
-                    className={`bi ${icon} me-2`}
-                    style={{ color: "var(--accent-color)" }}
-                  ></i>
-                  <span>{text}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+                              {/* Benefits Section */}
+                              <div className="col-12 col-md-6">
+                                <section
+                                  className="clubs-benefits text-start shadow-sm p-4 rounded h-100"
+                                  style={{ background: "#f5f8f7" }}
+                                >
+                                  <h5 style={{ color: "var(--accent-color)", marginBottom: "1rem" }}>
+                                    Benefits of Participation
+                                  </h5>
+                                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                                    {[
+                                      {
+                                        icon: "bi-check-circle-fill",
+                                        text: "Explore interests in a structured, fun environment.",
+                                      },
+                                      {
+                                        icon: "bi-people-fill",
+                                        text: "Build social skills by engaging with peers.",
+                                      },
+                                      {
+                                        icon: "bi-award-fill",
+                                        text: "Gain a sense of belonging and achievement.",
+                                      },
+                                      {
+                                        icon: "bi-person-check-fill",
+                                        text: "Strengthen teamwork and leadership abilities.",
+                                      },
+                                    ].map(({ icon, text }, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="mb-2 d-flex align-items-start"
+                                      >
+                                        <i
+                                          className={`bi ${icon} me-2`}
+                                          style={{ color: "var(--accent-color)" }}
+                                        ></i>
+                                        <span>{text}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </section>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
                       <footer className="healthwellness-conclusion">
                         <p>
@@ -1075,9 +1043,13 @@ export default function StudentsLifePage() {
                       }}
                     >
                       
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>Trips</h2>
-                      </div>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Trips
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
+                            </div>
 
                       <div className="trips-grid">
                         <div className="trip-card">
@@ -1156,8 +1128,12 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>Student Council</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Student Council
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                         <p>
                           The Student Council at Leaders International College
                           plays a crucial role in our school community,
@@ -1296,8 +1272,12 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>Arts Programs</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Art Programs
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                         <p>
                           Our arts programs are dedicated to nurturing
                           creativity and artistic expression among students. We
@@ -1400,8 +1380,12 @@ export default function StudentsLifePage() {
                       }}
                     >
                       {/* Header */}
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>School Events</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  School Events
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                         <p>
                           At Leaders International College, our vibrant school
                           calendar is filled with a diverse array of events that
@@ -1633,8 +1617,12 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>On-Campus Dining Services</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Dining Services
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                         <p>
                           At Leaders International College, our on-campus dining
                           services provide nutritious and delicious meal options
@@ -1682,8 +1670,12 @@ export default function StudentsLifePage() {
                         padding: "40px",
                       }}
                     >
-                      <div className="container section-title" data-aos="fade-up">
-                        <h2>Transportation</h2>
+                       <div className="container section-title text-center mb-4" data-aos="fade-up">
+                                <h2>
+                                  <span className="d-block d-md-none"><br /></span>
+                                  Transportations
+                                  <span className="d-block d-md-none"><br /></span>
+                            </h2>
                         <p>
                           Leaders International College offers a comprehensive
                           transportation service to ensure safe and convenient
