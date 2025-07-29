@@ -43,7 +43,7 @@ export default function StudentsLifePage() {
             }}
           >
             <div className="container position-relative">
-              <h1>Student Life</h1>
+              <h1>Students Life</h1>
               <p>
                 Student life at LIC is a dynamic blend of academic exploration,
                 creative expression, and meaningful community engagement that

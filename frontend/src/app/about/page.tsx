@@ -832,7 +832,9 @@ useEffect(() => {
                                 Campus & Location
                                 <span className="d-block d-md-none"><br /></span>
                               </h2>
-                              <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              
+                            </div>
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                                 LIC campus is designed to foster an environment of learning and personal growth.
                                 Located in the heart of New Cairo, our school is situated in a vibrant community
                                 that enriches the educational experience of our students with a mix of cultural,
@@ -845,8 +847,7 @@ useEffect(() => {
                                   {" "}View on Map
                                 </a>.
                               </p>
-                            </div>
-
+                              
                             {/* === Text Details === */}
                             <div data-aos="fade-up" data-aos-delay="100">
                               <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
