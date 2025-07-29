@@ -118,34 +118,41 @@ export default function AdmissionsPage() {
 
           {/* Buttons Styled Like Example */}
           <div className="container mt-5 text-center">
-  <div className="responsive-btn-group d-flex flex-wrap justify-content-center gap-2">
-    <button
-      className={`btn custom-tab ${activeSection === "apply" ? "active" : ""}`}
-      onClick={() => setActiveSection("apply")}
-    >
-      <i className="bi bi-pencil-square me-2"></i> How to Apply
-    </button>
-    <button
-      className={`btn custom-tab ${activeSection === "form" ? "active" : ""}`}
-      onClick={() => setActiveSection("form")}
-    >
-      <i className="bi bi-file-earmark-text me-2"></i> Apply Now
-    </button>
-    <button
-      className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""}`}
-      onClick={() => setActiveSection("requirements")}
-    >
-      <i className="bi bi-people me-2"></i> Age Acceptance Guide
-    </button>
-    <button
-      className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""}`}
-      onClick={() => setActiveSection("deadlines")}
-    >
-      <i className="bi bi-camera-video me-2"></i> Virtual Tour
-    </button>
-  </div>
-</div>
-
+            <div className="responsive-btn-group d-flex flex-wrap justify-content-center gap-2">
+              <button
+                className={`btn custom-tab ${
+                  activeSection === "apply" ? "active" : ""
+                }`}
+                onClick={() => setActiveSection("apply")}
+              >
+                <i className="bi bi-pencil-square me-2"></i> How to Apply
+              </button>
+              <button
+                className={`btn custom-tab ${
+                  activeSection === "form" ? "active" : ""
+                }`}
+                onClick={() => setActiveSection("form")}
+              >
+                <i className="bi bi-file-earmark-text me-2"></i> Apply Now
+              </button>
+              <button
+                className={`btn custom-tab ${
+                  activeSection === "requirements" ? "active" : ""
+                }`}
+                onClick={() => setActiveSection("requirements")}
+              >
+                <i className="bi bi-people me-2"></i> Age Acceptance Guide
+              </button>
+              <button
+                className={`btn custom-tab ${
+                  activeSection === "deadlines" ? "active" : ""
+                }`}
+                onClick={() => setActiveSection("deadlines")}
+              >
+                <i className="bi bi-camera-video me-2"></i> Virtual Tour
+              </button>
+            </div>
+          </div>
 
           <section id="admissions" className="admissions section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
@@ -305,7 +312,16 @@ export default function AdmissionsPage() {
                           <div className="deadline-item mb-4">
                             <h2>Virtual Tour</h2>
                             <p>
-                              Explore Leaders International College from the comfort of your home! Our virtual tour provides you with a unique opportunity to experience our campus as if you were here in person. Navigate through our state-of-the-art facilities, including classrooms, labs, sports complexes, and more, to see where our students learn, play, and grow. If you have any questions or would like more information about specific areas of our campus, please do not hesitate to contact our team.
+                              Explore Leaders International College from the
+                              comfort of your home! Our virtual tour provides
+                              you with a unique opportunity to experience our
+                              campus as if you were here in person. Navigate
+                              through our state-of-the-art facilities, including
+                              classrooms, labs, sports complexes, and more, to
+                              see where our students learn, play, and grow. If
+                              you have any questions or would like more
+                              information about specific areas of our campus,
+                              please do not hesitate to contact our team.
                             </p>
                           </div>
                         </div>
@@ -317,7 +333,14 @@ export default function AdmissionsPage() {
                               <div className="intro-image main-image">
                                 <h2>Press And Visit</h2>
                                 <p>
-                                  Take a step into our world from the comfort of your home. Our virtual tour offers a detailed look at the vibrant learning spaces, cutting-edge technology, and welcoming community that define Leaders International College. Explore classrooms, labs, sports facilities, and more — all in just a few clicks
+                                  Take a step into our world from the comfort of
+                                  your home. Our virtual tour offers a detailed
+                                  look at the vibrant learning spaces,
+                                  cutting-edge technology, and welcoming
+                                  community that define Leaders International
+                                  College. Explore classrooms, labs, sports
+                                  facilities, and more — all in just a few
+                                  clicks
                                 </p>
                                 <a
                                   href="http://vrtour.leadersintcollege.com/"
@@ -336,7 +359,6 @@ export default function AdmissionsPage() {
                                 >
                                   Explore Virtual Tour
                                 </a>
-
                               </div>
                             </div>
                           </div>

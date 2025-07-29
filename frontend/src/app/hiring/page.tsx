@@ -116,6 +116,7 @@ export default function WeAreHiringPage() {
                     label: "Current Vacancies",
                     icon: "bi-clipboard-check",
                   },
+                  { id: "other", label: "Other Vacancies", icon: "bi-box" },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -708,6 +709,21 @@ export default function WeAreHiringPage() {
                       )}
                     </div>
                   </div>
+                </div>
+              )}
+              {hiringSection === "other" && (
+                <div className="upcoming-events">
+                  <div
+                    className="section-header text-center"
+                    data-aos="fade-up"
+                    data-aos-delay={200}
+                  >
+                    <h3>Other Opportunities</h3>
+                    <p>
+                      If you didn’t find a matching role in our current
+                      vacancies, you can still apply with your preferences.
+                    </p>
+                  </div>
 
                   {/* Standalone Other Opportunities Card */}
                   <div
@@ -731,7 +747,7 @@ export default function WeAreHiringPage() {
                     {/* Right: Button */}
                     <div className="vacancy-action">
                       <Link
-                        href={`/hiring/apply?position=Other&employmentType=Custom`}
+                        href="/hiring/apply?position=Other&employmentType=Custom"
                         className="btn-register"
                       >
                         Apply Now
