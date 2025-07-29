@@ -21,7 +21,7 @@ interface EmploymentFormField {
 export default function ApplyForm() {
   const [fields, setFields] = useState<EmploymentFormField[]>([]);
   const [positionFromURL, setPositionFromURL] = useState("");
-  const [, setEmploymentTypeFromURL] = useState("");
+  const [employmentTypeFromURL, setEmploymentTypeFromURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const [academicYearFromURL, setAcademicYearFromURL] = useState("");
@@ -55,10 +55,17 @@ export default function ApplyForm() {
     }
 
     if (positionFromURL && positionFromURL !== "Other") {
-      formData.set("position", positionFromURL);
-      // ✅ Don't include employment_type at all for non-"Other" positions
-      formData.delete("employment_type");
-    }
+  formData.set("position", positionFromURL);
+
+  // ✅ Set the employment_type if available from the previous card
+  if (employmentTypeFromURL && employmentTypeFromURL !== "Other") {
+    formData.set("employment_type", employmentTypeFromURL);
+  } else {
+    // If not provided, ensure it's removed to avoid stale data
+    formData.delete("employment_type");
+  }
+}
+
 
     setIsLoading(true);
     try {

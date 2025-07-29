@@ -292,17 +292,17 @@ export default function JobManagementPage() {
   };
 
   const countApplicationsPerDay = (applications: Vacancy[]): Record<string, number> => {
-  const counts: Record<string, number> = {};
+    const counts: Record<string, number> = {};
 
-  applications.forEach((app) => {
-    const date = new Date(app.createdAt).toLocaleDateString(); // Format: MM/DD/YYYY
-    counts[date] = (counts[date] || 0) + 1;
-  });
+    applications.forEach((app) => {
+      const date = new Date(app.createdAt).toLocaleDateString(); // Format: MM/DD/YYYY
+      counts[date] = (counts[date] || 0) + 1;
+    });
 
-  return counts;
-};
+    return counts;
+  };
 
-const applicationCounts = countApplicationsPerDay(applications);
+  const applicationCounts = countApplicationsPerDay(applications);
 
 
 
@@ -589,7 +589,7 @@ const applicationCounts = countApplicationsPerDay(applications);
                                 (value as { path: string; originalname?: string }[]).map((fileObj, idx) => (
                                   <span key={idx}>
                                     <a
-                                      href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${fileObj.path}`}
+                                      href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${fileObj.path}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       download
@@ -608,7 +608,7 @@ const applicationCounts = countApplicationsPerDay(applications);
                                       href={
                                         fileUrl.startsWith("http")
                                           ? fileUrl
-                                          : `${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${fileUrl}`
+                                          : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${fileUrl}`
                                       }
                                       target="_blank"
                                       rel="noopener noreferrer"
@@ -659,117 +659,130 @@ const applicationCounts = countApplicationsPerDay(applications);
                   No fields yet. Click <strong>Add New Field</strong> to begin.
                 </p>
               ) : (
-                formFields.map((field, index) => (
-                  <div key={field.id || index} className="form-structure-box">
-                    {/* Field name and label */}
-                    <input
-                      className="form-input"
-                      value={field.field_name}
-                      onChange={(e) =>
-                        updateField(index, "field_name", e.target.value)
-                      }
-                      placeholder="Field Name"
-                    />
-                    <input
-                      className="form-input"
-                      value={field.label}
-                      onChange={(e) =>
-                        updateField(index, "label", e.target.value)
-                      }
-                      placeholder="Field Label"
-                    />
+                formFields.map((field, index) => {
+                  const lockAll = ["full_name", "email", "academic_year"].includes(field.field_name);
+                  const lockFieldNameOnly = ["employment_type", "position"].includes(field.field_name);
 
-                    {/* Type select */}
-                    <select
-                      className="form-input"
-                      value={field.type}
-                      onChange={(e) => updateField(index, "type", e.target.value)}
-                    >
-                      <option value="text">Text</option>
-                      <option value="number">Number</option>
-                      <option value="phone">Phone</option>
-                      <option value="email">Email</option>
-                      <option value="select">Select</option>
-                      <option value="checkbox">Checkbox Group</option>
-                      <option value="textarea">Textarea</option>
-                      <option value="date">Date</option>
-                      <option value="file">File</option>
-                    </select>
-
-                    {/* Required checkbox */}
-                    <label className="ms-2">
+                  return (
+                    <div key={field.id || index} className="form-structure-box">
+                      {/* Field name and label */}
                       <input
-                        type="checkbox"
-                        checked={field.required}
+                        className="form-input"
+                        value={field.field_name}
                         onChange={(e) =>
-                          updateField(index, "required", e.target.checked)
+                          updateField(index, "field_name", e.target.value)
                         }
-                      />{" "}
-                      Required
-                    </label>
+                        placeholder="Field Name"
+                        disabled={lockAll || lockFieldNameOnly}
+                      />
+                      <input
+                        className="form-input"
+                        value={field.label}
+                        onChange={(e) =>
+                          updateField(index, "label", e.target.value)
+                        }
+                        placeholder="Field Label"
+                        disabled={lockAll}
+                      />
 
-                    {/* Info for file */}
-                    {field.type === "file" && (
-                      <div className="mt-2 text-info small">
-                        📎 File upload field will allow users to attach a file.
-                      </div>
-                    )}
+                      {/* Type select */}
+                      <select
+                        className="form-input"
+                        value={field.type}
+                        onChange={(e) => updateField(index, "type", e.target.value)}
+                        disabled={lockAll}
+                      >
+                        <option value="text">Text</option>
+                        <option value="number">Number</option>
+                        <option value="phone">Phone</option>
+                        <option value="email">Email</option>
+                        <option value="select">Select</option>
+                        <option value="checkbox">Checkbox Group</option>
+                        <option value="textarea">Textarea</option>
+                        <option value="date">Date</option>
+                        <option value="file">File</option>
+                      </select>
 
-                    {/* Options field for select, checkbox group */}
-                    {(field.type === "select" || field.type === "checkbox") && (
-                      <div className="mt-3">
-                        <label className="fw-bold">Options</label>
-                        {(field.options || []).map((option: string, optIdx: number) => (
-                          <div key={optIdx} className="d-flex align-items-center mb-1">
-                            <input
-                              className="form-input me-2"
-                              value={option}
-                              onChange={(e) => updateOption(index, optIdx, e.target.value)}
-                              placeholder={`Option ${optIdx + 1}`}
-                            />
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={() => removeOption(index, optIdx)}
-                            >
-                              ✖
-                            </button>
-                          </div>
-                        ))}
+                      {/* Required checkbox */}
+                      <label className="ms-2">
+                        <input
+                          type="checkbox"
+                          checked={field.required}
+                          onChange={(e) =>
+                            updateField(index, "required", e.target.checked)
+                          }
+                          disabled={lockAll}
+                        />{" "}
+                        Required
+                      </label>
+
+                      {/* Info for file */}
+                      {field.type === "file" && (
+                        <div className="mt-2 text-info small">
+                          📎 File upload field will allow users to attach a file.
+                        </div>
+                      )}
+
+                      {/* Options field for select, checkbox group */}
+                      {(field.type === "select" || field.type === "checkbox") && (
+                        <div className="mt-3">
+                          <label className="fw-bold">Options</label>
+                          {(field.options || []).map((option: string, optIdx: number) => (
+                            <div key={optIdx} className="d-flex align-items-center mb-1">
+                              <input
+                                className="form-input me-2"
+                                value={option}
+                                onChange={(e) => updateOption(index, optIdx, e.target.value)}
+                                placeholder={`Option ${optIdx + 1}`}
+                                disabled={lockAll}
+                              />
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() => removeOption(index, optIdx)}
+                                disabled={lockAll}
+                              >
+                                ✖
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            className="btn btn-sm btn-secondary mt-1"
+                            onClick={() => addOption(index)}
+                            disabled={lockAll}
+                          >
+                            ➕ Add Option
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Field controls */}
+                      <div className="btn-group mt-3">
                         <button
-                          className="btn btn-sm btn-secondary mt-1"
-                          onClick={() => addOption(index)}
+                          className="btn-move"
+                          onClick={() => moveFieldUp(index)}
+                          disabled={index === 0 || lockAll}
                         >
-                          ➕ Add Option
+                          🔼 Move Up
+                        </button>
+                        <button
+                          className="btn-move"
+                          onClick={() => moveFieldDown(index)}
+                          disabled={index === formFields.length - 1 || lockAll}
+                        >
+                          🔽 Move Down
+                        </button>
+                        <button
+                          className="btn-danger btn-sm"
+                          onClick={() => removeField(index)}
+                          disabled={lockAll}
+                        >
+                          🗑️ Remove
                         </button>
                       </div>
-                    )}
-
-                    {/* Field controls */}
-                    <div className="btn-group mt-3">
-                      <button
-                        className="btn-move"
-                        onClick={() => moveFieldUp(index)}
-                        disabled={index === 0}
-                      >
-                        🔼 Move Up
-                      </button>
-                      <button
-                        className="btn-move"
-                        onClick={() => moveFieldDown(index)}
-                        disabled={index === formFields.length - 1}
-                      >
-                        🔽 Move Down
-                      </button>
-                      <button
-                        className="btn-danger btn-sm"
-                        onClick={() => removeField(index)}
-                      >
-                        🗑️ Remove
-                      </button>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                ))
+                  );
+                })
               )}
 
               <button className="btn-primary mt-3" onClick={addField}>
@@ -780,6 +793,7 @@ const applicationCounts = countApplicationsPerDay(applications);
               </button>
             </>
           )}
+
 
         </div>
       </div>
