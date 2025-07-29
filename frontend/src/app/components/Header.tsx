@@ -295,14 +295,14 @@ export default function Header() {
                 </li>
                 <li>
                   <Link
-                    href="/academic"
+                    href="/curriculum"
                     onClick={(e) => {
                       e.preventDefault();
                       handleCurriculumTab("academic");
                     }}
                     style={{ cursor: "pointer" }}
                   >
-                    Academics
+                    Academic Support
                   </Link>
                 </li>
               </ul>

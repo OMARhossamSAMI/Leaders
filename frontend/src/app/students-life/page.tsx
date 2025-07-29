@@ -1638,7 +1638,7 @@ export default function StudentsLifePage() {
 
                       <div className="dining-card">
                         <Image
-                          src="/assets/img/education/Dining.png"
+                          src="/assets/img/education/Dining.jpg"
                           alt="On-Campus Dining"
                           className="img-fluid rounded"
                           width={1920}
