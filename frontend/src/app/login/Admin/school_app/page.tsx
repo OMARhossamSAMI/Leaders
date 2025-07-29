@@ -59,6 +59,16 @@ export default function ApplicationsPage() {
     if (Array.isArray(value)) return value;
     return ""; // fallback for null, undefined, boolean, File, etc.
   };
+// Calculate pagination
+const [currentPage, setCurrentPage] = useState(1);
+const applicationsPerPage = 10;
+
+const totalPages = Math.ceil(applications.length / applicationsPerPage);
+const indexOfLastApp = currentPage * applicationsPerPage;
+const indexOfFirstApp = indexOfLastApp - applicationsPerPage;
+const currentApplications = applications.slice(indexOfFirstApp, indexOfLastApp);
+
+
 
   useEffect(() => {
     setLoadingApplications(true);
@@ -98,6 +108,11 @@ export default function ApplicationsPage() {
       )
       .finally(() => setLoadingApplications(false));
   }, []);
+
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, [currentPage]);
+
 
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
@@ -259,6 +274,20 @@ export default function ApplicationsPage() {
     updated.splice(newIndex, 0, movedItem);
     setFormStructureDraft(updated);
   };
+
+  const countApplicationsPerDay = (applications: Application[]): Record<string, number> => {
+  const counts: Record<string, number> = {};
+
+  applications.forEach((app) => {
+    const date = new Date(app.createdAt).toLocaleDateString(); // or .toISOString().split('T')[0]
+    counts[date] = (counts[date] || 0) + 1;
+  });
+
+  return counts;
+};
+
+
+  const applicationCounts = countApplicationsPerDay(applications);
 
   // ✅ Export to CSV function
   const exportToExcel = () => {
@@ -439,244 +468,246 @@ export default function ApplicationsPage() {
               ) : (
                 <>
                   {applications.length === 0 ? (
-                    <p className="text-center text-muted mt-4">
-                      No internship applications submitted yet.
-                    </p>
-                  ) : (
+  <p className="text-center text-muted mt-4">
+    No applications submitted yet.
+  </p>
+) : (
+  <>
+    <button
+      onClick={exportToExcel}
+      className="btn-primary mb-4"
+      style={{ display: "block", marginLeft: "auto" }}
+    >
+      📥 Export All as CSV
+    </button>
+
+    <div className="application-stats mt-4">
+      <h4>📊 Applications Submitted Per Day</h4>
+      <ul>
+        {Object.entries(applicationCounts).map(([date, count]) => (
+          <li key={date}>
+            <strong>{date}:</strong> {count} application{count > 1 ? "s" : ""}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "1.5rem",
+      }}
+    >
+      {Array.isArray(currentApplications) &&
+        currentApplications.map((app) => {
+          const displayName =
+            typeof app?.data?.student_name === "string" && app.data.student_name.trim() !== ""
+              ? app.data.student_name.trim()
+              : Object.entries(app?.data || {}).find(
+                  ([key, val]) =>
+                    key.toLowerCase().includes("name") &&
+                    typeof val === "string" &&
+                    val.trim() !== ""
+                )?.[1] || "Unnamed Applicant";
+
+          return (
+            <div
+              key={app._id}
+              style={{
+                background: "#fff",
+                borderRadius: "10px",
+                padding: "1.5rem",
+                width: "100%",
+                maxWidth: "600px",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-blue-700">
+                  {renderFieldValue(displayName)}
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleExpand(app._id)}
+                    className="icon-button"
+                  >
+                    {expandedId === app._id ? <EyeOff /> : <Eye />}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(app._id)}
+                    className="icon-button text-red-600"
+                  >
+                    <Trash2 />
+                  </button>
+                </div>
+              </div>
+
+              {/* Basic Info */}
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Grade:</strong>{" "}
+                {renderFieldValue(app.data?.grade_applying_for || "N/A")}
+              </p>
+
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Submitted:</strong>{" "}
+                {app.createdAt
+                  ? new Date(String(app.createdAt)).toLocaleDateString()
+                  : "N/A"}
+              </p>
+
+              {/* Files */}
+              {Array.isArray(app.files) && app.files.length > 0 && (
+                <div className="text-sm text-gray-600 mb-4">
+                  <strong>Files:</strong>
+                  <ul className="list-disc ml-5">
+                    {app.files.map((file, idx) =>
+                      file?.path ? (
+                        <li key={idx}>
+                          <a
+                            href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            {file.originalname || "Download file"}
+                          </a>
+                        </li>
+                      ) : (
+                        <li key={idx} className="text-red-500">
+                          Invalid file reference
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {/* Expanded View */}
+              {expandedId === app._id && (
+                <>
+                  {!expandedData[app._id] ? (
+                    <p>Loading full data...</p>
+                  ) : !editingApp || editingApp._id !== app._id ? (
                     <>
+                      {formFields.map((field) => (
+                        <p key={field.field_name}>
+                          <strong>{field.label}:</strong>{" "}
+                          {renderFieldValue(
+                            expandedData[app._id]?.data?.[field.field_name]
+                          )}
+                        </p>
+                      ))}
                       <button
-                        onClick={exportToExcel}
-                        className="btn-primary mb-4"
-                        style={{ display: "block", marginLeft: "auto" }}
+                        onClick={() => setEditingApp(expandedData[app._id])}
+                        className="btn-secondary mt-3"
                       >
-                        📥 Export All as CSV
+                        <PencilLine className="inline mr-1" size={18} /> Edit
                       </button>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "1.5rem",
-                        }}
-                      >
-                        {Array.isArray(applications) &&
-                          applications.map((app) => {
-                            const displayName =
-                              typeof app?.data?.student_name === "string" && app.data.student_name.trim() !== ""
-                                ? app.data.student_name.trim()
-                                : Object.entries(app?.data || {}).find(
-                                  ([key, val]) =>
-                                    key.toLowerCase().includes("name") &&
-                                    typeof val === "string" &&
-                                    val.trim() !== ""
-                                )?.[1] || "Unnamed Applicant";
-
-
-                            return (
-                              <div
-                                key={app._id}
-                                style={{
-                                  background: "#fff",
-                                  borderRadius: "10px",
-                                  padding: "1.5rem",
-                                  width: "100%",
-                                  maxWidth: "600px",
-                                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                                }}
-                              >
-                                <div className="flex justify-between items-center">
-                                  <h3 className="text-lg font-semibold text-blue-700">
-                                    {renderFieldValue(displayName)}
-                                  </h3>
-
-                                  <div className="flex gap-2">
-                                    <button
-                                      onClick={() => handleExpand(app._id)}
-                                      className="icon-button"
-                                    >
-                                      {expandedId === app._id ? (
-                                        <EyeOff />
-                                      ) : (
-                                        <Eye />
-                                      )}
-                                    </button>
-                                    <button
-                                      onClick={() => handleDelete(app._id)}
-                                      className="icon-button text-red-600"
-                                    >
-                                      <Trash2 />
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <p className="text-sm text-gray-600 mb-2">
-                                  <strong>Grade:</strong>{" "}
-                                  {renderFieldValue(
-                                    app.data?.grade_applying_for || "N/A"
-                                  )}
-                                </p>
-
-                                <p className="text-sm text-gray-600 mb-2">
-                                  <strong>Submitted:</strong>{" "}
-                                  {app.createdAt
-                                    ? new Date(
-                                      String(app.createdAt)
-                                    ).toLocaleDateString()
-                                    : "N/A"}
-                                </p>
-
-                                {Array.isArray(app.files) &&
-                                  app.files.length > 0 && (
-                                    <div className="text-sm text-gray-600 mb-4">
-                                      <strong>Files:</strong>
-                                      <ul className="list-disc ml-5">
-                                        {app.files.map((file, idx) =>
-                                          file?.path ? (
-                                            <li key={idx}>
-                                              <a
-                                                href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-600 underline"
-                                              >
-                                                {file.originalname ||
-                                                  "Download file"}
-                                              </a>
-                                            </li>
-                                          ) : (
-                                            <li
-                                              key={idx}
-                                              className="text-red-500"
-                                            >
-                                              Invalid file reference
-                                            </li>
-                                          )
-                                        )}
-                                      </ul>
-                                    </div>
-                                  )}
-
-                                {expandedId === app._id && (
-                                  <>
-                                    {!expandedData[app._id] ? (
-                                      <p>Loading full data...</p>
-                                    ) : !editingApp ||
-                                      editingApp._id !== app._id ? (
-                                      <>
-                                        {formFields.map((field) => (
-                                          <p key={field.field_name}>
-                                            <strong>{field.label}:</strong>{" "}
-                                            {renderFieldValue(
-                                              expandedData[app._id]?.data?.[
-                                              field.field_name
-                                              ]
-                                            )}
-                                          </p>
-                                        ))}
-                                        <button
-                                          onClick={() =>
-                                            setEditingApp(expandedData[app._id])
-                                          }
-                                          className="btn-secondary mt-3"
-                                        >
-                                          <PencilLine
-                                            className="inline mr-1"
-                                            size={18}
-                                          />{" "}
-                                          Edit
-                                        </button>
-                                      </>
-                                    ) : (
-                                      <div className="mt-4 space-y-3">
-                                        {formFields.map((field) => (
-                                          <div key={field.field_name}>
-                                            {field.type === "select" ? (
-                                              <select
-                                                value={
-                                                  getSafeInputValue(
-                                                    editingApp?.data?.[
-                                                    field.field_name
-                                                    ]
-                                                  ) || ""
-                                                }
-                                                onChange={(e) =>
-                                                  handleEditChange(
-                                                    field.field_name,
-                                                    e.target.value
-                                                  )
-                                                }
-                                                className="form-input border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                              >
-                                                <option value="" disabled>
-                                                  Select {field.label}
-                                                </option>
-
-                                                {Array.isArray(field.options) &&
-                                                  field.options.map((opt) => (
-                                                    <option
-                                                      key={opt}
-                                                      value={opt}
-                                                    >
-                                                      {opt}
-                                                    </option>
-                                                  ))}
-                                              </select>
-                                            ) : (
-                                              <input
-                                                type={field.type}
-                                                value={getSafeInputValue(
-                                                  editingApp?.data?.[
-                                                  field.field_name
-                                                  ]
-                                                )}
-                                                onChange={(e) =>
-                                                  handleEditChange(
-                                                    field.field_name,
-                                                    e.target.value
-                                                  )
-                                                }
-                                                className="form-input"
-                                                placeholder={field.label}
-                                              />
-                                            )}
-                                          </div>
-                                        ))}
-                                        <div className="flex gap-2 mt-3">
-                                          <button
-                                            onClick={handleUpdate}
-                                            className="btn-success"
-                                          >
-                                            <Save
-                                              className="inline mr-1"
-                                              size={16}
-                                            />{" "}
-                                            Save
-                                          </button>
-                                          <button
-                                            onClick={() => setEditingApp(null)}
-                                            className="btn-danger"
-                                          >
-                                            <XCircle
-                                              className="inline mr-1"
-                                              size={16}
-                                            />{" "}
-                                            Cancel
-                                          </button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            );
-                          })}
-                      </div>
                     </>
+                  ) : (
+                    <div className="mt-4 space-y-3">
+                      {formFields.map((field) => (
+                        <div key={field.field_name}>
+                          {field.type === "select" ? (
+                            <select
+                              value={
+                                getSafeInputValue(
+                                  editingApp?.data?.[field.field_name]
+                                ) || ""
+                              }
+                              onChange={(e) =>
+                                handleEditChange(field.field_name, e.target.value)
+                              }
+                              className="form-input border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            >
+                              <option value="" disabled>
+                                Select {field.label}
+                              </option>
+                              {Array.isArray(field.options) &&
+                                field.options.map((opt) => (
+                                  <option key={opt} value={opt}>
+                                    {opt}
+                                  </option>
+                                ))}
+                            </select>
+                          ) : (
+                            <input
+                              type={field.type}
+                              value={getSafeInputValue(
+                                editingApp?.data?.[field.field_name]
+                              )}
+                              onChange={(e) =>
+                                handleEditChange(field.field_name, e.target.value)
+                              }
+                              className="form-input"
+                              placeholder={field.label}
+                            />
+                          )}
+                        </div>
+                      ))}
+                      <div className="flex gap-2 mt-3">
+                        <button onClick={handleUpdate} className="btn-success">
+                          <Save className="inline mr-1" size={16} /> Save
+                        </button>
+                        <button
+                          onClick={() => setEditingApp(null)}
+                          className="btn-danger"
+                        >
+                          <XCircle className="inline mr-1" size={16} /> Cancel
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </>
               )}
+            </div>
+          );
+        })}
+    </div>
+
+    {/* Pagination Controls */}
+    {totalPages > 1 && (
+      <div className="pagination mt-4 d-flex justify-content-center gap-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className="btn btn-sm btn-outline-primary"
+          disabled={currentPage === 1}
+        >
+          ⬅ Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setCurrentPage(i + 1)}
+            className={`btn btn-sm ${
+              currentPage === i + 1
+                ? "btn-primary"
+                : "btn-outline-secondary"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          className="btn btn-sm btn-outline-primary"
+          disabled={currentPage === totalPages}
+        >
+          Next ➡
+        </button>
+      </div>
+    )}
+  </>
+)}
+                </>
+              )}
             </>
-          )}
+          )}                    
+
 
           {/* === Form Structure Tab === */}
           {activeTab === "form" && editingFormStructure && (

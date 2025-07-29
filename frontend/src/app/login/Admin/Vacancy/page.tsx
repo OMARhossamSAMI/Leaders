@@ -21,12 +21,19 @@ interface Job {
 }
 
 
+interface FileMeta {
+  path: string;
+  originalname?: string;
+}
+
 interface Vacancy {
   _id: string;
   data: FormDataMap;
   createdAt: string;
   expanded?: boolean;
+  files?: FileMeta[]; // ✅ Add this line
 }
+
 
 interface FormField {
   id: string;
@@ -284,18 +291,56 @@ export default function JobManagementPage() {
     }
   };
 
+  const countApplicationsPerDay = (applications: Vacancy[]): Record<string, number> => {
+  const counts: Record<string, number> = {};
+
+  applications.forEach((app) => {
+    const date = new Date(app.createdAt).toLocaleDateString(); // Format: MM/DD/YYYY
+    counts[date] = (counts[date] || 0) + 1;
+  });
+
+  return counts;
+};
+
+const applicationCounts = countApplicationsPerDay(applications);
+
+
+
   const handleExportCSV = () => {
     const csvRows: string[] = [];
-    const headers = [...formFields.map((f) => f.label), "Submitted At"];
+
+    // Add 'Uploaded Files' column manually
+    const headers = [...formFields.map((f) => f.label), "Uploaded Files", "Submitted At"];
     csvRows.push(headers.join(","));
 
     applications.forEach((app) => {
       const row = formFields.map((f) => {
+        // Prevent writing duplicate file info from form data
         const val = app.data[f.field_name];
-        if (Array.isArray(val)) return `"${val.join(",").replace(/"/g, '""')}"`;
+
+        if (Array.isArray(val)) {
+          return `"${val.join(",").replace(/"/g, '""')}"`;
+        }
         return `"${String(val ?? "").replace(/"/g, '""')}"`;
       });
+
+      // ✅ Append uploaded file links from app.files
+      const fileLinks = Array.isArray(app.files)
+        ? app.files
+          .map((file) =>
+            typeof file === "object" && file.path
+              ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
+              : ""
+          )
+          .filter((link) => link !== "")
+          .join(" | ")
+        : "";
+
+      row.push(`"${fileLinks}"`);
+
+      // Append submission timestamp
       row.push(`"${new Date(app.createdAt).toLocaleString()}"`);
+
       csvRows.push(row.join(","));
     });
 
@@ -307,6 +352,7 @@ export default function JobManagementPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
+
 
   if (!authenticated) return null;
 
@@ -487,6 +533,17 @@ export default function JobManagementPage() {
               <button className="btn-primary mb-3" onClick={handleExportCSV}>
                 📥 Export as CSV
               </button>
+              <div className="application-stats mt-4">
+                <h4>📊 Applications Submitted Per Day</h4>
+                <ul>
+                  {Object.entries(applicationCounts).map(([date, count]) => (
+                    <li key={date}>
+                      <strong>{date}:</strong> {count} application{count > 1 ? "s" : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
 
               <div className="scroll-grid mt-4">
                 {applications.map((app) => (
@@ -527,12 +584,25 @@ export default function JobManagementPage() {
                           <p key={key}>
                             <strong>{key}:</strong>{" "}
                             {Array.isArray(value) ? (
-                              value.every(
-                                (v) =>
-                                  typeof v === "string" &&
-                                  /\.(pdf|docx?|png|jpe?g)$/i.test(v)
-                              ) ? (
-                                value.map((fileUrl, idx) => (
+                              // Case 1: It's an array of file objects (with `path`)
+                              value.every(v => typeof v === "object" && "path" in v) ? (
+                                (value as { path: string; originalname?: string }[]).map((fileObj, idx) => (
+                                  <span key={idx}>
+                                    <a
+                                      href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${fileObj.path}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      download
+                                    >
+                                      📎 {fileObj.originalname || `View File ${idx + 1}`}
+                                    </a>
+                                    {idx < value.length - 1 && ", "}
+                                  </span>
+                                ))
+                              ) : (
+                                // Case 2: It's a plain array of strings (URLs)
+                                (value as string[]).every(v => typeof v === "string") &&
+                                (value as string[]).map((fileUrl, idx) => (
                                   <span key={idx}>
                                     <a
                                       href={
@@ -549,8 +619,6 @@ export default function JobManagementPage() {
                                     {idx < value.length - 1 && ", "}
                                   </span>
                                 ))
-                              ) : (
-                                value.join(", ")
                               )
                             ) : typeof value === "string" &&
                               /\.(pdf|docx?|png|jpe?g)$/i.test(value) ? (
@@ -569,6 +637,7 @@ export default function JobManagementPage() {
                             ) : (
                               value?.toString()
                             )}
+
                           </p>
                         ))}
                       </div>
