@@ -186,10 +186,13 @@ useEffect(() => {
                           </div>
                           {/* Text Right */}
                           <div className="col-md-7 order-0 order-md-1">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>Who We Are</h2> 
-                            </div>
-                            <p
+                            <div className="container section-title text-center mb-4" data-aos="fade-up">
+                              <h2>
+                                <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                                Who We Are
+                                <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                              </h2>
+                              <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -304,6 +307,7 @@ useEffect(() => {
                               and responsible citizenship in the global
                               community.
                             </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -311,34 +315,40 @@ useEffect(() => {
                   </div>
 
                   {/* === Governance === */}
-                  <div
-                    className={`tab-pane fade ${
-                      aboutTab === "governance" ? "show active" : ""
-                    }`}
-                    id="governance"
-                    role="tabpanel"
-                  >
-                    <div className="row gy-4 align-items-center">
-                      <div
-                        className="col-lg-12"
-                        data-aos="fade-up"
-                        style={{
-                          background: "#fff",
-                          borderRadius: "12px",
-                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-                          overflow: "hidden",
-                          padding: "30px",
-                        }}
-                      >
-                        <div className="row align-items-center">
-                          {/* Image Left */}
-                          <div className="col-md-5">
+                    <div
+                      className={`tab-pane fade ${
+                        aboutTab === "governance" ? "show active" : ""
+                      }`}
+                      id="governance"
+                      role="tabpanel"
+                    >
+                      <div className="row gy-4 align-items-center">
+                        <div
+                          className="col-lg-12"
+                          data-aos="fade-up"
+                          style={{
+                            background: "#fff",
+                            borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                            overflow: "hidden",
+                            padding: "30px",
+                          }}
+                        >
+                          {/* === Title === */}
+                          <div className="container section-title text-center mb-4" data-aos="fade-up">
+                            <h2>
+                              <span className="d-block d-md-none"><br /></span>
+                              Governance
+                              <span className="d-block d-md-none"><br /></span>
+                            </h2>
+                            {/* === Image === */}
+                          <div className="mb-4" data-aos="fade-up">
                             <Image
                               src="/assets/img/education/Governance.JPG"
                               alt="Governance"
                               className="img-fluid rounded"
-                              width={1200} // ← Replace with actual image width
-                              height={800} // ← Replace with actual image height
+                              width={1200}
+                              height={800}
                               style={{
                                 objectFit: "cover",
                                 width: "100%",
@@ -346,58 +356,36 @@ useEffect(() => {
                               }}
                             />
                           </div>
-                          {/* Text Right */}
-                          <div className="col-md-7">
-                              <div className="container section-title" data-aos="fade-up">
-                              <h2>Governance</h2> 
-                            </div>
-                           <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              At LIC, our governance is underpinned by a board
-                              of trustees and shareholders who bring a rich
-                              tapestry of experience and success from various
-                              sectors. Our leaders have deep roots in
-                              manufacturing, trading, tourism, hospitality, and
-                              real estate, with their expertise spanning across
-                              Egypt and extending into the dynamic business
-                              landscapes of the UAE.
+                          </div>
+                          {/* === Text === */}
+                          <div data-aos="fade-up" data-aos-delay="100">
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              At LIC, our governance is underpinned by a board of trustees and
+                              shareholders who bring a rich tapestry of experience and success
+                              from various sectors. Our leaders have deep roots in
+                              manufacturing, trading, tourism, hospitality, and real estate,
+                              with their expertise spanning across Egypt and extending into the
+                              dynamic business landscapes of the UAE.
                             </p>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              This diverse background enriches our school’s
-                              strategic direction, as our governance body draws
-                              upon a broad spectrum of industries to innovate
-                              and excel in educational practices. The
-                              board&apos;s collective vision focuses on
-                              expanding our educational endeavors across the
-                              MENA region, driven by a commitment to excellence
-                              and innovation.
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              This diverse background enriches our school’s strategic direction,
+                              as our governance body draws upon a broad spectrum of industries to
+                              innovate and excel in educational practices. The board&apos;s
+                              collective vision focuses on expanding our educational endeavors
+                              across the MENA region, driven by a commitment to excellence and
+                              innovation.
                             </p>
-                            <p
-                              style={{
-                                lineHeight: "1.8",
-                                textAlign: "justify",
-                              }}
-                            >
-                              Together, they are dedicated to shaping the future
-                              of education, ensuring that LIC continues to offer
-                              outstanding educational experiences that prepare
-                              our students to thrive in a vibrant and
+                            <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
+                              Together, they are dedicated to shaping the future of education,
+                              ensuring that LIC continues to offer outstanding educational
+                              experiences that prepare our students to thrive in a vibrant and
                               ever-changing world.
                             </p>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+
 
                   {/* === Accreditation === */}
                   <div
@@ -419,10 +407,12 @@ useEffect(() => {
                       >
                         {/* Title */}
                         <div className="container section-title text-center mb-4" data-aos="fade-up">
-                          <h2>Accreditation</h2>
-                        </div>
-
-                        {/* Carousel */}
+                          <h2>
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                            Accreditations
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          </h2>
+                          {/* Carousel */}
                         <div className="col-12 mb-4">
                           <div
                             id="educationCarousel"
@@ -490,7 +480,9 @@ useEffect(() => {
                             </div>
                           </div>
                         </div>
+                       </div>
 
+                        
                         {/* Text */}
                         <div className="text-content px-2">
                           <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
@@ -538,10 +530,13 @@ useEffect(() => {
                       >
                         {/* Title */}
                         <div className="container section-title text-center mb-4" data-aos="fade-up">
-                          <h2>IB Learner Profile</h2>
-                        </div>
-
-                        {/* Text Section */}
+                          <h2>
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                            IB Learner
+                            Profile
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                            </h2>
+                            {/* Text Section */}
                         <div className="col-12 mb-4">
                           <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                             Our adoption of the International Baccalaureate (IB) framework is central to our educational philosophy.
@@ -569,7 +564,9 @@ useEffect(() => {
                             citizens who are well-prepared to contribute to a more peaceful and sustainable world.
                           </p>
                         </div>
-
+                          
+                        </div>
+                        
                         {/* Image Section */}
                         <div className="col-12">
                           <div
@@ -632,9 +629,12 @@ useEffect(() => {
                           {/* Mission Text Right */}
                           <div className="col-md-7">
                             <div className="container section-title" data-aos="fade-up">
-                              <h2>Mission</h2> 
-                            </div>                           
-                            <p
+                              <h2>
+                              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                              Mission 
+                              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                              </h2>
+                              <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -664,7 +664,9 @@ useEffect(() => {
                               learning environment where all stakeholders are
                               actively involved in students’ learning and
                               embrace LIC prospective goals.
-                            </p>
+                            </p>                           
+                          </div>                           
+                            
                           </div>
                         </div>
 
@@ -687,9 +689,13 @@ useEffect(() => {
                           </div>
                           {/* Vision Text Right */}
                           <div className="col-md-7">
-                            <div className="container section-title" data-aos="fade-up">
-                              <h2>Vision</h2> 
-                            </div>                            <p
+                            <div className="container section-title text-center mb-4" data-aos="fade-up">
+                          <h2>
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                            Vision
+                            <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          </h2>
+                          <p
                               style={{
                                 lineHeight: "1.8",
                                 textAlign: "justify",
@@ -726,6 +732,7 @@ useEffect(() => {
                               curriculum, instructional strategies, and
                               approaches of assessment.
                             </p>
+                        </div>                                         
                           </div>
                         </div>
                       </div>
@@ -752,11 +759,11 @@ useEffect(() => {
                       >
                         {/* Title */}
                         <div className="container section-title text-center mb-4" data-aos="fade-up">
-                          <h2>Campus & Location</h2>
-                        </div>
-
-                        {/* Text First */}
-                        <div className="col-12">
+                          <h2>
+                          <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          Campus & Location
+                          <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          </h2>
                           <p style={{ lineHeight: "1.8", textAlign: "justify" }}>
                             LIC campus is designed to foster an environment of learning and personal growth.
                             Located in the heart of New Cairo, our school is situated in a vibrant community
@@ -770,6 +777,11 @@ useEffect(() => {
                               {" "}View on Map
                             </a>.
                           </p>
+                        </div>
+
+                        {/* Text First */}
+                        <div className="col-12">
+                          
 
                           <h4 style={{ color: "var(--accent-color)" }}>Campus Features</h4>
                           <ul style={{ lineHeight: "1.8", paddingLeft: "0", listStyle: "none" }}>
@@ -851,10 +863,12 @@ useEffect(() => {
                       >
                         {/* Title */}
                         <div className="container section-title text-center mb-4" data-aos="fade-up">
-                          <h2>Strategies</h2>
-                        </div>
-
-                        {/* Text Content */}
+                          <h2>
+                          <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          Strategies
+                          <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
+                          </h2>
+                          {/* Text Content */}
                         <div className="col-12">
                           <h5 style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
                             Highly Selective Strategy
@@ -896,7 +910,7 @@ useEffect(() => {
                             unique status in the education landscape.
                           </p>
                         </div>
-
+                        </div>
                         {/* Image at the End */}
                         <div className="col-12 mt-4">
                           <Image
