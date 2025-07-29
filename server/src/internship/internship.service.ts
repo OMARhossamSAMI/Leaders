@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Internship, InternshipDocument } from '../Schemas/internship.schema';
 import { Model } from 'mongoose';
 import { CreateInternshipDto } from './dto/create-internship.dto';
 import * as sgMail from '@sendgrid/mail';
 import axios from 'axios';
+import * as fs from 'fs';
+import { join } from 'path'; // if not already imported
 // ✅ Set API key immediately after importing SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
@@ -149,6 +151,30 @@ export class InternshipService {
   }
 
   async delete(id: string): Promise<void> {
+    const internship = await this.internshipModel.findById(id);
+    if (!internship) {
+      throw new NotFoundException(`Internship application not found`);
+    }
+
+    // ✅ Delete uploaded files from filesystem
+    const filePaths = [
+      internship.cv_file_url,
+      internship.cover_letter_url,
+    ].filter(Boolean);
+    for (const pathString of filePaths) {
+      const filename = pathString?.split('/uploads/')[1];
+      if (filename) {
+        const fullPath = join(__dirname, '..', '..', 'uploads', filename);
+        try {
+          await fs.promises.unlink(fullPath);
+          console.log(`🗑️ Deleted file: ${fullPath}`);
+        } catch (err) {
+          console.warn(`⚠️ Could not delete file: ${fullPath}`, err.message);
+        }
+      }
+    }
+
+    // ✅ Delete document from DB
     await this.internshipModel.findByIdAndDelete(id);
   }
 }
