@@ -13,8 +13,6 @@ interface ContactUsForm {
   role: string;
   grade?: string;
   subject: string;
-  contactMethod: string;
-  bestTime?: string;
   message: string;
 }
 
@@ -44,8 +42,7 @@ export default function ContactPage() {
       role: formData.get("role") as string,
       grade: formData.get("grade") as string,
       subject: formData.get("subject") as string,
-      contactMethod: formData.get("contactMethod") as string,
-      bestTime: formData.get("bestTime") as string,
+
       message: formData.get("message") as string,
     };
     setLoading(true); // ⏳ Start loading
@@ -97,135 +94,7 @@ export default function ContactPage() {
           <section id="contact" className="contact section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
               {/* Contact Info Boxes */}
-              <div className="row gy-4 mb-5">
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={100}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-geo-alt" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Our Address</h4>
-                      <p>
-                        Leaders International College Campus: off 90th road,
-                        fifth settlement.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>HR Department:</h4>
-                      <p>careers@leadersintcollege.com</p>
-                      <p>02 26410050</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Admission Department:</h4>
-                      <p>admission@leadersintcollege.com</p>
-                      <p>02 26410641</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>School Counselor Department:</h4>
-                      <p>schoolcounselorpyp1_pyp8@leadersintcollege.com</p>
-                      <p>cschoolcounselormyp_dp@leadersintcollege.com</p>
-                      <p>02 26410003</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Principal of School Department:</h4>
-                      <p>Principal@leadersintcollege.com</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Accounting &amp; Finance Department:</h4>
-                      <p>accountingOffice@leadersintcollege.com</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={200}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-envelope" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Other Departments:</h4>
-                      <p>info@leadersintcollege.com</p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="col-lg-6"
-                  data-aos="fade-up"
-                  data-aos-delay={300}
-                >
-                  <div className="contact-info-box">
-                    <div className="icon-box">
-                      <i className="bi bi-headset" />
-                    </div>
-                    <div className="info-content">
-                      <h4>Hours of Operation</h4>
-                      <p>Sunday-Thursday: 8 AM - 3 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
               {/* Google Maps (Full Width) */}
               <div
                 className="map-section"
@@ -339,63 +208,12 @@ export default function ContactPage() {
                                 <option value="admissions">Admissions</option>
                                 <option value="feedback">Feedback</option>
                                 <option value="complaint">Complaint</option>
+                                <option value="Carrers">Carrers</option>
                                 <option value="other">Other</option>
                               </select>
                             </div>
                           </div>
-                          <div className="col-md-6">
-                            <div className="form-group input-with-icon">
-                              <i className="bi bi-check-circle" />
-                              <label className="form-label d-block">
-                                Preferred Contact Method
-                              </label>
-                              <div className="form-check form-check-inline">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="contactMethod"
-                                  value="email"
-                                  defaultChecked
-                                />
-                                <label className="form-check-label">
-                                  Email
-                                </label>
-                              </div>
-                              <div className="form-check form-check-inline">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="contactMethod"
-                                  value="phone"
-                                />
-                                <label className="form-check-label">
-                                  Phone
-                                </label>
-                              </div>
-                              <div className="form-check form-check-inline">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="contactMethod"
-                                  value="whatsapp"
-                                />
-                                <label className="form-check-label">
-                                  WhatsApp
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="form-group input-with-icon">
-                              <i className="bi bi-clock" />
-                              <input
-                                type="text"
-                                className="form-control"
-                                name="bestTime"
-                                placeholder="Best Time to Contact You"
-                              />
-                            </div>
-                          </div>
+
                           <div className="col-12">
                             <div className="form-group input-with-icon">
                               <i className="bi bi-chat-dots message-icon" />
@@ -467,6 +285,160 @@ export default function ContactPage() {
                           </div>
                         </div>
                       </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="row gy-4 mb-5">
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={100}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-geo-alt" />
+                    </div>
+                    <div className="info-content">
+                      <h4>Our Address</h4>
+
+                      <li>
+                        <i className="bi bi-geo-fill me-1" /> Leaders
+                        International College Campus: off 90th road, fifth
+                        settlement.
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>HR Department:</h4>
+                      <li>
+                        <i className="bi bi-envelope-fill me-1" />{" "}
+                        careers@leadersintcollege.com
+                      </li>
+                      <li>
+                        <i className="bi bi-telephone-fill me-1" /> 02 26410050
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>Admission Department:</h4>
+                      <li>
+                        <i className="bi bi-envelope-fill me-1" />{" "}
+                        admission@leadersintcollege.com
+                      </li>
+                      <li>
+                        <i className="bi bi-telephone-fill me-1" /> 02 26410641
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>School Counselor Department:</h4>
+                      <li>
+                        <i className="bi bi-envelope-fill me-1" />{" "}
+                        schoolcounselorpyp1_pyp8@leadersintcollege.com
+                      </li>
+                      <li>
+                        <i className="bi bi-envelope-fill me-1" />{" "}
+                        schoolcounselormyp_dp@leadersintcollege.com
+                      </li>
+                      {/* <p>02 26410003</p> */}
+                    </div>
+                  </div>
+                </div>
+                {/* <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>Principal of School Department:</h4>
+                      <p>Principal@leadersintcollege.com</p>
+                    </div>
+                  </div>
+                </div> */}
+                {/* <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>Accounting &amp; Finance Department:</h4>
+                      <p>accountingOffice@leadersintcollege.com</p>
+                    </div>
+                  </div>
+                </div> */}
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={200}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-envelope" />
+                    </div>
+                    <div className="info-content">
+                      <h4>For other inquiries:</h4>
+                      <li>
+                        <i className="bi bi-envelope-fill me-1" />{" "}
+                        info@leadersintcollege.com
+                      </li>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="col-lg-6"
+                  data-aos="fade-up"
+                  data-aos-delay={300}
+                >
+                  <div className="contact-info-box">
+                    <div className="icon-box">
+                      <i className="bi bi-headset" />
+                    </div>
+                    <div className="info-content">
+                      <h4>Hours of Operation</h4>
+
+                      <li>
+                        <i className="bi bi-clock-fill me-1" /> Sunday–Thursday:
+                        8 AM – 3 PM
+                      </li>
                     </div>
                   </div>
                 </div>

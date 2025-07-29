@@ -199,16 +199,7 @@ export default function ContactUsAdminPage() {
                           <strong>Grade of Interest:</strong> {msg.grade}
                         </p>
                       )}
-                      <p className="highlight-contact">
-                        <i className="bi bi-chat-left-text-fill"></i>{" "}
-                        <strong>Preferred Contact:</strong> {msg.contactMethod}
-                      </p>
-                      {msg.bestTime && (
-                        <p>
-                          <i className="bi bi-alarm-fill"></i>{" "}
-                          <strong>Best Time to Reach:</strong> {msg.bestTime}
-                        </p>
-                      )}
+
                       <div className="message-box">
                         <i className="bi bi-chat-dots-fill"></i>{" "}
                         <strong>Message:</strong>

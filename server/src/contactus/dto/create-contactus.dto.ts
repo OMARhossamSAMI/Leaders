@@ -32,14 +32,6 @@ export class CreateContactUsDto {
 
   @IsString()
   @IsNotEmpty()
-  contactMethod: string;
-
-  @IsOptional()
-  @IsString()
-  bestTime?: string;
-
-  @IsString()
-  @IsNotEmpty()
   message: string;
   @IsOptional()
   @IsBoolean()

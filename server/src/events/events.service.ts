@@ -121,7 +121,7 @@ export class EventsService {
   async findVisibleOnWebsite() {
     const today = new Date();
     const fourDaysLater = new Date();
-    fourDaysLater.setDate(today.getDate() + 4);
+    fourDaysLater.setDate(today.getDate() + 7);
 
     return this.model
       .find({

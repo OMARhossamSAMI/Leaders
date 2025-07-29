@@ -134,8 +134,16 @@ export default function CreateEventPage() {
           <option value="SPORTS">Sports</option>
           <option value="ARTS">Arts</option>
           <option value="MUSIC">Music</option>
-          <option value="COMMUNITY">Community</option>
           <option value="SCIENCE">Science</option>
+          <option value="TECHNOLOGY">Technology</option>
+          <option value="TALENT">Talent Show</option>
+          <option value="COMMUNITY">Community</option>
+          <option value="CULTURAL">Cultural</option>
+          <option value="ENVIRONMENT">Environment</option>
+          <option value="DRAMA">Drama</option>
+          <option value="WELLNESS">Wellness</option>
+          <option value="INNOVATION">Innovation</option>
+          <option value="FUNDRAISER">Fundraiser</option>
           <option value="FIELD_TRIP">Field Trip</option>
           <option value="WORKSHOP">Workshop</option>
           <option value="OTHER">Other</option>

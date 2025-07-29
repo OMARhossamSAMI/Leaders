@@ -24,12 +24,6 @@ export class ContactUs {
   subject: string;
 
   @Prop({ required: true })
-  contactMethod: string; // email, phone, whatsapp
-
-  @Prop()
-  bestTime?: string;
-
-  @Prop({ required: true })
   message: string;
   @Prop({ default: false }) // ✅ Add this line
   reviewed: boolean;
