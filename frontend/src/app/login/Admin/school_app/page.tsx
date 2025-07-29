@@ -360,9 +360,8 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -463,12 +462,15 @@ export default function ApplicationsPage() {
                         {Array.isArray(applications) &&
                           applications.map((app) => {
                             const displayName =
-                              Object.entries(app?.data || {}).find(
-                                ([key, val]) =>
-                                  key.toLowerCase().includes("name") &&
-                                  typeof val === "string" &&
-                                  val.trim() !== ""
-                              )?.[1] || "Unnamed Applicant";
+                              typeof app?.data?.student_name === "string" && app.data.student_name.trim() !== ""
+                                ? app.data.student_name.trim()
+                                : Object.entries(app?.data || {}).find(
+                                  ([key, val]) =>
+                                    key.toLowerCase().includes("name") &&
+                                    typeof val === "string" &&
+                                    val.trim() !== ""
+                                )?.[1] || "Unnamed Applicant";
+
 
                             return (
                               <div
@@ -518,8 +520,8 @@ export default function ApplicationsPage() {
                                   <strong>Submitted:</strong>{" "}
                                   {app.createdAt
                                     ? new Date(
-                                        String(app.createdAt)
-                                      ).toLocaleDateString()
+                                      String(app.createdAt)
+                                    ).toLocaleDateString()
                                     : "N/A"}
                                 </p>
 
@@ -566,7 +568,7 @@ export default function ApplicationsPage() {
                                             <strong>{field.label}:</strong>{" "}
                                             {renderFieldValue(
                                               expandedData[app._id]?.data?.[
-                                                field.field_name
+                                              field.field_name
                                               ]
                                             )}
                                           </p>
@@ -593,7 +595,7 @@ export default function ApplicationsPage() {
                                                 value={
                                                   getSafeInputValue(
                                                     editingApp?.data?.[
-                                                      field.field_name
+                                                    field.field_name
                                                     ]
                                                   ) || ""
                                                 }
@@ -624,7 +626,7 @@ export default function ApplicationsPage() {
                                                 type={field.type}
                                                 value={getSafeInputValue(
                                                   editingApp?.data?.[
-                                                    field.field_name
+                                                  field.field_name
                                                   ]
                                                 )}
                                                 onChange={(e) =>

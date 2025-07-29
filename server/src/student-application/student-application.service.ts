@@ -6,6 +6,8 @@ import {
 } from '../Schemas/studentApplication.schema';
 import { Model } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
+import { join } from 'path';
+import { unlink } from 'fs/promises';
 
 // ✅ Confirm API key
 console.log(
@@ -169,7 +171,42 @@ export class StudentApplicationService {
   }
 
   async deleteApplication(id: string) {
-    return this.appModel.findByIdAndDelete(id);
+    console.log(`🧾 Attempting to delete student application with ID: ${id}`);
+
+    const application = await this.appModel.findById(id);
+
+    if (!application) {
+      console.warn(`⚠️ Student application not found: ${id}`);
+      return null;
+    }
+
+    console.log('📄 Student application found. Checking for uploaded files...');
+
+    if (Array.isArray(application.files)) {
+      console.log(`📁 Found ${application.files.length} file(s) to delete.`);
+      for (const file of application.files) {
+        try {
+          if (file.path) {
+            const fileName = file.path.split('/').pop();
+            if (fileName) {
+              const filePath = join(__dirname, '..', '..', 'uploads', fileName);
+              await unlink(filePath);
+              console.log(`🗑️ Deleted uploaded file: ${filePath}`);
+            } else {
+              console.warn(
+                `⚠️ Could not extract file name from path: ${file.path}`,
+              );
+            }
+          }
+        } catch (err) {
+          console.error(`⚠️ Could not delete file ${file.path}:`, err.message);
+        }
+      }
+    }
+
+    const deleted = await this.appModel.findByIdAndDelete(id);
+    console.log(`🗑️ Student application deleted from DB: ${id}`);
+    return deleted;
   }
 
   async updateApplication(id: string, updateData: Partial<StudentApplication>) {
