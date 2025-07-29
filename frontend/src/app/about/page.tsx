@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   const { aboutTab, setAboutTab } = useAboutTabs();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
