@@ -5,19 +5,18 @@ import axios from "axios";
 import { useHiringTabs } from "../components/HiringTabsContext";
 import Link from "next/link";
 import Image from "next/image";
-import './page.css';
+import "./page.css";
 // ✅ Optional: define the structure of a Job
 interface Job {
   _id: string;
   title: string;
   careerLevel: string;
   employmentType: string;
-  academicYear: string;    // e.g., "25/26"
-  startYear: number;       // e.g., 2025
-  endYear: number;         // e.g., 2026
-  createdAt: string;       // ISO date string
+  academicYear: string; // e.g., "25/26"
+  startYear: number; // e.g., 2025
+  endYear: number; // e.g., 2026
+  createdAt: string; // ISO date string
 }
-
 
 export default function WeAreHiringPage() {
   const { hiringSection, setHiringSection } = useHiringTabs();
@@ -25,13 +24,23 @@ export default function WeAreHiringPage() {
   const [jobs, setJobs] = useState<Job[]>([]); // ✅ Add useState for jobs
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;
-  const baseYear = currentMonth >= 6 ? currentDate.getFullYear() : currentDate.getFullYear() - 1;
+  const baseYear =
+    currentMonth >= 6
+      ? currentDate.getFullYear()
+      : currentDate.getFullYear() - 1;
 
-  const currentAcademic = `${String(baseYear).slice(2)}/${String(baseYear + 1).slice(2)}`;
-  const nextAcademic = `${String(baseYear + 1).slice(2)}/${String(baseYear + 2).slice(2)}`;
-  const displayCurrentYear = `20${currentAcademic.split('/')[0]} / 20${currentAcademic.split('/')[1]}`;
-  const displayNextYear = `20${nextAcademic.split('/')[0]} / 20${nextAcademic.split('/')[1]}`;
-
+  const currentAcademic = `${String(baseYear).slice(2)}/${String(
+    baseYear + 1
+  ).slice(2)}`;
+  const nextAcademic = `${String(baseYear + 1).slice(2)}/${String(
+    baseYear + 2
+  ).slice(2)}`;
+  const displayCurrentYear = `20${currentAcademic.split("/")[0]} / 20${
+    currentAcademic.split("/")[1]
+  }`;
+  const displayNextYear = `20${nextAcademic.split("/")[0]} / 20${
+    nextAcademic.split("/")[1]
+  }`;
 
   useEffect(() => {
     axios
@@ -81,17 +90,38 @@ export default function WeAreHiringPage() {
           {/* ✅ Tabs */}
           <div className="container mt-5 text-center">
             <div className="btn-group-wrapper overflow-auto">
-              <div className="btn-group flex-nowrap" style={{ minWidth: "600px" }}>
+              <div
+                className="btn-group flex-nowrap"
+                style={{ minWidth: "600px" }}
+              >
                 {[
                   { id: "opening", label: "Opening", icon: "bi-door-open" },
-                  { id: "development", label: "Professional Development", icon: "bi-award" },
-                  { id: "working", label: "Working at LIC", icon: "bi-people-fill" },
-                  { id: "internship", label: "Internship Program", icon: "bi-briefcase" },
-                  { id: "vacancies", label: "Current Vacancies", icon: "bi-clipboard-check" },
+                  {
+                    id: "development",
+                    label: "Professional Development",
+                    icon: "bi-award",
+                  },
+                  {
+                    id: "working",
+                    label: "Working at LIC",
+                    icon: "bi-people-fill",
+                  },
+                  {
+                    id: "internship",
+                    label: "Internship Program",
+                    icon: "bi-briefcase",
+                  },
+                  {
+                    id: "vacancies",
+                    label: "Current Vacancies",
+                    icon: "bi-clipboard-check",
+                  },
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    className={`btn custom-tab ${hiringSection === tab.id ? "active" : ""}`}
+                    className={`btn custom-tab ${
+                      hiringSection === tab.id ? "active" : ""
+                    }`}
                     onClick={() => setHiringSection(tab.id)}
                   >
                     <i className={`bi ${tab.icon} me-2`}></i> {tab.label}
@@ -100,7 +130,6 @@ export default function WeAreHiringPage() {
               </div>
             </div>
           </div>
-
 
           {/* ✅ Content Sections */}
           {/* Alumni Section */}
@@ -116,7 +145,7 @@ export default function WeAreHiringPage() {
                       data-aos-delay={200}
                     >
                       <div className="hero-content">
-                        <span className="alumni-badge">Careers</span>
+                        {/* <span className="alumni-badge">Careers</span> */}
                         <h2>Current Openings</h2>
                         <p>
                           At Leaders International College, we are always
@@ -154,7 +183,7 @@ export default function WeAreHiringPage() {
                       <div className="hero-image-wrapper">
                         <div className="hero-image">
                           <Image
-                            src="/assets/img/education/Teacher.JPG"
+                            src="/assets/img/education/Carrers.JPG"
                             alt="Alumni Network"
                             className="img-fluid"
                             width={1200} // ✅ Replace with actual width
@@ -164,6 +193,40 @@ export default function WeAreHiringPage() {
                       </div>
                     </div>
                   </div>
+                  <button
+                    onClick={() => setHiringSection("vacancies")}
+                    className="btn btn-primary d-inline-flex align-items-center gap-2"
+                    style={{
+                      background: "linear-gradient(to right, #00B4DB, #0083B0)", // LIC-style blue gradient
+                      border: "none",
+                      padding: "12px 24px",
+                      fontSize: "1rem",
+                      fontWeight: 500,
+                      borderRadius: "50px",
+                      boxShadow: "0 6px 20px rgba(0, 132, 255, 0.25)",
+                      color: "#fff",
+                      marginTop: "40px",
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background =
+                        "linear-gradient(to right, #0083B0, #005f7f)";
+                      e.currentTarget.style.boxShadow =
+                        "0 6px 25px rgba(0, 95, 127, 0.4)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background =
+                        "linear-gradient(to right, #00B4DB, #0083B0)";
+                      e.currentTarget.style.boxShadow =
+                        "0 6px 20px rgba(0, 132, 255, 0.25)";
+                    }}
+                  >
+                    <i
+                      className="bi bi-clipboard-check"
+                      style={{ fontSize: "1.2rem" }}
+                    ></i>
+                    View Current Vacancies
+                  </button>
                 </div>
               )}
 
@@ -279,6 +342,46 @@ export default function WeAreHiringPage() {
                     data-aos="fade-up"
                     data-aos-delay={600}
                   ></div>
+                  <div
+                    className="text-center mt-5"
+                    data-aos="fade-up"
+                    data-aos-delay={600}
+                  >
+                    <button
+                      onClick={() => setHiringSection("vacancies")}
+                      className="btn btn-primary d-inline-flex align-items-center gap-2"
+                      style={{
+                        background:
+                          "linear-gradient(to right, #00B4DB, #0083B0)",
+                        border: "none",
+                        padding: "12px 24px",
+                        fontSize: "1rem",
+                        fontWeight: 500,
+                        borderRadius: "50px",
+                        boxShadow: "0 6px 20px rgba(0, 132, 255, 0.25)",
+                        color: "#fff",
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to right, #0083B0, #005f7f)";
+                        e.currentTarget.style.boxShadow =
+                          "0 6px 25px rgba(0, 95, 127, 0.4)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background =
+                          "linear-gradient(to right, #00B4DB, #0083B0)";
+                        e.currentTarget.style.boxShadow =
+                          "0 6px 20px rgba(0, 132, 255, 0.25)";
+                      }}
+                    >
+                      <i
+                        className="bi bi-clipboard-check"
+                        style={{ fontSize: "1.2rem" }}
+                      ></i>
+                      View Current Vacancies
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -359,7 +462,14 @@ export default function WeAreHiringPage() {
                             aspirations might align with the goals of our school
                             community.
                           </p>
-                          <Link href="#" className="card-link">
+                          <Link
+                            href="#"
+                            className="card-link"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setHiringSection("vacancies");
+                            }}
+                          >
                             Current Openings page
                           </Link>
                         </div>
@@ -467,8 +577,8 @@ export default function WeAreHiringPage() {
                   >
                     <h3>Current Vacancies</h3>
                     <p>
-                      Explore exciting career opportunities currently open at Leaders
-                      International College.
+                      Explore exciting career opportunities currently open at
+                      Leaders International College.
                     </p>
                   </div>
 
@@ -480,7 +590,9 @@ export default function WeAreHiringPage() {
                   >
                     {/* Current Year Vacancies */}
                     <div className="vacancy-column">
-                      <h4 className="vacancy-heading">Academic Year {displayCurrentYear}</h4>
+                      <h4 className="vacancy-heading">
+                        Academic Year {displayCurrentYear}
+                      </h4>
                       {jobs.filter(
                         (job) =>
                           job.employmentType !== "Internship" &&
@@ -506,10 +618,12 @@ export default function WeAreHiringPage() {
                                 <h4>{job.title}</h4>
                                 <div className="vacancy-meta">
                                   <span>
-                                    <i className="bi bi-person" /> Career Level: {job.careerLevel}
+                                    <i className="bi bi-person" /> Career Level:{" "}
+                                    {job.careerLevel}
                                   </span>
                                   <span>
-                                    <i className="bi bi-clock" /> {job.employmentType}
+                                    <i className="bi bi-clock" />{" "}
+                                    {job.employmentType}
                                   </span>
                                 </div>
                               </div>
@@ -517,21 +631,28 @@ export default function WeAreHiringPage() {
                               {/* Right: Apply Button */}
                               <div className="vacancy-action">
                                 <Link
-                                  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}&academicYear=${encodeURIComponent(job.academicYear)}`}
+                                  href={`/hiring/apply?position=${encodeURIComponent(
+                                    job.title
+                                  )}&employmentType=${encodeURIComponent(
+                                    job.employmentType
+                                  )}&academicYear=${encodeURIComponent(
+                                    job.academicYear
+                                  )}`}
                                   className="btn-register"
                                 >
                                   Apply Now
                                 </Link>
                               </div>
                             </div>
-
                           ))
                       )}
                     </div>
 
                     {/* Next Year Vacancies */}
                     <div className="vacancy-column">
-                      <h4 className="vacancy-heading">Academic Year {displayNextYear}</h4>
+                      <h4 className="vacancy-heading">
+                        Academic Year {displayNextYear}
+                      </h4>
                       {jobs.filter(
                         (job) =>
                           job.employmentType !== "Internship" &&
@@ -557,10 +678,12 @@ export default function WeAreHiringPage() {
                                 <h4>{job.title}</h4>
                                 <div className="vacancy-meta">
                                   <span>
-                                    <i className="bi bi-person" /> Career Level: {job.careerLevel}
+                                    <i className="bi bi-person" /> Career Level:{" "}
+                                    {job.careerLevel}
                                   </span>
                                   <span>
-                                    <i className="bi bi-clock" /> {job.employmentType}
+                                    <i className="bi bi-clock" />{" "}
+                                    {job.employmentType}
                                   </span>
                                 </div>
                               </div>
@@ -568,15 +691,19 @@ export default function WeAreHiringPage() {
                               {/* Right: Apply Button */}
                               <div className="vacancy-action">
                                 <Link
-                                  href={`/hiring/apply?position=${encodeURIComponent(job.title)}&employmentType=${encodeURIComponent(job.employmentType)}&academicYear=${encodeURIComponent(job.academicYear)}`}
+                                  href={`/hiring/apply?position=${encodeURIComponent(
+                                    job.title
+                                  )}&employmentType=${encodeURIComponent(
+                                    job.employmentType
+                                  )}&academicYear=${encodeURIComponent(
+                                    job.academicYear
+                                  )}`}
                                   className="btn-register"
                                 >
                                   Apply Now
                                 </Link>
-
                               </div>
                             </div>
-
                           ))
                       )}
                     </div>
@@ -613,10 +740,9 @@ export default function WeAreHiringPage() {
                   </div>
                 </div>
               )}
-
-            </div >
-          </section >
-        </main >
+            </div>
+          </section>
+        </main>
 
         <Link
           href="#"
@@ -643,7 +769,7 @@ export default function WeAreHiringPage() {
             border: 1px solid #00b4e6;
           }
         `}</style>
-      </div >
+      </div>
     </>
   );
 }
