@@ -17,28 +17,27 @@ export class JobService {
 
     let { academicYear } = createJobDto;
 
-    // Log before normalization
-    console.log('🔎 Raw academicYear value:', academicYear);
-
-    // Normalize academicYear if it's in format like "2025 / 2026"
+    // 🔎 Normalize academicYear to "YY/YY" format
     if (academicYear.includes('20')) {
-      const normalized = academicYear.replace(/\s+/g, '');
-      academicYear = normalized.slice(2, 4) + '/' + normalized.slice(6, 8);
+      const normalized = academicYear.replace(/\s+/g, ''); // "2025/2026"
+      academicYear = normalized.slice(2, 4) + '/' + normalized.slice(6, 8); // "25/26"
       console.log('🔧 Normalized academicYear to:', academicYear);
     }
 
-    let startYear: number;
-    let endYear: number;
+    const [shortStart, shortEnd] = academicYear.split('/');
+    const startYear = 2000 + parseInt(shortStart);
+    const endYear = 2000 + parseInt(shortEnd);
 
-    if (academicYear === '25/26') {
-      startYear = 2025;
-      endYear = 2026;
-    } else if (academicYear === '26/27') {
-      startYear = 2026;
-      endYear = 2027;
-    } else {
-      console.error('❌ Invalid academic year provided:', academicYear);
-      throw new Error('Invalid academic year provided.');
+    // 🔐 Validate the parsed years
+    if (
+      isNaN(startYear) ||
+      isNaN(endYear) ||
+      startYear >= endYear ||
+      startYear < 2000 ||
+      endYear > 2100
+    ) {
+      console.error('❌ Invalid academic year format or range:', academicYear);
+      throw new Error('Invalid academic year format.');
     }
 
     const job = new this.jobModel({

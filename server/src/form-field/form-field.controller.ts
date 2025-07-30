@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Put,
+} from '@nestjs/common';
 import { FormFieldService } from './form-field.service';
 import { FormField } from '../Schemas/form-field.schema';
 
@@ -7,8 +16,9 @@ export class FormFieldController {
   constructor(private readonly fieldService: FormFieldService) {}
 
   @Get()
-  findAll(): Promise<FormField[]> {
-    return this.fieldService.findAll();
+  async getFormFields(): Promise<FormField[]> {
+    const fields = await this.fieldService.findAll();
+    return fields.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
 
   @Post()
@@ -27,10 +37,8 @@ export class FormFieldController {
   }
 
   @Put()
-async replaceAll(@Body() body: FormField[]) {
-  console.log("Received form structure:", body); // ✅ ADD THIS
-  return this.fieldService.replaceAll(body);
-}
-
-
+  async replaceAll(@Body() body: FormField[]) {
+    console.log('Received form structure:', body); // ✅ ADD THIS
+    return this.fieldService.replaceAll(body);
+  }
 }

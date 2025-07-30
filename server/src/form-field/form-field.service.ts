@@ -10,8 +10,9 @@ export class FormFieldService {
   ) {}
 
   findAll() {
-    return this.fieldModel.find().sort({ createdAt: 1 }).exec();
-  }
+  return this.fieldModel.find().sort({ order: 1 }).exec();
+}
+
 
   create(field: Partial<FormField>) {
     return this.fieldModel.create(field);

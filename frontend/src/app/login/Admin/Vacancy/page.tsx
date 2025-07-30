@@ -589,7 +589,7 @@ export default function JobManagementPage() {
                                 (value as { path: string; originalname?: string }[]).map((fileObj, idx) => (
                                   <span key={idx}>
                                     <a
-                                      href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${fileObj.path}`}
+                                      href={`${process.env.NEXT_PUBLIC_API_URL}/${fileObj.path}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       download
@@ -608,7 +608,7 @@ export default function JobManagementPage() {
                                       href={
                                         fileUrl.startsWith("http")
                                           ? fileUrl
-                                          : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${fileUrl}`
+                                          : `${process.env.NEXT_PUBLIC_API_URL}/${fileUrl}`
                                       }
                                       target="_blank"
                                       rel="noopener noreferrer"
@@ -626,7 +626,7 @@ export default function JobManagementPage() {
                                 href={
                                   value.startsWith("http")
                                     ? value
-                                    : `${process.env.NEXT_PUBLIC_API_URL}/uploads/vacancy/${value}`
+                                    : `${process.env.NEXT_PUBLIC_API_URL}/${value}`
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -637,6 +637,7 @@ export default function JobManagementPage() {
                             ) : (
                               value?.toString()
                             )}
+
 
                           </p>
                         ))}
