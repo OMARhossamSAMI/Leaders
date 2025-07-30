@@ -268,55 +268,57 @@ export default function AboutPage() {
                                 over a decade. Founded 10 years ago, LIC is
                                 among the first schools to be fully accredited
                                 for all stages of the International
-                                Baccalaureate
-                                <button
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    padding: 0,
-                                    textDecoration: "underline",
-                                    color: "var(--accent-color)",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    (window.location.href = "/curriculum")
-                                  }
-                                >
-                                  _Primary Years Programme (PYP)
-                                </button>
-                                ,
-                                <button
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    padding: 0,
-                                    textDecoration: "underline",
-                                    color: "var(--accent-color)",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    (window.location.href = "/curriculum?p=myp")
-                                  }
-                                >
-                                  _Middle Years Programme (MYP)
-                                </button>
-                                , and
-                                <button
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    padding: 0,
-                                    textDecoration: "underline",
-                                    color: "var(--accent-color)",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() =>
-                                    (window.location.href = "/curriculum?p=dp")
-                                  }
-                                >
-                                  _Diploma Programme (DP)
-                                </button>
-                                . This prestigious recognition places us at the
+                                Baccalaureate:
+                                <ul>
+                                  <li>
+                                    <button
+                                      style={{
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0,
+                                        textDecoration: "underline",
+                                        color: "var(--accent-color)",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => (window.location.href = "/curriculum")}
+                                    >
+                                      Primary Years Programme (PYP)
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      style={{
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0,
+                                        textDecoration: "underline",
+                                        color: "var(--accent-color)",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => (window.location.href = "/curriculum?p=myp")}
+                                    >
+                                      Middle Years Programme (MYP)
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      style={{
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0,
+                                        textDecoration: "underline",
+                                        color: "var(--accent-color)",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => (window.location.href = "/curriculum?p=dp")}
+                                    >
+                                      Diploma Programme (DP)
+                                    </button>
+                                  </li>
+                                </ul>
+
+                                
+                                This prestigious recognition places us at the
                                 forefront of international education, as one of
                                 the oldest and most experienced IB World
                                 Schools.
