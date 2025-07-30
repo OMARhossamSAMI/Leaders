@@ -24,9 +24,7 @@ export default function CurriculumForm() {
     if (tabFromQuery && tabMap[tabFromQuery]) {
       setCurriculumTab(tabMap[tabFromQuery]);
     }
-
-  }, [tabFromQuery,setCurriculumTab]);
-
+  }, [tabFromQuery, setCurriculumTab]);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -80,127 +78,126 @@ export default function CurriculumForm() {
                   <div className="col-12">
                     <div className="d-flex justify-content-center my-4 overflow-auto">
                       <div className="program-tabs">
-                        <ul
-                          className="nav nav-tabs flex-wrap justify-content-center gap-2"
-                          role="tablist"
-                        >
-                          <li className="nav-item" role="presentation">
+                        <div>
+                          {/* Injecting scoped CSS directly */}
+                          <style>
+                            {`
+      .custom-tab-wrapper-lic {
+        background-color: #dff3f9 !important;
+        border-radius: 50px !important;
+        padding: 20px 30px !important;
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 14px !important;
+        overflow-x: auto !important;
+        margin-bottom: 30px !important;
+      }
+
+      .custom-tab-btn-lic {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 18px !important;
+        border-radius: 50px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #1a1a1a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        transition: all 0.3s ease !important;
+        white-space: nowrap !important;
+      }
+
+      .custom-tab-btn-lic:hover {
+        background-color: #bde9f8 !important;
+      }
+
+      .custom-tab-btn-lic.active {
+        background-color: #00b4ec !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+      }
+
+      .custom-tab-btn-lic i {
+        font-size: 1rem !important;
+      }
+    `}
+                          </style>
+
+                          {/* Button tabs with updated unique class names */}
+                          <div className="custom-tab-wrapper-lic">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "pyp" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("pyp")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-book" />
-                              </span>
-                              <span className="text">PYP</span>
+                              <i className="bi bi-book" /> PYP
                             </button>
-                          </li>
 
-                          <li className="nav-item" role="presentation">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "myp" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("myp")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-award" />
-                              </span>
-                              <span className="text">MYP</span>
+                              <i className="bi bi-award" /> MYP
                             </button>
-                          </li>
 
-                          <li className="nav-item" role="presentation">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "dp" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("dp")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-mortarboard" />
-                              </span>
-                              <span className="text">DP</span>
+                              <i className="bi bi-mortarboard" /> DP
                             </button>
-                          </li>
 
-                          <li className="nav-item" role="presentation">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "american" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("american")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-globe-americas" />
-                              </span>
-                              <span className="text">American Diploma</span>
+                              <i className="bi bi-globe-americas" /> American
+                              Diploma
                             </button>
-                          </li>
 
-                          <li className="nav-item" role="presentation">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "igcse" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("igcse")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-journal-bookmark" />
-                              </span>
-                              <span className="text">IGCSE</span>
+                              <i className="bi bi-journal-bookmark" /> IGCSE
                             </button>
-                          </li>
 
-                          <li className="nav-item" role="presentation">
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "character" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("character")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-grid-3x3-gap" />
-                              </span>
-                              <span className="text">Character Building</span>
+                              <i className="bi bi-grid-3x3-gap" /> Character
+                              Building
                             </button>
-                          </li>
-                          <li className="nav-item" role="presentation">
+
                             <button
-                              className={`nav-link ${
+                              className={`custom-tab-btn-lic ${
                                 curriculumTab === "academic" ? "active" : ""
                               }`}
                               onClick={() => setCurriculumTab("academic")}
-                              type="button"
-                              role="tab"
                             >
-                              <span className="icon">
-                                <i className="bi bi-mortarboard" />
-                              </span>
-                              <span className="text">Academic Support</span>
+                              <i className="bi bi-mortarboard" /> Academic
+                              Support
                             </button>
-                          </li>
-                        </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-
               </div>
 
               <div
@@ -1622,46 +1619,63 @@ export default function CurriculumForm() {
                         <span className="subtitle">Academic Support</span>
                         <h2>Empowering Every Learner</h2>
                         <p>
-                          At Leaders International College, we believe in empowering all students to reach their full potential.
-                          Our Learning and Teaching Center (LTC) and Special Educational Needs (SEN) programs are designed to support
-                          students who need extra help as well as those who are excelling and require advanced challenges.
+                          At Leaders International College, we believe in
+                          empowering all students to reach their full potential.
+                          Our Learning and Teaching Center (LTC) and Special
+                          Educational Needs (SEN) programs are designed to
+                          support students who need extra help as well as those
+                          who are excelling and require advanced challenges.
                         </p>
 
                         <h5>What are LTC and SEN?</h5>
                         <ul>
                           <li>
-                            <strong>Learning and Teaching Center (LTC):</strong> This center provides support to enhance learning
-                            outcomes for all students. It offers personalized academic assistance to students who are struggling
-                            with their studies and also develops special programs for students who excel academically and need more
-                            advanced coursework to stay engaged and challenged.
+                            <strong>Learning and Teaching Center (LTC):</strong>{" "}
+                            This center provides support to enhance learning
+                            outcomes for all students. It offers personalized
+                            academic assistance to students who are struggling
+                            with their studies and also develops special
+                            programs for students who excel academically and
+                            need more advanced coursework to stay engaged and
+                            challenged.
                           </li>
                           <li>
-                            <strong>Special Educational Needs (SEN):</strong> Our SEN program caters to students who have different
-                            learning needs that require specific educational adjustments and resources. This includes students with
-                            learning disabilities, physical disabilities, and those who need modifications to access the curriculum
-                            effectively.
+                            <strong>Special Educational Needs (SEN):</strong>{" "}
+                            Our SEN program caters to students who have
+                            different learning needs that require specific
+                            educational adjustments and resources. This includes
+                            students with learning disabilities, physical
+                            disabilities, and those who need modifications to
+                            access the curriculum effectively.
                           </li>
                         </ul>
 
                         <h5>Role of Our Centers</h5>
                         <ul>
                           <li>
-                            <strong>Support for Struggling Students:</strong> Both LTC and SEN are crucial in identifying students
-                            who face academic difficulties and providing them with the necessary support to improve their learning
-                            experiences. This includes tutoring, specialized teaching strategies, and modifications to the learning
-                            environment.
+                            <strong>Support for Struggling Students:</strong>{" "}
+                            Both LTC and SEN are crucial in identifying students
+                            who face academic difficulties and providing them
+                            with the necessary support to improve their learning
+                            experiences. This includes tutoring, specialized
+                            teaching strategies, and modifications to the
+                            learning environment.
                           </li>
                           <li>
-                            <strong>Enhancements for Advanced Learners:</strong> For students who are ahead of their peers, these
-                            centers offer enrichment programs that present more complex material and opportunities for deeper
+                            <strong>Enhancements for Advanced Learners:</strong>{" "}
+                            For students who are ahead of their peers, these
+                            centers offer enrichment programs that present more
+                            complex material and opportunities for deeper
                             exploration of subjects that interest them.
                           </li>
                         </ul>
 
                         <p>
-                          The LTC and SEN at Leaders International College play a pivotal role in our educational approach,
-                          supporting a diverse range of learning needs and ensuring that all students have the opportunities they
-                          need to succeed both academically and personally.
+                          The LTC and SEN at Leaders International College play
+                          a pivotal role in our educational approach, supporting
+                          a diverse range of learning needs and ensuring that
+                          all students have the opportunities they need to
+                          succeed both academically and personally.
                         </p>
                       </div>
                     </div>
@@ -1676,40 +1690,54 @@ export default function CurriculumForm() {
                         <span className="subtitle">Digital Learning</span>
                         <h2>Innovative & Interactive Education</h2>
                         <p>
-                          At Leaders International College, we integrate advanced technology into our learning environments to
-                          enhance educational outcomes and prepare our students for a digital future.
+                          At Leaders International College, we integrate
+                          advanced technology into our learning environments to
+                          enhance educational outcomes and prepare our students
+                          for a digital future.
                         </p>
 
                         <h5>Interactive Learning Environments</h5>
                         <p>
-                          Our classrooms are equipped with interactive smart screens, which facilitate dynamic and engaging
-                          teaching methods. These tools allow teachers to deliver lessons in a visually enriched format that captures
-                          students&apos; attention and encourages interactive learning experiences.
+                          Our classrooms are equipped with interactive smart
+                          screens, which facilitate dynamic and engaging
+                          teaching methods. These tools allow teachers to
+                          deliver lessons in a visually enriched format that
+                          captures students&apos; attention and encourages
+                          interactive learning experiences.
                         </p>
 
                         <h5>Guided Education System: ManageBac</h5>
                         <p>
-                          To streamline our educational processes and enhance communication, we utilize ManageBac, a leading
-                          learning management system tailored for International Baccalaureate (IB) schools. ManageBac supports
-                          our teachers and students by providing an organized platform for lesson planning, assignments, and
-                          assessments, and it enables parents to keep track of their child’s academic progress and school
-                          activities in real-time.
+                          To streamline our educational processes and enhance
+                          communication, we utilize ManageBac, a leading
+                          learning management system tailored for International
+                          Baccalaureate (IB) schools. ManageBac supports our
+                          teachers and students by providing an organized
+                          platform for lesson planning, assignments, and
+                          assessments, and it enables parents to keep track of
+                          their child’s academic progress and school activities
+                          in real-time.
                         </p>
 
                         <p>
-                          At Leaders International College, our commitment to digital learning extends beyond interactive classrooms
-                          and management systems. We employ a variety of digital resources, software, and tools designed to enhance
-                          educational delivery and accommodate the diverse learning needs of our students. These technologies support
-                          personalized learning experiences, enabling each student to thrive in a nurturing, technologically advanced
-                          environment. By integrating these resources, we ensure our students are well-prepared to navigate and
-                          succeed in a digital-centric world.
+                          At Leaders International College, our commitment to
+                          digital learning extends beyond interactive classrooms
+                          and management systems. We employ a variety of digital
+                          resources, software, and tools designed to enhance
+                          educational delivery and accommodate the diverse
+                          learning needs of our students. These technologies
+                          support personalized learning experiences, enabling
+                          each student to thrive in a nurturing, technologically
+                          advanced environment. By integrating these resources,
+                          we ensure our students are well-prepared to navigate
+                          and succeed in a digital-centric world.
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-           </div>
+            </div>
           </section>
           {/* /Academics Section */}
         </main>

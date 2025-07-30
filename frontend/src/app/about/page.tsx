@@ -69,80 +69,120 @@ export default function AboutPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                <div className="tab-scroll-wrapper">
-                  <ul className="nav nav-tabs" role="tablist">
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "who" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("who")}
-                      >
-                        <i className="bi bi-people" /> Who We Are
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "mission" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("mission")}
-                      >
-                        <i className="bi bi-flag" /> Mission & Vision
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "strategies" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("strategies")}
-                      >
-                        <i className="bi bi-diagram-3" /> Strategies
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "governance" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("governance")}
-                      >
-                        <i className="bi bi-check2-circle" /> Governance
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "accreditation" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("accreditation")}
-                      >
-                        <i className="bi bi-bullseye" /> Accreditations
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "learner" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("learner")}
-                      >
-                        <i className="bi bi-eye" /> IB Learner Profile
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        className={`nav-link ${
-                          aboutTab === "campus" ? "active" : ""
-                        }`}
-                        onClick={() => setAboutTab("campus")}
-                      >
-                        <i className="bi bi-building" /> Campus
-                      </button>
-                    </li>
-                  </ul>
+                <div>
+                  {/* Inject scoped and forced styles */}
+                  <style>
+                    {`
+      .about-tabs-lic-wrapper {
+        background-color: #eef6f9 !important;
+        padding: 20px 30px !important;
+        border-radius: 40px !important;
+        overflow-x: auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+        margin-bottom: 25px !important;
+      }
+
+      .about-tab-btn-lic {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 40px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #1a1a1a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        transition: all 0.3s ease !important;
+        white-space: nowrap !important;
+      }
+
+      .about-tab-btn-lic:hover {
+        background-color: #cfeaf2 !important;
+      }
+
+      .about-tab-btn-lic.active {
+        background-color: #00a8d2 !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+      }
+
+      .about-tab-btn-lic i {
+        font-size: 1rem !important;
+      }
+    `}
+                  </style>
+
+                  {/* Tab Navigation Block */}
+                  <div className="about-tabs-lic-wrapper">
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "who" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("who")}
+                    >
+                      <i className="bi bi-people" /> Who We Are
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "mission" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("mission")}
+                    >
+                      <i className="bi bi-flag" /> Mission & Vision
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "strategies" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("strategies")}
+                    >
+                      <i className="bi bi-diagram-3" /> Strategies
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "governance" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("governance")}
+                    >
+                      <i className="bi bi-check2-circle" /> Governance
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "accreditation" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("accreditation")}
+                    >
+                      <i className="bi bi-bullseye" /> Accreditations
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "learner" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("learner")}
+                    >
+                      <i className="bi bi-eye" /> IB Learner Profile
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "campus" ? "active" : ""
+                      }`}
+                      onClick={() => setAboutTab("campus")}
+                    >
+                      <i className="bi bi-building" /> Campus
+                    </button>
+                  </div>
                 </div>
+
                 <div className="tab-content">
                   {/* === Who We Are === */}
                   <div
