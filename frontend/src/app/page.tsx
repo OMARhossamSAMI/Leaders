@@ -214,7 +214,7 @@ export default function Home() {
         <section id="hero" className="hero section dark-background">
           <div className="hero-container">
             <video autoPlay muted loop playsInline className="video-background">
-              <source src="assets/img/education/Video.mp4" type="video/mp4" />
+              <source src="assets/img/education/Video2.mp4" type="video/mp4" />
             </video>
             <div className="overlay" />
             <div className="container">
