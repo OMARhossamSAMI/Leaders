@@ -128,3 +128,16 @@ body {
   margin-top: 8px;
 }
 
+.program-tabs {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  max-height: unset !important;
+  height: auto !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+.program-tabs::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari */
+}

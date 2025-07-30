@@ -257,8 +257,8 @@ export default function Home() {
                           <i className="bi bi-trophy-fill" />
                         </div>
                         <div className="stat-content">
-                          <h4>98%</h4>
-                          <p>Graduate Employment</p>
+                          <h4>100%</h4>
+                          <p>University Enrollment Rate</p>
                         </div>
                       </div>
                       <div className="stat-item">
@@ -266,8 +266,8 @@ export default function Home() {
                           <i className="bi bi-globe" />
                         </div>
                         <div className="stat-content">
-                          <h4>45+</h4>
-                          <p>International Partners</p>
+                          <h4>10+</h4>
+                          <p>Years of Academic Excellence</p>
                         </div>
                       </div>
                       <div className="stat-item">
@@ -275,8 +275,7 @@ export default function Home() {
                           <i className="bi bi-mortarboard" />
                         </div>
                         <div className="stat-content">
-                          <h4>15:1</h4>
-                          <p>Student-Faculty Ratio</p>
+                          <p>IB World School</p>
                         </div>
                       </div>
                       <div className="stat-item">
@@ -284,8 +283,7 @@ export default function Home() {
                           <i className="bi bi-building" />
                         </div>
                         <div className="stat-content">
-                          <h4>120+</h4>
-                          <p>Degree Programs</p>
+                          <p>Personalized Learning Approach</p>
                         </div>
                       </div>
                     </div>
@@ -339,7 +337,7 @@ export default function Home() {
                     <span className="stat-number">
                       <span
                         data-purecounter-start={0}
-                        data-purecounter-end={15}
+                        data-purecounter-end={10}
                         data-purecounter-duration={1}
                         className="purecounter"
                       />
