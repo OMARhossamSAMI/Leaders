@@ -137,7 +137,7 @@ export class InternshipService {
     };
 
     const hrNotification: any = {
-      to: 'omar.hossam3@gmail.com',
+      to: 'Admissionoffice@leadersintcollege.com',
       from: {
         email: 'youssefsahhar2406@gmail.com',
         name: 'Internship Applications',
