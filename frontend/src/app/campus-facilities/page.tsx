@@ -120,58 +120,90 @@ export default function CampusFacilitiesPage() {
                 data-aos="fade-up"
                 data-aos-delay={200}
               >
-                <div className="tab-scroll-wrapper d-flex justify-content-center">
-                  <div className="tab-scroll-wrapper">
-                    <ul
-                      className="nav nav-tabs flex-nowrap overflow-auto"
-                      role="tablist"
-                      style={{ whiteSpace: "nowrap" }}
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <style>
+                    {`
+      .campus-style-tabs-container {
+        background-color: #def2f6 !important;
+        border-radius: 60px !important;
+        padding: 20px 30px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 14px !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        margin-bottom: 30px !important;
+      }
+
+      .campus-style-tab-btn {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 999px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #1a1a1a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        white-space: nowrap !important;
+        transition: all 0.3s ease !important;
+      }
+
+      .campus-style-tab-btn:hover {
+        background-color: #b6e5f3 !important;
+      }
+
+      .campus-style-tab-btn.active {
+        background-color: #25c6f2 !important;
+        color: white !important;
+        font-weight: 600 !important;
+      }
+
+      .campus-style-tab-btn i {
+        font-size: 1rem !important;
+      }
+    `}
+                  </style>
+
+                  <div className="campus-style-tabs-container">
+                    <button
+                      className={`campus-style-tab-btn ${
+                        campusTab === "academic" ? "active" : ""
+                      }`}
+                      onClick={() => setCampusTab("academic")}
                     >
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className={`nav-link ${
-                            campusTab === "academic" ? "active" : ""
-                          }`}
-                          type="button"
-                          onClick={() => setCampusTab("academic")}
-                        >
-                          <i className="bi bi-book" /> Academic Environment
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className={`nav-link ${
-                            campusTab === "athletic" ? "active" : ""
-                          }`}
-                          type="button"
-                          onClick={() => setCampusTab("athletic")}
-                        >
-                          <i className="bi bi-trophy" /> Sports Facilities
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className={`nav-link ${
-                            campusTab === "technology" ? "active" : ""
-                          }`}
-                          type="button"
-                          onClick={() => setCampusTab("technology")}
-                        >
-                          <i className="bi bi-laptop" /> Technology Integration
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          className={`nav-link ${
-                            campusTab === "arts" ? "active" : ""
-                          }`}
-                          type="button"
-                          onClick={() => setCampusTab("arts")}
-                        >
-                          <i className="bi bi-people" /> Arts and Innovation
-                        </button>
-                      </li>
-                    </ul>
+                      <i className="bi bi-trophy" /> Academic Environment
+                    </button>
+
+                    <button
+                      className={`campus-style-tab-btn ${
+                        campusTab === "athletic" ? "active" : ""
+                      }`}
+                      onClick={() => setCampusTab("athletic")}
+                    >
+                      <i className="bi bi-building" /> Sports Facilities
+                      Activities
+                    </button>
+
+                    <button
+                      className={`campus-style-tab-btn ${
+                        campusTab === "technology" ? "active" : ""
+                      }`}
+                      onClick={() => setCampusTab("technology")}
+                    >
+                      <i className="bi bi-calendar3" /> Technology Integration
+                    </button>
+
+                    <button
+                      className={`campus-style-tab-btn ${
+                        campusTab === "arts" ? "active" : ""
+                      }`}
+                      onClick={() => setCampusTab("arts")}
+                    >
+                      <i className="bi bi-heart-pulse" /> Arts and Innovation
+                    </button>
                   </div>
                 </div>
 
