@@ -355,6 +355,8 @@ export default function JobManagementPage() {
 
 
   if (!authenticated) return null;
+  type FileItem = { path: string; originalname?: string } | string;
+
 
   return (
     <>
@@ -583,43 +585,29 @@ export default function JobManagementPage() {
                         {Object.entries(app.data).map(([key, value]) => (
                           <p key={key}>
                             <strong>{key}:</strong>{" "}
+
                             {Array.isArray(value) ? (
-                              // Case 1: It's an array of file objects (with `path`)
-                              value.every(v => typeof v === "object" && "path" in v) ? (
-                                (value as { path: string; originalname?: string }[]).map((fileObj, idx) => (
+                              (value as FileItem[]).map((fileObj, idx) => {
+                                const isObjectWithPath = typeof fileObj === "object" && fileObj !== null && "path" in fileObj;
+                                const filePath = isObjectWithPath ? fileObj.path : fileObj;
+                                const fileName = isObjectWithPath
+                                  ? fileObj.originalname || `View File ${idx + 1}`
+                                  : `View File ${idx + 1}`;
+
+                                return (
                                   <span key={idx}>
                                     <a
-                                      href={`${process.env.NEXT_PUBLIC_API_URL}/${fileObj.path}`}
+                                      href={`${process.env.NEXT_PUBLIC_API_URL}/${filePath}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       download
                                     >
-                                      📎 {fileObj.originalname || `View File ${idx + 1}`}
+                                      📎 {fileName}
                                     </a>
-                                    {idx < value.length - 1 && ", "}
+                                    {idx < (value as FileItem[]).length - 1 && ", "}
                                   </span>
-                                ))
-                              ) : (
-                                // Case 2: It's a plain array of strings (URLs)
-                                (value as string[]).every(v => typeof v === "string") &&
-                                (value as string[]).map((fileUrl, idx) => (
-                                  <span key={idx}>
-                                    <a
-                                      href={
-                                        fileUrl.startsWith("http")
-                                          ? fileUrl
-                                          : `${process.env.NEXT_PUBLIC_API_URL}/${fileUrl}`
-                                      }
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      download
-                                    >
-                                      📎 View File {idx + 1}
-                                    </a>
-                                    {idx < value.length - 1 && ", "}
-                                  </span>
-                                ))
-                              )
+                                );
+                              })
                             ) : typeof value === "string" &&
                               /\.(pdf|docx?|png|jpe?g)$/i.test(value) ? (
                               <a
@@ -637,6 +625,7 @@ export default function JobManagementPage() {
                             ) : (
                               value?.toString()
                             )}
+
 
 
                           </p>
@@ -761,14 +750,12 @@ export default function JobManagementPage() {
                         <button
                           className="btn-move"
                           onClick={() => moveFieldUp(index)}
-                          disabled={index === 0 || lockAll}
                         >
                           🔼 Move Up
                         </button>
                         <button
                           className="btn-move"
                           onClick={() => moveFieldDown(index)}
-                          disabled={index === formFields.length - 1 || lockAll}
                         >
                           🔽 Move Down
                         </button>
