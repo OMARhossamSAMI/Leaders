@@ -25,6 +25,7 @@ export default function ApplyForm() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const [academicYearFromURL, setAcademicYearFromURL] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const job = searchParams.get("position");
@@ -43,8 +44,6 @@ export default function ApplyForm() {
       .catch((err) => console.error("❌ Failed to fetch form fields:", err));
   }, [searchParams]);
 
-
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -55,23 +54,22 @@ export default function ApplyForm() {
     }
 
     if (positionFromURL && positionFromURL !== "Other") {
-  formData.set("position", positionFromURL);
+      formData.set("position", positionFromURL);
 
-  // ✅ Set the employment_type if available from the previous card
-  if (employmentTypeFromURL && employmentTypeFromURL !== "Other") {
-    formData.set("employment_type", employmentTypeFromURL);
-  } else {
-    // If not provided, ensure it's removed to avoid stale data
-    formData.delete("employment_type");
-  }
-}
-
+      // ✅ Set the employment_type if available from the previous card
+      if (employmentTypeFromURL && employmentTypeFromURL !== "Other") {
+        formData.set("employment_type", employmentTypeFromURL);
+      } else {
+        // If not provided, ensure it's removed to avoid stale data
+        formData.delete("employment_type");
+      }
+    }
 
     setIsLoading(true);
+
     try {
       form.querySelector(".loading")?.classList.add("d-block");
       form.querySelector(".error-message")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.remove("d-block");
 
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/vacancy`, formData, {
         headers: {
@@ -80,7 +78,10 @@ export default function ApplyForm() {
       });
 
       form.querySelector(".loading")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.add("d-block");
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 4000);
       form.reset();
     } catch (error: unknown) {
       console.error("Submission error:", error);
@@ -94,11 +95,6 @@ export default function ApplyForm() {
       setIsLoading(false);
     }
   };
-
-
-
-
-
 
   return (
     <>
@@ -144,27 +140,17 @@ export default function ApplyForm() {
                   onSubmit={handleSubmit}
                   encType="multipart/form-data"
                 >
-                  <div className="loading" style={{ display: "none" }}>
-                    Loading
-                  </div>
-                  <div
-                    className="error-message"
-                    style={{ display: "none", color: "red" }}
-                  ></div>
-                  <div
-                    className="sent-message"
-                    style={{ display: "none", color: "green" }}
-                  >
-                    Your application has been sent. Thank you!
-                  </div>
-
                   <div className="row">
                     {fields.map((field, index) => {
-                      const label = field.label || field.field_name.replace(/_/g, " ");
+                      const label =
+                        field.label || field.field_name.replace(/_/g, " ");
                       const required = field.required ?? false;
 
                       // ✅ Skip "academic_year" if position is not "Other"
-                      if (field.field_name === "academic_year" && positionFromURL !== "Other") {
+                      if (
+                        field.field_name === "academic_year" &&
+                        positionFromURL !== "Other"
+                      ) {
                         return null;
                       }
 
@@ -197,12 +183,20 @@ export default function ApplyForm() {
 
                       // ✅ Handle "employment_type" only if position is "Other"
                       if (field.field_name === "employment_type") {
-                        if (positionFromURL === "Other" && field.options?.length) {
+                        if (
+                          positionFromURL === "Other" &&
+                          field.options?.length
+                        ) {
                           return (
                             <div className="col-md-6 mb-3" key={index}>
-                              <label className="form-label d-block">{label}</label>
+                              <label className="form-label d-block">
+                                {label}
+                              </label>
                               {field.options.map((opt, i) => (
-                                <div className="form-check form-check-inline" key={i}>
+                                <div
+                                  className="form-check form-check-inline"
+                                  key={i}
+                                >
                                   <input
                                     className="form-check-input"
                                     type="radio"
@@ -210,7 +204,9 @@ export default function ApplyForm() {
                                     value={opt}
                                     required={required}
                                   />
-                                  <label className="form-check-label">{opt}</label>
+                                  <label className="form-check-label">
+                                    {opt}
+                                  </label>
                                 </div>
                               ))}
                             </div>
@@ -230,9 +226,13 @@ export default function ApplyForm() {
                               required={required}
                               defaultValue=""
                             >
-                              <option value="" disabled>{label}</option>
+                              <option value="" disabled>
+                                {label}
+                              </option>
                               {field.options.map((opt, i) => (
-                                <option key={i} value={opt}>{opt}</option>
+                                <option key={i} value={opt}>
+                                  {opt}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -248,7 +248,9 @@ export default function ApplyForm() {
                               type="file"
                               name={field.field_name}
                               className="form-control"
-                              multiple={field.field_name.includes("certificates")}
+                              multiple={field.field_name.includes(
+                                "certificates"
+                              )}
                               required={required}
                             />
                           </div>
@@ -284,10 +286,22 @@ export default function ApplyForm() {
                         </div>
                       );
                     })}
-
                   </div>
 
                   <div className="event-action mt-4 text-center">
+                    <div
+                      className="error-message"
+                      style={{ display: "none", color: "red" }}
+                    ></div>
+                    {showSuccess && (
+                      <div
+                        className="alert alert-success text-center"
+                        role="alert"
+                      >
+                        ✅ Your message has been sent successfully!
+                      </div>
+                    )}
+
                     <button
                       type="submit"
                       className="btn-register text-white d-flex align-items-center justify-content-center gap-2"
