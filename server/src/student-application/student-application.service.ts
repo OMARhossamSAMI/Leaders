@@ -96,7 +96,7 @@ export class StudentApplicationService {
       ? `<ul>${fileMetadata
           .map(
             (file) =>
-              `<li><a href="${'http://localhost:3000'}/${file.path}" target="_blank">${file.originalname}</a></li>`,
+              `<li><a href="${process.env.Backend_URL}/${file.path}" target="_blank">${file.originalname}</a></li>`,
           )
           .join('')}</ul>`
       : `<p>No files were attached.</p>`;

@@ -42,7 +42,8 @@ export class InternshipService {
 
     if (cv_file_url) {
       try {
-        const baseUrl = 'https://backend-leaders-production.up.railway.app/'; // ✅ your domain here
+        const baseUrl = process.env.Backend_URL; // ✅ your domain here
+        console.log('🔗 BackendUrl:', baseUrl);
         const fullCvUrl = `${baseUrl}${cv_file_url}`;
 
         const response = await axios.get(fullCvUrl, {
@@ -67,7 +68,7 @@ export class InternshipService {
 
     if (cover_letter_url) {
       try {
-        const baseUrl = 'https://backend-leaders-production.up.railway.app/';
+        const baseUrl = process.env.Backend_URL;
         const fullCoverUrl = `${baseUrl}${cover_letter_url}`;
 
         const response = await axios.get(fullCoverUrl, {

@@ -26,7 +26,7 @@ export default function InternshipApplyPage() {
       form.querySelector(".sent-message")?.classList.remove("d-block");
 
       await axios.post(
-        `https://backend-leaders-production.up.railway.app/internship`,
+        `${process.env.NEXT_PUBLIC_API_URL}/internship`,
         formData,
         {
           headers: {
