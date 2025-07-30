@@ -355,7 +355,6 @@ export default function JobManagementPage() {
 
 
   if (!authenticated) return null;
-  type FileItem = { path: string; originalname?: string } | string;
 
 
   return (
@@ -535,6 +534,7 @@ export default function JobManagementPage() {
               <button className="btn-primary mb-3" onClick={handleExportCSV}>
                 📥 Export as CSV
               </button>
+
               <div className="application-stats mt-4">
                 <h4>📊 Applications Submitted Per Day</h4>
                 <ul>
@@ -546,7 +546,6 @@ export default function JobManagementPage() {
                 </ul>
               </div>
 
-
               <div className="scroll-grid mt-4">
                 {applications.map((app) => (
                   <div key={app._id} className="card">
@@ -557,9 +556,7 @@ export default function JobManagementPage() {
                     </h5>
                     <p>
                       <strong>Email:</strong>{" "}
-                      {app.data?.email instanceof File
-                        ? app.data.email.name
-                        : app.data?.email || "N/A"}
+                      {typeof app.data?.email === "string" ? app.data.email : "N/A"}
                       <br />
                       <strong>Submitted:</strong>{" "}
                       {new Date(app.createdAt).toLocaleString()}
@@ -580,56 +577,79 @@ export default function JobManagementPage() {
                         <Trash2 size={16} className="me-1" /> Delete
                       </button>
                     </div>
+
                     {app.expanded && (
                       <div className="application-details mt-3">
                         {Object.entries(app.data).map(([key, value]) => (
                           <p key={key}>
                             <strong>{key}:</strong>{" "}
-
-                            {Array.isArray(value) ? (
-                              (value as FileItem[]).map((fileObj, idx) => {
-                                const isObjectWithPath = typeof fileObj === "object" && fileObj !== null && "path" in fileObj;
-                                const filePath = isObjectWithPath ? fileObj.path : fileObj;
-                                const fileName = isObjectWithPath
-                                  ? fileObj.originalname || `View File ${idx + 1}`
-                                  : `View File ${idx + 1}`;
-
-                                return (
-                                  <span key={idx}>
-                                    <a
-                                      href={`${process.env.NEXT_PUBLIC_API_URL}/${filePath}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      download
-                                    >
-                                      📎 {fileName}
-                                    </a>
-                                    {idx < (value as FileItem[]).length - 1 && ", "}
-                                  </span>
-                                );
-                              })
+                            {Array.isArray(value) &&
+                              value.every(
+                                (v) => typeof v === "object" && v !== null && "path" in v
+                              ) ? (
+                              (value as { path: string; originalname?: string }[]).map(
+                                (fileObj, idx) => {
+                                  const filePath = fileObj.path.startsWith("uploads/")
+                                    ? fileObj.path
+                                    : `uploads/${fileObj.path.replace(/^\/+/, "")}`;
+                                  return (
+                                    <span key={idx}>
+                                      <a
+                                        href={`${process.env.NEXT_PUBLIC_API_URL}/${filePath}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="text-blue-600 underline"
+                                      >
+                                        📎 {fileObj.originalname || `View File ${idx + 1}`}
+                                      </a>
+                                      {idx < value.length - 1 && ", "}
+                                    </span>
+                                  );
+                                }
+                              )
                             ) : typeof value === "string" &&
                               /\.(pdf|docx?|png|jpe?g)$/i.test(value) ? (
                               <a
                                 href={
                                   value.startsWith("http")
                                     ? value
-                                    : `${process.env.NEXT_PUBLIC_API_URL}/${value}`
+                                    : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${value.replace(/^\/+/, "")}`
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 download
+                                className="text-blue-600 underline"
                               >
                                 📎 View File
                               </a>
                             ) : (
-                              value?.toString()
+                              <span>{value?.toString()}</span>
                             )}
-
-
-
                           </p>
                         ))}
+
+                        {/* Display standalone uploaded files from app.files */}
+                        {(app.files?.length ?? 0) > 0 && (
+  <div className="mt-3">
+    <strong>Uploaded Files:</strong>{" "}
+    {app.files?.map((file, idx) => (
+      <span key={idx}>
+        <a
+          href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          download
+          className="text-blue-600 underline"
+        >
+          📎 {file.originalname || `File ${idx + 1}`}
+        </a>
+        {idx < (app.files?.length ?? 0) - 1 && ", "}
+      </span>
+    ))}
+  </div>
+)}
+
                       </div>
                     )}
                   </div>
@@ -637,6 +657,8 @@ export default function JobManagementPage() {
               </div>
             </>
           )}
+
+
           {activeTab === "edit-structure" && (
             <>
               <h2 className="section-heading">
