@@ -75,7 +75,7 @@ export class ContactUsService {
   `;
 
     const itNotification = {
-      to: 'omar.hossam3@gmail.com',
+      to: 'Admissionoffice@leadersintcollege.com',
       from: {
         email: 'youssefsahhar2406@gmail.com',
         name: 'Contact Portal',
