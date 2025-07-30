@@ -191,7 +191,7 @@ export default function CurriculumForm() {
                               <span className="icon">
                                 <i className="bi bi-mortarboard" />
                               </span>
-                              <span className="text">Academic</span>
+                              <span className="text">Academic Support</span>
                             </button>
                           </li>
                         </ul>
