@@ -126,39 +126,87 @@ export default function AdmissionsPage() {
           </div>
 
           {/* Buttons Styled Like Example */}
+
           <div className="container mt-5 text-center">
-            <div className="responsive-btn-group d-flex flex-wrap justify-content-center gap-2">
+            <style>
+              {`
+      .admission-tab-wrapper {
+        display: inline-flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 14px !important;
+        padding: 18px 25px !important;
+        background-color: #def2f6 !important;
+        border-radius: 60px !important;
+        margin: 0 auto !important;
+      }
+
+      .admission-tab-btn {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 999px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #1a1a1a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        white-space: nowrap !important;
+        transition: all 0.3s ease !important;
+      }
+
+      .admission-tab-btn:hover {
+        background-color: #b6e5f3 !important;
+      }
+
+      .admission-tab-btn.active {
+        background-color: #25c6f2 !important;
+        color: white !important;
+        font-weight: 600 !important;
+      }
+
+      .admission-tab-btn i {
+        font-size: 1rem !important;
+      }
+    `}
+            </style>
+
+            <div className="admission-tab-wrapper">
               <button
-                className={`btn custom-tab ${
+                className={`admission-tab-btn ${
                   activeSection === "apply" ? "active" : ""
                 }`}
                 onClick={() => setActiveSection("apply")}
               >
-                <i className="bi bi-pencil-square me-2"></i> How to Apply
+                <i className="bi bi-pencil-square"></i> How to Apply
               </button>
+
               <button
-                className={`btn custom-tab ${
+                className={`admission-tab-btn ${
                   activeSection === "form" ? "active" : ""
                 }`}
                 onClick={() => setActiveSection("form")}
               >
-                <i className="bi bi-file-earmark-text me-2"></i> Apply Now
+                <i className="bi bi-file-earmark-text"></i> Apply Now
               </button>
+
               <button
-                className={`btn custom-tab ${
+                className={`admission-tab-btn ${
                   activeSection === "requirements" ? "active" : ""
                 }`}
                 onClick={() => setActiveSection("requirements")}
               >
-                <i className="bi bi-people me-2"></i> Age Acceptance Guide
+                <i className="bi bi-people"></i> Age Acceptance Guide
               </button>
+
               <button
-                className={`btn custom-tab ${
+                className={`admission-tab-btn ${
                   activeSection === "deadlines" ? "active" : ""
                 }`}
                 onClick={() => setActiveSection("deadlines")}
               >
-                <i className="bi bi-camera-video me-2"></i> Virtual Tour
+                <i className="bi bi-camera-video"></i> Virtual Tour
               </button>
             </div>
           </div>

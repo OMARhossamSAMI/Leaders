@@ -9871,3 +9871,47 @@ section,
   font-weight: 500;
   margin-top: 1rem;
 }
+/* Wrapper around the entire tab section */
+.curriculum-tabs-wrapper {
+  background-color: #dff3f9 !important;
+  border-radius: 50px !important;
+  padding: 20px 30px !important;
+  display: flex !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+  overflow-x: auto !important;
+}
+
+/* Style for each button */
+.curriculum-tab-btn {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 10px 18px !important;
+  border-radius: 50px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1a1a1a !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.3s ease !important;
+  white-space: nowrap !important;
+}
+
+/* Hover */
+.curriculum-tab-btn:hover {
+  background-color: #bde9f8 !important;
+}
+
+/* Active tab */
+.curriculum-tab-btn.active {
+  background-color: #00b4ec !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Optional: style icons */
+.curriculum-tab-btn i {
+  font-size: 1rem !important;
+}

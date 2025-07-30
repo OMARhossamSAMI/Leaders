@@ -86,49 +86,87 @@ export default function WeAreHiringPage() {
               </nav>
             </div>
           </div>
-
-          {/* ✅ Tabs */}
           <div className="container mt-5 text-center">
-            <div className="btn-group-wrapper overflow-auto">
-              <div
-                className="btn-group flex-nowrap"
-                style={{ minWidth: "600px" }}
-              >
-                {[
-                  { id: "opening", label: "Opening", icon: "bi-door-open" },
-                  {
-                    id: "development",
-                    label: "Professional Development",
-                    icon: "bi-award",
-                  },
-                  {
-                    id: "working",
-                    label: "Working at LIC",
-                    icon: "bi-people-fill",
-                  },
-                  {
-                    id: "internship",
-                    label: "Internship Program",
-                    icon: "bi-briefcase",
-                  },
-                  {
-                    id: "vacancies",
-                    label: "Current Vacancies",
-                    icon: "bi-clipboard-check",
-                  },
-                  { id: "other", label: "Other Vacancies", icon: "bi-box" },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={`btn custom-tab ${
-                      hiringSection === tab.id ? "active" : ""
-                    }`}
-                    onClick={() => setHiringSection(tab.id)}
-                  >
-                    <i className={`bi ${tab.icon} me-2`}></i> {tab.label}
-                  </button>
-                ))}
-              </div>
+            <style>
+              {`
+      .hiring-tab-wrapper {
+        display: inline-flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 14px !important;
+        padding: 18px 25px !important;
+        background-color: #def2f6 !important;
+        border-radius: 60px !important;
+        margin: 0 auto !important;
+        max-width: 100% !important;
+      }
+
+      .hiring-tab-btn {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 999px !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        color: #1a1a1a !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        white-space: nowrap !important;
+        transition: all 0.3s ease !important;
+      }
+
+      .hiring-tab-btn:hover {
+        background-color: #b6e5f3 !important;
+      }
+
+      .hiring-tab-btn.active {
+        background-color: #25c6f2 !important;
+        color: white !important;
+        font-weight: 600 !important;
+      }
+
+      .hiring-tab-btn i {
+        font-size: 1rem !important;
+      }
+    `}
+            </style>
+
+            <div className="hiring-tab-wrapper">
+              {[
+                { id: "opening", label: "Opening", icon: "bi-door-open" },
+                {
+                  id: "development",
+                  label: "Professional Development",
+                  icon: "bi-award",
+                },
+                {
+                  id: "working",
+                  label: "Working at LIC",
+                  icon: "bi-people-fill",
+                },
+                {
+                  id: "internship",
+                  label: "Internship Program",
+                  icon: "bi-briefcase",
+                },
+                {
+                  id: "vacancies",
+                  label: "Current Vacancies",
+                  icon: "bi-clipboard-check",
+                },
+                { id: "other", label: "Other Vacancies", icon: "bi-box" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`hiring-tab-btn ${
+                    hiringSection === tab.id ? "active" : ""
+                  }`}
+                  onClick={() => setHiringSection(tab.id)}
+                >
+                  <i className={`bi ${tab.icon}`}></i> {tab.label}
+                </button>
+              ))}
             </div>
           </div>
 
