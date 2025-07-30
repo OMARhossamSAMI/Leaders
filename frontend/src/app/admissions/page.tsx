@@ -20,6 +20,9 @@ interface FormField {
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const [fields, setFields] = useState<FormField[]>([]);
+  const [successMessage, setSuccessMessage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     // Hide preloader
@@ -64,6 +67,7 @@ export default function AdmissionsPage() {
     const formData = new FormData(form); // ✅ Keep FormData
 
     try {
+      setIsSubmitting(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/applications`,
         {
@@ -76,10 +80,15 @@ export default function AdmissionsPage() {
       const result = await response.json();
 
       if (response.ok) {
-        alert(result.message || "Application submitted successfully!");
         form.reset();
+
+        setSuccessMessage(true);
+        setTimeout(() => {
+          setSuccessMessage(false);
+        }, 4000);
+        setIsSubmitting(false);
       } else {
-        alert("❌ Error: " + (result.message || "Submission failed."));
+        setErrorMessage("❌ " + (result.message || "Submission failed."));
       }
     } catch (error) {
       console.error("Submission Error:", error);
@@ -543,14 +552,41 @@ export default function AdmissionsPage() {
                                   );
                                 })}
                             </div>
-
+                            {successMessage && (
+                              <div
+                                className="alert alert-success text-center"
+                                role="alert"
+                              >
+                                ✅ Your message has been sent successfully!
+                              </div>
+                            )}
+                            {errorMessage && (
+                              <div
+                                className="alert alert-danger text-center"
+                                role="alert"
+                              >
+                                {errorMessage}
+                              </div>
+                            )}
                             <div className="text-center mt-4">
                               <button
                                 type="submit"
                                 className="btn-submit-application"
+                                disabled={isSubmitting}
+                                style={{
+                                  backgroundColor: isSubmitting
+                                    ? "#7cc7de"
+                                    : "#00a6d9",
+                                  opacity: isSubmitting ? 0.7 : 1,
+                                  cursor: isSubmitting
+                                    ? "not-allowed"
+                                    : "pointer",
+                                }}
                               >
                                 <i className="bi bi-file-earmark-text"></i>{" "}
-                                Submit Application
+                                {isSubmitting
+                                  ? "Submitting..."
+                                  : "Submit Application"}
                               </button>
                             </div>
                           </form>

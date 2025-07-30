@@ -9862,3 +9862,12 @@ section,
   white-space: nowrap;
 }
 
+.alert-danger {
+  background-color: #ffe5e5;
+  color: #d93025;
+  border: 1px solid #f5c2c7;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-top: 1rem;
+}

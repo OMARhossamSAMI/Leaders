@@ -416,12 +416,21 @@ export default function Home() {
         {/* Featured Programs Section */}
         <section id="featured-programs" className="featured-programs section">
           {/* Section Title */}
-          <div className="container section-title text-center mb-4" data-aos="fade-up">
-             <h2>
-              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                Featured Programs
-              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-              </h2>
+          <div
+            className="container section-title text-center mb-4"
+            data-aos="fade-up"
+          >
+            <h2>
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+              Featured Programs
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+            </h2>
             <p>
               Explore our internationally recognized IB, American Diploma, and
               IGCSE programs designed to empower students through inquiry,
@@ -750,12 +759,21 @@ export default function Home() {
           className="students-life-block section"
         >
           {/* Section Title */}
-            <div className="container section-title text-center mb-4" data-aos="fade-up">
-             <h2>
-              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                Students Life
-              <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-              </h2>            
+          <div
+            className="container section-title text-center mb-4"
+            data-aos="fade-up"
+          >
+            <h2>
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+              Students Life
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+            </h2>
             <p>
               Student Life at Leaders International College is vibrant,
               balanced, and designed to help every student thrive academically,
@@ -896,35 +914,48 @@ export default function Home() {
                   data-aos="fade-right"
                   data-aos-delay={200}
                 >
-              <div className="container section-title text-center mb-4" data-aos="fade-up">
-                <h2>
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                    Campus & Facilities
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                  </h2> 
-                  <p className="stats-description">
-                    Leaders International College’s New Cairo campus is
-                    thoughtfully designed to inspire learning and personal
-                    growth within a vibrant community. It features modern
-                    classrooms, advanced science and IT labs, a well-stocked
-                    library, art and music studios, extensive sports facilities,
-                    outdoor learning spaces, and a healthy cafeteria. The campus
-                    is easily accessible by road and school bus services, with
-                    ample parking for visitors. Safety is ensured through 24/7
-                    security, surveillance systems, and controlled access.
-                  </p>
-                  <div className="stats-cta">
-                    <Link href="/campus-facilities" className="btn btn-primary">
-                      Learn More
-                    </Link>
-                    <Link
-                      href="http://vrtour.leadersintcollege.com/"
-                      className="btn btn-outline"
-                    >
-                      Virtual Tour
-                    </Link>
+                  <div
+                    className="container section-title text-center mb-4"
+                    data-aos="fade-up"
+                  >
+                    <h2>
+                      <span className="d-block d-md-none">
+                        <br />
+                      </span>{" "}
+                      {/* Line break only on mobile */}
+                      Campus & Facilities
+                      <span className="d-block d-md-none">
+                        <br />
+                      </span>{" "}
+                      {/* Line break only on mobile */}
+                    </h2>
+                    <p className="stats-description">
+                      Leaders International College’s New Cairo campus is
+                      thoughtfully designed to inspire learning and personal
+                      growth within a vibrant community. It features modern
+                      classrooms, advanced science and IT labs, a well-stocked
+                      library, art and music studios, extensive sports
+                      facilities, outdoor learning spaces, and a healthy
+                      cafeteria. The campus is easily accessible by road and
+                      school bus services, with ample parking for visitors.
+                      Safety is ensured through 24/7 security, surveillance
+                      systems, and controlled access.
+                    </p>
+                    <div className="stats-cta">
+                      <Link
+                        href="/campus-facilities"
+                        className="btn btn-primary"
+                      >
+                        Learn More
+                      </Link>
+                      <Link
+                        href="http://vrtour.leadersintcollege.com/"
+                        className="btn btn-outline"
+                      >
+                        Virtual Tour
+                      </Link>
+                    </div>
                   </div>
-                  </div>                
                 </div>
               </div>
               <div className="col-lg-6 d-flex justify-content-center align-items-center">
@@ -955,31 +986,39 @@ export default function Home() {
                   data-aos-delay={100}
                 >
                   <div className="map-info">
-              <div className="container section-title text-center mb-4" data-aos="fade-up">
-                <h2>
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                    Campus Map
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                  </h2>                     <p>
-                      Navigate our expansive campus with ease using our
-                      interactive map. Locate buildings, facilities, and
-                      services to find your way around.
-                    </p>
-                    
-                  </div>
-                  <div className="text-center mt-4">
-                    <a
-                      href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
-                      className="custom-direction-btn"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <div
+                      className="container section-title text-center mb-4"
+                      data-aos="fade-up"
                     >
-                      <i className="bi bi-geo-alt-fill"></i> Get Directions
-                    </a>
+                      <h2>
+                        <span className="d-block d-md-none">
+                          <br />
+                        </span>{" "}
+                        {/* Line break only on mobile */}
+                        Campus Map
+                        <span className="d-block d-md-none">
+                          <br />
+                        </span>{" "}
+                        {/* Line break only on mobile */}
+                      </h2>{" "}
+                      <p>
+                        Navigate our expansive campus with ease using our
+                        interactive map. Locate buildings, facilities, and
+                        services to find your way around.
+                      </p>
+                    </div>
+                    <div className="text-center mt-4">
+                      <a
+                        href="https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=30.016339563956866,31.462300996830244"
+                        className="custom-direction-btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="bi bi-geo-alt-fill"></i> Get Directions
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-
 
                 <div
                   className="col-lg-7"
@@ -1008,12 +1047,21 @@ export default function Home() {
         {/* /Stats Section */}
         <section id="testimonials" className="testimonials section">
           {/* Section Title */}
-          <div className="container section-title text-center mb-4" data-aos="fade-up">
-                <h2>
-                    <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                      Testimonials
-                    <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                  </h2> 
+          <div
+            className="container section-title text-center mb-4"
+            data-aos="fade-up"
+          >
+            <h2>
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+              Testimonials
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+            </h2>
             <p>
               Hear directly from our students, parents, and staff about their
               experiences at Leaders International College.
@@ -1063,12 +1111,21 @@ export default function Home() {
 
         {/* Events Section */}
         <section id="events" className="events section">
-          <div className="container section-title text-center mb-4" data-aos="fade-up">
-                <h2>
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                    Upcoming School Events
-                  <span className="d-block d-md-none"><br /></span> {/* Line break only on mobile */}
-                  </h2> 
+          <div
+            className="container section-title text-center mb-4"
+            data-aos="fade-up"
+          >
+            <h2>
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+              Upcoming School Events
+              <span className="d-block d-md-none">
+                <br />
+              </span>{" "}
+              {/* Line break only on mobile */}
+            </h2>
             <p>
               Stay updated on the latest academic, sports, and community events
               happening soon!

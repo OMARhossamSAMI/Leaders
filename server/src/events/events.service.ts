@@ -120,12 +120,14 @@ export class EventsService {
 
   async findVisibleOnWebsite() {
     const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
     const fourDaysLater = new Date();
     fourDaysLater.setDate(today.getDate() + 7);
 
     return this.model
       .find({
-        date: { $lte: fourDaysLater, $gte: today },
+        date: { $lte: fourDaysLater, $gte: yesterday },
       })
       .sort({ date: 1 })
       .exec();
@@ -149,7 +151,7 @@ export class EventsService {
     today.setHours(0, 0, 0, 0);
 
     const threshold = new Date(today);
-    threshold.setDate(threshold.getDate() - 1); // Keep events 1 extra day
+    threshold.setDate(threshold.getDate()); // Keep events 1 extra day
 
     const result = await this.model.deleteMany({ date: { $lt: threshold } });
     if (result.deletedCount) {
