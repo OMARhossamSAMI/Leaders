@@ -74,7 +74,7 @@ export class StudentApplicationService {
     await createdApp.save();
 
     const studentName = formData.student_name || 'Student';
-    const studentEmail = formData.email;
+    const studentEmail = formData.father_email;
 
     const tableRows = Object.entries(formData)
       .map(([key, value]) => {
@@ -142,19 +142,19 @@ export class StudentApplicationService {
             email: 'youssefsahhar2406@gmail.com',
             name: 'Leaders International College',
           },
-          subject: `✅ We've received your application, ${studentName}`,
+          subject: `✅ We've received your child's application, Parent of ${studentName}`,
           html: `
-      <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
-        <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
-          Application Received
-        </h2>
-        <p style="font-size: 15px;">Dear <strong>${studentName}</strong>,</p>
-        <p style="font-size: 15px;">Thank you for submitting your application to <strong>Leaders International College</strong>.</p>
-        <p style="font-size: 15px;">Our admissions team has received your information and is currently reviewing your application. If your profile aligns with our admission criteria, you will be contacted for further steps.</p>
-        <p style="margin-top: 25px;">We wish you the best and appreciate your interest in joining our community.</p>
-        <p style="margin-top: 30px;">Sincerely,<br/><strong>Admissions Department</strong><br/>Leaders International College</p>
-      </div>
-      `,
+  <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
+    <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+      Application Received
+    </h2>
+    <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
+    <p style="font-size: 15px;">We would like to inform you that the student application for <strong>${studentName}</strong> has been successfully submitted to <strong>Leaders International College</strong>.</p>
+    <p style="font-size: 15px;">Our admissions team is reviewing the application and will reach out if further steps are required.</p>
+    <p style="margin-top: 25px;">Thank you for trusting us with your child's education.</p>
+    <p style="margin-top: 30px;">Sincerely,<br/><strong>Admissions Department</strong><br/>Leaders International College</p>
+  </div>
+  `,
         }
       : null;
 
