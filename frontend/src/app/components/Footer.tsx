@@ -40,15 +40,7 @@ export default function Footer() {
               >
                 <i className="bi bi-linkedin"></i>
               </Link>
-            </div>
-
-            <div className="mt-4 d-flex align-items-center gap-2">
-              <Link href="/contact" className="social-icon-button with-text">
-                <i className="bi bi-envelope-fill"></i> <span>Contact Us</span>
-              </Link>
-              <i className="bi bi-arrow-left-short fs-4 text-white"></i>{" "}
-              {/* Arrow pointing at the button */}
-            </div>
+            </div>          
           </div>
 
           {/* === Departments === */}
@@ -135,6 +127,7 @@ export default function Footer() {
             { label: "Curriculum", path: "/curriculum" },
             { label: "Students Life", path: "/students-life" },
             { label: "We Are Hiring", path: "/hiring" },
+            { label: "Contact Us", path: "/contact" },
           ].map((item, idx, arr) => (
             <span key={item.label}>
               <Link href={item.path} className="footer-link">

@@ -145,7 +145,7 @@ export default function Header() {
                     href="/campus-facilities"
                     onClick={() => handleCampusTab("academic")}
                   >
-                    Academic Environments
+                    Academic Environment
                   </Link>
                 </li>
                 <li>
@@ -334,7 +334,7 @@ export default function Header() {
                     href="/students-life"
                     onClick={() => handleStudentsLifeTab("dayinlic")}
                   >
-                    Day In LIC
+                    Day in LIC
                   </Link>
                 </li>
                 <li>
@@ -417,7 +417,7 @@ export default function Header() {
                     href="/hiring"
                     onClick={() => handleHiringTab("opening")}
                   >
-                    Opening
+                    Openings
                   </Link>
                 </li>
                 <li>

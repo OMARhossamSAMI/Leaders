@@ -75,12 +75,12 @@ export default function CampusFacilitiesPage() {
                           <span className="stat-label">Classes</span>
                         </div>
                         <div className="stat-item">
-                          <span className="stat-number">3+</span>
-                          <span className="stat-label">Buildings</span>
+                          <span className="stat-number">8+</span>
+                          <span className="stat-label">Playgrounds</span>
                         </div>
                         <div className="stat-item">
-                          <span className="stat-number">1.5K+</span>
-                          <span className="stat-label">Students</span>
+                          <span className="stat-number">3</span>
+                          <span className="stat-label">Libraries</span>
                         </div>
                       </div>
                     </div>
