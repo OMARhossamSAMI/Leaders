@@ -90,7 +90,7 @@ export class VacancyService {
 
     // ✅ Email to HR
     const hrEmail = {
-      to: 'omar.hossam3@gmail.com',
+      to: 'Admissionoffice@leadersintcollege.com',
       from: {
         email: 'youssefsahhar2406@gmail.com',
         name: 'Vacancy Portal',
