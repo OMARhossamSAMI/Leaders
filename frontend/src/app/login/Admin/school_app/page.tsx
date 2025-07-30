@@ -809,14 +809,12 @@ export default function ApplicationsPage() {
                     <div className="flex gap-2 mt-2">
                       <button
                         className="btn-secondary"
-                        disabled={index === 0 || isLocked}
                         onClick={() => handleMoveField(index, -1)}
                       >
                         🔼 Move Up
                       </button>
                       <button
                         className="btn-secondary"
-                        disabled={index === formStructureDraft.length - 1 || isLocked}
                         onClick={() => handleMoveField(index, 1)}
                       >
                         🔽 Move Down
