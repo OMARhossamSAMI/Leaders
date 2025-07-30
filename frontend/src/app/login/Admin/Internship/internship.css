@@ -130,3 +130,13 @@ h2, h3, h5 {
 .mb-2 { margin-bottom: 0.5rem; }
 .flex { display: flex; }
 .gap-2 { gap: 0.5rem; }
+
+/* In your CSS file */
+.btn-accent {
+  background-color: var(--accent-color) !important;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+    color: white !important;
+
+}
