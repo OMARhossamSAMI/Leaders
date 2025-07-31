@@ -28,9 +28,7 @@ export default function UpdateForm() {
           role: string;
           description: string;
           profilePhoto: string;
-        }>(
-          `https://backend-leaders-production.up.railway.app/testimonials/${safeId}`
-        )
+        }>(`${process.env.NEXT_PUBLIC_API_URL}/testimonials/${safeId}`)
         .then((res) => {
           setForm(res.data);
         })

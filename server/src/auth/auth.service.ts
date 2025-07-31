@@ -1,7 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-
+import { config } from 'dotenv';
+config(); // Load environment variables
 @Injectable()
 export class AuthService {
   private users: any[] = [];
@@ -11,26 +12,29 @@ export class AuthService {
   }
 
   private async initializeUsers() {
-    const hrPassword = await bcrypt.hash('hr123', 10);
-    const itPassword = await bcrypt.hash('it123', 10);
-    const AdmissionsPassword = await bcrypt.hash('admissions123', 10);
+    const hrPassword = await bcrypt.hash(process.env.HR_PASSWORD!, 10);
+    const itPassword = await bcrypt.hash(process.env.IT_PASSWORD!, 10);
+    const admissionPassword = await bcrypt.hash(
+      process.env.ADMISSION_PASSWORD!,
+      10,
+    );
 
     this.users = [
       {
-        email: 'careers@leadersintcollege.com',
+        email: process.env.HR_EMAIL,
         password: hrPassword,
         role: 'hr',
-      }, //hr
+      },
       {
-        email: 'itsupport@leadersintcollege.com',
+        email: process.env.IT_EMAIL,
         password: itPassword,
         role: 'it',
-      }, //it
+      },
       {
-        email: 'admission@leadersintcollege.com',
-        password: AdmissionsPassword,
+        email: process.env.ADMISSION_EMAIL,
+        password: admissionPassword,
         role: 'Admission',
-      }, //it'
+      },
     ];
   }
 

@@ -95,7 +95,7 @@ export default function AdminPage() {
       icon: "bi-chat-left-quote-fill",
       title: "Testimonials",
       description: "Manage testimonials from students, parents, and staff.",
-      href: "/login/testimonials",
+      href: "/login/Admin/testimonials",
       color: "#6f42c1",
       roles: ["it"],
     },
