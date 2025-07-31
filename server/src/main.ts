@@ -27,6 +27,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       'https://leaderscollege.up.railway.app',
+      'https://leaders-frontend.onrender.com'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
