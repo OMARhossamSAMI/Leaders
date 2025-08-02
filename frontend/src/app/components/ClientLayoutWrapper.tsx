@@ -12,17 +12,25 @@ type Props = {
 export default function ClientLayoutWrapper({ children }: Props) {
   const pathname = usePathname();
 
-  const isAdminPage = pathname.startsWith("/login/Admin");
-  const isLogin = pathname.startsWith("/login");
+  const isAdminPage = pathname.startsWith("/lic-auth-v9v3tz/Admin");
+  const isLogin = pathname.startsWith("/lic-auth-v9v3tz");
   const isTestimonials = pathname.startsWith("/testimonials");
-  const isSchool_app = pathname.startsWith("/login/Admin/school_app");
-  const isVacancy = pathname.startsWith("/login/Admin/Vacancy");
+  const isSchool_app = pathname.startsWith("/lic-auth-v9v3tz/Admin/school_app");
+  const isVacancy = pathname.startsWith("/lic-auth-v9v3tz/Admin/Vacancy");
 
   return (
     <>
-      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && !isVacancy && <Header />}
+      {!isAdminPage &&
+        !isLogin &&
+        !isTestimonials &&
+        !isSchool_app &&
+        !isVacancy && <Header />}
       {children}
-      {!isAdminPage && !isLogin && !isTestimonials && !isSchool_app && !isVacancy &&<Footer />}
+      {!isAdminPage &&
+        !isLogin &&
+        !isTestimonials &&
+        !isSchool_app &&
+        !isVacancy && <Footer />}
     </>
   );
 }

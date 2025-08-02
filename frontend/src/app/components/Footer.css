@@ -44,6 +44,9 @@ body {
 .footer .row > div {
   margin-bottom: 0.5rem !important; /* Reduce vertical spacing */
 }
+.footer .row {
+  --bs-gutter-x: 4.5rem;
+}
 
 .footer-contact-btn {
   background: #007bff;
@@ -151,8 +154,8 @@ body {
   word-break: keep-all;
   white-space: nowrap;
   overflow-wrap: normal;
-  line-height: 1.2;
-  margin: 0.1rem 0;
+  line-height: 1.4;
+  margin: 0.4rem 0; /* <-- changed from 0.1rem */
   font-size: 0.8rem;
 }
 

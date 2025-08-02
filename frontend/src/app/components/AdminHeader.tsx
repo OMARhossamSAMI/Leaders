@@ -33,14 +33,42 @@ export default function AdminHeader() {
   }, []);
 
   const links = [
-    { href: "/login/Admin", label: "Dashboard", roles: ["it", "hr", "Admission"] },
-    { href: "/login/Admin/school_app", label: "Student App", roles: ["it", "Admission"] },
-    { href: "/login/Admin/Internship", label: "Internships", roles: ["it", "hr"] },
-    { href: "/login/Admin/Vacancy", label: "Vacancies", roles: ["it", "hr"] },
-    { href: "/login/Admin/events", label: "Events", roles: ["it"] },
-    { href: "/login/Admin/testimonials", label: "Testimonials", roles: ["it"] },
-    { href: "/login/Admin/popup", label: "Pop Up Messages", roles: ["it"] },
-    { href: "/login/Admin/contactus", label: "Contact Us", roles: ["it"] },
+    {
+      href: "/lic-auth-v9v3tz/Admin",
+      label: "Dashboard",
+      roles: ["it", "hr", "Admission"],
+    },
+    {
+      href: "/lic-auth-v9v3tz/Admin/school_app",
+      label: "Student App",
+      roles: ["it", "Admission"],
+    },
+    {
+      href: "/lic-auth-v9v3tz/Admin/Internship",
+      label: "Internships",
+      roles: ["it", "hr"],
+    },
+    {
+      href: "/lic-auth-v9v3tz/Admin/Vacancy",
+      label: "Vacancies",
+      roles: ["it", "hr"],
+    },
+    { href: "/lic-auth-v9v3tz/Admin/events", label: "Events", roles: ["it"] },
+    {
+      href: "/lic-auth-v9v3tz/Admin/testimonials",
+      label: "Testimonials",
+      roles: ["it"],
+    },
+    {
+      href: "/lic-auth-v9v3tz/Admin/popup",
+      label: "Pop Up Messages",
+      roles: ["it"],
+    },
+    {
+      href: "/lic-auth-v9v3tz/Admin/contactus",
+      label: "Contact Us",
+      roles: ["it"],
+    },
   ];
 
   const visibleLinks = links.filter((link) => link.roles.includes(role || ""));
@@ -50,8 +78,16 @@ export default function AdminHeader() {
       <header className="header d-flex align-items-center fixed-top">
         <div className="container-fluid d-flex align-items-center justify-content-between">
           {/* Logo only */}
-          <Link href="/login/Admin" className="logo d-flex align-items-center">
-            <Image src="/assets/img/lic_logo.png" alt="Logo" width={40} height={40} />
+          <Link
+            href="/lic-auth-v9v3tz/Admin"
+            className="logo d-flex align-items-center"
+          >
+            <Image
+              src="/assets/img/lic_logo.png"
+              alt="Logo"
+              width={40}
+              height={40}
+            />
           </Link>
           {/* Navigation menu (hidden on small screens) */}
           <nav className="navmenu d-none d-md-flex">
@@ -59,10 +95,12 @@ export default function AdminHeader() {
               {visibleLinks.map((link) => {
                 const isActive =
                   pathname === link.href ||
-                  (pathname.startsWith(link.href) && link.href !== "/login/Admin");
+                  (pathname.startsWith(link.href) &&
+                    link.href !== "/lic-auth-v9v3tz/Admin");
 
                 const finalLabel =
-                  role === "Admission" && link.href === "/login/Admin/school_app"
+                  role === "Admission" &&
+                  link.href === "/lic-auth-v9v3tz/Admin/school_app"
                     ? "Student Application"
                     : link.label;
 
@@ -88,23 +126,36 @@ export default function AdminHeader() {
       </header>
 
       {/* Overlay */}
-      <div className={`sidebar-overlay ${sidebarOpen ? "open" : ""}`} onClick={() => setSidebarOpen(false)} />
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Sidebar - from right */}
       <aside className={`sidebar sidebar-right ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <Image src="/assets/img/lic_logo.png" alt="Logo" width={40} height={40} />
-          <i className="bi bi-x close-btn" onClick={() => setSidebarOpen(false)} />
+          <Image
+            src="/assets/img/lic_logo.png"
+            alt="Logo"
+            width={40}
+            height={40}
+          />
+          <i
+            className="bi bi-x close-btn"
+            onClick={() => setSidebarOpen(false)}
+          />
         </div>
 
         <ul className="sidebar-links">
           {visibleLinks.map((link) => {
             const isActive =
               pathname === link.href ||
-              (pathname.startsWith(link.href) && link.href !== "/login/Admin");
+              (pathname.startsWith(link.href) &&
+                link.href !== "/lic-auth-v9v3tz/Admin");
 
             const finalLabel =
-              role === "Admission" && link.href === "/login/Admin/school_app"
+              role === "Admission" &&
+              link.href === "/lic-auth-v9v3tz/Admin/school_app"
                 ? "Student Application"
                 : link.label;
 

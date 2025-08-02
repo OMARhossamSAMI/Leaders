@@ -309,7 +309,7 @@ export default function Home() {
                 data-aos-delay={200}
               >
                 <h2 className="display-6 fw-bold mb-4">
-                  Come & Join Us, <span>Leaders International Schools</span>
+                  Come & Join Us, <span>Leaders International College</span>
                 </h2>
                 <p className="lead mb-4">
                   Discover how our dedicated academic support and innovative
