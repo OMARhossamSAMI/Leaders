@@ -117,7 +117,7 @@ export class InternshipService {
     const applicantConfirmation = {
       to: email,
       from: {
-        email: 'youssefsahhar2406@gmail.com',
+        email: 'Careers@leadersintcollege.com',
         name: 'Leaders International College Careers',
       },
       subject: `🎓 Thank you for applying, ${full_name}!`,
@@ -137,9 +137,9 @@ export class InternshipService {
     };
 
     const hrNotification: any = {
-      to: 'Admissionoffice@leadersintcollege.com',
+      to: 'Careers@leadersintcollege.com',
       from: {
-        email: 'youssefsahhar2406@gmail.com',
+        email: 'Careers@leadersintcollege.com',
         name: 'Internship Applications',
       },
       subject: `📥 Internship Application from ${full_name}`,
