@@ -75,9 +75,9 @@ export class ContactUsService {
   `;
 
     const itNotification = {
-      to: 'Edutech@leadersintcollege.com',
+      to: 'Info@leadersintcollege.com',
       from: {
-        email: 'Admissionoffice@leadersintcollege.com',
+        email: 'Info@leadersintcollege.com',
         name: 'Contact Portal',
       },
       subject: `📬 New Contact Request: ${subject} from ${fullName}`,
@@ -87,7 +87,7 @@ export class ContactUsService {
     const userConfirmation = {
       to: email,
       from: {
-        email: 'Admissionoffice@leadersintcollege.com',
+        email: 'Info@leadersintcollege.com',
         name: 'Leaders International College',
       },
       subject: `✅ We’ve received your message, ${fullName}`,
