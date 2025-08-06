@@ -344,7 +344,7 @@ export default function AdmissionsPage() {
                       {/* Full-width image */}
                       <div className="requirements-image mb-4">
                         <Image
-                          src="/assets/img/education/AGE.jpg"
+                          src="/assets/img/education/AgeGuide.JPG"
                           alt="Age Acceptance Guide"
                           width={1200} // Replace with actual image width
                           height={800} // Replace with actual image height

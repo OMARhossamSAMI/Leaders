@@ -1405,24 +1405,61 @@ export default function AboutPage() {
                                 school&apos;s unique status in the education
                                 landscape.{" "}
                               </p>
+
+                              <h5
+                                style={{
+                                  color: "var(--accent-color)",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                Value-Oriented Strategy
+                              </h5>
+                              <p
+                                style={{
+                                  lineHeight: "1.8",
+                                  textAlign: "justify",
+                                }}
+                              >
+                                At the heart of our educational philosophy lies a strong commitment to instilling core human values in every learner. Our value-oriented strategy integrates ethics, empathy, respect, and responsibility into daily learning experiences, fostering not only academic excellence but also character development. We aim to nurture students who lead with integrity and contribute positively to their communities and the world.
+
+                              </p>
+
+                              <h5
+                                style={{
+                                  color: "var(--accent-color)",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                Co-Education Strategy
+                              </h5>
+                              <p
+                                style={{
+                                  lineHeight: "1.8",
+                                  textAlign: "justify",
+                                }}
+                              >
+                                We believe in the power of co-education to prepare students for real-world collaboration and mutual respect. Our co-education strategy promotes gender equity, encourages inclusive dialogue, and helps students develop essential social and communication skills. By learning together, boys and girls gain a balanced perspective, build confidence, and grow into well-rounded, respectful individuals.
+                              </p>
                             </div>
                           </div>
 
                           {/* Image for mobile view only */}
                           <div className="col-12 d-block d-md-none mt-4">
                             <Image
-                              src="/assets/img/education/Accr.JPG"
-                              alt="Strategies"
-                              className="img-fluid rounded"
-                              width={1200}
-                              height={800}
-                              style={{
-                                objectFit: "cover",
-                                width: "100%",
-                                height: "auto",
-                                marginBottom: "1rem",
-                              }}
-                            />
+  src="/assets/img/education/Accr.JPG"
+  alt="Strategies"
+  width={1200}
+  height={2000} // Required or error will occur
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    marginBottom: "1rem",
+    borderRadius: "12px",
+  }}
+  className="rounded"
+/>
+
                           </div>
                         </div>
                       </div>

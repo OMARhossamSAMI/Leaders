@@ -349,7 +349,7 @@ export default function Home() {
                     <span className="stat-number">
                       <span
                         data-purecounter-start={0}
-                        data-purecounter-end={2300}
+                        data-purecounter-end={1200}
                         data-purecounter-duration={1}
                         className="purecounter"
                       />
@@ -361,7 +361,7 @@ export default function Home() {
                     <span className="stat-number">
                       <span
                         data-purecounter-start={0}
-                        data-purecounter-end={500}
+                        data-purecounter-end={250}
                         data-purecounter-duration={1}
                         className="purecounter"
                       />

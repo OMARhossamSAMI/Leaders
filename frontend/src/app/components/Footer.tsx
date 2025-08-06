@@ -47,17 +47,6 @@ export default function Footer() {
           <div className="col-lg-8 col-md-12">
             <div className="row gy-3">
               <div className="col-12 col-sm-6 col-lg-4">
-                <h5 className="mb-2">HR Department</h5>
-                <p>
-                  <i className="bi bi-envelope me-2"></i>{" "}
-                  careers@leadersintcollege.com
-                </p>
-                <p>
-                  <i className="bi bi-telephone me-2"></i> 02 26410050
-                </p>
-              </div>
-
-              <div className="col-12 col-sm-6 col-lg-4">
                 <h5 className="mb-2">Admission Department</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
@@ -65,6 +54,17 @@ export default function Footer() {
                 </p>
                 <p>
                   <i className="bi bi-telephone me-2"></i> 02 26410641
+                </p>
+              </div>
+              
+              <div className="col-12 col-sm-6 col-lg-4">
+                <h5 className="mb-2">HR Department</h5>
+                <p>
+                  <i className="bi bi-envelope me-2"></i>{" "}
+                  careers@leadersintcollege.com
+                </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i> 02 26410050
                 </p>
               </div>
 
