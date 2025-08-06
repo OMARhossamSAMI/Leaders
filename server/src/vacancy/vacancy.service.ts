@@ -90,9 +90,9 @@ export class VacancyService {
 
     // ✅ Email to HR
     const hrEmail = {
-      to: 'Admissionoffice@leadersintcollege.com',
+      to: 'Careers@leadersintcollege.com',
       from: {
-        email: 'youssefsahhar2406@gmail.com',
+        email: 'Careers@leadersintcollege.com',
         name: 'Vacancy Portal',
       },
       subject: `📩 Vacancy Application - ${fullName}`,
@@ -119,7 +119,7 @@ export class VacancyService {
       ? {
           to: userEmail,
           from: {
-            email: 'youssefsahhar2406@gmail.com',
+            email: 'Careers@leadersintcollege.com',
             name: 'Leaders International College',
           },
           subject: `✅ Your application has been received, ${fullName}`,
