@@ -105,9 +105,9 @@ export class StudentApplicationService {
     // ✅ Email to Admissions
     // ========================
     const admissionsEmail = {
-      to: 'Admissionoffice@leadersintcollege.com',
+      to: 'Admission@leadersintcollege.com',
       from: {
-        email: 'Admissionoffice@leadersintcollege.com',
+        email: 'Admission@leadersintcollege.com',
         name: 'Student Applications',
       },
       subject: `📥 New Student Application from ${studentName}`,
@@ -139,7 +139,7 @@ export class StudentApplicationService {
       ? {
           to: studentEmail,
           from: {
-            email: 'Admissionoffice@leadersintcollege.com',
+            email: 'Admission@leadersintcollege.com',
             name: 'Leaders International College',
           },
           subject: `✅ We've received your child's application, Parent of ${studentName}`,
