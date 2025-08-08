@@ -149,10 +149,10 @@ export class StudentApplicationService {
       Application Received
     </h2>
     <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
-    <p style="font-size: 15px;">We would like to inform you that the student application for <strong>${studentName}</strong> has been successfully submitted to <strong>Leaders International College</strong>.</p>
-    <p style="font-size: 15px;">Our admissions team is reviewing the application and will reach out if further steps are required.</p>
-    <p style="margin-top: 25px;">Thank you for trusting us with your child's education.</p>
-    <p style="margin-top: 30px;">Sincerely,<br/><strong>Admissions Department</strong><br/>Leaders International College</p>
+    <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
+    <p style="font-size: 15px;">Our Admissions Team is currently reviewing the submitted information and will be in touch with you as soon as possible regarding the next steps.</p>
+    <p style="margin-top: 25px;">We’re honored by your interest in joining our community and appreciate the trust you’ve placed in us to be part of your child’s educational journey.</p>
+    <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong><br/></p>
   </div>
   `,
         }

@@ -59,18 +59,18 @@ export class ContactUsService {
     const htmlForUser = `
   <div style="font-family: Arial, sans-serif; background-color: #f5f8fb; padding: 24px; max-width: 700px; margin: auto; border: 1px solid #ccddee; border-radius: 8px;">
     <h2 style="color: white; background-color: #007bff; padding: 16px; border-radius: 6px; text-align: center;">
-      Thank You for Reaching Out
+      Thank you for getting in touch with Leaders International College.
     </h2>
     <p style="font-size: 16px;">Dear <strong>${fullName}</strong>,</p>
     <p style="font-size: 16px;">We’ve received your message regarding "<strong>${subject}</strong>".</p>
     
     
-    <p style="font-size: 16px;">Here is a copy of your message:</p>
+    <p style="font-size: 16px;">, and here is a copy of your submission:</p>
     <blockquote style="margin: 10px 0; padding: 12px 16px; background: #ffffff; border-left: 4px solid #007bff; white-space: pre-wrap;">
       ${message}
     </blockquote>
-    <p style="font-size: 16px;">Thank you again for contacting <strong>Leaders International College</strong>. We're here to help!</p>
-    <p style="margin-top: 30px;">Sincerely,<br/><strong>IT Support Team</strong><br/>Leaders International College</p>
+    <p style="font-size: 16px;">Your message has been successfully received, and a member of our team will follow up if needed. We appreciate your engagement and look forward to supporting you.</p>
+    <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College Administration</strong><br/></p>
   </div>
   `;
 
