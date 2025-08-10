@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://leaders-frontend.onrender.com
+Host: https://leadersintcollege.com
 
 # Sitemaps
-Sitemap: https://leaders-frontend.onrender.com/sitemap.xml
+Sitemap: https://leadersintcollege.com/sitemap.xml
