@@ -131,6 +131,11 @@ export default function Header() {
                     Campus
                   </Link>
                 </li>
+                <li>
+                  <Link href="/about" onClick={() => handleAboutTab("culture")}>
+                    Culture & Values
+                  </Link>
+                </li>
               </ul>
             </li>
 
@@ -408,7 +413,7 @@ export default function Header() {
                 href="/hiring"
                 className={pathname.startsWith("/hiring") ? "active" : ""}
               >
-                <span>We Are Hiring</span>
+                <span>We are Hiring</span>
                 <i className="bi bi-chevron-down toggle-dropdown" />
               </Link>
               <ul>

@@ -269,21 +269,23 @@ export default function Home() {
                           <h4>10+</h4>
                           <p>Years of Academic Excellence</p>
                         </div>
+                      </div>  
+                      <div className="stat-item">
+                        <div className="stat-icon">
+                          <i className="bi bi-building" />
+                        </div>
+                        <div className="stat-content">
+                          <p>Ethics & Character Development</p>
+                        </div>
                       </div>
                       <div className="stat-item">
                         <div className="stat-icon">
                           <i className="bi bi-mortarboard" />
                         </div>
                         <div className="stat-content">
-                          <p>IB World School</p>
-                        </div>
-                      </div>
-                      <div className="stat-item">
-                        <div className="stat-icon">
-                          <i className="bi bi-building" />
-                        </div>
-                        <div className="stat-content">
-                          <p>Personalized Learning Approach</p>
+                          <p>IB World School -</p>
+                          <p>Fully Accredited Continuum</p>
+                          <p>(PYP-MYP-DP)</p>
                         </div>
                       </div>
                     </div>

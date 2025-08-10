@@ -73,47 +73,47 @@ export default function AboutPage() {
                   {/* Inject scoped and forced styles */}
                   <style>
                     {`
-      .about-tabs-lic-wrapper {
-        background-color: #eef6f9 !important;
-        padding: 20px 30px !important;
-        border-radius: 40px !important;
-        overflow-x: auto !important;
-        display: flex !important;
-        justify-content: center !important;
-        flex-wrap: wrap !important;
-        gap: 12px !important;
-        margin-bottom: 25px !important;
-      }
+                    .about-tabs-lic-wrapper {
+                      background-color: #eef6f9 !important;
+                      padding: 20px 30px !important;
+                      border-radius: 40px !important;
+                      overflow-x: auto !important;
+                      display: flex !important;
+                      justify-content: center !important;
+                      flex-wrap: wrap !important;
+                      gap: 12px !important;
+                      margin-bottom: 25px !important;
+                    }
 
-      .about-tab-btn-lic {
-        background-color: transparent !important;
-        border: none !important;
-        padding: 10px 20px !important;
-        border-radius: 40px !important;
-        font-size: 15px !important;
-        font-weight: 500 !important;
-        color: #1a1a1a !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        transition: all 0.3s ease !important;
-        white-space: nowrap !important;
-      }
+                    .about-tab-btn-lic {
+                      background-color: transparent !important;
+                      border: none !important;
+                      padding: 10px 20px !important;
+                      border-radius: 40px !important;
+                      font-size: 15px !important;
+                      font-weight: 500 !important;
+                      color: #1a1a1a !important;
+                      display: flex !important;
+                      align-items: center !important;
+                      gap: 8px !important;
+                      transition: all 0.3s ease !important;
+                      white-space: nowrap !important;
+                    }
 
-      .about-tab-btn-lic:hover {
-        background-color: #cfeaf2 !important;
-      }
+                    .about-tab-btn-lic:hover {
+                      background-color: #cfeaf2 !important;
+                    }
 
-      .about-tab-btn-lic.active {
-        background-color: #00a8d2 !important;
-        color: #ffffff !important;
-        font-weight: 600 !important;
-      }
+                    .about-tab-btn-lic.active {
+                      background-color: #00a8d2 !important;
+                      color: #ffffff !important;
+                      font-weight: 600 !important;
+                    }
 
-      .about-tab-btn-lic i {
-        font-size: 1rem !important;
-      }
-    `}
+                    .about-tab-btn-lic i {
+                      font-size: 1rem !important;
+                    }
+                  `}
                   </style>
 
                   {/* Tab Navigation Block */}
@@ -179,6 +179,13 @@ export default function AboutPage() {
                       onClick={() => setAboutTab("campus")}
                     >
                       <i className="bi bi-building" /> Campus
+                    </button>
+
+                    <button
+                      className={`about-tab-btn-lic ${aboutTab === "culture" ? "active" : ""}`}
+                      onClick={() => setAboutTab("culture")}
+                    >
+                      <i className="bi bi-building" /> Culture & Values
                     </button>
                   </div>
                 </div>
@@ -525,6 +532,9 @@ export default function AboutPage() {
                               <div className="carousel-inner">
                                 {[
                                   "A2.jpeg",
+                                  "PYP_New.jpeg",
+                                  "MYP_NEW.jpeg",
+                                  "DP_NEW.jpeg",
                                   "A1.jpeg",
                                   "A5.jpeg",
                                   "A3.jpeg",
@@ -599,6 +609,9 @@ export default function AboutPage() {
                               <div className="thumb-container d-flex justify-content-center gap-2 mt-3">
                                 {[
                                   "A2.jpeg",
+                                  "PYP_New.jpeg",
+                                  "MYP_NEW.jpeg",
+                                  "DP_NEW.jpeg",
                                   "A1.jpeg",
                                   "A5.jpeg",
                                   "A3.jpeg",
@@ -625,7 +638,7 @@ export default function AboutPage() {
                                       src={`/assets/img/education/${file}`}
                                       alt={`Thumbnail ${idx + 1}`}
                                       style={{
-                                        width: "55px",
+                                        width: "45px",
                                         height: "auto",
                                         borderRadius: "4px",
                                       }}
@@ -1293,11 +1306,25 @@ export default function AboutPage() {
                               alt="Strategies"
                               className="img-fluid rounded"
                               width={1200}
-                              height={800}
+                              height={600}
                               style={{
                                 objectFit: "cover",
                                 width: "100%",
-                                height: "auto",
+                                height: "550px",
+                                marginBottom: "1rem",
+                              }}
+                            />
+
+                            <Image
+                              src="/assets/img/education/Swing.jpg"
+                              alt="Strategies"
+                              className="img-fluid rounded"
+                              width={1200}
+                              height={600}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                height: "550px",
                                 marginBottom: "1rem",
                               }}
                             />
@@ -1446,20 +1473,108 @@ export default function AboutPage() {
                           {/* Image for mobile view only */}
                           <div className="col-12 d-block d-md-none mt-4">
                             <Image
-  src="/assets/img/education/Accr.JPG"
-  alt="Strategies"
-  width={1200}
-  height={2000} // Required or error will occur
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    marginBottom: "1rem",
-    borderRadius: "12px",
-  }}
-  className="rounded"
-/>
+                              src="/assets/img/education/Accr.JPG"
+                              alt="Strategies"
+                              width={1200}
+                              height={2000} // Required or error will occur
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                                marginBottom: "1rem",
+                                borderRadius: "12px",
+                              }}
+                              className="rounded"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  {/* === Culture & Values Tab Content === */}
+                  <div
+                    className={`tab-pane fade ${aboutTab === "culture" ? "show active" : ""}`}
+                    id="culture"
+                    role="tabpanel"
+                  >
+                    <div className="row gy-4 align-items-center">
+                      <div
+                        className="col-lg-12"
+                        data-aos="fade-up"
+                        style={{
+                          background: "#fff",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+                          overflow: "hidden",
+                          padding: "30px",
+                        }}
+                      >
+                        <div className="row align-items-center">
+                          {/* ===== Image Left on Desktop ===== */}
+                          <div className="col-md-5 d-none d-md-block">
+                            <Image
+                              src="/assets/img/education/Culture.JPG"
+                              alt="Governance"
+                              className="img-fluid rounded"
+                              width={1200}
+                              height={800}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                height: "auto",
+                              }}
+                            />
+                          </div>
 
+                          {/* ===== Text Right / Full Width on Mobile ===== */}
+                          <div className="col-md-7">
+                            {/* === Title === */}
+                            <div
+                              className="container section-title text-center mb-4"
+                              data-aos="fade-up"
+                            >
+                              <h2>
+                                <span className="d-block d-md-none">
+                                  <br />
+                                </span>
+                                Culture & Values
+                                <span className="d-block d-md-none">
+                                  <br />
+                                </span>
+                              </h2>
+                            </div>
+
+                            {/* === Image on Mobile Only === */}
+                            <div
+                              className="mb-4 d-block d-md-none"
+                              data-aos="fade-up"
+                            >
+                              <Image
+                                src="/assets/img/education/Culture.JPG"
+                                alt="Culture"
+                                className="img-fluid rounded"
+                                width={1200}
+                                height={800}
+                                style={{
+                                  objectFit: "cover",
+                                  width: "100%",
+                                  height: "auto",
+                                }}
+                              />
+                            </div>
+
+                            {/* === Text === */}
+                            <div data-aos="fade-up" data-aos-delay="100">
+                              <p
+                                style={{
+                                  lineHeight: "1.8",
+                                  textAlign: "justify",
+                                }}
+                              >
+                              At Leaders College for Educational Services, our foundation is our strength — built on ten enduring pillars that define who we are and how we work. Respect fosters a supportive community, Commitment drives our dedication, and Recognition ensures every effort is valued. Through Teamwork and Hard Work, we achieve excellence together, while Transparency builds trust in all we do. Discipline and Equality create fairness and consistency, Documentation safeguards our progress, and Constant Development ensures we are always moving forward. These values are not just ideals — they are the living culture that shapes our students, staff, and community every day.                              
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
