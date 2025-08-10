@@ -182,7 +182,9 @@ export default function AboutPage() {
                     </button>
 
                     <button
-                      className={`about-tab-btn-lic ${aboutTab === "culture" ? "active" : ""}`}
+                      className={`about-tab-btn-lic ${
+                        aboutTab === "culture" ? "active" : ""
+                      }`}
                       onClick={() => setAboutTab("culture")}
                     >
                       <i className="bi bi-building" /> Culture & Values
@@ -287,7 +289,9 @@ export default function AboutPage() {
                                         color: "var(--accent-color)",
                                         cursor: "pointer",
                                       }}
-                                      onClick={() => (window.location.href = "/curriculum")}
+                                      onClick={() =>
+                                        (window.location.href = "/curriculum")
+                                      }
                                     >
                                       Primary Years Programme (PYP)
                                     </button>
@@ -302,7 +306,10 @@ export default function AboutPage() {
                                         color: "var(--accent-color)",
                                         cursor: "pointer",
                                       }}
-                                      onClick={() => (window.location.href = "/curriculum?p=myp")}
+                                      onClick={() =>
+                                        (window.location.href =
+                                          "/curriculum?p=myp")
+                                      }
                                     >
                                       Middle Years Programme (MYP)
                                     </button>
@@ -317,14 +324,15 @@ export default function AboutPage() {
                                         color: "var(--accent-color)",
                                         cursor: "pointer",
                                       }}
-                                      onClick={() => (window.location.href = "/curriculum?p=dp")}
+                                      onClick={() =>
+                                        (window.location.href =
+                                          "/curriculum?p=dp")
+                                      }
                                     >
                                       Diploma Programme (DP)
                                     </button>
                                   </li>
                                 </ul>
-
-                                
                                 This prestigious recognition places us at the
                                 forefront of international education, as one of
                                 the oldest and most experienced IB World
@@ -1316,7 +1324,7 @@ export default function AboutPage() {
                             />
 
                             <Image
-                              src="/assets/img/education/Swing.jpg"
+                              src="/assets/img/education/Swing.JPG"
                               alt="Strategies"
                               className="img-fluid rounded"
                               width={1200}
@@ -1447,8 +1455,16 @@ export default function AboutPage() {
                                   textAlign: "justify",
                                 }}
                               >
-                                At the heart of our educational philosophy lies a strong commitment to instilling core human values in every learner. Our value-oriented strategy integrates ethics, empathy, respect, and responsibility into daily learning experiences, fostering not only academic excellence but also character development. We aim to nurture students who lead with integrity and contribute positively to their communities and the world.
-
+                                At the heart of our educational philosophy lies
+                                a strong commitment to instilling core human
+                                values in every learner. Our value-oriented
+                                strategy integrates ethics, empathy, respect,
+                                and responsibility into daily learning
+                                experiences, fostering not only academic
+                                excellence but also character development. We
+                                aim to nurture students who lead with integrity
+                                and contribute positively to their communities
+                                and the world.
                               </p>
 
                               <h5
@@ -1465,7 +1481,15 @@ export default function AboutPage() {
                                   textAlign: "justify",
                                 }}
                               >
-                                We believe in the power of co-education to prepare students for real-world collaboration and mutual respect. Our co-education strategy promotes gender equity, encourages inclusive dialogue, and helps students develop essential social and communication skills. By learning together, boys and girls gain a balanced perspective, build confidence, and grow into well-rounded, respectful individuals.
+                                We believe in the power of co-education to
+                                prepare students for real-world collaboration
+                                and mutual respect. Our co-education strategy
+                                promotes gender equity, encourages inclusive
+                                dialogue, and helps students develop essential
+                                social and communication skills. By learning
+                                together, boys and girls gain a balanced
+                                perspective, build confidence, and grow into
+                                well-rounded, respectful individuals.
                               </p>
                             </div>
                           </div>
@@ -1490,11 +1514,12 @@ export default function AboutPage() {
                         </div>
                       </div>
                     </div>
-                    
                   </div>
                   {/* === Culture & Values Tab Content === */}
                   <div
-                    className={`tab-pane fade ${aboutTab === "culture" ? "show active" : ""}`}
+                    className={`tab-pane fade ${
+                      aboutTab === "culture" ? "show active" : ""
+                    }`}
                     id="culture"
                     role="tabpanel"
                   >
@@ -1572,7 +1597,21 @@ export default function AboutPage() {
                                   textAlign: "justify",
                                 }}
                               >
-                              At Leaders College for Educational Services, our foundation is our strength — built on ten enduring pillars that define who we are and how we work. Respect fosters a supportive community, Commitment drives our dedication, and Recognition ensures every effort is valued. Through Teamwork and Hard Work, we achieve excellence together, while Transparency builds trust in all we do. Discipline and Equality create fairness and consistency, Documentation safeguards our progress, and Constant Development ensures we are always moving forward. These values are not just ideals — they are the living culture that shapes our students, staff, and community every day.                              
+                                At Leaders College for Educational Services, our
+                                foundation is our strength — built on ten
+                                enduring pillars that define who we are and how
+                                we work. Respect fosters a supportive community,
+                                Commitment drives our dedication, and
+                                Recognition ensures every effort is valued.
+                                Through Teamwork and Hard Work, we achieve
+                                excellence together, while Transparency builds
+                                trust in all we do. Discipline and Equality
+                                create fairness and consistency, Documentation
+                                safeguards our progress, and Constant
+                                Development ensures we are always moving
+                                forward. These values are not just ideals — they
+                                are the living culture that shapes our students,
+                                staff, and community every day.
                               </p>
                             </div>
                           </div>
