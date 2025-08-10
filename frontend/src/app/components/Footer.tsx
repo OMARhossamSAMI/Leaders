@@ -144,6 +144,31 @@ export default function Footer() {
             Rights Reserved
           </p>
         </div>
+
+       <div style={{ textAlign: "center", marginTop: "1rem" }}>
+  <a
+    href="https://www.instagram.com/sitehub_builders"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "6px",
+      padding: "4px 8px",
+      backgroundColor: "#000",
+      color: "#fff",
+      borderRadius: "4px",
+      fontSize: "0.75rem",
+      textDecoration: "none",
+      fontWeight: "bold",
+    }}
+  >
+    <i className="bi bi-terminal"></i>
+    Powered By: Sitehub_Builders
+  </a>
+</div>
+
+
       </div>
     </footer>
   );

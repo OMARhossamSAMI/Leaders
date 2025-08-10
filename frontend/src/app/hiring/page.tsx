@@ -71,7 +71,7 @@ export default function WeAreHiringPage() {
             }}
           >
             <div className="container position-relative">
-              <h1>We Are Hiring</h1>
+              <h1>We are Hiring</h1>
               <p>
                 Join our passionate team of educators and help shape the
                 future—now hiring talented teachers and staff!
@@ -81,7 +81,7 @@ export default function WeAreHiringPage() {
                   <li>
                     <Link href="/">Home</Link>
                   </li>
-                  <li className="current">We Are Hiring</li>
+                  <li className="current">We are Hiring</li>
                 </ol>
               </nav>
             </div>
@@ -689,7 +689,13 @@ export default function WeAreHiringPage() {
 
                     {/* Next Year Vacancies */}
                     <div className="vacancy-column">
-                      <h4 className="vacancy-heading">
+                      <h4
+                        className="vacancy-heading"
+                        style={{
+                          color: "var(--accent-color)",
+                          fontWeight: "bold",
+                        }}
+                      >
                         Academic Year {displayNextYear}
                       </h4>
                       {jobs.filter(
