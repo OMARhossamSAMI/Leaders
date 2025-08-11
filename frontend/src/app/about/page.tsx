@@ -646,7 +646,7 @@ export default function AboutPage() {
                                       src={`/assets/img/education/${file}`}
                                       alt={`Thumbnail ${idx + 1}`}
                                       style={{
-                                        width: "45px",
+                                        width: "25px",
                                         height: "auto",
                                         borderRadius: "4px",
                                       }}

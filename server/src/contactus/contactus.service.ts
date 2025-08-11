@@ -36,7 +36,7 @@ export class ContactUsService {
     <h2 style="color: #ffffff; background-color: #004080; padding: 16px; border-radius: 6px; text-align: center;">
       📩 New Contact Message Received
     </h2>
-    <p style="font-size: 16px;">Dear IT Team,</p>
+    <p style="font-size: 16px;">Dear Leaders International College,</p>
     <p style="font-size: 16px;">You have received a new message from the contact form on the website. The details are as follows:</p>
     
     <div style="background-color: #ffffff; padding: 20px; border-radius: 6px; margin-top: 20px;">
@@ -65,7 +65,7 @@ export class ContactUsService {
     <p style="font-size: 16px;">We’ve received your message regarding "<strong>${subject}</strong>".</p>
     
     
-    <p style="font-size: 16px;">, and here is a copy of your submission:</p>
+    <p style="font-size: 16px;">Here is a copy of your submission:</p>
     <blockquote style="margin: 10px 0; padding: 12px 16px; background: #ffffff; border-left: 4px solid #007bff; white-space: pre-wrap;">
       ${message}
     </blockquote>
