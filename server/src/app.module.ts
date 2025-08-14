@@ -20,6 +20,7 @@ import { diskStorage } from 'multer';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AcceptedStudentModule } from './accepted-student/accepted-student.module';
 @Module({
   imports: [
     MulterModule.register({
@@ -51,6 +52,7 @@ import { AppService } from './app.service';
     JobModule,
     InternshipModule,
     AuthModule,
+    AcceptedStudentModule,
   ],
   controllers: [AppController], // ✅ Add this line
   providers: [
