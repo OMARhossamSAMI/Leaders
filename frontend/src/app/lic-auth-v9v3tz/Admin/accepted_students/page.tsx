@@ -38,8 +38,7 @@ export default function AcceptedStudentsPage() {
   const [formFields, setFormFields] = useState<FormField[]>([]);
 
   // Keep same tabbed layout for visual parity
-  const [editingFormStructure, setEditingFormStructure] = useState(false);
-  const [formStructureDraft, setFormStructureDraft] = useState<FormField[]>([]);
+
   const [activeTab, setActiveTab] = useState<"accepted" | "form">("accepted");
 
   const [authenticated, setAuthenticated] = useState(false);
@@ -63,14 +62,6 @@ export default function AcceptedStudentsPage() {
     if (value instanceof File) return value.name;
     if (typeof value === "object") return JSON.stringify(value);
     return <em>Unsupported</em>;
-  };
-
-  const getSafeInputValue = (
-    value: string | number | boolean | string[] | File | null | undefined
-  ): string | number | readonly string[] | undefined => {
-    if (typeof value === "string" || typeof value === "number") return value;
-    if (Array.isArray(value)) return value;
-    return ""; // fallback for null, undefined, boolean, File, etc.
   };
 
   const countPerDay = (rows: AcceptedStudent[]): Record<string, number> => {
@@ -142,73 +133,11 @@ export default function AcceptedStudentsPage() {
   };
 
   // ===== Delete (kept for design parity, but no DELETE call: GET-only phase) =====
-  const handleDelete = (id: string) => {
+  const handleDelete = () => {
     alert("Remove from accepted list: coming soon.");
   };
 
   // ===== Form structure editor (optional — same as applications page) =====
-  const handleFormStructureEdit = () => {
-    setFormStructureDraft([...formFields]);
-    setEditingFormStructure(true);
-    setActiveTab("form");
-  };
-
-  const handleFieldChange = (
-    index: number,
-    key: keyof FormField,
-    value: FieldValue
-  ) => {
-    const updated = [...formStructureDraft];
-    if (key === "options" && updated[index].type === "select") {
-      updated[index].options = value as string[];
-    } else if (key !== "options") {
-      updated[index] = {
-        ...updated[index],
-        [key]: value,
-      };
-    }
-    setFormStructureDraft(updated);
-  };
-
-  const handleAddField = () => {
-    setFormStructureDraft([
-      ...formStructureDraft,
-      { field_name: "", label: "", type: "text", required: false, options: [] },
-    ]);
-  };
-
-  const handleRemoveField = (index: number) => {
-    const updated = [...formStructureDraft];
-    updated.splice(index, 1);
-    setFormStructureDraft(updated);
-  };
-
-  const handleSaveForm = async () => {
-    const formWithOrder = formStructureDraft.map((field, index) => ({
-      ...field,
-      order: index,
-    }));
-
-    try {
-      const response = await fetch(`$http://localhost:3000/form-fields`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formWithOrder),
-      });
-
-      if (response.ok) {
-        setFormFields(formWithOrder);
-        setEditingFormStructure(false);
-        setActiveTab("accepted");
-        alert("Form structure saved successfully!");
-      } else {
-        alert("Failed to save form structure");
-      }
-    } catch (error) {
-      console.error("Failed to save form fields:", error);
-      alert("Failed to save form structure");
-    }
-  };
 
   // ===== CSV export (same layout; new filename) =====
   const exportToExcel = () => {
@@ -221,7 +150,7 @@ export default function AcceptedStudentsPage() {
     ];
     csvRows.push(headers.join(","));
 
-    students.forEach((s, idx) => {
+    students.forEach((s) => {
       const row: string[] = [];
 
       formFields.forEach((field) => {
@@ -452,7 +381,7 @@ export default function AcceptedStudentsPage() {
 
                                   {/* Keep delete button for design parity, no API call yet */}
                                   <button
-                                    onClick={() => handleDelete(s._id)}
+                                    onClick={() => handleDelete()}
                                     className="icon-button text-red-600"
                                     aria-label="Remove accepted student (coming soon)"
                                     title="Remove accepted student (coming soon)"
