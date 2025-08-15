@@ -67,7 +67,7 @@ export default function Header() {
           <Image
             src="/assets/img/lic_logo.png"
             alt="School Logo"
-            width={40} // You can adjust this if the image isn't square
+            width={55} // You can adjust this if the image isn't square
             height={40}
             style={{ marginRight: 10 }}
             priority // Optional: use if this logo is in your header or shown above the fold

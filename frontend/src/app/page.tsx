@@ -257,8 +257,8 @@ export default function Home() {
                           <i className="bi bi-trophy-fill" />
                         </div>
                         <div className="stat-content">
-                          <h4>100%</h4>
-                          <p>University Enrollment Rate</p>
+                          <h4>10 Years +</h4>
+                          <p>of Academic Excellence</p>
                         </div>
                       </div>
                       <div className="stat-item">
@@ -266,8 +266,8 @@ export default function Home() {
                           <i className="bi bi-globe" />
                         </div>
                         <div className="stat-content">
-                          <h4>10+</h4>
-                          <p>Years of Academic Excellence</p>
+                          <h4>Dual</h4>
+                          <p>Certificate</p>
                         </div>
                       </div>  
                       <div className="stat-item">
