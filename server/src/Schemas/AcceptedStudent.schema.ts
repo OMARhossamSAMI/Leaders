@@ -20,6 +20,9 @@ export class AcceptedStudent {
   })
   files?: { originalname: string; path: string }[];
 
+  @Prop({ type: Boolean, default: false })
+  assessmentMessageSent: boolean; // ✅ New field
+
   createdAt?: Date;
   updatedAt?: Date;
 }

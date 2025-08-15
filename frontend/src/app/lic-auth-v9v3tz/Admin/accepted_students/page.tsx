@@ -18,8 +18,13 @@ interface AcceptedStudent {
   updatedAt: string;
   data: Record<string, FieldValue>;
   files?: { originalname: string; path: string }[];
+  assessmentMessageSent?: boolean;
 }
-
+type WhatsAppAPIResponse = {
+  success?: boolean;
+  messageId?: string;
+  error?: { message: string };
+};
 interface FormField {
   field_name: string;
   label: string;
@@ -44,6 +49,8 @@ export default function AcceptedStudentsPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
   const [loadingStudents, setLoadingStudents] = useState(true);
+  const [selectedStudent, setSelectedStudent] =
+    useState<AcceptedStudent | null>(null);
 
   // Pagination (reuse same pattern)
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +59,26 @@ export default function AcceptedStudentsPage() {
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
   const currentStudents = students.slice(indexOfFirst, indexOfLast);
-
+  const [showModal, setShowModal] = useState(false);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const generateTimeSlots = () => {
+    const times = [];
+    for (let hour = 8; hour <= 17; hour++) {
+      for (const minute of [0, 15, 30, 45]) {
+        if (hour === 17 && minute > 0) break; // stop after 5:00 PM
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+        times.push(
+          `${displayHour}:${minute.toString().padStart(2, "0")} ${ampm}`
+        );
+      }
+    }
+    return times;
+  };
   // ===== Helpers =====
   const renderFieldValue = (value: unknown): React.ReactNode => {
     if (value === null || value === undefined) return <em>Not provided</em>;
@@ -132,9 +158,32 @@ export default function AcceptedStudentsPage() {
     setExpandedId(id);
   };
 
-  // ===== Delete (kept for design parity, but no DELETE call: GET-only phase) =====
-  const handleDelete = () => {
-    alert("Remove from accepted list: coming soon.");
+  // ===== Delete an accepted student =====
+  const handleDelete = async (id: string) => {
+    if (
+      !confirm(
+        "Are you sure you want to remove this student from the accepted list?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/accepted-student/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete accepted student");
+      }
+
+      // Remove from state without re-fetch
+      setStudents((prev) => prev.filter((s) => s._id !== id));
+      alert("Student removed from accepted list.");
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting student. Please try again.");
+    }
   };
 
   // ===== Form structure editor (optional — same as applications page) =====
@@ -200,6 +249,76 @@ export default function AcceptedStudentsPage() {
     link.download = "accepted_students.csv";
     link.click();
     URL.revokeObjectURL(url);
+  };
+  function normalizePhoneNumber(input: string): string {
+    // Remove all non-digit characters
+    let digits = input.replace(/\D/g, "");
+
+    // If starts with 0, replace with country code (Egypt example: 20)
+    if (digits.startsWith("0")) {
+      digits = "20" + digits.slice(1);
+    }
+
+    // If already has +20 or 20, just ensure no plus sign
+    if (digits.startsWith("20") && digits.length > 10) {
+      return digits;
+    }
+
+    return digits;
+  }
+
+  const handleSendMessage = async (
+    student: AcceptedStudent,
+    date: string,
+    time: string,
+    onSuccess: () => void
+  ): Promise<WhatsAppAPIResponse | undefined> => {
+    const fatherName = student.data?.father_name || "Parent";
+    const studentName = student.data?.student_name || "Student";
+    const rawPhoneNumber = student.data?.father_phone || "";
+
+    const phoneNumber = normalizePhoneNumber(String(rawPhoneNumber));
+
+    if (!date || !time) {
+      alert("Please select both date and time.");
+      return;
+    }
+
+    if (!phoneNumber) {
+      alert("No valid phone number found for this student.");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/accepted-student/${student._id}/send-assessment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fatherName,
+            studentName,
+            date,
+            time,
+            phoneNumber,
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to send");
+
+      const data = await res.json();
+      console.log("WhatsApp API response:", data);
+
+      onSuccess(); // Close modal + update UI to "Message Sent"
+      return data;
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      console.error(err);
+      alert("Failed to send message.");
+      return { error: { message } };
+    }
   };
 
   return (
@@ -381,13 +500,31 @@ export default function AcceptedStudentsPage() {
 
                                   {/* Keep delete button for design parity, no API call yet */}
                                   <button
-                                    onClick={() => handleDelete()}
+                                    onClick={() => handleDelete(s._id)}
                                     className="icon-button text-red-600"
                                     aria-label="Remove accepted student (coming soon)"
                                     title="Remove accepted student (coming soon)"
                                     type="button"
                                   >
                                     <Trash2 />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      if (!s.assessmentMessageSent) {
+                                        setSelectedStudent(s);
+                                        setShowModal(true);
+                                      }
+                                    }}
+                                    className={`btn btn-sm ${
+                                      s.assessmentMessageSent
+                                        ? "btn-secondary"
+                                        : "btn-success"
+                                    }`}
+                                    disabled={s.assessmentMessageSent}
+                                  >
+                                    {s.assessmentMessageSent
+                                      ? "✅ Assesment Message Already Sent"
+                                      : "📩 Send Assessment Message"}
                                   </button>
                                 </div>
                               </div>
@@ -514,6 +651,222 @@ export default function AcceptedStudentsPage() {
           )}
         </div>
       </div>
+      {showModal && selectedStudent && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal">
+            <h3 className="modal-title">📅 Schedule Assessment</h3>
+
+            <label className="form-label">Select Date</label>
+            <input
+              type="date"
+              className="custom-input"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+
+            <label className="form-label mt-3">Select Time</label>
+            <select
+              className="custom-input"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            >
+              <option value="">-- Select Time --</option>
+              {generateTimeSlots().map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </select>
+
+            <div className="modal-actions">
+              <button
+                className="btn-primary"
+                disabled={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  setErrorMessage(""); // clear previous errors
+                  try {
+                    const res = await handleSendMessage(
+                      selectedStudent,
+                      date,
+                      time,
+                      () => {}
+                    );
+
+                    // Check if API returned an error
+                    if (res?.error) {
+                      setErrorMessage(
+                        `❌ Cannot send message: ${
+                          res.error.message || "Unknown error"
+                        }`
+                      );
+                    } else {
+                      setMessageSent(true);
+                      setTimeout(() => {
+                        setShowModal(false);
+                        setMessageSent(false);
+                      }, 1500);
+                    }
+                  } catch (err) {
+                    setErrorMessage(
+                      `❌ Cannot send message: ${
+                        err instanceof Error ? err.message : String(err)
+                      }`
+                    );
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              >
+                {loading ? <span className="spinner" /> : "Send Message"}
+              </button>
+
+              <button
+                className="btn-secondary"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+
+            {messageSent && (
+              <p className="success-msg">✅ Message has been sent!</p>
+            )}
+
+            {errorMessage && <p className="error-msg">{errorMessage}</p>}
+          </div>
+
+          {/* Styles inline with JSX */}
+          <style jsx>{`
+            .custom-modal-overlay {
+              position: fixed;
+              inset: 0;
+              background: rgba(0, 0, 0, 0.45);
+              backdrop-filter: blur(4px);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 999;
+              animation: fadeIn 0.3s ease-in-out;
+            }
+            .custom-modal {
+              background: #fff;
+              padding: 2rem;
+              border-radius: 16px;
+              width: 95%;
+              max-width: 420px;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+              animation: slideUp 0.3s ease-in-out;
+            }
+            .modal-title {
+              font-size: 1.4rem;
+              font-weight: 600;
+              margin-bottom: 1rem;
+              color: #333;
+              text-align: center;
+            }
+            .form-label {
+              font-weight: 500;
+              margin-top: 0.5rem;
+              display: block;
+              color: #555;
+            }
+            .custom-input {
+              width: 100%;
+              padding: 0.65rem 0.75rem;
+              border: 1px solid #ccc;
+              border-radius: 10px;
+              margin-top: 0.4rem;
+              font-size: 0.95rem;
+              transition: border 0.2s ease-in-out;
+            }
+            .custom-input:focus {
+              outline: none;
+              border-color: #007bff;
+            }
+            .modal-actions {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 1.5rem;
+              gap: 0.5rem;
+            }
+            .btn-primary {
+              flex: 1;
+              background: #28a745;
+              color: #fff;
+              border: none;
+              padding: 0.6rem;
+              border-radius: 8px;
+              font-size: 0.95rem;
+              cursor: pointer;
+              transition: background 0.3s;
+            }
+            .btn-primary:hover {
+              background: #218838;
+            }
+            .btn-secondary {
+              flex: 1;
+              background: #6c757d;
+              color: white;
+              border: none;
+              padding: 0.6rem;
+              border-radius: 8px;
+              font-size: 0.95rem;
+              cursor: pointer;
+            }
+            .btn-secondary:hover {
+              background: #5a6268;
+            }
+            .spinner {
+              border: 3px solid #fff;
+              border-top: 3px solid rgba(255, 255, 255, 0.3);
+              border-radius: 50%;
+              width: 18px;
+              height: 18px;
+              animation: spin 0.7s linear infinite;
+              display: inline-block;
+            }
+            .success-msg {
+              color: #28a745;
+              margin-top: 1rem;
+              text-align: center;
+              font-weight: 500;
+            }
+            .error-msg {
+              color: #dc3545;
+              margin-top: 1rem;
+              text-align: center;
+              font-weight: 500;
+            }
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+            @keyframes slideUp {
+              from {
+                transform: translateY(20px);
+                opacity: 0;
+              }
+              to {
+                transform: translateY(0);
+                opacity: 1;
+              }
+            }
+            @keyframes spin {
+              0% {
+                transform: rotate(0);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+          `}</style>
+        </div>
+      )}
 
       <AdminFooter />
     </>
