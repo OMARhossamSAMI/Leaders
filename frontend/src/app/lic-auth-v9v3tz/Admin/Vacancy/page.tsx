@@ -313,55 +313,68 @@ export default function JobManagementPage() {
   const applicationCounts = countApplicationsPerDay(applications);
 
   const handleExportCSV = () => {
-    const csvRows: string[] = [];
+    if (!Array.isArray(applications) || applications.length === 0) return;
 
-    // Add 'Uploaded Files' column manually
-    const headers = [
-      ...formFields.map((f) => f.label),
-      "Uploaded Files",
-      "Submitted At",
-    ];
-    csvRows.push(headers.join(","));
-
+    // 🔹 Step 1: Collect all unique keys across applications
+    const allKeys = new Set<string>();
     applications.forEach((app) => {
-      const row = formFields.map((f) => {
-        // Prevent writing duplicate file info from form data
-        const val = app.data[f.field_name];
+      if (app?.data && typeof app.data === "object") {
+        Object.keys(app.data).forEach((k) => allKeys.add(k));
+      }
+    });
 
-        if (Array.isArray(val)) {
-          return `"${val.join(",").replace(/"/g, '""')}"`;
+    // Convert to array (headers)
+    const headers = [...allKeys, "Uploaded Files", "Submitted At"];
+    const csvRows: string[] = [headers.join(",")];
+
+    const escapeCell = (val: unknown): string => {
+      if (val == null) return "";
+      if (Array.isArray(val)) return `"${val.join(",").replace(/"/g, '""')}"`;
+      if (typeof val === "object") return `"${JSON.stringify(val).replace(/"/g, '""')}"`;
+      return `"${String(val).replace(/"/g, '""')}"`;
+    };
+
+
+    // 🔹 Step 2: Build rows
+    applications.forEach((app) => {
+      const row: string[] = [];
+
+      headers.forEach((h) => {
+        if (h === "Uploaded Files") {
+          // handle uploaded files
+          const fileLinks = Array.isArray(app.files)
+            ? app.files
+              .map((file) =>
+                file && typeof file === "object" && file.path
+                  ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
+                  : ""
+              )
+              .filter(Boolean)
+              .join(" | ")
+            : "";
+          row.push(escapeCell(fileLinks));
+        } else if (h === "Submitted At") {
+          row.push(escapeCell(app.createdAt ? new Date(app.createdAt).toLocaleString() : ""));
+        } else {
+          row.push(escapeCell(app.data?.[h]));
         }
-        return `"${String(val ?? "").replace(/"/g, '""')}"`;
       });
-
-      // ✅ Append uploaded file links from app.files
-      const fileLinks = Array.isArray(app.files)
-        ? app.files
-            .map((file) =>
-              typeof file === "object" && file.path
-                ? `${process.env.NEXT_PUBLIC_API_URL}/${file.path}`
-                : ""
-            )
-            .filter((link) => link !== "")
-            .join(" | ")
-        : "";
-
-      row.push(`"${fileLinks}"`);
-
-      // Append submission timestamp
-      row.push(`"${new Date(app.createdAt).toLocaleString()}"`);
 
       csvRows.push(row.join(","));
     });
 
+    // 🔹 Step 3: Export CSV
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = "Vac_applications.csv";
+    document.body.appendChild(link);
     link.click();
+    link.remove();
     URL.revokeObjectURL(url);
   };
+
 
   if (!authenticated) return null;
 
@@ -389,17 +402,15 @@ export default function JobManagementPage() {
             View Vacancies
           </button>
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             View Applications
           </button>
           <button
-            className={`tab-btn ${
-              activeTab === "edit-structure" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "edit-structure" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("edit-structure")}
           >
             Edit Form Structure
@@ -600,12 +611,12 @@ export default function JobManagementPage() {
                           <p key={key}>
                             <strong>{key}:</strong>{" "}
                             {Array.isArray(value) &&
-                            value.every(
-                              (v) =>
-                                typeof v === "object" &&
-                                v !== null &&
-                                "path" in v
-                            ) ? (
+                              value.every(
+                                (v) =>
+                                  typeof v === "object" &&
+                                  v !== null &&
+                                  "path" in v
+                              ) ? (
                               (
                                 value as {
                                   path: string;
@@ -617,9 +628,9 @@ export default function JobManagementPage() {
                                 )
                                   ? fileObj.path
                                   : `uploads/${fileObj.path.replace(
-                                      /^\/+/,
-                                      ""
-                                    )}`;
+                                    /^\/+/,
+                                    ""
+                                  )}`;
                                 return (
                                   <span key={idx}>
                                     <a
@@ -643,9 +654,8 @@ export default function JobManagementPage() {
                                 href={
                                   value.startsWith("http")
                                     ? value
-                                    : `${
-                                        process.env.NEXT_PUBLIC_API_URL
-                                      }/uploads/${value.replace(/^\/+/, "")}`
+                                    : `${process.env.NEXT_PUBLIC_API_URL
+                                    }/uploads/${value.replace(/^\/+/, "")}`
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -777,42 +787,42 @@ export default function JobManagementPage() {
                       {/* Options field for select, checkbox group */}
                       {(field.type === "select" ||
                         field.type === "checkbox") && (
-                        <div className="mt-3">
-                          <label className="fw-bold">Options</label>
-                          {(field.options || []).map(
-                            (option: string, optIdx: number) => (
-                              <div
-                                key={optIdx}
-                                className="d-flex align-items-center mb-1"
-                              >
-                                <input
-                                  className="form-input me-2"
-                                  value={option}
-                                  onChange={(e) =>
-                                    updateOption(index, optIdx, e.target.value)
-                                  }
-                                  placeholder={`Option ${optIdx + 1}`}
-                                  disabled={lockAll}
-                                />
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => removeOption(index, optIdx)}
-                                  disabled={lockAll}
+                          <div className="mt-3">
+                            <label className="fw-bold">Options</label>
+                            {(field.options || []).map(
+                              (option: string, optIdx: number) => (
+                                <div
+                                  key={optIdx}
+                                  className="d-flex align-items-center mb-1"
                                 >
-                                  ✖
-                                </button>
-                              </div>
-                            )
-                          )}
-                          <button
-                            className="btn btn-sm btn-secondary mt-1"
-                            onClick={() => addOption(index)}
-                            disabled={lockAll}
-                          >
-                            ➕ Add Option
-                          </button>
-                        </div>
-                      )}
+                                  <input
+                                    className="form-input me-2"
+                                    value={option}
+                                    onChange={(e) =>
+                                      updateOption(index, optIdx, e.target.value)
+                                    }
+                                    placeholder={`Option ${optIdx + 1}`}
+                                    disabled={lockAll}
+                                  />
+                                  <button
+                                    className="btn btn-sm btn-danger"
+                                    onClick={() => removeOption(index, optIdx)}
+                                    disabled={lockAll}
+                                  >
+                                    ✖
+                                  </button>
+                                </div>
+                              )
+                            )}
+                            <button
+                              className="btn btn-sm btn-secondary mt-1"
+                              onClick={() => addOption(index)}
+                              disabled={lockAll}
+                            >
+                              ➕ Add Option
+                            </button>
+                          </div>
+                        )}
 
                       {/* Field controls */}
                       <div className="btn-group mt-3">
