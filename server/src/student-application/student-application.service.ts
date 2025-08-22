@@ -19,12 +19,56 @@ console.log(
 // ✅ Set SendGrid API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
+// ⬇️ helper to safely build a regex from arbitrary input
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 @Injectable()
 export class StudentApplicationService {
   constructor(
     @InjectModel(StudentApplication.name)
     private appModel: Model<StudentApplicationDocument>,
   ) {}
+
+
+   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
+  // student-application.service.ts
+async findByParentEmail(rawEmail: string) {
+  const email = rawEmail.trim();
+
+  const app = await this.appModel
+    .findOne({
+      $or: [
+        { 'data.father_email': new RegExp(`^${this.escape(email)}$`, 'i') },
+        { 'data.mother_email': new RegExp(`^${this.escape(email)}$`, 'i') },
+      ],
+    })
+    .select({
+      _id: 1,
+      createdAt: 1,
+      'data.student_name': 1,
+      'data.father_email': 1,
+      'data.mother_email': 1,
+    })
+    .lean();
+
+  if (!app) return null;
+
+  return {
+    _id: app._id.toString(), // ✅ plain string
+    submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
+    student_name: app.data?.student_name,
+    father_email: app.data?.father_email,
+    mother_email: app.data?.mother_email,
+  };
+}
+
+// (optional helper)
+private escape(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 
   async submitApplication(
     formData: Record<string, any>,

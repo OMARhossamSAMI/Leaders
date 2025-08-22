@@ -127,6 +127,16 @@ export default function AdminPage() {
       color: "#dc3545",
       roles: ["it"],
     },
+    {
+      icon: "bi-calendar-check",
+      title: "Assessment Appointments",
+      description:
+        "See all reserved assessment slots by parents (day & time).",
+      href: "/lic-auth-v9v3tz/Admin/assessment-appointments",
+      color: "#0dcaf0",
+      roles: ["it", "Admission"],
+    },
+
   ];
   const filteredCards = cards.filter((card) => card.roles.includes(role || ""));
   return (

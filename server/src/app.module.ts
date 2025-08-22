@@ -21,6 +21,7 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AcceptedStudentModule } from './accepted-student/accepted-student.module';
+import { AppointmentsModule } from './appointments/appointments.module';
 @Module({
   imports: [
     MulterModule.register({
@@ -53,6 +54,7 @@ import { AcceptedStudentModule } from './accepted-student/accepted-student.modul
     InternshipModule,
     AuthModule,
     AcceptedStudentModule,
+    AppointmentsModule,
   ],
   controllers: [AppController], // ✅ Add this line
   providers: [

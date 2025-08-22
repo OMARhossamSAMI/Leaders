@@ -174,40 +174,45 @@ export default function AdmissionsPage() {
 
             <div className="admission-tab-wrapper">
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "apply" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("apply")}
               >
                 <i className="bi bi-pencil-square"></i> How to Apply
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "form" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "form" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("form")}
               >
                 <i className="bi bi-file-earmark-text"></i> Apply Now
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "requirements" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("requirements")}
               >
                 <i className="bi bi-people"></i> Age Acceptance Guide
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "deadlines" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("deadlines")}
               >
                 <i className="bi bi-camera-video"></i> Virtual Tour
               </button>
+
+              <Link
+                href="/admissions/appointments"
+                className="admission-tab-btn"
+                aria-label="Reserve Assessment Date"
+              >
+                <i className="bi bi-calendar-check"></i> Reserve Assessment Date
+              </Link>
+
             </div>
           </div>
 
