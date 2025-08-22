@@ -67,16 +67,6 @@ export default function AdminPage() {
       roles: ["it", "Admission"],
     },
     {
-      icon: "bi-person-check-fill",
-      title: "Accepted Students",
-      description:
-        "View and manage students who have been accepted into the school.",
-      href: "/lic-auth-v9v3tz/Admin/accepted_students",
-      color: "#20c997", // teal-like color, change as you wish
-      roles: ["it", "Admission"], // only visible to these roles
-    },
-
-    {
       icon: "bi-laptop",
       title: "Internship Applications",
       description:

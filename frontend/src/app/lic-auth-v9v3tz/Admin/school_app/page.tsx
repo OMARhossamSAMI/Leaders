@@ -8,7 +8,6 @@ import {
   PencilLine,
   Save,
   XCircle,
-  CheckCircle2,
 } from "lucide-react";
 import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
@@ -78,14 +77,7 @@ export default function ApplicationsPage() {
     indexOfFirstApp,
     indexOfLastApp
   );
-  // Accept confirmation modal state
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
-  // Accept API loading state
-  const [acceptLoading, setAcceptLoading] = useState(false);
+
 
   useEffect(() => {
     setLoadingApplications(true);
@@ -380,65 +372,9 @@ export default function ApplicationsPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
-  // Open/close helpers
-  const openAcceptConfirm = (id: string, name: string) => {
-    setConfirmTarget({ id, name });
-    setConfirmOpen(true);
-  };
-  const closeAcceptConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmTarget(null);
-  };
+  
 
-  // Placeholder for later API integration
-  const handleConfirmAccept = async () => {
-    if (!confirmTarget?.id) return;
-
-    try {
-      setAcceptLoading(true);
-
-      const token =
-        typeof window !== "undefined"
-          ? sessionStorage.getItem("admin_token")
-          : null;
-
-      const res = await fetch(
-        `http://localhost:3000/accepted-student/${confirmTarget.id}/accept`,
-        {
-          method: "POST",
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        // try to show backend message if any
-        let msg = "Failed to accept student.";
-        try {
-          const data = await res.json();
-          if (data?.message)
-            msg = Array.isArray(data.message)
-              ? data.message.join(", ")
-              : data.message;
-        } catch {}
-        alert(msg);
-        return;
-      }
-
-      // ✅ Success – remove from local list and reset UI
-      setApplications((prev) => prev.filter((a) => a._id !== confirmTarget.id));
-      if (expandedId === confirmTarget.id) setExpandedId(null);
-      alert("Student accepted successfully.");
-    } catch (e) {
-      console.error(e);
-      alert("Network error: could not accept student.");
-    } finally {
-      setAcceptLoading(false);
-      closeAcceptConfirm();
-    }
-  };
+  
 
   return (
     <>
@@ -633,25 +569,6 @@ export default function ApplicationsPage() {
                                       )}
                                     </button>
 
-                                    {/* ✅ new: Accept button (compact, professional) */}
-                                    <button
-                                      onClick={() =>
-                                        openAcceptConfirm(
-                                          app._id,
-                                          String(renderFieldValue(displayName))
-                                        )
-                                      }
-                                      className="btn-accept"
-                                      aria-label="Accept applicant"
-                                      title="Accept applicant"
-                                      type="button"
-                                    >
-                                      <CheckCircle2
-                                        size={18}
-                                        className="me-1"
-                                      />
-                                      Accept
-                                    </button>
 
                                     {/* keep delete */}
                                     <button
@@ -1027,47 +944,6 @@ export default function ApplicationsPage() {
         </div>{" "}
         {/* end of white shadow box */}
       </div>
-      {confirmOpen && (
-        <div
-          className="confirm-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirmTitle"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeAcceptConfirm();
-          }}
-        >
-          <div className="confirm-dialog" role="document">
-            <div className="confirm-header">
-              <CheckCircle2 />
-              <h5 id="confirmTitle">Accept Student</h5>
-            </div>
-            <p className="confirm-text">
-              Are you sure you want to <b>accept</b>{" "}
-              <span className="confirm-name">
-                {confirmTarget?.name || "this applicant"}
-              </span>
-              ?
-            </p>
-            <div className="confirm-actions">
-              <button
-                className="btn-danger-outline"
-                onClick={closeAcceptConfirm}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn-success-solid"
-                onClick={handleConfirmAccept}
-                disabled={acceptLoading}
-              >
-                {acceptLoading ? "Accepting..." : "Yes, Accept"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <AdminFooter />
     </>
   );
