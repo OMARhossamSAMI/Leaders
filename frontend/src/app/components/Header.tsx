@@ -218,6 +218,12 @@ export default function Header() {
                     Virtual Tour
                   </Link>
                 </li>
+                <li>
+                  <Link href="/admissions/appointments">
+                    Reserve Assessment Date
+                  </Link>
+                </li>
+
               </ul>
             </li>
             <li className="dropdown">
@@ -457,7 +463,7 @@ export default function Header() {
                     Current Vacancies
                   </Link>
                 </li>
-                 <li>
+                <li>
                   <Link
                     href="/hiring"
                     onClick={() => handleHiringTab("other")}
