@@ -219,7 +219,10 @@ export default function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/admissions/appointments">
+                  <Link 
+                  href="/admissions"
+                  onClick={() => handleAdmissionTab("reserve")}
+                  >
                     Reserve Assessment Date
                   </Link>
                 </li>

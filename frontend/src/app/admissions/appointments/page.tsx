@@ -1,3 +1,4 @@
+// src/app/appointment/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +24,16 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
 const DARK = "#1a1a1a";
+
+// ---- helpers/types for robust API handling ----
+type CreateApptSuccess = { _id?: string; id?: string };
+type ApiErrorBody = { message?: string | string[] };
+
+const hasMessage = (v: unknown): v is ApiErrorBody =>
+  typeof v === "object" && v !== null && "message" in v;
+
+const hasNewId = (v: unknown): v is CreateApptSuccess =>
+  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
@@ -78,7 +89,6 @@ export default function AppointmentPage() {
   }, [windowStart, windowEnd]);
 
   // Auto-select the first bookable date once app + allowedDates are ready.
-  // This immediately triggers the available-times fetch so reserved slots disappear up front.
   useEffect(() => {
     if (!app || !allowedDates.length || selectedDate) return;
     const todayStr = fmtLocalYYYYMMDD(new Date());
@@ -178,17 +188,6 @@ export default function AppointmentPage() {
     }
   };
 
-  // Put these helpers above your component (or inside it before onSave)
-  type CreateApptSuccess = { _id?: string; id?: string };
-  type ApiErrorBody = { message?: string | string[] };
-
-  const hasMessage = (v: unknown): v is ApiErrorBody =>
-    typeof v === "object" && v !== null && "message" in v;
-
-  const hasNewId = (v: unknown): v is CreateApptSuccess =>
-    typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
-
-  // --- your function ---
   const onSave = async () => {
     if (!app?._id || !selectedDate || !selectedTime) return;
 
@@ -215,7 +214,7 @@ export default function AppointmentPage() {
       });
 
       const contentType = res.headers.get("content-type") || "";
-      let data: unknown = null;                  // ✅ no `any`
+      let data: unknown = null;
       let rawText: string | null = null;
 
       try {
@@ -266,8 +265,8 @@ export default function AppointmentPage() {
       }
 
       // success
-      const newId =
-        hasNewId(data) ? (data._id ?? data.id) : undefined;
+      const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
+
 
       setSavedId(newId || "OK");
       // remove the booked time from the list so no one can pick it without refresh
@@ -287,25 +286,34 @@ export default function AppointmentPage() {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }, []);
 
-
   return (
-    <main className="container-fluid py-5">
-      {/* Page Title */}
+    <>
+      {/* ===== Header borrowed from Contact page ===== */}
       <div
-        className="rounded-3 p-4 p-md-5 mb-4"
-        style={{ background: ACCENT_LIGHT, border: "1px solid #e8f4f7" }}
-      >
-        <h1 className="mb-2" style={{ color: DARK, fontWeight: 800 }}>
-          Book Assessment Appointment
-        </h1>
-        <p className="mb-0" style={{ color: "#4b5563" }}>
-          Enter the <strong>father</strong> or <strong>mother</strong> email used in your
-          application. If we find your application, you can select a 15-minute slot between{" "}
-          <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
-          submission date.
-        </p>
-      </div>
-
+            className="page-title dark-background"
+            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+          >
+            <div className="container position-relative">
+              <h1>Book Assessment Appointment</h1>
+              <p>
+                Schedule your child’s assessment appointment within the available window.
+                Select a convenient date and time, and our admissions team will confirm.
+                Enter the <strong>father</strong> or <strong>mother</strong> email used in your
+                application. If we find your application, you can select a 15-minute slot between{" "}
+                <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
+                submission date.
+              </p>          
+              <nav className="breadcrumbs">
+                <ol>
+                  <li>
+                    <Link href="/">Home</Link>
+                  </li>
+                  <li className="current">Appointment</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+      {/* ===== End Header ===== */}
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
@@ -523,6 +531,6 @@ export default function AppointmentPage() {
           }
         }
       `}</style>
-    </main>
+      </>
   );
 }
