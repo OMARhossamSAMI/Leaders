@@ -183,15 +183,13 @@ export default function AdmissionsPage() {
                 <i className="bi bi-camera-video"></i> Virtual Tour
               </button>
 
-              {/* Navigate to assessment page */}
-              <Link
-                href="/admissions/appointments"
-                className="admission-tab-btn"
-                aria-label="Reserve Assessment Date"
-                prefetch={false}
+              <button
+                type="button"
+                className={`admission-tab-btn ${activeSection === "reserve" ? "active" : ""}`}
+                onClick={() => setActiveSection("reserve")}
               >
                 <i className="bi bi-calendar-check"></i> Reserve Assessment Date
-              </Link>
+              </button>              
             </div>
           </div>
 
@@ -546,6 +544,62 @@ export default function AdmissionsPage() {
                               </button>
                             </div>
                           </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {activeSection === "reserve" && (
+                  <div className="col-lg-12">
+                    <div className="admissions-requirements">
+                      <h2>Reserve Assessment Date</h2>
+
+                      <div className="requirements-list mt-4">
+                        <div className="requirement-item shadow-sm p-3 rounded">
+                          <div className="row align-items-center">
+                            {/* Left (Text + Button on desktop) / First on mobile */}
+                            <div className="col-12 col-lg-6 order-1 order-lg-1 mb-4 mb-lg-0">
+                              <p className="mb-3">
+                                Parents can now easily reserve their child’s assessment appointment online without the need for phone calls or in-person visits. Simply select a suitable date and time within two weeks of submitting your application. Once your reservation is complete, our admissions team will promptly confirm the booking and provide you with all the necessary details to prepare for the assessment day.
+                              </p>
+
+                              <Link
+                                href="/admissions/appointments"
+                                className="btn mt-2"
+                                style={{
+                                  backgroundColor: "var(--accent-color)",
+                                  color: "#fff",
+                                  fontWeight: 600,
+                                  borderRadius: "6px",
+                                  padding: "10px 20px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                }}
+                              >
+                                <i className="bi bi-calendar-check" />
+                                Go to Reservation Page
+                              </Link>
+                            </div>
+
+                            {/* Right (Image on desktop) / Second on mobile */}
+                            <div className="col-12 col-lg-6 order-2 order-lg-2">
+                              <div className="requirements-image">
+                                <Image
+                                  src="/assets/img/education/Reserve.JPG" 
+                                  alt="Reserve Assessment Date"
+                                  width={400}
+                                  height={200}
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    borderRadius: "8px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -1,3 +1,4 @@
+// src/app/appointment/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -23,6 +24,16 @@ const API = process.env.NEXT_PUBLIC_API_URL;
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
 const DARK = "#1a1a1a";
+
+// ---- helpers/types for robust API handling ----
+type CreateApptSuccess = { _id?: string; id?: string };
+type ApiErrorBody = { message?: string | string[] };
+
+const hasMessage = (v: unknown): v is ApiErrorBody =>
+  typeof v === "object" && v !== null && "message" in v;
+
+const hasNewId = (v: unknown): v is CreateApptSuccess =>
+  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
@@ -78,7 +89,6 @@ export default function AppointmentPage() {
   }, [windowStart, windowEnd]);
 
   // Auto-select the first bookable date once app + allowedDates are ready.
-  // This immediately triggers the available-times fetch so reserved slots disappear up front.
   useEffect(() => {
     if (!app || !allowedDates.length || selectedDate) return;
     const todayStr = fmtLocalYYYYMMDD(new Date());
@@ -180,108 +190,95 @@ export default function AppointmentPage() {
     }
   };
 
-  // Put these helpers above your component (or inside it before onSave)
-type CreateApptSuccess = { _id?: string; id?: string };
-type ApiErrorBody = { message?: string | string[] };
+  const onSave = async () => {
+    if (!app?._id || !selectedDate || !selectedTime) return;
 
-const hasMessage = (v: unknown): v is ApiErrorBody =>
-  typeof v === "object" && v !== null && "message" in v;
+    setSaveError("");
+    setSaving(true);
+    setSavedId(null);
 
-const hasNewId = (v: unknown): v is CreateApptSuccess =>
-  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
+    // Build ISO datetime in local time, then convert to ISO
+    const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
+    const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
+    const local = new Date(y, m - 1, d, hh, mm, 0, 0);
 
-// --- your function ---
-const onSave = async () => {
-  if (!app?._id || !selectedDate || !selectedTime) return;
-
-  setSaveError("");
-  setSaving(true);
-  setSavedId(null);
-
-  // Build ISO datetime in local time, then convert to ISO
-  const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-  const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
-  const local = new Date(y, m - 1, d, hh, mm, 0, 0);
-
-  const payload: Appointment = {
-    applicationId: app._id,
-    parentEmail: email.trim(),
-    slotISO: local.toISOString(),
-  };
-
-  try {
-    const res = await fetch(`${API}/appointments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const contentType = res.headers.get("content-type") || "";
-    let data: unknown = null;                  // ✅ no `any`
-    let rawText: string | null = null;
+    const payload: Appointment = {
+      applicationId: app._id,
+      parentEmail: email.trim(),
+      slotISO: local.toISOString(),
+    };
 
     try {
-      if (contentType.includes("application/json")) {
-        data = await res.json();
-      } else {
-        rawText = await res.text();
+      const res = await fetch(`${API}/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = res.headers.get("content-type") || "";
+      let data: unknown = null;
+      let rawText: string | null = null;
+
+      try {
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          rawText = await res.text();
+        }
+      } catch {
+        // ignore parse errors
       }
+
+      if (!res.ok) {
+        // Build a friendly error message
+        let msg: string;
+        if (hasMessage(data)) {
+          msg = Array.isArray(data.message)
+            ? data.message.join(" ")
+            : data.message ?? rawText ?? `HTTP ${res.status}`;
+        } else {
+          msg = rawText ?? `HTTP ${res.status}`;
+        }
+
+        const toLocal = (dt: Date) =>
+          `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
+            dt.getDate()
+          ).padStart(2, "0")}`;
+        const winFrom = windowStart ? toLocal(windowStart) : null;
+        const winTo = windowEnd ? toLocal(windowEnd) : null;
+
+        if (/weekend|friday|saturday/i.test(msg)) {
+          msg = "Appointments are not available on Friday or Saturday.";
+        } else if (
+          (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
+          winFrom && winTo
+        ) {
+          msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
+        } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
+          msg = "That time was just booked. Please choose another slot.";
+          // reflect the conflict immediately (remove it if it somehow remained in the list)
+          setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
+          setSelectedTime("");
+        }
+
+        console.error("Appointment booking failed", { status: res.status, data, rawText });
+        setSaveError(msg || "Unable to book this slot. Please choose another.");
+        return;
+      }
+
+      // success
+      const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
+
+      setSavedId(newId || "OK");
+      // remove the booked time from the list so no one can pick it without refresh
+      setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
+      setSelectedTime("");
     } catch {
-      // ignore parse errors
+      setSaveError("Network error. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    if (!res.ok) {
-      // Build a friendly error message
-      let msg: string;
-      if (hasMessage(data)) {
-        msg = Array.isArray(data.message)
-          ? data.message.join(" ")
-          : data.message ?? rawText ?? `HTTP ${res.status}`;
-      } else {
-        msg = rawText ?? `HTTP ${res.status}`;
-      }
-
-      const toLocal = (dt: Date) =>
-        `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
-          dt.getDate()
-        ).padStart(2, "0")}`;
-      const winFrom = windowStart ? toLocal(windowStart) : null;
-      const winTo = windowEnd ? toLocal(windowEnd) : null;
-
-      if (/weekend|friday|saturday/i.test(msg)) {
-        msg = "Appointments are not available on Friday or Saturday.";
-      } else if (
-        (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
-        winFrom && winTo
-      ) {
-        msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
-      } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
-        msg = "That time was just booked. Please choose another slot.";
-        // reflect the conflict immediately (remove it if it somehow remained in the list)
-        setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-        setSelectedTime("");
-      }
-
-      console.error("Appointment booking failed", { status: res.status, data, rawText });
-      setSaveError(msg || "Unable to book this slot. Please choose another.");
-      return;
-    }
-
-    // success
-    const newId =
-      hasNewId(data) ? (data._id ?? data.id) : undefined;
-
-    setSavedId(newId || "OK");
-    // remove the booked time from the list so no one can pick it without refresh
-    setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-    setSelectedTime("");
-  } catch {
-    setSaveError("Network error. Please try again.");
-  } finally {
-    setSaving(false);
-  }
-};
-
+  };
 
   // -------- UI --------
   const startOfToday = useMemo(() => {
@@ -289,25 +286,34 @@ const onSave = async () => {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }, []);
 
-
   return (
-    <main className="container-fluid py-5">
-      {/* Page Title */}
+    <>
+      {/* ===== Header borrowed from Contact page ===== */}
       <div
-        className="rounded-3 p-4 p-md-5 mb-4"
-        style={{ background: ACCENT_LIGHT, border: "1px solid #e8f4f7" }}
-      >
-        <h1 className="mb-2" style={{ color: DARK, fontWeight: 800 }}>
-          Book Assessment Appointment
-        </h1>
-        <p className="mb-0" style={{ color: "#4b5563" }}>
-          Enter the <strong>father</strong> or <strong>mother</strong> email used in your
-          application. If we find your application, you can select a 15-minute slot between{" "}
-          <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
-          submission date.
-        </p>
-      </div>
-
+            className="page-title dark-background"
+            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+          >
+            <div className="container position-relative">
+              <h1>Book Assessment Appointment</h1>
+              <p>
+                Schedule your child’s assessment appointment within the available window.
+                Select a convenient date and time, and our admissions team will confirm.
+                Enter the <strong>father</strong> or <strong>mother</strong> email used in your
+                application. If we find your application, you can select a 15-minute slot between{" "}
+                <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
+                submission date.
+              </p>          
+              <nav className="breadcrumbs">
+                <ol>
+                  <li>
+                    <Link href="/">Home</Link>
+                  </li>
+                  <li className="current">Appointment</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+      {/* ===== End Header ===== */}
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
@@ -525,6 +531,6 @@ const onSave = async () => {
           }
         }
       `}</style>
-    </main>
+      </>
   );
 }
