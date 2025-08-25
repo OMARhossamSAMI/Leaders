@@ -110,11 +110,9 @@ export default function AppointmentPage() {
 
     const load = async () => {
       try {
-        const offset = new Date().getTimezoneOffset(); // minutes (e.g., Cairo ≈ -120)
-        const res = await fetch(
-          `${API}/appointments/available?date=${selectedDate}&offset=${offset}`,
-          { cache: "no-store" }
-        );
+        const offsetMin = 0 - new Date().getTimezoneOffset(); // UTC - local
+        const res = await fetch(`${API}/appointments/available-for-date?date=${selectedDate}&offset=${offsetMin}`);
+
         const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
         if (!cancelled) {
           setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
@@ -269,6 +267,7 @@ export default function AppointmentPage() {
       // success
       const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
 
+
       setSavedId(newId || "OK");
       // remove the booked time from the list so no one can pick it without refresh
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
@@ -279,6 +278,7 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
+
 
   // -------- UI --------
   const startOfToday = useMemo(() => {
