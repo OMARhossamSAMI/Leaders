@@ -100,11 +100,9 @@ export default function AppointmentPage() {
 
     const load = async () => {
       try {
-        const offset = new Date().getTimezoneOffset(); // minutes (e.g., Cairo ≈ -120)
-        const res = await fetch(
-          `${API}/appointments/available?date=${selectedDate}&offset=${offset}`,
-          { cache: "no-store" }
-        );
+        const offsetMin = 0 - new Date().getTimezoneOffset(); // UTC - local
+        const res = await fetch(`${API}/appointments/available-for-date?date=${selectedDate}&offset=${offsetMin}`);
+
         const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
         if (!cancelled) {
           setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
@@ -181,106 +179,106 @@ export default function AppointmentPage() {
   };
 
   // Put these helpers above your component (or inside it before onSave)
-type CreateApptSuccess = { _id?: string; id?: string };
-type ApiErrorBody = { message?: string | string[] };
+  type CreateApptSuccess = { _id?: string; id?: string };
+  type ApiErrorBody = { message?: string | string[] };
 
-const hasMessage = (v: unknown): v is ApiErrorBody =>
-  typeof v === "object" && v !== null && "message" in v;
+  const hasMessage = (v: unknown): v is ApiErrorBody =>
+    typeof v === "object" && v !== null && "message" in v;
 
-const hasNewId = (v: unknown): v is CreateApptSuccess =>
-  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
+  const hasNewId = (v: unknown): v is CreateApptSuccess =>
+    typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
 
-// --- your function ---
-const onSave = async () => {
-  if (!app?._id || !selectedDate || !selectedTime) return;
+  // --- your function ---
+  const onSave = async () => {
+    if (!app?._id || !selectedDate || !selectedTime) return;
 
-  setSaveError("");
-  setSaving(true);
-  setSavedId(null);
+    setSaveError("");
+    setSaving(true);
+    setSavedId(null);
 
-  // Build ISO datetime in local time, then convert to ISO
-  const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-  const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
-  const local = new Date(y, m - 1, d, hh, mm, 0, 0);
+    // Build ISO datetime in local time, then convert to ISO
+    const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
+    const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
+    const local = new Date(y, m - 1, d, hh, mm, 0, 0);
 
-  const payload: Appointment = {
-    applicationId: app._id,
-    parentEmail: email.trim(),
-    slotISO: local.toISOString(),
-  };
-
-  try {
-    const res = await fetch(`${API}/appointments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const contentType = res.headers.get("content-type") || "";
-    let data: unknown = null;                  // ✅ no `any`
-    let rawText: string | null = null;
+    const payload: Appointment = {
+      applicationId: app._id,
+      parentEmail: email.trim(),
+      slotISO: local.toISOString(),
+    };
 
     try {
-      if (contentType.includes("application/json")) {
-        data = await res.json();
-      } else {
-        rawText = await res.text();
+      const res = await fetch(`${API}/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const contentType = res.headers.get("content-type") || "";
+      let data: unknown = null;                  // ✅ no `any`
+      let rawText: string | null = null;
+
+      try {
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          rawText = await res.text();
+        }
+      } catch {
+        // ignore parse errors
       }
+
+      if (!res.ok) {
+        // Build a friendly error message
+        let msg: string;
+        if (hasMessage(data)) {
+          msg = Array.isArray(data.message)
+            ? data.message.join(" ")
+            : data.message ?? rawText ?? `HTTP ${res.status}`;
+        } else {
+          msg = rawText ?? `HTTP ${res.status}`;
+        }
+
+        const toLocal = (dt: Date) =>
+          `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
+            dt.getDate()
+          ).padStart(2, "0")}`;
+        const winFrom = windowStart ? toLocal(windowStart) : null;
+        const winTo = windowEnd ? toLocal(windowEnd) : null;
+
+        if (/weekend|friday|saturday/i.test(msg)) {
+          msg = "Appointments are not available on Friday or Saturday.";
+        } else if (
+          (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
+          winFrom && winTo
+        ) {
+          msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
+        } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
+          msg = "That time was just booked. Please choose another slot.";
+          // reflect the conflict immediately (remove it if it somehow remained in the list)
+          setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
+          setSelectedTime("");
+        }
+
+        console.error("Appointment booking failed", { status: res.status, data, rawText });
+        setSaveError(msg || "Unable to book this slot. Please choose another.");
+        return;
+      }
+
+      // success
+      const newId =
+        hasNewId(data) ? (data._id ?? data.id) : undefined;
+
+      setSavedId(newId || "OK");
+      // remove the booked time from the list so no one can pick it without refresh
+      setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
+      setSelectedTime("");
     } catch {
-      // ignore parse errors
+      setSaveError("Network error. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    if (!res.ok) {
-      // Build a friendly error message
-      let msg: string;
-      if (hasMessage(data)) {
-        msg = Array.isArray(data.message)
-          ? data.message.join(" ")
-          : data.message ?? rawText ?? `HTTP ${res.status}`;
-      } else {
-        msg = rawText ?? `HTTP ${res.status}`;
-      }
-
-      const toLocal = (dt: Date) =>
-        `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
-          dt.getDate()
-        ).padStart(2, "0")}`;
-      const winFrom = windowStart ? toLocal(windowStart) : null;
-      const winTo = windowEnd ? toLocal(windowEnd) : null;
-
-      if (/weekend|friday|saturday/i.test(msg)) {
-        msg = "Appointments are not available on Friday or Saturday.";
-      } else if (
-        (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
-        winFrom && winTo
-      ) {
-        msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
-      } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
-        msg = "That time was just booked. Please choose another slot.";
-        // reflect the conflict immediately (remove it if it somehow remained in the list)
-        setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-        setSelectedTime("");
-      }
-
-      console.error("Appointment booking failed", { status: res.status, data, rawText });
-      setSaveError(msg || "Unable to book this slot. Please choose another.");
-      return;
-    }
-
-    // success
-    const newId =
-      hasNewId(data) ? (data._id ?? data.id) : undefined;
-
-    setSavedId(newId || "OK");
-    // remove the booked time from the list so no one can pick it without refresh
-    setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-    setSelectedTime("");
-  } catch {
-    setSaveError("Network error. Please try again.");
-  } finally {
-    setSaving(false);
-  }
-};
+  };
 
 
   // -------- UI --------

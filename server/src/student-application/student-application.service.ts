@@ -31,44 +31,112 @@ export class StudentApplicationService {
     private appModel: Model<StudentApplicationDocument>,
   ) {}
 
-
-   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
+  // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
   // student-application.service.ts
-async findByParentEmail(rawEmail: string) {
-  const email = rawEmail.trim();
+  async findByParentEmail(rawEmail: string) {
+    const email = rawEmail.trim();
 
-  const app = await this.appModel
-    .findOne({
+    const query = {
       $or: [
         { 'data.father_email': new RegExp(`^${this.escape(email)}$`, 'i') },
         { 'data.mother_email': new RegExp(`^${this.escape(email)}$`, 'i') },
+        { father_email: new RegExp(`^${this.escape(email)}$`, 'i') },
+        { mother_email: new RegExp(`^${this.escape(email)}$`, 'i') },
       ],
-    })
-    .select({
-      _id: 1,
-      createdAt: 1,
-      'data.student_name': 1,
-      'data.father_email': 1,
-      'data.mother_email': 1,
-    })
-    .lean();
+    };
 
-  if (!app) return null;
+    const app = await this.appModel
+      .findOne(query)
+      .select({
+        _id: 1,
+        createdAt: 1,
 
-  return {
-    _id: app._id.toString(), // ✅ plain string
-    submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
-    student_name: app.data?.student_name,
-    father_email: app.data?.father_email,
-    mother_email: app.data?.mother_email,
-  };
-}
+        // emails
+        'data.student_name': 1,
+        'data.father_email': 1,
+        'data.mother_email': 1,
+        father_email: 1,
+        mother_email: 1,
 
-// (optional helper)
-private escape(s: string) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+        // phones (cover common variants)
+        'data.father_phone': 1,
+        'data.mother_phone': 1,
+        'data.father_mobile': 1,
+        'data.mother_mobile': 1,
+        'data.father_whatsapp': 1,
+        'data.mother_whatsapp': 1,
 
+        father_phone: 1,
+        mother_phone: 1,
+        father_mobile: 1,
+        mother_mobile: 1,
+        father_whatsapp: 1,
+        mother_whatsapp: 1,
+      })
+      .lean();
+
+    if (!app) return null;
+
+    // handy getter that checks both data.* and root
+    const get = (key: string) =>
+      (app as any)?.data?.[key] ?? (app as any)?.[key];
+
+    const student_name = get('student_name');
+    const father_email = get('father_email');
+    const mother_email = get('mother_email');
+
+    // collect possible phone sources
+    const rawPhones = [
+      get('father_phone'),
+      get('mother_phone'),
+      get('father_mobile'),
+      get('mother_mobile'),
+      get('father_whatsapp'),
+      get('mother_whatsapp'),
+    ]
+      .filter(
+        (v: unknown): v is string => typeof v === 'string' && v.trim() !== '',
+      )
+      .map((s: string) => s.trim());
+
+    // basic normalization & de-dup
+    const digitsOnly = (s: string) => s.replace(/[^\d]/g, '');
+    const uniquePhones = Array.from(
+      new Set(rawPhones.map(digitsOnly).filter(Boolean)),
+    );
+
+    // pick one for father/mother if present
+    const fatherPhone =
+      digitsOnly(
+        get('father_phone') ||
+          get('father_mobile') ||
+          get('father_whatsapp') ||
+          '',
+      ) || undefined;
+    const motherPhone =
+      digitsOnly(
+        get('mother_phone') ||
+          get('mother_mobile') ||
+          get('mother_whatsapp') ||
+          '',
+      ) || undefined;
+
+    return {
+      _id: String(app._id),
+      submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
+      student_name,
+      father_email,
+      mother_email,
+      fatherPhone,
+      motherPhone,
+      phones: uniquePhones, // all available numbers (digits-only)
+    };
+  }
+
+  // (optional helper)
+  private escape(s: string) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
 
   async submitApplication(
     formData: Record<string, any>,

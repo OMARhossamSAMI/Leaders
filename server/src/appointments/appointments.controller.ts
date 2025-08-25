@@ -56,4 +56,20 @@ export class AppointmentsController {
     const off = Number.isFinite(Number(offset)) ? Number(offset) : 0; // JS: UTC - local (e.g. Cairo summer = -180)
     return this.service.availableTimesForDate(date, off);
   }
+
+  // Return AVAILABLE times, not taken ones
+  @Get('available-for-date')
+  async availableForDate(
+    @Query('date') date: string,       // YYYY-MM-DD in user's local calendar
+    @Query('offset') offset?: string,  // minutes, where offset = UTC - local
+  ) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      throw new BadRequestException('date must be YYYY-MM-DD');
+    }
+    const off = Number(offset ?? '0');
+    if (!Number.isFinite(off)) {
+      throw new BadRequestException('offset must be a number (UTC - local minutes)');
+    }
+    return this.service.availableTimesForDate(date, off);
+  }
 }
