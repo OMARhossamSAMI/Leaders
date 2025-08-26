@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";               // ⬅️ NEW
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
@@ -26,6 +26,9 @@ export default function AdmissionsPage() {
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+
 
   // ⬅️ NEW: popup + redirect handling
   const [showReserveModal, setShowReserveModal] = useState(false);
@@ -114,6 +117,27 @@ export default function AdmissionsPage() {
     }
   };
 
+ const slots = useMemo(
+    () => [
+      { label: "Wednesday 27 August — 10:00 AM", iso: "2025-08-27T10:00" },
+      { label: "Wednesday 27 August — 12:00 PM", iso: "2025-08-27T12:00" },
+      { label: "Thursday 28 August — 11:00 AM", iso: "2025-08-28T11:00" },
+      { label: "Thursday 28 August — 2:00 PM", iso: "2025-08-28T14:00" },
+      { label: "Friday 29 August — 9:30 AM", iso: "2025-08-29T09:30" },
+      { label: "Friday 29 August — 1:00 PM", iso: "2025-08-29T13:00" },
+    ],
+    []
+  );
+
+  const submit = () => {
+    if (!selectedSlot) {
+      alert("Please choose a date & time first.");
+      return;
+    }
+    alert(`Frontend-only preview:\nBooked campus tour for ${selectedSlot}`);
+    setOpen(false);
+    setSelectedSlot(null);
+  };
   return (
     <>
       <div>
@@ -363,16 +387,7 @@ export default function AdmissionsPage() {
                               information about specific areas of our campus,
                               please do not hesitate to contact our team.
                             </p>
-                          </div>
-                        </div>
-
-                        {/* COLUMN 2: Spring Semester */}
-                        <div className="col-lg-6">
-                          <div className="deadline-item mb-4">
-                            <div className="intro-image-container">
-                              <div className="intro-image main-image">
-                                <h2>Press And Visit</h2>
-                                <p>
+                            <p>
                                   Take a step into our world from the comfort of
                                   your home. Our virtual tour offers a detailed
                                   look at the vibrant learning spaces,
@@ -399,9 +414,241 @@ export default function AdmissionsPage() {
                                 >
                                   Explore Virtual Tour
                                 </a>
+                          </div>
+                        </div>
+
+                        {/* COLUMN 2: Spring Semester */}
+                         <div className="col-lg-6">
+                        <div className="deadline-item mb-4">
+                          <div className="intro-image-container">
+                            <div className="intro-image main-image">
+                              <h2>Book a Tour</h2>
+
+                              <p className="mt-3">
+                                Discover Leaders International College in person! Our campus tour invites you to step into the heart of our school, explore our modern classrooms, science and computer labs, libraries, and sports facilities, and experience the lively atmosphere that makes our community unique. During the tour, you’ll have the chance to meet our dedicated staff, ask questions about academics and student life, and see first-hand how we support every child’s growth.
+                              </p>
+                              <p className="mt-3">
+                                Booking a tour is simple — just select a convenient day and provide your details. Our Admissions team will confirm your visit and guide you through everything you need to know. We look forward to welcoming you and showing you why Leaders International College is the perfect place for your child’s educational journey.            
+                              </p>
+
+                              <button
+                                onClick={() => setOpen(true)}
+                                className="btn btn-accent"
+                                style={{
+                                  backgroundColor: "var(--accent-color)",
+                                  color: "#fff",
+                                  padding: "12px 24px",
+                                  borderRadius: "8px",
+                                  fontWeight: 600,
+                                  display: "inline-block",
+                                  textDecoration: "none",
+                                }}
+                              >
+                                Book a Tour
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Popup */}
+                        {open && (
+                          <div
+                            className="tour-modal-backdrop"
+                            style={{
+                              position: "fixed",
+                              inset: 0,
+                              background: "rgba(0,0,0,0.5)",
+                              zIndex: 1050,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: "16px",
+                            }}
+                            onClick={() => setOpen(false)}
+                          >
+                            <div
+                              className="tour-modal"
+                              style={{
+                                width: "min(900px, 100%)",
+                                maxHeight: "90vh",
+                                overflow: "auto",
+                                background: "#fff",
+                                borderRadius: "16px",
+                                boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div
+                                className="tour-modal-header"
+                                style={{
+                                  padding: "20px 24px",
+                                  borderBottom: "1px solid #eee",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <h2 style={{ margin: 0 }}>Book a Campus Tour</h2>
+                                <button
+                                  aria-label="Close"
+                                  onClick={() => setOpen(false)}
+                                  style={{
+                                    border: "none",
+                                    background: "transparent",
+                                    fontSize: "24px",
+                                    lineHeight: 1,
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+
+                              <div className="tour-modal-body" style={{ padding: "24px" }}>
+                                <p style={{ marginTop: 0 }}>
+                                  Please enter your details, then choose one of the available dates & times below.
+                                </p>
+
+                                <div
+                                  style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 1fr",
+                                    gap: "16px",
+                                  }}
+                                >
+                                  {/* Left column: fields */}
+                                <div>
+                                  <div className="mb-3">
+                                    <label className="form-label">Student Name</label>
+                                    <input
+                                      className="form-control"
+                                      type="text"
+                                      placeholder="e.g. Sarah Ahmed"
+                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                      onFocus={(e) =>
+                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
+                                      }
+                                      onBlur={(e) =>
+                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
+                                      }
+                                    />
+                                  </div>
+
+                                  <div className="mb-3">
+                                    <label className="form-label">Parent Email</label>
+                                    <input
+                                      className="form-control"
+                                      type="email"
+                                      placeholder="name@example.com"
+                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                      onFocus={(e) =>
+                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
+                                      }
+                                      onBlur={(e) =>
+                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
+                                      }
+                                    />
+                                  </div>
+
+                                  <div className="mb-3">
+                                    <label className="form-label">Parent Phone</label>
+                                    <input
+                                      className="form-control"
+                                      type="tel"
+                                      placeholder="+20 1X XXX XXXX"
+                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                      onFocus={(e) =>
+                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
+                                      }
+                                      onBlur={(e) =>
+                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                  {/* Right column: slots with date+time */}
+                                  <div>
+                                    <label className="form-label">Choose a Date & Time</label>
+                                    <div
+                                      style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "1fr",
+                                        gap: "10px",
+                                      }}
+                                    >
+                                      {slots.map((opt) => {
+                                        const isSelected = selectedSlot === opt.label;
+                                        return (
+                                          <button
+                                            key={opt.iso}
+                                            type="button"
+                                            onClick={() => setSelectedSlot(opt.label)}
+                                            className="btn"
+                                            style={{
+                                              padding: "12px 16px",
+                                              borderRadius: "8px",
+                                              textAlign: "left",
+                                              border: isSelected
+                                                ? "2px solid var(--accent-color)"
+                                                : "1px solid #e5e7eb",
+                                              background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
+                                              fontWeight: isSelected ? 700 : 600,
+                                            }}
+                                          >
+                                            {opt.label}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {selectedSlot && (
+                                      <div style={{ marginTop: "10px", fontSize: "0.95rem" }}>
+                                        Selected: <strong>{selectedSlot}</strong>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div
+                                className="tour-modal-footer"
+                                style={{
+                                  padding: "16px 24px",
+                                  borderTop: "1px solid #eee",
+                                  display: "flex",
+                                  justifyContent: "flex-end",
+                                  gap: "10px",
+                                }}
+                              >
+                                <button
+                                  className="btn"
+                                  style={{
+                                    backgroundColor: "#f1f1f1",
+                                    padding: "10px 22px",
+                                    borderRadius: "8px",
+                                    fontWeight: 500,
+                                  }}
+                                  onClick={() => setOpen(false)}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  className="btn"
+                                  style={{
+                                    backgroundColor: "var(--accent-color)",
+                                    color: "#fff",
+                                    padding: "12px 24px",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                  }}
+                                  onClick={submit}
+                                >
+                                  Submit Request
+                                </button>
                               </div>
                             </div>
                           </div>
+                          )}
                         </div>
                       </div>
                     </div>
