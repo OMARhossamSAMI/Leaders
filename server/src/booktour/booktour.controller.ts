@@ -22,13 +22,12 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 export class BookTourController {
   constructor(private readonly svc: BookTourService) {}
 
-  // Debug (like /testimonials)
   @Get('admin/ping')
   ping() {
     return { ok: true, at: new Date().toISOString() };
   }
 
-  // Admin — slots
+  // ---------- Admin — slots ----------
   // @UseGuards(JwtAuthGuard)
   @Post('admin/slots')
   createSlot(@Body() dto: CreateSlotDto) {
@@ -54,12 +53,19 @@ export class BookTourController {
     return this.svc.deleteSlot(id);
   }
 
+  // Bookings for a specific slot
   @Get('admin/slots/:id/bookings')
   listBookings(@Param('id') slotId: string) {
     return this.svc.listBookingsForSlot(slotId);
   }
 
-  // Public
+  // ---------- Admin — bookings (ALL) ----------
+  @Get('admin/bookings')
+  listAllBookings() {
+    return this.svc.listAllBookings();
+  }
+
+  // ---------- Public ----------
   @Get('slots/active')
   listActiveSlots() {
     return this.svc.listActiveSlots();

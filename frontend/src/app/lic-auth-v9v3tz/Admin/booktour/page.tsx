@@ -21,7 +21,7 @@ type Slot = {
 
 type Booking = {
   _id: string;
-  slotId: string;
+  slotId: string; // ObjectId as string in payload
   studentName: string;
   parentEmail: string;
   parentPhone: string;
@@ -41,7 +41,7 @@ export default function BookTourAdminPage() {
 
   // ---- Slots state ----
   const [slots, setSlots] = useState<Slot[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loadingSlots, setLoadingSlots] = useState<boolean>(true);
   const [msg, setMsg] = useState<string>("");
   const [err, setErr] = useState<string>("");
 
@@ -58,15 +58,9 @@ export default function BookTourAdminPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
   const [bookingsErr, setBookingsErr] = useState<string>("");
-    const sortedSlotsDesc = useMemo(
-    () =>
-      (slots || [])
-        .slice()
-        .sort((a, b) => new Date(b.iso).getTime() - new Date(a.iso).getTime()),
-    [slots]
-  );
 
-  // Build ISO (UTC) from picked local date & time
+  // ---- Derived values ----
+
   const isoPreview = useMemo(() => {
     if (!date || !time) return "";
     const local = new Date(`${date}T${time}:00`);
@@ -84,7 +78,6 @@ export default function BookTourAdminPage() {
     ).toISOString();
   }, [date, time]);
 
-  // ---- Helpers ----
   const slotDisplayLabel = (s: Slot) =>
     s.label?.trim() ||
     `${new Date(s.iso).toLocaleDateString(undefined, {
@@ -96,19 +89,29 @@ export default function BookTourAdminPage() {
       minute: "2-digit",
     })}`;
 
+  const sortedSlotsDesc = useMemo(
+    () =>
+      (slots || [])
+        .slice()
+        .sort((a, b) => new Date(b.iso).getTime() - new Date(a.iso).getTime()),
+    [slots]
+  );
+
+  // ---- Data loaders ----
+
   const loadSlots = async () => {
     try {
-      setLoading(true);
+      setLoadingSlots(true);
       setErr("");
       const res = await axios.get<Slot[]>(`${API}/booktour/admin/slots`, {
         headers: { "Content-Type": "application/json" },
       });
-      setSlots(res.data);
+      setSlots(res.data || []);
     } catch (e: any) {
-      console.error(e);
+      console.error("[Slots] load error:", e?.response?.status, e?.response?.data || e);
       setErr(e?.response?.data?.message || e.message || "Failed to load slots");
     } finally {
-      setLoading(false);
+      setLoadingSlots(false);
     }
   };
 
@@ -116,20 +119,33 @@ export default function BookTourAdminPage() {
     try {
       setLoadingBookings(true);
       setBookingsErr("");
-      const res = await axios.get<Booking[]>(
-        `${API}/booktour/admin/slots/${slotId}/bookings`,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      setBookings(res.data || []);
+      const url = `${API}/booktour/admin/slots/${encodeURIComponent(slotId)}/bookings`;
+      console.log("[Bookings] fetching:", url);
+      const res = await axios.get<Booking[]>(url, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("[Bookings] response:", res.status, res.data);
+      setBookings(Array.isArray(res.data) ? res.data : []);
     } catch (e: any) {
-      console.error(e);
+      console.error("[Bookings] load error:", e?.response?.status, e?.response?.data || e);
       setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+      setBookings([]);
     } finally {
       setLoadingBookings(false);
     }
   };
 
-  // ---- Auth check (redirect if no token) ----
+  const handleFilterClick = async (slot: Slot) => {
+    console.log("[Bookings] chip clicked:", {
+      slotId: slot._id,
+      label: slot.label,
+      iso: slot.iso,
+    });
+    setSelectedSlotForBookings(slot._id);
+    await loadBookingsForSlot(slot._id);
+  };
+
+  // ---- Auth check ----
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
     if (!token) {
@@ -145,7 +161,8 @@ export default function BookTourAdminPage() {
     void loadSlots();
   }, [authenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ---- Create slot ----
+  // ---- Actions ----
+
   const handleCreate = async () => {
     setMsg("");
     setErr("");
@@ -171,7 +188,6 @@ export default function BookTourAdminPage() {
       });
       setMsg(`Created ✔ (${res.data?._id || ""})`);
       setShowCreate(false);
-      // reset fields
       setDate("");
       setTime("");
       setCapacity(1);
@@ -179,12 +195,11 @@ export default function BookTourAdminPage() {
       setLabel("");
       await loadSlots();
     } catch (e: any) {
-      console.error(e);
+      console.error("[Slot] create error:", e?.response?.status, e?.response?.data || e);
       setErr(e?.response?.data?.message || e.message || "Create failed");
     }
   };
 
-  // ---- Toggle active ----
   const handleToggle = async (id: string, newState: boolean) => {
     setMsg("");
     setErr("");
@@ -197,12 +212,11 @@ export default function BookTourAdminPage() {
       setSlots((prev) => prev.map((s) => (s._id === id ? { ...s, active: newState } : s)));
       setMsg(`Slot ${newState ? "activated" : "deactivated"} ✔`);
     } catch (e: any) {
-      console.error(e);
+      console.error("[Slot] toggle error:", e?.response?.status, e?.response?.data || e);
       setErr(e?.response?.data?.message || e.message || "Toggle failed");
     }
   };
 
-  // ---- Delete slot ----
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this slot (and its bookings)?")) return;
     setMsg("");
@@ -211,18 +225,16 @@ export default function BookTourAdminPage() {
       await axios.delete(`${API}/booktour/admin/slots/${id}`);
       setSlots((prev) => prev.filter((s) => s._id !== id));
       setMsg("Deleted ✔");
-      // if that slot was selected in Bookings tab, clear it
       if (selectedSlotForBookings === id) {
         setSelectedSlotForBookings(null);
         setBookings([]);
       }
     } catch (e: any) {
-      console.error(e);
+      console.error("[Slot] delete error:", e?.response?.status, e?.response?.data || e);
       setErr(e?.response?.data?.message || e.message || "Delete failed");
     }
   };
 
-  // Placeholder/auto label suggestion
   const autoLabel = () => {
     if (!date || !time) return "";
     const local = new Date(`${date}T${time}:00`);
@@ -241,29 +253,20 @@ export default function BookTourAdminPage() {
     );
   };
 
-  // ---- Render (after all hooks are declared) ----
+  // ---- Render ----
   if (!authenticated) return null;
-
-  // Precomputed sorted slots (farthest/top)
-
 
   return (
     <>
       <AdminHeader />
 
-      <div
-        style={{
-          paddingTop: "130px",
-          backgroundColor: "#f5f9fa",
-          minHeight: "100vh",
-        }}
-      >
+      <div style={{ paddingTop: "130px", backgroundColor: "#f5f9fa", minHeight: "100vh" }}>
         <section className="admin-section">
           {/* Header */}
           <div className="container section-title">
             <h2>Book a Tour</h2>
             <p>Create, activate, and manage campus tour slots — and view bookings.</p>
-            <br></br>
+            <br />
 
             {/* Tabs */}
             <div className="tabs-container" role="tablist" aria-label="Book a Tour Tabs">
@@ -290,8 +293,8 @@ export default function BookTourAdminPage() {
           {activeTab === "slots" && (
             <div className="testimonial-box admin-shadow-box">
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <button className="btn btn-outline-secondary" onClick={loadSlots} disabled={loading}>
-                  {loading ? "Refreshing…" : "Refresh"}
+                <button className="btn btn-accent" onClick={loadSlots} disabled={loadingSlots}>
+                  {loadingSlots ? "Refreshing…" : "Refresh"}
                 </button>
                 <button
                   className="btn btn-primary"
@@ -303,63 +306,17 @@ export default function BookTourAdminPage() {
               </div>
 
               {/* Alerts */}
-              {msg && (
-                <div className="alert alert-success" role="alert">
-                  {msg}
-                </div>
-              )}
-              {err && (
-                <div className="alert alert-danger" role="alert">
-                  {err}
-                </div>
-              )}
+              {msg && <div className="alert alert-success" role="alert">{msg}</div>}
+              {err && <div className="alert alert-danger" role="alert">{err}</div>}
 
               {/* Content */}
-              {loading ? (
-                <>
-                  <div className="loader-container">
-                    <div className="spinner" />
-                    <p className="loading-text">Loading Slots...</p>
-                  </div>
-
-                  <style jsx>{`
-                    .loader-container {
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                      padding: 4rem 1rem;
-                      width: 100%;
-                    }
-                    .spinner {
-                      width: 50px;
-                      height: 50px;
-                      border: 6px solid #c2c8eb;
-                      border-top: 6px solid #3d9bdeff;
-                      border-radius: 50%;
-                      animation: spin 0.9s linear infinite;
-                    }
-                    .loading-text {
-                      margin-top: 1rem;
-                      font-size: 1.1rem;
-                      font-weight: 500;
-                      color: #3f9adaff;
-                    }
-                    @keyframes spin {
-                      to {
-                        transform: rotate(360deg);
-                      }
-                    }
-                  `}</style>
-                </>
+              {loadingSlots ? (
+                <div className="loader-container">
+                  <div className="spinner" />
+                  <p className="loading-text">Loading Slots...</p>
+                </div>
               ) : slots.length === 0 ? (
-                <p
-                  style={{
-                    color: "#888",
-                    fontStyle: "italic",
-                    padding: "1rem",
-                  }}
-                >
+                <p style={{ color: "#888", fontStyle: "italic", padding: "1rem" }}>
                   No slots yet — click “+ Add Slot”.
                 </p>
               ) : (
@@ -398,10 +355,7 @@ export default function BookTourAdminPage() {
                               })}
                             </td>
                             <td className="text-center">
-                              <span
-                                className={`badge ${s.active ? "bg-success" : "bg-secondary"}`}
-                                style={{ fontWeight: 600 }}
-                              >
+                              <span className={`badge ${s.active ? "bg-success" : "bg-secondary"}`} style={{ fontWeight: 600 }}>
                                 {s.active ? "ON" : "OFF"}
                               </span>
                             </td>
@@ -449,21 +403,41 @@ export default function BookTourAdminPage() {
                 <div className="d-flex align-items-center gap-2 flex-wrap">
                   <span className="me-2 fw-semibold">Filter by date/label:</span>
 
-                  {/* Filter pills: from slots list (latest first) */}
                   <div className="filter-chips">
+                    {/* Optional "All" chip to show every booking */}
+                    <button
+                      type="button"
+                      className={`filter-btn ${selectedSlotForBookings === null ? "active-filter" : ""}`}
+                      onClick={async () => {
+                        setSelectedSlotForBookings(null);
+                        setBookingsErr("");
+                        try {
+                          setLoadingBookings(true);
+                          const res = await axios.get<Booking[]>(`${API}/booktour/admin/bookings`);
+                          setBookings(Array.isArray(res.data) ? res.data : []);
+                          console.log("[Bookings] ALL response:", res.status, res.data);
+                        } catch (e: any) {
+                          console.error("[Bookings] ALL error:", e?.response?.status, e?.response?.data || e);
+                          setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+                          setBookings([]);
+                        } finally {
+                          setLoadingBookings(false);
+                        }
+                      }}
+                    >
+                      All
+                    </button>
+
                     {sortedSlotsDesc.map((s) => {
-                      const isActive = selectedSlotForBookings === s._id;
+                      const isActiveChip = selectedSlotForBookings === s._id;
                       const label = slotDisplayLabel(s);
                       return (
                         <button
                           key={s._id}
                           type="button"
-                          className={`filter-btn ${isActive ? "active-filter" : ""}`}
-                          aria-pressed={isActive}
-                          onClick={() => {
-                            setSelectedSlotForBookings(s._id);
-                            void loadBookingsForSlot(s._id);
-                          }}
+                          className={`filter-btn ${isActiveChip ? "active-filter" : ""}`}
+                          aria-pressed={isActiveChip}
+                          onClick={() => handleFilterClick(s)}
                           title={label}
                         >
                           {label}
@@ -473,36 +447,46 @@ export default function BookTourAdminPage() {
                   </div>
                 </div>
 
-
                 <div className="d-flex gap-2">
                   <button
-                    className="btn btn-outline-secondary"
+                    className="btn btn-accent"
                     onClick={() => {
-                      if (selectedSlotForBookings) void loadBookingsForSlot(selectedSlotForBookings);
+                      if (selectedSlotForBookings) {
+                        void loadBookingsForSlot(selectedSlotForBookings);
+                      } else {
+                        // refresh "All"
+                        (async () => {
+                          try {
+                            setLoadingBookings(true);
+                            setBookingsErr("");
+                            const res = await axios.get<Booking[]>(`${API}/booktour/admin/bookings`);
+                            setBookings(Array.isArray(res.data) ? res.data : []);
+                          } catch (e: any) {
+                            setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+                          } finally {
+                            setLoadingBookings(false);
+                          }
+                        })();
+                      }
                     }}
-                    disabled={!selectedSlotForBookings || loadingBookings}
+                    disabled={loadingBookings}
                   >
                     {loadingBookings ? "Refreshing…" : "Refresh"}
                   </button>
-                 
                 </div>
               </div>
 
               {/* Info / alerts */}
               {bookingsErr && <div className="alert alert-danger">{bookingsErr}</div>}
 
-              {!selectedSlotForBookings ? (
-                <p className="text-muted" style={{ padding: "0.5rem" }}>
-                  Pick a date/label above to view all bookings for that slot.
-                </p>
-              ) : loadingBookings ? (
+              {loadingBookings ? (
                 <div className="loader-container">
                   <div className="spinner" />
                   <p className="loading-text">Loading Bookings...</p>
                 </div>
               ) : bookings.length === 0 ? (
                 <p className="text-muted" style={{ padding: "0.5rem" }}>
-                  No bookings found for this slot.
+                  No bookings found{selectedSlotForBookings ? " for this slot." : "."}
                 </p>
               ) : (
                 <div className="table-responsive">
@@ -517,31 +501,30 @@ export default function BookTourAdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {bookings.map((b) => (
-                        <tr key={b._id}>
-                          <td>{b.studentName}</td>
-                          <td>
-                            <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
-                          </td>
-                          <td>
-                            <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
-                          </td>
-                          <td>{b.selectedLabel || slotDisplayLabel(slots.find(s => s._id === b.slotId) as Slot)}</td>
-                          <td className="small text-muted">
-                            {b.createdAt
-                              ? new Date(b.createdAt).toLocaleString()
-                              : "—"}
-                          </td>
-                        </tr>
-                      ))}
+                      {bookings.map((b) => {
+                        const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
+                        return (
+                          <tr key={b._id}>
+                            <td>{b.studentName}</td>
+                            <td>
+                              <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
+                            </td>
+                            <td>
+                              <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
+                            </td>
+                            <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
+                            <td className="small text-muted">
+                              {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               )}
             </div>
           )}
-
-
         </section>
       </div>
 

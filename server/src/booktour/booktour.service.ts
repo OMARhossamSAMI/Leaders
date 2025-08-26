@@ -14,7 +14,8 @@ export class BookTourService {
     @InjectModel(BookTourBooking.name) private bookingModel: Model<BookTourBookingDocument>,
   ) {}
 
-  // Admin
+  // ------- Slots -------
+
   async createSlot(dto: CreateSlotDto) {
     const iso = new Date(dto.iso);
     if (Number.isNaN(+iso)) throw new BadRequestException('Invalid iso datetime');
@@ -69,6 +70,8 @@ export class BookTourService {
       .lean();
   }
 
+  // ------- Booking -------
+
   /**
    * Capacity-safe booking:
    * - Atomically increments bookedCount only if below capacity and slot is active & in the future
@@ -89,7 +92,6 @@ export class BookTourService {
     );
 
     if (!slot) {
-      // Determine a clearer reason
       const exists = await this.slotModel.findById(dto.slotId);
       if (!exists) throw new NotFoundException('Slot not found');
       if (!exists.active) throw new BadRequestException('Slot is not active');
@@ -98,20 +100,38 @@ export class BookTourService {
       throw new BadRequestException('Booking not allowed');
     }
 
-    const booking = await this.bookingModel.create({
+    return this.bookingModel.create({
       slotId: slot._id,
       studentName: dto.studentName,
       parentEmail: dto.parentEmail,
       parentPhone: dto.parentPhone,
       selectedLabel: dto.selectedLabel ?? slot.label,
     });
-
-    return booking;
   }
 
-  // Admin helper
+  // ------- Admin helpers -------
+
+  async listAllBookings() {
+    return this.bookingModel
+      .find({})
+      .sort({ createdAt: -1 })
+      .populate({ path: 'slotId', select: 'iso label active capacity' })
+      .lean();
+  }
+
   async listBookingsForSlot(slotId: string) {
     if (!Types.ObjectId.isValid(slotId)) throw new BadRequestException('Invalid slot id');
-    return this.bookingModel.find({ slotId }).sort({ createdAt: -1 }).lean();
+
+    const slot = await this.slotModel.findById(slotId).lean();
+    if (!slot) throw new NotFoundException('Slot not found');
+
+    const oid = new Types.ObjectId(slotId);
+
+    // Primary: exact ObjectId match
+    // Safeties: legacy string match OR label match if your old data only stored labels
+    const or: any[] = [{ slotId: oid }, { slotId: slotId }];
+    if (slot.label?.trim()) or.push({ selectedLabel: slot.label.trim() });
+
+    return this.bookingModel.find({ $or: or }).sort({ createdAt: -1 }).lean();
   }
 }
