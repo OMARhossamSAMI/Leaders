@@ -67,16 +67,6 @@ export default function AdminPage() {
       roles: ["it", "Admission"],
     },
     {
-      icon: "bi-person-check-fill",
-      title: "Accepted Students",
-      description:
-        "View and manage students who have been accepted into the school.",
-      href: "/lic-auth-v9v3tz/Admin/accepted_students",
-      color: "#20c997", // teal-like color, change as you wish
-      roles: ["it", "Admission"], // only visible to these roles
-    },
-
-    {
       icon: "bi-laptop",
       title: "Internship Applications",
       description:
@@ -127,6 +117,16 @@ export default function AdminPage() {
       color: "#dc3545",
       roles: ["it"],
     },
+    {
+      icon: "bi-calendar-check",
+      title: "Assessment Appointments",
+      description:
+        "See all reserved assessment slots by parents (day & time).",
+      href: "/lic-auth-v9v3tz/Admin/assessment-appointments",
+      color: "#0dcaf0",
+      roles: ["it", "Admission"],
+    },
+
   ];
   const filteredCards = cards.filter((card) => card.roles.includes(role || ""));
   return (

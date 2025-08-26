@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";               // ⬅️ NEW
 import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 import "./page.css";
@@ -19,13 +20,19 @@ interface FormField {
 
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
+  const router = useRouter();                               // ⬅️ NEW
+
   const [fields, setFields] = useState<FormField[]>([]);
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // ⬅️ NEW: popup + redirect handling
+  const [showReserveModal, setShowReserveModal] = useState(false);
+  const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
+  const [reserveHref, setReserveHref] = useState("/admissions/appointments");
+
   useEffect(() => {
-    // Hide preloader
     const preloader = document.getElementById("preloader");
     if (preloader) {
       const timer = setTimeout(() => {
@@ -33,20 +40,15 @@ export default function AdmissionsPage() {
       }, 15);
       return () => clearTimeout(timer);
     }
-
-    // Fetch dynamic form fields
     const fetchFields = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/form-fields`
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`);
         const data = await res.json();
         setFields(data);
       } catch (error) {
         console.error("Failed to fetch form fields", error);
       }
     };
-
     fetchFields();
   }, []);
 
@@ -58,40 +60,56 @@ export default function AdmissionsPage() {
       }, 15);
       return () => clearTimeout(timer);
     }
-  }, []); // <-- Dependency array must be here
+  }, []);
+
+  // ⬅️ NEW: clear redirect timer on unmount or when modal closes
+  useEffect(() => {
+    return () => {
+      if (redirectTimer !== null) window.clearTimeout(redirectTimer);
+    };
+  }, [redirectTimer]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const formData = new FormData(form); // ✅ Keep FormData
+    const formData = new FormData(form);
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/applications`,
-        {
-          method: "POST",
-          body: formData, // ✅ Send FormData directly
-          // ❌ DO NOT set Content-Type manually; let browser set it
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`, {
+        method: "POST",
+        body: formData, // keep FormData
+      });
 
       const result = await response.json();
 
       if (response.ok) {
-        form.reset();
+        // Try to extract a parent email to prefill the appointments page
+        const father = (formData.get("father_email") || "") as string;
+        const mother = (formData.get("mother_email") || "") as string;
+        const emailToPass = (father || mother || "").trim();
+        const href = emailToPass
+          ? `/admissions/appointments?email=${encodeURIComponent(emailToPass)}`
+          : `/admissions/appointments`;
 
+        setReserveHref(href);
+
+        form.reset();
         setSuccessMessage(true);
-        setTimeout(() => {
-          setSuccessMessage(false);
-        }, 4000);
         setIsSubmitting(false);
+
+        // ⬅️ Show popup and auto-redirect after 2.5s
+        setShowReserveModal(true);
+        const t = window.setTimeout(() => router.push(href), 2500);
+        setRedirectTimer(t);
       } else {
+        setIsSubmitting(false);
         setErrorMessage("❌ " + (result.message || "Submission failed."));
       }
     } catch (error) {
       console.error("Submission Error:", error);
+      setIsSubmitting(false);
       alert("❌ An error occurred while submitting the form.");
     }
   };
@@ -103,16 +121,13 @@ export default function AdmissionsPage() {
           {/* Page Title */}
           <div
             className="page-title dark-background"
-            style={{
-              backgroundImage:
-                "url(assets/img/education/Background_school.JPG)",
-            }}
+            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
           >
             <div className="container position-relative">
               <h1>Admissions</h1>
               <p>
-                Start your journey at LIC—apply now to join a community that
-                nurtures excellence, character, and global citizenship.
+                Start your journey at LIC—apply now to join a community that nurtures excellence,
+                character, and global citizenship.
               </p>
               <nav className="breadcrumbs">
                 <ol>
@@ -125,91 +140,59 @@ export default function AdmissionsPage() {
             </div>
           </div>
 
-          {/* Buttons Styled Like Example */}
-
+          {/* Tabs */}
           <div className="container mt-5 text-center">
-            <style>
-              {`
-      .admission-tab-wrapper {
-        display: inline-flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 14px !important;
-        padding: 18px 25px !important;
-        background-color: #def2f6 !important;
-        border-radius: 60px !important;
-        margin: 0 auto !important;
-      }
-
-      .admission-tab-btn {
-        background-color: transparent !important;
-        border: none !important;
-        padding: 10px 20px !important;
-        border-radius: 999px !important;
-        font-size: 15px !important;
-        font-weight: 500 !important;
-        color: #1a1a1a !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 8px !important;
-        white-space: nowrap !important;
-        transition: all 0.3s ease !important;
-      }
-
-      .admission-tab-btn:hover {
-        background-color: #b6e5f3 !important;
-      }
-
-      .admission-tab-btn.active {
-        background-color: #25c6f2 !important;
-        color: white !important;
-        font-weight: 600 !important;
-      }
-
-      .admission-tab-btn i {
-        font-size: 1rem !important;
-      }
-    `}
-            </style>
+            <style>{`
+    .admission-tab-wrapper{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:14px;padding:18px 25px;background:#def2f6;border-radius:60px;margin:0 auto}
+    .admission-tab-btn{background:transparent;border:none;padding:10px 20px;border-radius:999px;font-size:15px;font-weight:500;color:#1a1a1a;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:all .3s}
+    .admission-tab-btn:hover{background:#b6e5f3}
+    .admission-tab-btn.active{background:#25c6f2;color:#fff;font-weight:600}
+    .admission-tab-btn i{font-size:1rem}
+  `}</style>
 
             <div className="admission-tab-wrapper">
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
+                type="button"
+                className={`admission-tab-btn ${activeSection === "apply" ? "active" : ""}`}
                 onClick={() => setActiveSection("apply")}
               >
                 <i className="bi bi-pencil-square"></i> How to Apply
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "form" ? "active" : ""
-                }`}
+                type="button"
+                className={`admission-tab-btn ${activeSection === "form" ? "active" : ""}`}
                 onClick={() => setActiveSection("form")}
               >
                 <i className="bi bi-file-earmark-text"></i> Apply Now
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
+                type="button"
+                className={`admission-tab-btn ${activeSection === "requirements" ? "active" : ""}`}
                 onClick={() => setActiveSection("requirements")}
               >
                 <i className="bi bi-people"></i> Age Acceptance Guide
               </button>
 
               <button
-                className={`admission-tab-btn ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
+                type="button"
+                className={`admission-tab-btn ${activeSection === "deadlines" ? "active" : ""}`}
                 onClick={() => setActiveSection("deadlines")}
               >
                 <i className="bi bi-camera-video"></i> Virtual Tour
               </button>
+
+              <button
+                type="button"
+                className={`admission-tab-btn ${activeSection === "reserve" ? "active" : ""}`}
+                onClick={() => setActiveSection("reserve")}
+              >
+                <i className="bi bi-calendar-check"></i> Reserve Assessment Date
+              </button>              
             </div>
           </div>
+
 
           <section id="admissions" className="admissions section">
             <div className="container" data-aos="fade-up" data-aos-delay={100}>
@@ -432,33 +415,20 @@ export default function AdmissionsPage() {
                         <i className="bi bi-file-earmark-check" />
                         <h3>Ready to Apply?</h3>
                         <p>
-                          Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents. We are here to
-                          answer all your questions and guide you through each
-                          step of the admissions process.
+                          Please carefully provide the information requested below. Once submitted, our admissions team
+                          will review your application and contact you to arrange interviews for both the student and
+                          parents.
                         </p>
                       </div>
                     </div>
 
-                    {/* FULL-WIDTH FORM CARD */}
                     <div className="form-wrapper mt-5">
                       <div className="card w-100">
                         <div className="card-body">
-                          <h2 className="card-title">
-                            Admission Application Form
-                          </h2>
-                          <p>
-                            Please complete the form below to apply for
-                            admission at Leaders International College.
-                          </p>
+                          <h2 className="card-title">Admission Application Form</h2>
+                          <p>Please complete the form below to apply for admission at Leaders International College.</p>
 
-                          <form
-                            id="applicationForm"
-                            className="php-email-form mt-4"
-                            onSubmit={handleSubmit}
-                          >
+                          <form id="applicationForm" className="php-email-form mt-4" onSubmit={handleSubmit}>
                             <h5>Applicant Details</h5>
 
                             <div className="row">
@@ -467,29 +437,15 @@ export default function AdmissionsPage() {
                                 .map((field, index) => {
                                   const label =
                                     field.label ||
-                                    (field.field_name
-                                      ? field.field_name.replace(/_/g, " ")
-                                      : "");
+                                    (field.field_name ? field.field_name.replace(/_/g, " ") : "");
                                   const required = field.required ?? false;
 
-                                  // RADIO BUTTONS
-                                  if (
-                                    field.type === "radio" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "radio" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label d-block">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label d-block">{label}</label>
                                         {field.options.map((opt, i) => (
-                                          <div
-                                            className="form-check form-check-inline"
-                                            key={i}
-                                          >
+                                          <div className="form-check form-check-inline" key={i}>
                                             <input
                                               className="form-check-input"
                                               type="radio"
@@ -497,34 +453,18 @@ export default function AdmissionsPage() {
                                               value={opt}
                                               required={required}
                                             />
-                                            <label className="form-check-label">
-                                              {opt}
-                                            </label>
+                                            <label className="form-check-label">{opt}</label>
                                           </div>
                                         ))}
                                       </div>
                                     );
                                   }
 
-                                  // SELECT DROPDOWN
-                                  if (
-                                    field.type === "select" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "select" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
-                                        <select
-                                          name={field.field_name}
-                                          className="form-select"
-                                          required={required}
-                                          defaultValue=""
-                                        >
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
+                                        <select name={field.field_name} className="form-select" required={required} defaultValue="">
                                           <option value="" disabled>
                                             {label}
                                           </option>
@@ -538,57 +478,33 @@ export default function AdmissionsPage() {
                                     );
                                   }
 
-                                  // DATE INPUT
                                   if (field.type === "date") {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
                                         <input
                                           type="date"
                                           name={field.field_name}
                                           className="form-control"
-                                          max={
-                                            new Date()
-                                              .toISOString()
-                                              .split("T")[0]
-                                          }
+                                          max={new Date().toISOString().split("T")[0]}
                                           required={required}
                                         />
                                       </div>
                                     );
                                   }
 
-                                  // FILE INPUT
                                   if (field.type === "file") {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
-                                        <input
-                                          type="file"
-                                          name="files" // ✅ MUST match backend FilesInterceptor('files')
-                                          className="form-control"
-                                          required={required}
-                                        />
+                                      <div className="col-md-6 mb-3" key={index}>
+                                        <label className="form-label">{label}</label>
+                                        <input type="file" name="files" className="form-control" required={required} />
                                       </div>
                                     );
                                   }
 
-                                  // DEFAULT INPUTS (text, email, number, etc.)
                                   return (
                                     <div className="col-md-6 mb-3" key={index}>
-                                      <label className="form-label">
-                                        {label}
-                                      </label>
+                                      <label className="form-label">{label}</label>
                                       <input
                                         type={field.type}
                                         name={field.field_name}
@@ -600,44 +516,90 @@ export default function AdmissionsPage() {
                                   );
                                 })}
                             </div>
+
                             {successMessage && (
-                              <div
-                                className="alert alert-success text-center"
-                                role="alert"
-                              >
-                                ✅ Your message has been sent successfully!
+                              <div className="alert alert-success text-center" role="alert">
+                                ✅ Application submitted successfully!
                               </div>
                             )}
                             {errorMessage && (
-                              <div
-                                className="alert alert-danger text-center"
-                                role="alert"
-                              >
+                              <div className="alert alert-danger text-center" role="alert">
                                 {errorMessage}
                               </div>
                             )}
+
                             <div className="text-center mt-4">
                               <button
                                 type="submit"
                                 className="btn-submit-application"
                                 disabled={isSubmitting}
                                 style={{
-                                  backgroundColor: isSubmitting
-                                    ? "#7cc7de"
-                                    : "#00a6d9",
+                                  backgroundColor: isSubmitting ? "#7cc7de" : "#00a6d9",
                                   opacity: isSubmitting ? 0.7 : 1,
-                                  cursor: isSubmitting
-                                    ? "not-allowed"
-                                    : "pointer",
+                                  cursor: isSubmitting ? "not-allowed" : "pointer",
                                 }}
                               >
                                 <i className="bi bi-file-earmark-text"></i>{" "}
-                                {isSubmitting
-                                  ? "Submitting..."
-                                  : "Submit Application"}
+                                {isSubmitting ? "Submitting..." : "Submit Application"}
                               </button>
                             </div>
                           </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {activeSection === "reserve" && (
+                  <div className="col-lg-12">
+                    <div className="admissions-requirements">
+                      <h2>Reserve Assessment Date</h2>
+
+                      <div className="requirements-list mt-4">
+                        <div className="requirement-item shadow-sm p-3 rounded">
+                          <div className="row align-items-center">
+                            {/* Left (Text + Button on desktop) / First on mobile */}
+                            <div className="col-12 col-lg-6 order-1 order-lg-1 mb-4 mb-lg-0">
+                              <p className="mb-3">
+                                Parents can now easily reserve their child’s assessment appointment online without the need for phone calls or in-person visits. Simply select a suitable date and time within two weeks of submitting your application. Once your reservation is complete, our admissions team will promptly confirm the booking and provide you with all the necessary details to prepare for the assessment day.
+                              </p>
+
+                              <Link
+                                href="/admissions/appointments"
+                                className="btn mt-2"
+                                style={{
+                                  backgroundColor: "var(--accent-color)",
+                                  color: "#fff",
+                                  fontWeight: 600,
+                                  borderRadius: "6px",
+                                  padding: "10px 20px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "6px",
+                                }}
+                              >
+                                <i className="bi bi-calendar-check" />
+                                Go to Reservation Page
+                              </Link>
+                            </div>
+
+                            {/* Right (Image on desktop) / Second on mobile */}
+                            <div className="col-12 col-lg-6 order-2 order-lg-2">
+                              <div className="requirements-image">
+                                <Image
+                                  src="/assets/img/education/Reserve.JPG" 
+                                  alt="Reserve Assessment Date"
+                                  width={400}
+                                  height={200}
+                                  style={{
+                                    width: "100%",
+                                    height: "auto",
+                                    borderRadius: "8px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -649,20 +611,56 @@ export default function AdmissionsPage() {
         </main>
       </div>
 
+      {/* ⬅️ NEW: lightweight popup/modal */}
+      {showReserveModal && (
+        <div className="reserve-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="reserveTitle">
+          <div className="reserve-modal">
+            <h3 id="reserveTitle" className="mb-2">Next step: Reserve assessment</h3>
+            <p className="mb-3">
+              Your application was received. Please book an assessment appointment now to complete the process.
+            </p>
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  if (redirectTimer !== null) window.clearTimeout(redirectTimer);
+                  router.push(reserveHref);
+                }}
+              >
+                Go to reservation
+              </button>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  if (redirectTimer !== null) window.clearTimeout(redirectTimer);
+                  setShowReserveModal(false);
+                }}
+              >
+                Not now
+              </button>
+            </div>
+            <div className="small text-muted mt-2">You’ll be redirected automatically in a moment…</div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
-        .custom-tab {
-          border-radius: 50px;
-          padding: 10px 20px;
-          margin: 5px;
-          background: #fff;
-          border: 1px solid #ddd;
-          font-weight: 600;
+        .custom-tab { border-radius: 50px; padding: 10px 20px; margin: 5px; background: #fff; border: 1px solid #ddd; font-weight: 600; }
+        .custom-tab.active { background: #00b4e6; color: #fff; border: 1px solid #00b4e6; }
+
+        /* ⬅️ Modal styles */
+        .reserve-modal-backdrop{
+          position: fixed; inset: 0; background: rgba(0,0,0,.45);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 1050;
         }
-        .custom-tab.active {
-          background: #00b4e6;
-          color: #fff;
-          border: 1px solid #00b4e6;
+        .reserve-modal{
+          background: #fff; width: min(560px, 92vw);
+          border-radius: 14px; padding: 22px;
+          box-shadow: 0 12px 40px rgba(0,0,0,.2);
         }
+        .reserve-modal h3{ font-weight: 800; color: #003a63; }
+        .reserve-modal .btn{ border-radius: 10px; font-weight: 600; }
       `}</style>
     </>
   );

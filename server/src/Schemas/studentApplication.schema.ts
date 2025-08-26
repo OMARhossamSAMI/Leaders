@@ -3,10 +3,27 @@ import { Document } from 'mongoose';
 
 export type StudentApplicationDocument = StudentApplication & Document;
 
+export type ApplicationState =
+  | 'applied'
+  | 'waiting_for_assessment'
+  | 'assessed'
+  | 'accepted'
+  | 'rejected';
+
 @Schema({ timestamps: true })
 export class StudentApplication {
-  @Prop({ type: Object }) 
-  data: Record<string, any>; // All submitted form fields
+  // dynamic form payload
+  @Prop({ type: Object })
+  data: Record<string, any>;
+
+  // NEW: static status field
+  @Prop({
+    type: String,
+    enum: ['applied', 'waiting_for_assessment', 'assessed', 'accepted', 'rejected'],
+    default: 'applied',
+    index: true,
+  })
+  state: ApplicationState;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -23,4 +40,5 @@ export class StudentApplication {
   files?: { originalname: string; path: string }[];
 }
 
-export const StudentApplicationSchema = SchemaFactory.createForClass(StudentApplication);
+export const StudentApplicationSchema =
+  SchemaFactory.createForClass(StudentApplication);
