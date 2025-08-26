@@ -346,49 +346,39 @@ export class AppointmentsService {
     return { checkout_url: checkoutUrl };
   }
 
-  // 🔹 Server-to-server POST callback
-  async handlePaymobCallback(body: any) {
-    try {
-      const isPaid = body?.obj?.success === true;
-
-      if (!isPaid) {
-        return { success: false, message: 'Payment not successful' };
-      }
-
-      const extra = body.obj?.order?.extras;
-      if (!extra) {
-        throw new BadRequestException('Missing booking info in callback');
-      }
-
-      const dto: CreateAppointmentDto = {
-        applicationId: extra.applicationId,
-        parentEmail: extra.parentEmail,
-        slotISO: extra.slotISO,
-      };
-
-      const appt = await this.create(dto);
-
-      return { success: true, appointment: appt };
-    } catch (err) {
-      console.error('Callback error:', err);
-      return { success: false, message: 'Error processing payment' };
-    }
-  }
-
-  // 🔹 Browser redirect GET callback
   async handlePaymobRedirect(query: any, res: Response) {
     try {
       const isPaid = query?.success === 'true';
 
-      if (isPaid) {
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Thankyou',
-        );
-      } else {
+      if (!isPaid) {
         return res.redirect(
           'http://localhost:3001/admissions/appointments/Declined',
         );
       }
+
+      // ✅ Try to reconstruct DTO from query (if Paymob passed extras/order info)
+      const applicationId = query?.applicationId;
+      const parentEmail = query?.parentEmail;
+      const slotISO = query?.slotISO;
+
+      if (applicationId && parentEmail && slotISO) {
+        const dto: CreateAppointmentDto = {
+          applicationId,
+          parentEmail,
+          slotISO,
+        };
+
+        await this.create(dto);
+      } else {
+        console.warn(
+          'No booking info in GET redirect query, skipping create()',
+        );
+      }
+
+      // ✅ Redirect to success page
+      return res.redirect(
+        'http://localhost:3001/admissions/appointments/Thankyou',
+      );
     } catch (err) {
       console.error('Redirect error:', err);
       return res.redirect(
