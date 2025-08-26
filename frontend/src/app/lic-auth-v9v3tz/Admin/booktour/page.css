@@ -1,0 +1,16 @@
+.admin-section .section-title {
+  margin-bottom: 1.25rem;
+}
+
+.admin-shadow-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+}
+
+.badge.bg-success, .badge.bg-secondary { font-weight: 600; }
+
+@media (max-width: 576px) {
+  .table-responsive { font-size: 0.95rem; }
+}

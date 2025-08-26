@@ -23,6 +23,7 @@ import { AppService } from './app.service';
 import { AcceptedStudentModule } from './accepted-student/accepted-student.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { BookTourModule } from './booktour/booktour.module';
 @Module({
   imports: [
     MulterModule.register({
@@ -57,6 +58,7 @@ import { WhatsappModule } from './whatsapp/whatsapp.module';
     AcceptedStudentModule,
     AppointmentsModule,
     WhatsappModule,
+    BookTourModule,
   ],
   controllers: [AppController], // ✅ Add this line
   providers: [
