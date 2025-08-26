@@ -145,61 +145,68 @@ export class WhatsappService {
   }
 
   // Uses TEMPLATE (required for first outbound message)
-  private async sendViaMetaTemplate(toRaw: string, slotISO: string) {
-    const to = toRaw.replace(/^\+/, ''); // optional: strip '+'
-    const url = this.apiUrl();
+  // --- add this getter
+private get TEMPLATE_HAS_HEADER() {
+  // true only if your template actually contains a HEADER (text or image)
+  return (process.env.WA_TEMPLATE_HAS_HEADER || 'false').toLowerCase() === 'true';
+}
 
-    const d = this.fmtDate(slotISO);
-    const t = this.fmtTime(slotISO);
+private async sendViaMetaTemplate(toRaw: string, slotISO: string) {
+  const to = toRaw.replace(/^\+/, '');
+  const url = this.apiUrl();
 
-    const paramCount = Number(process.env.WA_TEMPLATE_PARAM_COUNT ?? '2'); // default 2
-    const components: any[] = [];
+  const d = this.fmtDate(slotISO);
+  const t = this.fmtTime(slotISO);
 
-    // optional header image (only if your template has a header of type IMAGE!)
+  const paramCount = Number(process.env.WA_TEMPLATE_PARAM_COUNT ?? '2');
+  const components: any[] = [];
+
+  // ⛔️ Only include header if the template has a header
+  if (this.TEMPLATE_HAS_HEADER) {
+    // If *image* header: POLAROID_IMAGE_URL must be public
     if (this.POLAROID_URL) {
       components.push({
         type: 'header',
         parameters: [{ type: 'image', image: { link: this.POLAROID_URL } }],
       });
+    } else {
+      // If the header is TEXT (title) with {{1}} etc., push {type:'text'} params here instead.
+      // components.push({ type: 'header', parameters: [{ type: 'text', text: '...' }] });
+      // For your case (no header), do nothing.
     }
-
-    // body parameters – add exactly what the template expects
-    const bodyParams: any[] = [];
-    if (paramCount >= 1) bodyParams.push({ type: 'text', text: d });
-    if (paramCount >= 2) bodyParams.push({ type: 'text', text: t });
-    if (bodyParams.length) {
-      components.push({ type: 'body', parameters: bodyParams });
-    }
-
-    // if there are no components, omit the property entirely
-    const template: any = {
-      name: this.TEMPLATE_NAME,
-      language: { code: this.TEMPLATE_LANG },
-    };
-    if (components.length) template.components = components;
-
-    const payload = {
-      messaging_product: 'whatsapp' as const,
-      to,
-      type: 'template' as const,
-      template,
-    };
-
-    this.log.debug(`[META:TEMPLATE] POST ${url} -> to=${to}`);
-    const r = await fetch(url, {
-      method: 'POST',
-      headers: this.apiHeaders(),
-      body: JSON.stringify(payload),
-    });
-
-    const txt = await r.text();
-    this.log.debug(`[META:TEMPLATE] status=${r.status} body=${txt}`);
-    if (!r.ok)
-      throw new BadRequestException(
-        `WhatsApp template send failed (${r.status}).`,
-      );
-    return true;
   }
+
+  // ✅ Body variables (your template has 2: {{1}} = date, {{2}} = time)
+  const bodyParams: any[] = [];
+  if (paramCount >= 1) bodyParams.push({ type: 'text', text: d });
+  if (paramCount >= 2) bodyParams.push({ type: 'text', text: t });
+  if (bodyParams.length) components.push({ type: 'body', parameters: bodyParams });
+
+  const template: any = {
+    name: this.TEMPLATE_NAME,
+    language: { code: this.TEMPLATE_LANG },
+  };
+  if (components.length) template.components = components; // <- omit entirely if none
+
+  const payload = {
+    messaging_product: 'whatsapp' as const,
+    to,
+    type: 'template' as const,
+    template,
+  };
+
+  this.log.debug(`[META:TEMPLATE] POST ${url} -> to=${to}`);
+  const r = await fetch(url, { method: 'POST', headers: this.apiHeaders(), body: JSON.stringify(payload) });
+  const txt = await r.text();
+  this.log.debug(`[META:TEMPLATE] status=${r.status} body=${txt}`);
+  if (!r.ok) throw new BadRequestException(`WhatsApp template send failed (${r.status}).`);
+  try {
+    const wamid = JSON.parse(txt)?.messages?.[0]?.id;
+    if (wamid) this.log.log(`[META:TEMPLATE] wamid=${wamid}`);
+  } catch {}
+  return true;
+}
+
 
   async sendAssessment(dto: {
     parentEmail?: string;
