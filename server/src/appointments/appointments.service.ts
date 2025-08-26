@@ -346,18 +346,15 @@ export class AppointmentsService {
     return { checkout_url: checkoutUrl };
   }
 
-  async handlePaymobCallback(body: any, @Res() res: Response) {
+  // 🔹 Server-to-server POST callback
+  async handlePaymobCallback(body: any) {
     try {
       const isPaid = body?.obj?.success === true;
 
-      // If payment failed
       if (!isPaid) {
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
+        return { success: false, message: 'Payment not successful' };
       }
 
-      // Extract extra booking info
       const extra = body.obj?.order?.extras;
       if (!extra) {
         throw new BadRequestException('Missing booking info in callback');
@@ -369,16 +366,31 @@ export class AppointmentsService {
         slotISO: extra.slotISO,
       };
 
-      // Save appointment (business logic still applies)
-      await this.create(dto);
+      const appt = await this.create(dto);
 
-      // ✅ Redirect to success page
-      return res.redirect(
-        'http://localhost:3001/admissions/appointments/Thankyou',
-      );
+      return { success: true, appointment: appt };
     } catch (err) {
       console.error('Callback error:', err);
-      // On any unexpected error, fallback to declined page
+      return { success: false, message: 'Error processing payment' };
+    }
+  }
+
+  // 🔹 Browser redirect GET callback
+  async handlePaymobRedirect(query: any, res: Response) {
+    try {
+      const isPaid = query?.success === 'true';
+
+      if (isPaid) {
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Thankyou',
+        );
+      } else {
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
+    } catch (err) {
+      console.error('Redirect error:', err);
       return res.redirect(
         'http://localhost:3001/admissions/appointments/Declined',
       );
