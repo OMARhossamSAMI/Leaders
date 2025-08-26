@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Res } from '@nestjs/common';
+
+import { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
@@ -10,7 +12,9 @@ import {
   StudentApplicationDocument,
 } from '../Schemas/studentApplication.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 // Opening window: 09:00–12:15 every 15 min
 const START_HOUR = 9;
 const END_HOUR = 12;
@@ -24,6 +28,8 @@ export class AppointmentsService {
 
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
+    private readonly http: HttpService,
+    private readonly config: ConfigService,
   ) {}
 
   private escape(s: string) {
@@ -56,8 +62,18 @@ export class AppointmentsService {
       const email = parentEmail.trim();
       const query = {
         $or: [
-          { 'data.father_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
-          { 'data.mother_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
+          {
+            'data.father_email': {
+              $regex: `^${this.escape(email)}$`,
+              $options: 'i',
+            },
+          },
+          {
+            'data.mother_email': {
+              $regex: `^${this.escape(email)}$`,
+              $options: 'i',
+            },
+          },
         ],
       };
       application = await this.appModel.findOne(query).lean();
@@ -71,16 +87,26 @@ export class AppointmentsService {
     // 1) No Fri/Sat
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
     if (dow === 5 || dow === 6) {
-      throw new BadRequestException('Appointments are not available on Friday or Saturday');
+      throw new BadRequestException(
+        'Appointments are not available on Friday or Saturday',
+      );
     }
 
     // 2) Within two weeks from application createdAt (date-only, local-less)
-    const submitted = application.createdAt ? new Date(application.createdAt) : new Date();
-    const winStart = new Date(submitted.getFullYear(), submitted.getMonth(), submitted.getDate());
+    const submitted = application.createdAt
+      ? new Date(application.createdAt)
+      : new Date();
+    const winStart = new Date(
+      submitted.getFullYear(),
+      submitted.getMonth(),
+      submitted.getDate(),
+    );
     const winEnd = new Date(winStart);
     winEnd.setDate(winEnd.getDate() + 14);
     if (slot < winStart || slot > winEnd) {
-      throw new BadRequestException('Selected slot is outside the allowed scheduling window');
+      throw new BadRequestException(
+        'Selected slot is outside the allowed scheduling window',
+      );
     }
 
     // 3) 09:00–12:15 window, 15-minute steps
@@ -95,8 +121,11 @@ export class AppointmentsService {
     }
 
     // 4) Prevent double booking of the exact slot (canonical UTC compare)
-    const already = await this.apptModel.findOne({ slotISO: slotUtcISO }).lean();
-    if (already) throw new BadRequestException('This slot has already been booked');
+    const already = await this.apptModel
+      .findOne({ slotISO: slotUtcISO })
+      .lean();
+    if (already)
+      throw new BadRequestException('This slot has already been booked');
 
     // ---- Create appointment ----
     const doc = await this.apptModel.create({
@@ -125,9 +154,14 @@ export class AppointmentsService {
   async listAll(opts?: { upcoming?: boolean; q?: string }) {
     const filter: any = {};
     if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
-    if (opts?.q) filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
+    if (opts?.q)
+      filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
 
-    const docs = await this.apptModel.find(filter).sort({ slotISO: 1 }).lean().exec();
+    const docs = await this.apptModel
+      .find(filter)
+      .sort({ slotISO: 1 })
+      .lean()
+      .exec();
 
     return docs.map((d) => ({
       _id: String(d._id),
@@ -141,11 +175,15 @@ export class AppointmentsService {
   /** Generate all 15-min slots 09:00..12:15 (local) as HH:mm */
   private generateSlots(): string[] {
     const times: string[] = [];
-    let h = 9, m = 0;
+    let h = 9,
+      m = 0;
     while (h < 12 || (h === 12 && m <= 15)) {
       times.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
       m += 15;
-      if (m === 60) { m = 0; h += 1; }
+      if (m === 60) {
+        m = 0;
+        h += 1;
+      }
     }
     return times;
   }
@@ -162,8 +200,12 @@ export class AppointmentsService {
     const h = localNow.getHours();
     const m = localNow.getMinutes();
     const rounded = Math.ceil(m / 15) * 15;
-    let nh = h, nm = rounded;
-    if (rounded === 60) { nh = h + 1; nm = 0; }
+    let nh = h,
+      nm = rounded;
+    if (rounded === 60) {
+      nh = h + 1;
+      nm = 0;
+    }
     const hh = String(nh).padStart(2, '0');
     const mm = String(nm).padStart(2, '0');
     return `${hh}:${mm}`;
@@ -173,7 +215,8 @@ export class AppointmentsService {
   private utcRangeFromLocalYmd(dateISO: string, offsetMin: number) {
     const [y, m, d] = dateISO.split('-').map(Number);
     const startUtcMs = Date.UTC(y, m - 1, d, 0, 0, 0, 0) + offsetMin * 60_000;
-    const endUtcMs   = Date.UTC(y, m - 1, d, 23, 59, 59, 999) + offsetMin * 60_000;
+    const endUtcMs =
+      Date.UTC(y, m - 1, d, 23, 59, 59, 999) + offsetMin * 60_000;
     return {
       startISO: new Date(startUtcMs).toISOString(),
       endISO: new Date(endUtcMs).toISOString(),
@@ -193,10 +236,14 @@ export class AppointmentsService {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
 
     // All appointments whose UTC slot falls within that local day
-    const docs = await this.apptModel.find({ slotISO: { $gte: startISO, $lte: endISO } }).lean();
+    const docs = await this.apptModel
+      .find({ slotISO: { $gte: startISO, $lte: endISO } })
+      .lean();
 
     const takenSet = new Set(
-      docs.map((a) => this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin)),
+      docs.map((a) =>
+        this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin),
+      ),
     );
 
     const all = this.generateSlots();
@@ -219,9 +266,122 @@ export class AppointmentsService {
     return { times: available };
   }
 
-  async getTakenTimesForDate(dateISO: string, offsetMin: number): Promise<string[]> {
+  async getTakenTimesForDate(
+    dateISO: string,
+    offsetMin: number,
+  ): Promise<string[]> {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
-    const sameDay = await this.apptModel.find({ slotISO: { $gte: startISO, $lte: endISO } }).lean();
-    return sameDay.map((a) => this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin));
+    const sameDay = await this.apptModel
+      .find({ slotISO: { $gte: startISO, $lte: endISO } })
+      .lean();
+    return sameDay.map((a) =>
+      this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin),
+    );
+  }
+  async startPayment(dto: CreateAppointmentDto) {
+    const { applicationId, parentEmail, slotISO } = dto;
+
+    const secretKey = this.config.get<string>('PAYMOB_SECRET_KEY');
+    const publicKey = this.config.get<string>('PAYMOB_PUBLIC_KEY');
+    const base = this.config.get<string>('PAYMOB_BASE');
+    const integrationId = this.config.get<string>('PAYMOB_INTEGRATION_ID');
+
+    const amountCents = 500000; // 5000 EGP
+
+    // === STEP 1: Create Intention ===
+    const intentionRes = await firstValueFrom(
+      this.http.post(
+        `${base}/v1/intention/`,
+        {
+          amount: amountCents,
+          currency: 'EGP',
+          payment_methods: [Number(integrationId)],
+          items: [
+            {
+              name: 'Assessment Fee',
+              amount: amountCents,
+              description: 'School assessment booking',
+              quantity: 1,
+            },
+          ],
+          billing_data: {
+            apartment: 'NA',
+            email: parentEmail,
+            floor: 'NA',
+            first_name: 'Parent',
+            last_name: 'Name',
+            street: 'NA',
+            building: 'NA',
+            phone_number: '+201280008668',
+            shipping_method: 'NA',
+            postal_code: 'NA',
+            city: 'Cairo',
+            country: 'EG',
+            state: 'Cairo',
+          },
+          customer: {
+            first_name: 'Parent',
+            last_name: 'Name',
+            email: parentEmail,
+          },
+          extras: {
+            applicationId,
+            parentEmail,
+            slotISO,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Token ${secretKey}`,
+          },
+        },
+      ),
+    );
+
+    const clientSecret = intentionRes.data.client_secret;
+
+    // === STEP 2: Build Unified Checkout URL ===
+    const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
+
+    return { checkout_url: checkoutUrl };
+  }
+
+  async handlePaymobCallback(body: any, @Res() res: Response) {
+    try {
+      const isPaid = body?.obj?.success === true;
+
+      // If payment failed
+      if (!isPaid) {
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
+
+      // Extract extra booking info
+      const extra = body.obj?.order?.extras;
+      if (!extra) {
+        throw new BadRequestException('Missing booking info in callback');
+      }
+
+      const dto: CreateAppointmentDto = {
+        applicationId: extra.applicationId,
+        parentEmail: extra.parentEmail,
+        slotISO: extra.slotISO,
+      };
+
+      // Save appointment (business logic still applies)
+      await this.create(dto);
+
+      // ✅ Redirect to success page
+      return res.redirect(
+        'http://localhost:3001/admissions/appointments/Thankyou',
+      );
+    } catch (err) {
+      console.error('Callback error:', err);
+      // On any unexpected error, fallback to declined page
+      return res.redirect(
+        'http://localhost:3001/admissions/appointments/Declined',
+      );
+    }
   }
 }
