@@ -6,6 +6,7 @@ import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 import "./page.css";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 
 interface FormField {
   field_name: string;
@@ -18,22 +19,132 @@ interface FormField {
   placeholder?: string;
 }
 
+type Slot = {
+  _id: string;
+  iso: string;        // ISO in UTC
+  label?: string;
+  active: boolean;
+  capacity: number;
+  bookedCount: number;
+};
+
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const router = useRouter();                               // ⬅️ NEW
-
+const [showBookedPopup, setShowBookedPopup] = useState(false);
+const [bookedTimer, setBookedTimer] = useState<number | null>(null);
   const [fields, setFields] = useState<FormField[]>([]);
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
+  // ---- Your existing selectedSlot (kept for UI text). We’ll also track slotId internally.
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null); // display text
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null); // actual id
 
   // ⬅️ NEW: popup + redirect handling
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
   const [reserveHref, setReserveHref] = useState("/admissions/appointments");
+
+  // Booking form state
+  const [studentName, setStudentName] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
+  const [parentPhone, setParentPhone] = useState("");
+
+  // UX state
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingErr, setBookingErr] = useState<string | null>(null);
+  const [bookingOk, setBookingOk] = useState<string | null>(null);
+
+
+  const [bookedPopup, setBookedPopup] = useState<{ title: string; message: string; kind: 'success' | 'error' } | null>(null);
+
+useEffect(() => {
+  return () => { if (bookedTimer !== null) window.clearTimeout(bookedTimer); };
+}, [bookedTimer]);
+
+const handleBookingSubmit = async () => {
+  setBookingErr(null);
+  setBookingOk(null);
+
+  // collect missing fields to show a single popup
+  const missing: string[] = [];
+  if (!selectedSlotId) missing.push("date & time");
+  if (!studentName.trim()) missing.push("student name");
+  if (!parentEmail.trim()) missing.push("parent email");
+  if (!parentPhone.trim()) missing.push("parent phone");
+
+  const list = (arr: string[]) => (
+    arr.length === 1 ? arr[0]
+    : arr.length === 2 ? `${arr[0]} and ${arr[1]}`
+    : `${arr.slice(0, -1).join(", ")}, and ${arr[arr.length - 1]}`
+  );
+
+  if (missing.length) {
+    const msg = `Please fill ${list(missing)}.`;
+    setBookingErr(msg);
+    setBookedPopup({ title: "Missing information", message: msg, kind: "error" });
+    setShowBookedPopup(true);
+    const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
+    setBookedTimer(t);
+    return; // don't call the API
+  }
+
+  try {
+    setBookingLoading(true);
+
+    const res = await fetch(`${API}/booktour/bookings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slotId: selectedSlotId,
+        studentName: studentName.trim(),
+        parentEmail: parentEmail.trim(),
+        parentPhone: parentPhone.trim(),
+        selectedLabel: selectedSlot ?? undefined,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      const msg = Array.isArray(data?.message) ? data.message.join(" • ") : (data?.message || "Booking failed");
+      throw new Error(msg);
+    }
+
+    // SUCCESS
+    setBookingOk("Successfully booked! We’ve saved your details.");
+    setOpen(false); // close big popup
+
+    setBookedPopup({ title: "Successfully booked!", message: "We’ve received your request. A confirmation will be sent to your email.", kind: "success" });
+    setShowBookedPopup(true);
+    const t = window.setTimeout(() => setShowBookedPopup(false), 2500);
+    setBookedTimer(t);
+
+    // clear fields
+    setStudentName(""); setParentEmail(""); setParentPhone("");
+    setSelectedSlot(null); setSelectedSlotId(null);
+
+    // refresh slots so "spots left" updates
+    try {
+      const refresh = await fetch(`${API}/booktour/admin/slots?active=true`, { headers: { "Content-Type": "application/json" }, cache: "no-store" });
+      const refreshed = await refresh.json();
+      if (Array.isArray(refreshed)) setSlots(refreshed);
+    } catch { /* ignore */ }
+  } catch (err: any) {
+    const msg = err?.message || "Booking failed";
+    setBookingErr(msg);
+    setBookedPopup({ title: "Booking failed", message: msg, kind: "error" });
+    setShowBookedPopup(true);
+    const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
+    setBookedTimer(t);
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -117,18 +228,72 @@ export default function AdmissionsPage() {
     }
   };
 
- const slots = useMemo(
-    () => [
-      { label: "Wednesday 27 August — 10:00 AM", iso: "2025-08-27T10:00" },
-      { label: "Wednesday 27 August — 12:00 PM", iso: "2025-08-27T12:00" },
-      { label: "Thursday 28 August — 11:00 AM", iso: "2025-08-28T11:00" },
-      { label: "Thursday 28 August — 2:00 PM", iso: "2025-08-28T14:00" },
-      { label: "Friday 29 August — 9:30 AM", iso: "2025-08-29T09:30" },
-      { label: "Friday 29 August — 1:00 PM", iso: "2025-08-29T13:00" },
-    ],
-    []
-  );
+  // ================= SLOTS FROM BACKEND (replace dummy useMemo) =================
+  const API = process.env.NEXT_PUBLIC_API_URL!;
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState<boolean>(true);
+  const [slotsErr, setSlotsErr] = useState<string>("");
 
+// "Wed 14 Aug 2025 – 11:30"
+const fmtDateTime = (iso: string) => {
+  const d = new Date(iso);
+  const weekday = d.toLocaleDateString(undefined, { weekday: "short" }); // "Mon", "Tue", ...
+  const dateStr = d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+  const timeStr = d.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return `${weekday} ${dateStr} – ${timeStr}`;
+};
+
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        setLoadingSlots(true);
+        setSlotsErr("");
+        const res = await fetch(`${API}/booktour/admin/slots?active=true`, {
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",                 // avoid stale caching in browsers
+        });
+        const data = await res.json();
+        if (!alive) return;
+        setSlots(Array.isArray(data) ? data : []);
+      } catch (e: any) {
+        if (!alive) return;
+        setSlotsErr(e?.message || "Failed to load tour slots");
+      } finally {
+        if (alive) setLoadingSlots(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [API]);
+
+  // Only show bookable; sort ascending (backend already active+future)
+// show exactly what the API returns (already active + future), just sort by time
+const visibleSlots = useMemo(
+  () =>
+    (slots || [])
+      .map(s => ({ ...s, bookedCount: s.bookedCount ?? 0, capacity: s.capacity ?? 0 }))
+      .sort((a, b) => new Date(a.iso).getTime() - new Date(b.iso).getTime()),
+  [slots]
+);
+
+
+
+
+  const selectedSlotObj = useMemo(
+    () => visibleSlots.find((s) => s._id === selectedSlotId) || null,
+    [visibleSlots, selectedSlotId]
+  );
+  // ============================================================================
+
+  // Keep your preview submit util if needed
   const submit = () => {
     if (!selectedSlot) {
       alert("Please choose a date & time first.");
@@ -137,7 +302,9 @@ export default function AdmissionsPage() {
     alert(`Frontend-only preview:\nBooked campus tour for ${selectedSlot}`);
     setOpen(false);
     setSelectedSlot(null);
+    setSelectedSlotId(null);
   };
+
   return (
     <>
       <div>
@@ -204,7 +371,7 @@ export default function AdmissionsPage() {
                 className={`admission-tab-btn ${activeSection === "deadlines" ? "active" : ""}`}
                 onClick={() => setActiveSection("deadlines")}
               >
-                <i className="bi bi-camera-video"></i> Virtual Tour
+                <i className="bi bi-camera-video"></i> Tour
               </button>
 
               <button
@@ -422,7 +589,7 @@ export default function AdmissionsPage() {
                         <div className="deadline-item mb-4">
                           <div className="intro-image-container">
                             <div className="intro-image main-image">
-                              <h2>Book a Tour</h2>
+                              <h2>Campus Tour</h2>
 
                               <p className="mt-3">
                                 Discover Leaders International College in person! Our campus tour invites you to step into the heart of our school, explore our modern classrooms, science and computer labs, libraries, and sports facilities, and experience the lively atmosphere that makes our community unique. During the tour, you’ll have the chance to meet our dedicated staff, ask questions about academics and student life, and see first-hand how we support every child’s growth.
@@ -518,88 +685,116 @@ export default function AdmissionsPage() {
                                 >
                                   {/* Left column: fields */}
                                 <div>
-                                  <div className="mb-3">
-                                    <label className="form-label">Student Name</label>
-                                    <input
-                                      className="form-control"
-                                      type="text"
-                                      placeholder="e.g. Sarah Ahmed"
-                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                      onFocus={(e) =>
-                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
-                                      }
-                                      onBlur={(e) =>
-                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
-                                      }
-                                    />
-                                  </div>
+                                 <div>
+                                    <div className="mb-3">
+                                      <label className="form-label" htmlFor="tourStudentName">Student Name</label>
+                                      <input
+                                        id="tourStudentName"
+                                        name="studentName"
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="e.g. Sarah Ahmed"
+                                        value={studentName}
+                                        onChange={(e) => setStudentName(e.target.value)}
+                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                                      />
+                                    </div>
 
-                                  <div className="mb-3">
-                                    <label className="form-label">Parent Email</label>
-                                    <input
-                                      className="form-control"
-                                      type="email"
-                                      placeholder="name@example.com"
-                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                      onFocus={(e) =>
-                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
-                                      }
-                                      onBlur={(e) =>
-                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
-                                      }
-                                    />
-                                  </div>
+                                    <div className="mb-3">
+                                      <label className="form-label" htmlFor="tourParentEmail">Parent Email</label>
+                                      <input
+                                        id="tourParentEmail"
+                                        name="parentEmail"
+                                        className="form-control"
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        value={parentEmail}
+                                        onChange={(e) => setParentEmail(e.target.value)}
+                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                                      />
+                                    </div>
 
-                                  <div className="mb-3">
-                                    <label className="form-label">Parent Phone</label>
-                                    <input
-                                      className="form-control"
-                                      type="tel"
-                                      placeholder="+20 1X XXX XXXX"
-                                      style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                      onFocus={(e) =>
-                                        (e.currentTarget.style.border = "2px solid var(--accent-color)")
-                                      }
-                                      onBlur={(e) =>
-                                        (e.currentTarget.style.border = "1px solid #e5e7eb")
-                                      }
-                                    />
+                                    <div className="mb-3">
+                                      <label className="form-label" htmlFor="tourParentPhone">Parent Phone</label>
+                                      <input
+                                        id="tourParentPhone"
+                                        name="parentPhone"
+                                        className="form-control"
+                                        type="tel"
+                                        placeholder="+20 1X XXX XXXX"
+                                        value={parentPhone}
+                                        onChange={(e) => setParentPhone(e.target.value)}
+                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                                      />
+                                    </div>
+
                                   </div>
                                 </div>
                                   {/* Right column: slots with date+time */}
                                   <div>
                                     <label className="form-label">Choose a Date & Time</label>
-                                    <div
-                                      style={{
-                                        display: "grid",
-                                        gridTemplateColumns: "1fr",
-                                        gap: "10px",
-                                      }}
-                                    >
-                                      {slots.map((opt) => {
-                                        const isSelected = selectedSlot === opt.label;
-                                        return (
-                                          <button
-                                            key={opt.iso}
-                                            type="button"
-                                            onClick={() => setSelectedSlot(opt.label)}
-                                            className="btn"
-                                            style={{
-                                              padding: "12px 16px",
-                                              borderRadius: "8px",
-                                              textAlign: "left",
-                                              border: isSelected
-                                                ? "2px solid var(--accent-color)"
-                                                : "1px solid #e5e7eb",
-                                              background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
-                                              fontWeight: isSelected ? 700 : 600,
-                                            }}
-                                          >
-                                            {opt.label}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
+
+                                    {loadingSlots ? (
+                                      <div className="small text-muted">Loading available slots…</div>
+                                    ) : slotsErr ? (
+                                      <div className="alert alert-danger">{slotsErr}</div>
+                                    ) : visibleSlots.length === 0 ? (
+                                      <div className="small text-muted">No available slots at the moment.</div>
+                                    ) : (
+                                      <div
+                                        style={{
+                                          display: "grid",
+                                          gridTemplateColumns: "1fr",
+                                          gap: "10px",
+                                        }}
+                                      >
+                                        {visibleSlots.map((opt) => {
+                                          const displayLabel = opt.label?.trim() || fmtDateTime(opt.iso);
+                                          const remaining = Math.max(0, (opt.capacity ?? 0) - (opt.bookedCount ?? 0));
+                                          const isFull = remaining === 0;
+                                          const isSelected = selectedSlotId === opt._id;
+
+                                          return (
+                                            <button
+                                              key={opt._id}
+                                              type="button"
+                                              onClick={() => {
+                                                if (isFull) return;                // guard click
+                                                setSelectedSlot(displayLabel);
+                                                setSelectedSlotId(opt._id);
+                                              }}
+                                              className="btn"
+                                              disabled={isFull}                     // not pressable
+                                              aria-disabled={isFull}
+                                              aria-pressed={isSelected}
+                                              style={{
+                                                padding: "12px 16px",
+                                                borderRadius: "8px",
+                                                textAlign: "left",
+                                                border: isSelected
+                                                  ? "2px solid var(--accent-color)"
+                                                  : "1px solid #e5e7eb",
+                                                background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
+                                                fontWeight: isSelected ? 700 : 600,
+                                                opacity: isFull ? 0.6 : 1,
+                                                cursor: isFull ? "not-allowed" : "pointer",
+                                              }}
+                                            >
+                                              {displayLabel}
+                                              <div className="small text-muted" style={{ marginTop: 2 }}>
+                                                {isFull ? "Full" : `${remaining} spots left`}
+                                              </div>
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
 
                                     {selectedSlot && (
                                       <div style={{ marginTop: "10px", fontSize: "0.95rem" }}>
@@ -632,19 +827,20 @@ export default function AdmissionsPage() {
                                 >
                                   Cancel
                                 </button>
-                                <button
-                                  className="btn"
-                                  style={{
-                                    backgroundColor: "var(--accent-color)",
-                                    color: "#fff",
-                                    padding: "12px 24px",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                  }}
-                                  onClick={submit}
-                                >
-                                  Submit Request
-                                </button>
+                                  <button
+                                    className="btn"
+                                    style={{
+                                      backgroundColor: "var(--accent-color)",
+                                      color: "#fff",
+                                      padding: "12px 24px",
+                                      borderRadius: "8px",
+                                      fontWeight: 600,
+                                    }}
+                                    onClick={handleBookingSubmit}
+                                    disabled={bookingLoading}
+                                  >
+                                    {bookingLoading ? "Submitting…" : "Submit Request"}
+                                  </button>
                               </div>
                             </div>
                           </div>
@@ -890,6 +1086,44 @@ export default function AdmissionsPage() {
           </div>
         </div>
       )}
+
+{showBookedPopup && bookedPopup && createPortal(
+  <div className="booked-popup-backdrop" role="dialog" aria-modal="true" aria-labelledby="bookedTitle">
+    <div className="booked-popup-card">
+      <div
+        className="booked-popup-icon"
+        aria-hidden
+        style={{
+          background: bookedPopup.kind === "success" ? "#e8f8ff" : "#ffeaea",
+          color:       bookedPopup.kind === "success" ? "#0aa2d1" : "#c32626",
+        }}
+      >
+        {bookedPopup.kind === "success" ? "✓" : "!"}
+      </div>
+      <h4 id="bookedTitle" style={{ margin: 0 }}>{bookedPopup.title}</h4>
+      <p className="mb-3" style={{ textAlign: "center" }}>{bookedPopup.message}</p>
+      <button
+        className="btn"
+        style={{
+          backgroundColor: bookedPopup.kind === "success" ? "var(--accent-color)" : "#c32626",
+          color: "#fff",
+          borderRadius: 8,
+          padding: "10px 18px",
+          fontWeight: 600
+        }}
+        onClick={() => {
+          if (bookedTimer !== null) window.clearTimeout(bookedTimer);
+          setShowBookedPopup(false);
+        }}
+      >
+        OK
+      </button>
+    </div>
+  </div>,
+  document.body
+)}
+
+
 
       <style jsx>{`
         .custom-tab { border-radius: 50px; padding: 10px 20px; margin: 5px; background: #fff; border: 1px solid #ddd; font-weight: 600; }

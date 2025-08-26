@@ -19,12 +19,25 @@ type Slot = {
   updatedAt?: string;
 };
 
+type Booking = {
+  _id: string;
+  slotId: string;
+  studentName: string;
+  parentEmail: string;
+  parentPhone: string;
+  selectedLabel?: string;
+  createdAt?: string;
+};
+
 export default function BookTourAdminPage() {
   const API = process.env.NEXT_PUBLIC_API_URL!;
   const router = useRouter();
 
   // ---- Auth ----
   const [authenticated, setAuthenticated] = useState<boolean>(false);
+
+  // ---- Tabs ----
+  const [activeTab, setActiveTab] = useState<"slots" | "bookings">("slots");
 
   // ---- Slots state ----
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -39,6 +52,19 @@ export default function BookTourAdminPage() {
   const [capacity, setCapacity] = useState<number>(1);
   const [active, setActive] = useState<boolean>(true);
   const [label, setLabel] = useState<string>("");
+
+  // ---- Bookings tab state ----
+  const [selectedSlotForBookings, setSelectedSlotForBookings] = useState<string | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
+  const [bookingsErr, setBookingsErr] = useState<string>("");
+    const sortedSlotsDesc = useMemo(
+    () =>
+      (slots || [])
+        .slice()
+        .sort((a, b) => new Date(b.iso).getTime() - new Date(a.iso).getTime()),
+    [slots]
+  );
 
   // Build ISO (UTC) from picked local date & time
   const isoPreview = useMemo(() => {
@@ -58,17 +84,18 @@ export default function BookTourAdminPage() {
     ).toISOString();
   }, [date, time]);
 
-  // ---- Auth check (redirect if no token) ----
-  useEffect(() => {
-    const token = sessionStorage.getItem("admin_token");
-    if (!token) {
-      router.push("/lic-auth-v9v3tz");
-    } else {
-      setAuthenticated(true);
-    }
-  }, [router]);
+  // ---- Helpers ----
+  const slotDisplayLabel = (s: Slot) =>
+    s.label?.trim() ||
+    `${new Date(s.iso).toLocaleDateString(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    })} • ${new Date(s.iso).toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
 
-  // ---- Load all slots ----
   const loadSlots = async () => {
     try {
       setLoading(true);
@@ -85,6 +112,34 @@ export default function BookTourAdminPage() {
     }
   };
 
+  const loadBookingsForSlot = async (slotId: string) => {
+    try {
+      setLoadingBookings(true);
+      setBookingsErr("");
+      const res = await axios.get<Booking[]>(
+        `${API}/booktour/admin/slots/${slotId}/bookings`,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      setBookings(res.data || []);
+    } catch (e: any) {
+      console.error(e);
+      setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
+
+  // ---- Auth check (redirect if no token) ----
+  useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+    if (!token) {
+      router.push("/lic-auth-v9v3tz");
+    } else {
+      setAuthenticated(true);
+    }
+  }, [router]);
+
+  // ---- Initial load ----
   useEffect(() => {
     if (!authenticated) return;
     void loadSlots();
@@ -156,6 +211,11 @@ export default function BookTourAdminPage() {
       await axios.delete(`${API}/booktour/admin/slots/${id}`);
       setSlots((prev) => prev.filter((s) => s._id !== id));
       setMsg("Deleted ✔");
+      // if that slot was selected in Bookings tab, clear it
+      if (selectedSlotForBookings === id) {
+        setSelectedSlotForBookings(null);
+        setBookings([]);
+      }
     } catch (e: any) {
       console.error(e);
       setErr(e?.response?.data?.message || e.message || "Delete failed");
@@ -182,8 +242,10 @@ export default function BookTourAdminPage() {
   };
 
   // ---- Render (after all hooks are declared) ----
-  // We still can short-circuit UI for unauthenticated, but AFTER hooks are set up:
   if (!authenticated) return null;
+
+  // Precomputed sorted slots (farthest/top)
+
 
   return (
     <>
@@ -191,7 +253,7 @@ export default function BookTourAdminPage() {
 
       <div
         style={{
-          paddingTop: "130px", // push below fixed header
+          paddingTop: "130px",
           backgroundColor: "#f5f9fa",
           minHeight: "100vh",
         }}
@@ -199,135 +261,287 @@ export default function BookTourAdminPage() {
         <section className="admin-section">
           {/* Header */}
           <div className="container section-title">
-            <h2>Book a Tour — Slots</h2>
-            <p>Create, activate, and manage campus tour slots.</p>
-          </div>
+            <h2>Book a Tour</h2>
+            <p>Create, activate, and manage campus tour slots — and view bookings.</p>
+            <br></br>
 
-          {/* Shadow container */}
-          <div className="admin-shadow-box">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <button className="btn btn-outline-secondary" onClick={loadSlots} disabled={loading}>
-                {loading ? "Refreshing…" : "Refresh"}
+            {/* Tabs */}
+            <div className="tabs-container" role="tablist" aria-label="Book a Tour Tabs">
+              <button
+                role="tab"
+                aria-selected={activeTab === "slots"}
+                className={`tab-btn ${activeTab === "slots" ? "active-tab" : ""}`}
+                onClick={() => setActiveTab("slots")}
+              >
+                Slots
               </button>
-              <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
-                + Add Slot
+              <button
+                role="tab"
+                aria-selected={activeTab === "bookings"}
+                className={`tab-btn ${activeTab === "bookings" ? "active-tab" : ""}`}
+                onClick={() => setActiveTab("bookings")}
+              >
+                Bookings
               </button>
             </div>
+          </div>
 
-            {/* Alerts */}
-            {msg && (
-              <div className="alert alert-success" role="alert">
-                {msg}
+          {/* ---- SLOTS TAB ---- */}
+          {activeTab === "slots" && (
+            <div className="testimonial-box admin-shadow-box">
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <button className="btn btn-outline-secondary" onClick={loadSlots} disabled={loading}>
+                  {loading ? "Refreshing…" : "Refresh"}
+                </button>
+                <button
+                  className="btn btn-primary"
+                  style={{ backgroundColor: "var(--accent-color)", color: "#fff" }}
+                  onClick={() => setShowCreate(true)}
+                >
+                  + Add Slot
+                </button>
               </div>
-            )}
-            {err && (
-              <div className="alert alert-danger" role="alert">
-                {err}
-              </div>
-            )}
 
-            {/* Content */}
-            {loading ? (
-              <>
-                <div className="loader-container">
-                  <div className="spinner" />
-                  <p className="loading-text">Loading Slots...</p>
+              {/* Alerts */}
+              {msg && (
+                <div className="alert alert-success" role="alert">
+                  {msg}
+                </div>
+              )}
+              {err && (
+                <div className="alert alert-danger" role="alert">
+                  {err}
+                </div>
+              )}
+
+              {/* Content */}
+              {loading ? (
+                <>
+                  <div className="loader-container">
+                    <div className="spinner" />
+                    <p className="loading-text">Loading Slots...</p>
+                  </div>
+
+                  <style jsx>{`
+                    .loader-container {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                      padding: 4rem 1rem;
+                      width: 100%;
+                    }
+                    .spinner {
+                      width: 50px;
+                      height: 50px;
+                      border: 6px solid #c2c8eb;
+                      border-top: 6px solid #3d9bdeff;
+                      border-radius: 50%;
+                      animation: spin 0.9s linear infinite;
+                    }
+                    .loading-text {
+                      margin-top: 1rem;
+                      font-size: 1.1rem;
+                      font-weight: 500;
+                      color: #3f9adaff;
+                    }
+                    @keyframes spin {
+                      to {
+                        transform: rotate(360deg);
+                      }
+                    }
+                  `}</style>
+                </>
+              ) : slots.length === 0 ? (
+                <p
+                  style={{
+                    color: "#888",
+                    fontStyle: "italic",
+                    padding: "1rem",
+                  }}
+                >
+                  No slots yet — click “+ Add Slot”.
+                </p>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Label</th>
+                        <th>ISO (UTC)</th>
+                        <th className="text-center">Active</th>
+                        <th className="text-center">Capacity</th>
+                        <th className="text-center">Remaining Spots</th>
+                        <th className="text-center">Booked</th>
+                        <th className="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedSlotsDesc.map((s) => {
+                        const cap = s.capacity ?? 0;
+                        const booked = s.bookedCount ?? 0;
+                        const remaining = Math.max(0, cap - booked);
+
+                        return (
+                          <tr key={s._id}>
+                            <td>{s.label || new Date(s.iso).toLocaleString()}</td>
+                            <td className="small text-muted">
+                              {new Date(s.iso).toLocaleDateString(undefined, {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}{" "}
+                              –{" "}
+                              {new Date(s.iso).toLocaleTimeString(undefined, {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`badge ${s.active ? "bg-success" : "bg-secondary"}`}
+                                style={{ fontWeight: 600 }}
+                              >
+                                {s.active ? "ON" : "OFF"}
+                              </span>
+                            </td>
+                            <td className="text-center">{cap}</td>
+                            <td className="text-center">
+                              {remaining > 0 ? (
+                                remaining
+                              ) : (
+                                <span className="badge bg-danger" style={{ fontWeight: 600 }}>
+                                  Full
+                                </span>
+                              )}
+                            </td>
+                            <td className="text-center">{booked}</td>
+                            <td className="text-end">
+                              <div className="d-inline-flex gap-2">
+                                <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() => handleToggle(s._id, !s.active)}
+                                >
+                                  {s.active ? "Deactivate" : "Activate"}
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => handleDelete(s._id)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ---- BOOKINGS TAB ---- */}
+          {activeTab === "bookings" && (
+            <div className="testimonial-box admin-shadow-box">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <span className="me-2 fw-semibold">Filter by date/label:</span>
+
+                  {/* Filter pills: from slots list (latest first) */}
+                  <div className="filter-chips">
+                    {sortedSlotsDesc.map((s) => {
+                      const isActive = selectedSlotForBookings === s._id;
+                      const label = slotDisplayLabel(s);
+                      return (
+                        <button
+                          key={s._id}
+                          type="button"
+                          className={`filter-btn ${isActive ? "active-filter" : ""}`}
+                          aria-pressed={isActive}
+                          onClick={() => {
+                            setSelectedSlotForBookings(s._id);
+                            void loadBookingsForSlot(s._id);
+                          }}
+                          title={label}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <style jsx>{`
-                  .loader-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 4rem 1rem;
-                    width: 100%;
-                  }
 
-                  .spinner {
-                    width: 50px;
-                    height: 50px;
-                    border: 6px solid #c2c8eb;
-                    border-top: 6px solid #3d9bdeff;
-                    border-radius: 50%;
-                    animation: spin 0.9s linear infinite;
-                  }
-
-                  .loading-text {
-                    margin-top: 1rem;
-                    font-size: 1.1rem;
-                    font-weight: 500;
-                    color: #3f9adaff;
-                  }
-
-                  @keyframes spin {
-                    to {
-                      transform: rotate(360deg);
-                    }
-                  }
-                `}</style>
-              </>
-            ) : slots.length === 0 ? (
-              <p
-                style={{
-                  color: "#888",
-                  fontStyle: "italic",
-                  padding: "1rem",
-                }}
-              >
-                No slots yet — click “+ Add Slot”.
-              </p>
-            ) : (
-              <div className="table-responsive">
-                <table className="table align-middle">
-                  <thead>
-                    <tr>
-                      <th>Label</th>
-                      <th>ISO (UTC)</th>
-                      <th className="text-center">Active</th>
-                      <th className="text-center">Capacity</th>
-                      <th className="text-center">Booked</th>
-                      <th className="text-end">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {slots.map((s) => (
-                      <tr key={s._id}>
-                        <td>{s.label || new Date(s.iso).toLocaleString()}</td>
-                        <td className="small text-muted">{s.iso}</td>
-                        <td className="text-center">
-                          <span
-                            className={`badge ${s.active ? "bg-success" : "bg-secondary"}`}
-                            style={{ fontWeight: 600 }}
-                          >
-                            {s.active ? "ON" : "OFF"}
-                          </span>
-                        </td>
-                        <td className="text-center">{s.capacity}</td>
-                        <td className="text-center">{s.bookedCount}</td>
-                        <td className="text-end">
-                          <div className="d-inline-flex gap-2">
-                            <button
-                              className="btn btn-sm btn-outline-primary"
-                              onClick={() => handleToggle(s._id, !s.active)}
-                            >
-                              {s.active ? "Deactivate" : "Activate"}
-                            </button>
-                            <button
-                              className="btn btn-sm btn-outline-danger"
-                              onClick={() => handleDelete(s._id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={() => {
+                      if (selectedSlotForBookings) void loadBookingsForSlot(selectedSlotForBookings);
+                    }}
+                    disabled={!selectedSlotForBookings || loadingBookings}
+                  >
+                    {loadingBookings ? "Refreshing…" : "Refresh"}
+                  </button>
+                 
+                </div>
               </div>
-            )}
-          </div>
+
+              {/* Info / alerts */}
+              {bookingsErr && <div className="alert alert-danger">{bookingsErr}</div>}
+
+              {!selectedSlotForBookings ? (
+                <p className="text-muted" style={{ padding: "0.5rem" }}>
+                  Pick a date/label above to view all bookings for that slot.
+                </p>
+              ) : loadingBookings ? (
+                <div className="loader-container">
+                  <div className="spinner" />
+                  <p className="loading-text">Loading Bookings...</p>
+                </div>
+              ) : bookings.length === 0 ? (
+                <p className="text-muted" style={{ padding: "0.5rem" }}>
+                  No bookings found for this slot.
+                </p>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Student</th>
+                        <th>Parent Email</th>
+                        <th>Parent Phone</th>
+                        <th>Selected Label</th>
+                        <th>Booked At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bookings.map((b) => (
+                        <tr key={b._id}>
+                          <td>{b.studentName}</td>
+                          <td>
+                            <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
+                          </td>
+                          <td>
+                            <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
+                          </td>
+                          <td>{b.selectedLabel || slotDisplayLabel(slots.find(s => s._id === b.slotId) as Slot)}</td>
+                          <td className="small text-muted">
+                            {b.createdAt
+                              ? new Date(b.createdAt).toLocaleString()
+                              : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+
         </section>
       </div>
 
