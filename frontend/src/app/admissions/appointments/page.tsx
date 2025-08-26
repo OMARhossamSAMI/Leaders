@@ -19,7 +19,7 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = "https://leaders-temp-backend.onrender.com";
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";

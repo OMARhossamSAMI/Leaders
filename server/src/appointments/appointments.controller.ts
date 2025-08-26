@@ -82,7 +82,7 @@ export class AppointmentsController {
     return this.service.startPayment(dto);
   }
   // appointments.controller.ts
-  @Post('callback')
+  @Get('callback')
   async paymobCallback(@Body() body: any, @Res() res: Response) {
     return this.service.handlePaymobCallback(body, res);
   }
