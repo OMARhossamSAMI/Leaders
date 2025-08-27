@@ -428,8 +428,8 @@ export class AppointmentsService {
         // 🔎 Log optional extras if present
         if (extras.student_name)
           console.log('👦 Student Name:', extras.student_name);
-        if (extras.father_name)
-          console.log('👨 Father Name:', extras.father_name);
+        if (extras.fatherName)
+          console.log('👨 Father Name:', extras.fatherName);
         if (extras.fatherPhone)
           console.log('📞 Father Phone:', extras.fatherPhone);
         if (extras.motherPhone)
@@ -465,7 +465,7 @@ export class AppointmentsService {
           const waRes = await this.acceptedStudentService.sendAssessmentMessage(
             extras.applicationId, // assuming this id exists in acceptedStudentModel
             {
-              fatherName: extras.father_name || 'Parent',
+              fatherName: extras.fatherName || 'Parent',
               studentName: extras.student_name || 'Student',
               date: dateStr,
               time: timeStr,
