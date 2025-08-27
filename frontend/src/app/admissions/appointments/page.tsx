@@ -115,6 +115,7 @@ export default function AppointmentPage() {
         // Use the new endpoint (alias /available-for-date still exists)
         const res = await fetch(
           `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
+
         );
 
         const data: { times: string[] } = res.ok
@@ -251,39 +252,31 @@ export default function AppointmentPage() {
           msg = rawText ?? `HTTP ${res.status}`;
         }
 
-        const toLocal = (dt: Date) =>
-          `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
-            dt.getDate()
-          ).padStart(2, "0")}`;
-        const winFrom = windowStart ? toLocal(windowStart) : null;
-        const winTo = windowEnd ? toLocal(windowEnd) : null;
 
-        if (/weekend|friday|saturday/i.test(msg)) {
-          msg = "Appointments are not available on Friday or Saturday.";
-        } else if (
-          (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
-          winFrom && winTo
-        ) {
-          msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
-        } else if (res.status === 409 || /conflict|taken|already.*booked|slot.*full/i.test(msg)) {
-          msg = "That time is no longer available. Please choose another slot.";
-          // reflect the conflict immediately (remove it if it somehow remained in the list)
-          setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-          setSelectedTime("");
-        }
-
-        console.error("Appointment booking failed", { status: res.status, data, rawText });
-        setSaveError(msg || "Unable to book this slot. Please choose another.");
+        console.error("Payment initiation failed", {
+          status: res.status,
+          data,
+          rawText,
+        });
+        setSaveError(msg || "Unable to start payment. Please try again.");
         return;
       }
 
-      // success
-      const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
+      // 🔹 Step 2: Redirect user to Paymob Unified Checkout
+      if (data?.checkout_url) {
+        window.location.href = data.checkout_url;
+        return;
+      }
 
+      const newId =
+        hasNewId(data) && (data._id || data.id)
+          ? String(data._id || data.id)
+          : null;
       setSavedId(newId || "OK");
       // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
+
     } catch {
       setSaveError("Network error. Please try again.");
     } finally {
@@ -303,6 +296,7 @@ export default function AppointmentPage() {
       <div
         className="page-title dark-background"
         style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+
       >
         <div className="container position-relative">
           <h1>Book Assessment Appointment</h1>
@@ -313,6 +307,7 @@ export default function AppointmentPage() {
             application. If we find your application, you can select a <b>30-minute</b> slot between{" "}
             <b>09:00</b> and <b>12:00</b> (Sun–Thu). The window closes at <b>12:30</b>, so the last
             start time is <b>12:00</b>.
+
           </p>
           <nav className="breadcrumbs">
             <ol>
@@ -559,7 +554,6 @@ export default function AppointmentPage() {
           }
         }
       `}</style>
-    </>
     </>
   );
 }
