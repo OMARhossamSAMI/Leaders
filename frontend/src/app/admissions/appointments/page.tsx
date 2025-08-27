@@ -110,8 +110,12 @@ export default function AppointmentPage() {
 
     const load = async () => {
       try {
-        const offsetMin = 0 - new Date().getTimezoneOffset(); // UTC - local
-        const res = await fetch(`${API}/appointments/available-for-date?date=${selectedDate}&offset=${offsetMin}`);
+        // IMPORTANT: JS getTimezoneOffset() already returns (UTC - local) in minutes
+        const offsetMin = new Date().getTimezoneOffset(); // e.g., Cairo summer = -180
+        // Use the new endpoint (alias /available-for-date still exists)
+        const res = await fetch(
+          `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
+        );
 
         const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
         if (!cancelled) {
@@ -252,8 +256,8 @@ export default function AppointmentPage() {
           winFrom && winTo
         ) {
           msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
-        } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
-          msg = "That time was just booked. Please choose another slot.";
+        } else if (res.status === 409 || /conflict|taken|already.*booked|slot.*full/i.test(msg)) {
+          msg = "That time is no longer available. Please choose another slot.";
           // reflect the conflict immediately (remove it if it somehow remained in the list)
           setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
           setSelectedTime("");
@@ -267,9 +271,8 @@ export default function AppointmentPage() {
       // success
       const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
 
-
       setSavedId(newId || "OK");
-      // remove the booked time from the list so no one can pick it without refresh
+      // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
     } catch {
@@ -278,7 +281,6 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
-
 
   // -------- UI --------
   const startOfToday = useMemo(() => {
@@ -290,29 +292,29 @@ export default function AppointmentPage() {
     <>
       {/* ===== Header borrowed from Contact page ===== */}
       <div
-            className="page-title dark-background"
-            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
-          >
-            <div className="container position-relative">
-              <h1>Book Assessment Appointment</h1>
-              <p>
-                Schedule your child’s assessment appointment within the available window.
-                Select a convenient date and time, and our admissions team will confirm.
-                Enter the <strong>father</strong> or <strong>mother</strong> email used in your
-                application. If we find your application, you can select a 15-minute slot between{" "}
-                <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
-                submission date.
-              </p>          
-              <nav className="breadcrumbs">
-                <ol>
-                  <li>
-                    <Link href="/">Home</Link>
-                  </li>
-                  <li className="current">Appointment</li>
-                </ol>
-              </nav>
-            </div>
-          </div>
+        className="page-title dark-background"
+        style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+      >
+        <div className="container position-relative">
+          <h1>Book Assessment Appointment</h1>
+          <p>
+            Schedule your child’s assessment appointment within the available window.
+            Select a convenient date and time, and our admissions team will confirm.
+            Enter the <strong>father</strong> or <strong>mother</strong> email used in your
+            application. If we find your application, you can select a <b>30-minute</b> slot between{" "}
+            <b>09:00</b> and <b>12:00</b> (Sun–Thu). The window closes at <b>12:30</b>, so the last
+            start time is <b>12:00</b>.
+          </p>
+          <nav className="breadcrumbs">
+            <ol>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li className="current">Appointment</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
       {/* ===== End Header ===== */}
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
@@ -531,6 +533,6 @@ export default function AppointmentPage() {
           }
         }
       `}</style>
-      </>
+    </>
   );
 }
