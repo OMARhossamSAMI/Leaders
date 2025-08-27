@@ -80,16 +80,6 @@ export class AcceptedStudentService {
       phoneNumber: string;
     },
   ) {
-    const student = await this.acceptedStudentModel.findById(id);
-
-    if (!student) {
-      throw new Error('Student not found');
-    }
-
-    if (student.assessmentMessageSent) {
-      return { error: 'Assessment message already sent to this student' };
-    }
-
     const token = process.env.WHATSAPP_ACCESS_TOKEN;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
     const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
@@ -137,12 +127,6 @@ export class AcceptedStudentService {
     );
 
     const data = await res.json();
-
-    if (!data.error) {
-      // ✅ Mark as sent
-      student.assessmentMessageSent = true;
-      await student.save();
-    }
 
     return data;
   }
