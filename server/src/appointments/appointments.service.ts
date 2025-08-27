@@ -16,6 +16,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { StudentApplicationService } from '../student-application/student-application.service';
+import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 // Opening window: 09:00–12:15 every 15 min
 const START_HOUR = 9;
 const END_HOUR = 12;
@@ -32,6 +33,7 @@ export class AppointmentsService {
     private readonly http: HttpService,
     private readonly config: ConfigService,
     private readonly studentAppService: StudentApplicationService, // <-- add this
+    private readonly acceptedStudentService: AcceptedStudentService, // 👈 now available
   ) {}
 
   private escape(s: string) {
@@ -442,6 +444,7 @@ export class AppointmentsService {
 
         console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
 
+        // ✅ Create appointment
         const dto: CreateAppointmentDto = {
           applicationId: extras.applicationId,
           parentEmail: extras.parentEmail,
@@ -450,6 +453,33 @@ export class AppointmentsService {
 
         await this.create(dto);
         console.log('🎉 Appointment created successfully');
+
+        // ✅ Send WhatsApp message using AcceptedStudentService
+        try {
+          const dateStr = cairoDate.toLocaleDateString('en-GB');
+          const timeStr = cairoDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+
+          const waRes = await this.acceptedStudentService.sendAssessmentMessage(
+            extras.applicationId, // assuming this id exists in acceptedStudentModel
+            {
+              fatherName: extras.father_name || 'Parent',
+              studentName: extras.student_name || 'Student',
+              date: dateStr,
+              time: timeStr,
+              phoneNumber:
+                extras.fatherPhone ||
+                extras.motherPhone ||
+                extras.allPhones?.[0],
+            },
+          );
+
+          console.log('📲 WhatsApp API response:', waRes);
+        } catch (waErr) {
+          console.error('⚠️ Failed to send WhatsApp message:', waErr);
+        }
       } else {
         console.warn(
           '⚠️ Extras not found or incomplete in transaction inquiry',
