@@ -397,16 +397,20 @@ export class AppointmentsService {
       console.log('👉 Extracted extras:', extras);
 
       if (extras?.applicationId && extras?.parentEmail && extras?.slotISO) {
-        console.log('✅ All extras found:', {
-          applicationId: extras.applicationId,
-          parentEmail: extras.parentEmail,
-          slotISO: extras.slotISO,
-        });
+        console.log('✅ All extras found (raw):', extras);
+
+        // Convert Paymob UTC ISO → Cairo local
+        const utcDate = new Date(extras.slotISO);
+        const cairoOffsetMinutes = 3 * 60; // Cairo is UTC+3 in summer, UTC+2 in winter
+        const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
+        const cairoDate = new Date(localMs);
+
+        console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
 
         const dto: CreateAppointmentDto = {
           applicationId: extras.applicationId,
           parentEmail: extras.parentEmail,
-          slotISO: extras.slotISO,
+          slotISO: cairoDate.toISOString(), // corrected to local time
         };
 
         await this.create(dto);
