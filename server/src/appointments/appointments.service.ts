@@ -348,30 +348,72 @@ export class AppointmentsService {
 
   async handlePaymobRedirect(query: any, res: Response) {
     try {
+      console.log('👉 Redirect query received:', query);
+
       const isPaid = query?.success === 'true';
+      console.log('✅ Success flag:', isPaid);
 
       if (!isPaid) {
+        console.warn('❌ Payment marked as failed in query');
         return res.redirect(
           'http://localhost:3001/admissions/appointments/Declined',
         );
       }
 
-      // ✅ Try to reconstruct DTO from query (if Paymob passed extras/order info)
-      const applicationId = query?.applicationId;
-      const parentEmail = query?.parentEmail;
-      const slotISO = query?.slotISO;
+      // Get the order ID from redirect params
+      const orderId = query?.order;
+      console.log('👉 Order ID from query:', orderId);
 
-      if (applicationId && parentEmail && slotISO) {
+      if (!orderId) {
+        console.error('❌ No order id in redirect query');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
+
+      // === STEP 1: Authenticate to get auth token ===
+      const apiKey = this.config.get<string>('PAYMOB_API_KEY');
+      const base = this.config.get<string>('PAYMOB_BASE');
+
+      const authRes = await firstValueFrom(
+        this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
+      );
+      const authToken = authRes?.data?.token;
+      console.log('🔑 Auth token received:', !!authToken);
+
+      // === STEP 2: Call transaction inquiry with order_id ===
+      const trxRes = await firstValueFrom(
+        this.http.post(
+          `${base}/api/ecommerce/orders/transaction_inquiry`,
+          { order_id: orderId },
+          { headers: { Authorization: `Bearer ${authToken}` } },
+        ),
+      );
+
+      console.log('📦 Transaction inquiry response:', trxRes.data);
+
+      // === STEP 3: Extract extras from payment_key_claims.extra ===
+      const extras = trxRes.data?.payment_key_claims?.extra;
+      console.log('👉 Extracted extras:', extras);
+
+      if (extras?.applicationId && extras?.parentEmail && extras?.slotISO) {
+        console.log('✅ All extras found:', {
+          applicationId: extras.applicationId,
+          parentEmail: extras.parentEmail,
+          slotISO: extras.slotISO,
+        });
+
         const dto: CreateAppointmentDto = {
-          applicationId,
-          parentEmail,
-          slotISO,
+          applicationId: extras.applicationId,
+          parentEmail: extras.parentEmail,
+          slotISO: extras.slotISO,
         };
 
         await this.create(dto);
+        console.log('🎉 Appointment created successfully');
       } else {
         console.warn(
-          'No booking info in GET redirect query, skipping create()',
+          '⚠️ Extras not found or incomplete in transaction inquiry',
         );
       }
 
@@ -380,7 +422,7 @@ export class AppointmentsService {
         'http://localhost:3001/admissions/appointments/Thankyou',
       );
     } catch (err) {
-      console.error('Redirect error:', err);
+      console.error('🔥 Redirect error:', err?.response?.data || err);
       return res.redirect(
         'http://localhost:3001/admissions/appointments/Declined',
       );
