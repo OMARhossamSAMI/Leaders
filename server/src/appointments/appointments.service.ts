@@ -15,6 +15,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { StudentApplicationService } from '../student-application/student-application.service';
 // Opening window: 09:00–12:15 every 15 min
 const START_HOUR = 9;
 const END_HOUR = 12;
@@ -30,6 +31,7 @@ export class AppointmentsService {
     private readonly appModel: Model<StudentApplicationDocument>,
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    private readonly studentAppService: StudentApplicationService, // <-- add this
   ) {}
 
   private escape(s: string) {
@@ -288,6 +290,18 @@ export class AppointmentsService {
 
     const amountCents = 500000; // 5000 EGP
 
+    // 🔍 Lookup student application using parent email
+    const studentApp =
+      await this.studentAppService.findByParentEmail(parentEmail);
+    console.log('🎓 Student app lookup result:', studentApp);
+
+    // Safely extract values
+    const studentName = studentApp?.student_name || 'Student';
+    const fatherName = studentApp?.father_name || 'Parent'; // 👈 take from DB
+    const fatherPhone = studentApp?.fatherPhone;
+    const motherPhone = studentApp?.motherPhone;
+    const primaryPhone = fatherPhone || motherPhone || '+201280008668';
+
     // === STEP 1: Create Intention ===
     const intentionRes = await firstValueFrom(
       this.http.post(
@@ -308,11 +322,11 @@ export class AppointmentsService {
             apartment: 'NA',
             email: parentEmail,
             floor: 'NA',
-            first_name: 'Parent',
-            last_name: 'Name',
+            first_name: studentName, // 👈 child’s name
+            last_name: fatherName, // 👈 father’s name
             street: 'NA',
             building: 'NA',
-            phone_number: '+201280008668',
+            phone_number: primaryPhone,
             shipping_method: 'NA',
             postal_code: 'NA',
             city: 'Cairo',
@@ -320,14 +334,20 @@ export class AppointmentsService {
             state: 'Cairo',
           },
           customer: {
-            first_name: 'Parent',
-            last_name: 'Name',
+            first_name: studentName,
+            last_name: fatherName,
             email: parentEmail,
           },
+          // Store extras so we can retrieve later
           extras: {
             applicationId,
             parentEmail,
             slotISO,
+            student_name: studentName,
+            fatherName, // 👈 store it in extras as well
+            fatherPhone,
+            motherPhone,
+            allPhones: studentApp?.phones,
           },
         },
         {
@@ -394,14 +414,29 @@ export class AppointmentsService {
 
       // === STEP 3: Extract extras from payment_key_claims.extra ===
       const extras = trxRes.data?.payment_key_claims?.extra;
-      console.log('👉 Extracted extras:', extras);
+      console.log('👉 Extracted extras (raw):', extras);
 
       if (extras?.applicationId && extras?.parentEmail && extras?.slotISO) {
-        console.log('✅ All extras found (raw):', extras);
+        console.log('✅ Required extras found:', {
+          applicationId: extras.applicationId,
+          parentEmail: extras.parentEmail,
+          slotISO: extras.slotISO,
+        });
+
+        // 🔎 Log optional extras if present
+        if (extras.student_name)
+          console.log('👦 Student Name:', extras.student_name);
+        if (extras.father_name)
+          console.log('👨 Father Name:', extras.father_name);
+        if (extras.fatherPhone)
+          console.log('📞 Father Phone:', extras.fatherPhone);
+        if (extras.motherPhone)
+          console.log('📞 Mother Phone:', extras.motherPhone);
+        if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
         // Convert Paymob UTC ISO → Cairo local
         const utcDate = new Date(extras.slotISO);
-        const cairoOffsetMinutes = 3 * 60; // Cairo is UTC+3 in summer, UTC+2 in winter
+        const cairoOffsetMinutes = 3 * 60; // UTC+3
         const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
         const cairoDate = new Date(localMs);
 
@@ -410,7 +445,7 @@ export class AppointmentsService {
         const dto: CreateAppointmentDto = {
           applicationId: extras.applicationId,
           parentEmail: extras.parentEmail,
-          slotISO: cairoDate.toISOString(), // corrected to local time
+          slotISO: cairoDate.toISOString(),
         };
 
         await this.create(dto);
