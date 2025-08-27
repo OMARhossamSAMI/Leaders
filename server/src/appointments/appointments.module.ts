@@ -11,6 +11,7 @@ import {
 } from '../Schemas/studentApplication.schema'; // <-- correct path & model
 import { HttpModule } from '@nestjs/axios'; // 👈 import HttpModule
 import { ConfigModule } from '@nestjs/config';
+import { StudentApplicationModule } from '../student-application/student-application.module'; // 👈 add this
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -24,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
     ]),
     HttpModule, // 👈 add this
     ConfigModule, // 👈 make sure ConfigModule is available
+    StudentApplicationModule,
   ],
   controllers: [AppointmentsController],
   providers: [AppointmentsService],
