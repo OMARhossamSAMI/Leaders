@@ -67,6 +67,24 @@ export default function AdminPage() {
       roles: ["it", "Admission"],
     },
     {
+      icon: "bi-calendar-check",
+      title: "Assessment Appointments",
+      description:
+        "See all reserved assessment slots by parents (day & time).",
+      href: "/lic-auth-v9v3tz/Admin/assessment-appointments",
+      color: "#0dcaf0",
+      roles: ["it", "Admission"],
+    },
+    {
+      icon: "bi-building-add",
+      title: "Book a Tour Slots",
+      description:
+        "Create, activate, and manage available campus tour slots for parents.",
+      href: "/lic-auth-v9v3tz/Admin/booktour",
+      color: "#198754", 
+      roles: ["it", "Admission"],
+    },
+    {
       icon: "bi-laptop",
       title: "Internship Applications",
       description:
@@ -116,15 +134,6 @@ export default function AdminPage() {
       href: "/lic-auth-v9v3tz/Admin/contactus",
       color: "#dc3545",
       roles: ["it"],
-    },
-    {
-      icon: "bi-calendar-check",
-      title: "Assessment Appointments",
-      description:
-        "See all reserved assessment slots by parents (day & time).",
-      href: "/lic-auth-v9v3tz/Admin/assessment-appointments",
-      color: "#0dcaf0",
-      roles: ["it", "Admission"],
     },
 
   ];

@@ -19,7 +19,7 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = "https://leaders-temp-backend.onrender.com";
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -33,7 +33,7 @@ const hasMessage = (v: unknown): v is ApiErrorBody =>
   typeof v === "object" && v !== null && "message" in v;
 
 const hasNewId = (v: unknown): v is CreateApptSuccess =>
-  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
+  typeof v === "object" && v !== null && ("_id" in v || "id" in v);
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
@@ -117,7 +117,9 @@ export default function AppointmentPage() {
           `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
         );
 
-        const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
+        const data: { times: string[] } = res.ok
+          ? await res.json()
+          : { times: [] };
         if (!cancelled) {
           setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
         }
@@ -155,7 +157,9 @@ export default function AppointmentPage() {
     try {
       setSearching(true);
       const res = await fetch(
-        `${API}/applications/by-parent-email?email=${encodeURIComponent(email.trim())}`
+        `${API}/applications/by-parent-email?email=${encodeURIComponent(
+          email.trim()
+        )}`
       );
       const data = await res.json();
 
@@ -171,7 +175,9 @@ export default function AppointmentPage() {
       const a = data.application || {};
       const normalized: Application = {
         _id: String(a?._id ?? a?.id ?? a?.applicationId ?? ""),
-        submittedAt: String(a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()),
+        submittedAt: String(
+          a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()
+        ),
         father_email: a?.father_email ?? a?.data?.father_email,
         mother_email: a?.mother_email ?? a?.data?.mother_email,
         student_name: a?.student_name ?? a?.data?.student_name,
@@ -179,7 +185,9 @@ export default function AppointmentPage() {
 
       // sanity check: must be a 24-hex string
       if (!/^[0-9a-fA-F]{24}$/.test(normalized._id)) {
-        setLookupError("Found your application but the id is invalid. Please try again.");
+        setLookupError(
+          "Found your application but the id is invalid. Please try again."
+        );
         setApp(null);
         return;
       }
@@ -211,14 +219,15 @@ export default function AppointmentPage() {
     };
 
     try {
-      const res = await fetch(`${API}/appointments`, {
+      // 🔹 Step 1: Ask backend to start payment (Unified Checkout)
+      const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const contentType = res.headers.get("content-type") || "";
-      let data: unknown = null;
+      let data: any = null;
       let rawText: string | null = null;
 
       try {
@@ -361,7 +370,11 @@ export default function AppointmentPage() {
             {!app && !searching && !lookupError && (
               <div className="col-12 text-muted" style={{ fontSize: 14 }}>
                 Haven’t applied yet?{" "}
-                <Link href="/admissions" className="fw-semibold" style={{ color: ACCENT }}>
+                <Link
+                  href="/admissions"
+                  className="fw-semibold"
+                  style={{ color: ACCENT }}
+                >
                   Submit an application first
                 </Link>
                 .
@@ -379,7 +392,10 @@ export default function AppointmentPage() {
               <h4 className="card-title mb-0" style={{ color: DARK }}>
                 Select Appointment Slot
               </h4>
-              <span className="badge text-dark" style={{ background: ACCENT_LIGHT }}>
+              <span
+                className="badge text-dark"
+                style={{ background: ACCENT_LIGHT }}
+              >
                 Window:{" "}
                 <b>
                   {windowStart ? fmtLocalYYYYMMDD(windowStart) : "—"} →{" "}
@@ -390,7 +406,8 @@ export default function AppointmentPage() {
 
             {allowedDates.length === 0 ? (
               <div className="alert alert-warning mb-0">
-                We couldn’t find a valid scheduling window. Please contact admissions.
+                We couldn’t find a valid scheduling window. Please contact
+                admissions.
               </div>
             ) : (
               <>
@@ -419,7 +436,11 @@ export default function AppointmentPage() {
                           className={`btn btn-sm ${active ? "text-white" : ""}`}
                           disabled={isPast}
                           style={{
-                            background: active ? ACCENT : isPast ? "#e5e7eb" : ACCENT_LIGHT,
+                            background: active
+                              ? ACCENT
+                              : isPast
+                              ? "#e5e7eb"
+                              : ACCENT_LIGHT,
                             color: active ? "#fff" : DARK,
                             borderRadius: 999,
                             fontWeight: 600,
@@ -451,7 +472,8 @@ export default function AppointmentPage() {
                 >
                   {availableTimes.length === 0 && !timesLoading ? (
                     <div className="alert alert-secondary mb-0">
-                      No available times left for this day. Please choose another date.
+                      No available times left for this day. Please choose
+                      another date.
                     </div>
                   ) : (
                     <div className="row g-2">
@@ -463,7 +485,9 @@ export default function AppointmentPage() {
                           <div key={t} className="col-6 col-md-3 col-lg-2">
                             <button
                               type="button"
-                              className={`btn w-100 ${active ? "text-white" : ""}`}
+                              className={`btn w-100 ${
+                                active ? "text-white" : ""
+                              }`}
                               onClick={() => !disabled && setSelectedTime(t)}
                               disabled={disabled}
                               style={{
@@ -508,7 +532,9 @@ export default function AppointmentPage() {
                     </span>
                   )}
                   {saveError && (
-                    <span className="text-danger fw-semibold">❌ {saveError}</span>
+                    <span className="text-danger fw-semibold">
+                      ❌ {saveError}
+                    </span>
                   )}
                 </div>
               </>
@@ -533,6 +559,7 @@ export default function AppointmentPage() {
           }
         }
       `}</style>
+    </>
     </>
   );
 }

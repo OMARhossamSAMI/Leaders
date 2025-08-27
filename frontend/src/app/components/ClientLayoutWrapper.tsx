@@ -17,6 +17,11 @@ export default function ClientLayoutWrapper({ children }: Props) {
   const isTestimonials = pathname.startsWith("/testimonials");
   const isSchool_app = pathname.startsWith("/lic-auth-v9v3tz/Admin/school_app");
   const isVacancy = pathname.startsWith("/lic-auth-v9v3tz/Admin/Vacancy");
+  // 🔹 NEW: hide header/footer on Thank You page
+  const isThankYou = pathname
+    .toLowerCase()
+    .includes("/admissions/appointments/thankyou");
+  const isDeclined = pathname.startsWith("/admissions/appointments/Declined");
 
   return (
     <>
@@ -24,13 +29,17 @@ export default function ClientLayoutWrapper({ children }: Props) {
         !isLogin &&
         !isTestimonials &&
         !isSchool_app &&
-        !isVacancy && <Header />}
+        !isVacancy &&
+        !isThankYou &&
+        !isDeclined && <Header />}
       {children}
       {!isAdminPage &&
         !isLogin &&
         !isTestimonials &&
         !isSchool_app &&
-        !isVacancy && <Footer />}
+        !isVacancy &&
+        !isThankYou &&
+        !isDeclined && <Footer />}
     </>
   );
 }

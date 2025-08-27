@@ -9,7 +9,10 @@ import {
   StudentApplication,
   StudentApplicationSchema,
 } from '../Schemas/studentApplication.schema'; // <-- correct path & model
-
+import { HttpModule } from '@nestjs/axios'; // 👈 import HttpModule
+import { ConfigModule } from '@nestjs/config';
+import { StudentApplicationModule } from '../student-application/student-application.module'; // 👈 add this
+import { AcceptedStudentModule } from '../accepted-student/accepted-student.module'; // 👈 import it
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -21,6 +24,10 @@ import {
         collection: 'studentapplications',
       },
     ]),
+    HttpModule, // 👈 add this
+    ConfigModule, // 👈 make sure ConfigModule is available
+    StudentApplicationModule,
+    AcceptedStudentModule, // 👈 added here
   ],
   controllers: [AppointmentsController],
   providers: [AppointmentsService],

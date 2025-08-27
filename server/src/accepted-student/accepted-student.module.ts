@@ -20,5 +20,6 @@ import { AcceptedStudentController } from './accepted-student.controller';
   ],
   controllers: [AcceptedStudentController],
   providers: [AcceptedStudentService],
+  exports: [AcceptedStudentService], // 👈 allow other modules to inject it
 })
 export class AcceptedStudentModule {}
