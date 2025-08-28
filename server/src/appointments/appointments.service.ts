@@ -7,7 +7,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-  import { HttpService } from '@nestjs/axios';
+import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import type { Response } from 'express';
@@ -25,11 +25,11 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 // --- Scheduling window & capacity (30-min slots) ---
-const START_HOUR = 9;          // 09:00
-const CLOSE_HOUR = 12;         // window closes at 12:30 (last start 12:00)
-const CLOSE_MIN = 30;          // 12:30
-const SLOT_MINUTES = 30;       // 30-min steps
-const MAX_PER_SLOT = 2;        // <= 2 bookings per slot
+const START_HOUR = 9; // 09:00
+const CLOSE_HOUR = 12; // window closes at 12:30 (last start 12:00)
+const CLOSE_MIN = 30; // 12:30
+const SLOT_MINUTES = 30; // 30-min steps
+const MAX_PER_SLOT = 2; // <= 2 bookings per slot
 
 @Injectable()
 export class AppointmentsService {
@@ -51,7 +51,8 @@ export class AppointmentsService {
     private readonly config: ConfigService,
 
     // Optional WhatsApp sender — guard all calls
-    @Optional() @Inject('AcceptedStudentService')
+    @Optional()
+    @Inject('AcceptedStudentService')
     private readonly acceptedStudentService?: {
       sendAssessmentMessage: (
         applicationId: string,
@@ -74,13 +75,18 @@ export class AppointmentsService {
         this.logger.error('Failed to init SendGrid', e as any);
       }
     } else {
-      this.logger.warn('SENDGRID_API_KEY is missing — emails will not be sent.');
+      this.logger.warn(
+        'SENDGRID_API_KEY is missing — emails will not be sent.',
+      );
     }
 
-    this.fromEmail = this.config.get('MAIL_FROM_EMAIL') || 'admission@leadersintcollege.com';
-    this.fromName  = this.config.get('MAIL_FROM_NAME')  || 'Leaders Admissions';
-    this.admissionsEmail = this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
-    this.schoolName = this.config.get('SCHOOL_NAME') || 'Leaders International College';
+    this.fromEmail =
+      this.config.get('MAIL_FROM_EMAIL') || 'admission@leadersintcollege.com';
+    this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
+    this.admissionsEmail =
+      this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
+    this.schoolName =
+      this.config.get('SCHOOL_NAME') || 'Leaders International College';
   }
 
   // ------------------------ Utils ------------------------
@@ -95,12 +101,16 @@ export class AppointmentsService {
   /** Generate all 30-min start times 09:00..12:00 (local) as HH:mm */
   private generateSlots(): string[] {
     const times: string[] = [];
-    let h = START_HOUR, m = 0;
+    let h = START_HOUR,
+      m = 0;
     const endExclusive = CLOSE_HOUR * 60 + CLOSE_MIN; // 12:30
     while (h * 60 + m < endExclusive) {
       times.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
       m += SLOT_MINUTES;
-      if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
+      if (m >= 60) {
+        h += Math.floor(m / 60);
+        m = m % 60;
+      }
     }
     return times;
   }
@@ -110,8 +120,12 @@ export class AppointmentsService {
     const h = localNow.getHours();
     const m = localNow.getMinutes();
     const rounded = Math.ceil(m / SLOT_MINUTES) * SLOT_MINUTES; // 0 or 30
-    let nh = h, nm = rounded;
-    if (rounded === 60) { nh = h + 1; nm = 0; }
+    let nh = h,
+      nm = rounded;
+    if (rounded === 60) {
+      nh = h + 1;
+      nm = 0;
+    }
     const hh = String(nh).padStart(2, '0');
     const mm = String(nm).padStart(2, '0');
     return `${hh}:${mm}`;
@@ -121,7 +135,8 @@ export class AppointmentsService {
   private utcRangeFromLocalYmd(dateISO: string, offsetMin: number) {
     const [y, m, d] = dateISO.split('-').map(Number);
     const startUtcMs = Date.UTC(y, m - 1, d, 0, 0, 0, 0) + offsetMin * 60_000;
-    const endUtcMs   = Date.UTC(y, m - 1, d, 23, 59, 59, 999) + offsetMin * 60_000;
+    const endUtcMs =
+      Date.UTC(y, m - 1, d, 23, 59, 59, 999) + offsetMin * 60_000;
     return {
       startISO: new Date(startUtcMs).toISOString(),
       endISO: new Date(endUtcMs).toISOString(),
@@ -148,8 +163,18 @@ export class AppointmentsService {
       const email = parentEmail.trim();
       const query = {
         $or: [
-          { 'data.father_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
-          { 'data.mother_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
+          {
+            'data.father_email': {
+              $regex: `^${this.escape(email)}$`,
+              $options: 'i',
+            },
+          },
+          {
+            'data.mother_email': {
+              $regex: `^${this.escape(email)}$`,
+              $options: 'i',
+            },
+          },
         ],
       };
       application = await this.appModel.findOne(query).lean();
@@ -167,7 +192,11 @@ export class AppointmentsService {
   private s(v: unknown, fallback = ''): string {
     if (v === null || v === undefined) return fallback;
     if (typeof v === 'string') return v;
-    try { return JSON.stringify(v); } catch { return String(v); }
+    try {
+      return JSON.stringify(v);
+    } catch {
+      return String(v);
+    }
   }
 
   /** Format the slot in Cairo local (date + time) */
@@ -188,8 +217,8 @@ export class AppointmentsService {
     studentName: string;
     parentName: string;
     parentEmail: string;
-    slotISO: string;     // UTC ISO
-    orderId?: string;    // optional Paymob order id
+    slotISO: string; // UTC ISO
+    orderId?: string; // optional Paymob order id
   }) {
     const { date, time } = this.formatCairo(params.slotISO);
     const orderLine = params.orderId
@@ -225,14 +254,17 @@ export class AppointmentsService {
   private async sendAdmissionsPaidEmail(opts: {
     application: any;
     parentEmail: string;
-    slotISO: string;     // UTC ISO
+    slotISO: string; // UTC ISO
     orderId?: string;
   }) {
     if (!this.canSendMail()) return;
 
     const data = (opts.application?.data || {}) as Record<string, any>;
     const studentName =
-      data.student_name || data.student || opts.application?.student_name || 'Student';
+      data.student_name ||
+      data.student ||
+      opts.application?.student_name ||
+      'Student';
     const parentName =
       data.father_name || data.guardian_name || data.mother_name || 'Parent';
 
@@ -259,7 +291,8 @@ export class AppointmentsService {
 
     if (!slotISO) throw new BadRequestException('slotISO is required');
     const slot = new Date(slotISO);
-    if (isNaN(slot.getTime())) throw new BadRequestException('Invalid slot date/time');
+    if (isNaN(slot.getTime()))
+      throw new BadRequestException('Invalid slot date/time');
     const slotUtcISO = slot.toISOString();
 
     // Past time guard
@@ -275,25 +308,35 @@ export class AppointmentsService {
     // 1) No Fri/Sat
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
     if (dow === 5 || dow === 6) {
-      throw new BadRequestException('Appointments are not available on Friday or Saturday');
+      throw new BadRequestException(
+        'Appointments are not available on Friday or Saturday',
+      );
     }
 
     // 2) Within two weeks from application createdAt (compare date-only)
-    const submitted = application.createdAt ? new Date(application.createdAt) : new Date();
-    const winStart = new Date(submitted.getFullYear(), submitted.getMonth(), submitted.getDate());
+    const submitted = application.createdAt
+      ? new Date(application.createdAt)
+      : new Date();
+    const winStart = new Date(
+      submitted.getFullYear(),
+      submitted.getMonth(),
+      submitted.getDate(),
+    );
     const winEnd = new Date(winStart);
     winEnd.setDate(winEnd.getDate() + 14);
     if (slot < winStart || slot > winEnd) {
-      throw new BadRequestException('Selected slot is outside the allowed scheduling window');
+      throw new BadRequestException(
+        'Selected slot is outside the allowed scheduling window',
+      );
     }
 
     // 3) 09:00–12:30 window, 30-min steps (last start 12:00)
     const hh = slot.getHours();
     const mm = slot.getMinutes();
     const totalMin = hh * 60 + mm;
-    const openMin = START_HOUR * 60;                    // 540
-    const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN;       // 750
-    const lastStartMin = closeMin - SLOT_MINUTES;       // 720 (12:00)
+    const openMin = START_HOUR * 60; // 540
+    const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN; // 750
+    const lastStartMin = closeMin - SLOT_MINUTES; // 720 (12:00)
 
     if (mm % SLOT_MINUTES !== 0) {
       throw new BadRequestException('Slots must align to 30-minute intervals');
@@ -354,9 +397,14 @@ export class AppointmentsService {
   async listAll(opts?: { upcoming?: boolean; q?: string }) {
     const filter: any = {};
     if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
-    if (opts?.q) filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
+    if (opts?.q)
+      filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
 
-    const docs = await this.apptModel.find(filter).sort({ slotISO: 1 }).lean().exec();
+    const docs = await this.apptModel
+      .find(filter)
+      .sort({ slotISO: 1 })
+      .lean()
+      .exec();
 
     return docs.map((d) => ({
       _id: String(d._id),
@@ -371,11 +419,16 @@ export class AppointmentsService {
   async availableTimesForDate(dateISO: string, offsetMin: number) {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
 
-    const docs = await this.apptModel.find({ slotISO: { $gte: startISO, $lte: endISO } }).lean();
+    const docs = await this.apptModel
+      .find({ slotISO: { $gte: startISO, $lte: endISO } })
+      .lean();
 
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin);
+      const t = this.utcIsoToLocalHHmm(
+        a.slotISO as unknown as string,
+        offsetMin,
+      );
       counts.set(t, (counts.get(t) || 0) + 1);
     }
 
@@ -398,10 +451,17 @@ export class AppointmentsService {
     return { times: available };
   }
 
-  async getTakenTimesForDate(dateISO: string, offsetMin: number): Promise<string[]> {
+  async getTakenTimesForDate(
+    dateISO: string,
+    offsetMin: number,
+  ): Promise<string[]> {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
-    const sameDay = await this.apptModel.find({ slotISO: { $gte: startISO, $lte: endISO } }).lean();
-    return sameDay.map((a) => this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin));
+    const sameDay = await this.apptModel
+      .find({ slotISO: { $gte: startISO, $lte: endISO } })
+      .lean();
+    return sameDay.map((a) =>
+      this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin),
+    );
   }
 
   // ------------------------ Paymob: Start Payment ------------------------
@@ -422,18 +482,20 @@ export class AppointmentsService {
 
     // 🔍 Lookup student application
     const appDoc = await this.findApplication(applicationId, parentEmail);
-    if (!appDoc) throw new BadRequestException('Application not found for payment');
+    if (!appDoc)
+      throw new BadRequestException('Application not found for payment');
 
     const data = appDoc.data || {};
     const studentName =
       data.student_name || data.student || appDoc.student_name || 'Student';
-    const fatherName =
-      data.father_name || data.guardian_name || 'Parent';
+    const fatherName = data.father_name || data.guardian_name || 'Parent';
 
     const fatherPhone = data.father_phone || data.fatherPhone;
     const motherPhone = data.mother_phone || data.motherPhone;
     const allPhones: string[] = [
-      fatherPhone, motherPhone, ...(Array.isArray(data.phones) ? data.phones : []),
+      fatherPhone,
+      motherPhone,
+      ...(Array.isArray(data.phones) ? data.phones : []),
     ].filter(Boolean);
     const primaryPhone = allPhones[0] || '+201000000000';
 
@@ -489,7 +551,8 @@ export class AppointmentsService {
     );
 
     const clientSecret: string | undefined = intentionRes?.data?.client_secret;
-    if (!clientSecret) throw new BadRequestException('Failed to create payment intention');
+    if (!clientSecret)
+      throw new BadRequestException('Failed to create payment intention');
 
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
     return { checkout_url: checkoutUrl };
@@ -506,13 +569,17 @@ export class AppointmentsService {
 
       if (!isPaid) {
         this.logger.warn('❌ Payment marked as failed in query');
-        return res.redirect('http://localhost:3001/admissions/appointments/Declined');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
       }
 
       const orderId = query?.order;
       if (!orderId) {
         this.logger.error('❌ No order id in redirect query');
-        return res.redirect('http://localhost:3001/admissions/appointments/Declined');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
       }
 
       // === STEP 1: Authenticate
@@ -533,29 +600,48 @@ export class AppointmentsService {
         ),
       );
 
-      this.logger.log(`📦 Transaction inquiry response: ${JSON.stringify(trxRes.data)}`);
+      this.logger.log(
+        `📦 Transaction inquiry response: ${JSON.stringify(trxRes.data)}`,
+      );
 
       const extras = trxRes?.data?.payment_key_claims?.extra;
       this.logger.log(`👉 Extracted extras: ${JSON.stringify(extras)}`);
 
       if (!(extras?.applicationId && extras?.parentEmail && extras?.slotISO)) {
-        this.logger.warn('⚠️ Extras not found or incomplete in transaction inquiry');
-        return res.redirect('http://localhost:3001/admissions/appointments/Declined');
+        this.logger.warn(
+          '⚠️ Extras not found or incomplete in transaction inquiry',
+        );
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
       }
 
-      const slotUtcISO = new Date(extras.slotISO).toISOString();
+      // 🔎 Add logs for slotISO in different views
+      this.logger.log(`🕒 Raw extras.slotISO: ${extras.slotISO}`);
+      const slotFromExtras = new Date(extras.slotISO);
+      this.logger.log(
+        `🕒 Parsed Date (toString): ${slotFromExtras.toString()}`,
+      );
+      this.logger.log(`🕒 Parsed Date (UTC): ${slotFromExtras.toUTCString()}`);
+      this.logger.log(
+        `🕒 Parsed Date (Cairo): ${slotFromExtras.toLocaleString('en-GB', { timeZone: 'Africa/Cairo' })}`,
+      );
 
-      // ✅ Create appointment (uses all business rules & capacity checks)
+      const slotUtcISO = slotFromExtras.toISOString();
+      this.logger.log(`🕒 Normalized slotUtcISO: ${slotUtcISO}`);
+
+      // ✅ Create appointment
       const dto: CreateAppointmentDto = {
         applicationId: String(extras.applicationId),
         parentEmail: String(extras.parentEmail),
         slotISO: slotUtcISO,
       };
+      this.logger.log(`📌 Appointment DTO to create: ${JSON.stringify(dto)}`);
 
       await this.create(dto);
       this.logger.log('🎉 Appointment created successfully after payment');
 
-      // ✅ Notify Admissions (paid successfully, include Cairo date/time)
+      // ✅ Notify Admissions
       try {
         const application = await this.findApplication(
           String(extras.applicationId),
@@ -571,21 +657,32 @@ export class AppointmentsService {
 
         this.logger.log('📧 Admissions payment email sent.');
       } catch (mailErr) {
-        this.logger.error('Failed to send admissions payment email', mailErr as any);
+        this.logger.error(
+          'Failed to send admissions payment email',
+          mailErr as any,
+        );
       }
 
-      // ✅ Optional: WhatsApp follow-up
+      // ✅ WhatsApp follow-up
       if (this.acceptedStudentService?.sendAssessmentMessage) {
         try {
           const cairo = new Date(slotUtcISO);
-          const dateStr = cairo.toLocaleDateString('en-GB', { timeZone: 'Africa/Cairo' });
+          const dateStr = cairo.toLocaleDateString('en-GB', {
+            timeZone: 'Africa/Cairo',
+          });
           const timeStr = cairo.toLocaleTimeString('en-GB', {
             hour: '2-digit',
             minute: '2-digit',
             timeZone: 'Africa/Cairo',
           });
           const phoneNumber =
-            extras.fatherPhone || extras.motherPhone || (Array.isArray(extras.allPhones) ? extras.allPhones[0] : undefined);
+            extras.fatherPhone ||
+            extras.motherPhone ||
+            (Array.isArray(extras.allPhones) ? extras.allPhones[0] : undefined);
+
+          this.logger.log(
+            `📲 Preparing WhatsApp message with date=${dateStr} time=${timeStr} phone=${phoneNumber}`,
+          );
 
           const waRes = await this.acceptedStudentService.sendAssessmentMessage(
             String(extras.applicationId),
@@ -604,10 +701,14 @@ export class AppointmentsService {
         }
       }
 
-      return res.redirect('http://localhost:3001/admissions/appointments/Thankyou');
+      return res.redirect(
+        'http://localhost:3001/admissions/appointments/Thankyou',
+      );
     } catch (err: any) {
       this.logger.error('🔥 Redirect error', err?.response?.data || err);
-      return res.redirect('http://localhost:3001/admissions/appointments/Declined');
+      return res.redirect(
+        'http://localhost:3001/admissions/appointments/Declined',
+      );
     }
   }
 }
