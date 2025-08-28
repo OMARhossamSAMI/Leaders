@@ -51,8 +51,12 @@ export class StudentApplicationService {
         _id: 1,
         createdAt: 1,
 
-        // emails
+        // names
         'data.student_name': 1,
+        'data.father_name': 1,
+        'data.mother_name': 1,
+
+        // emails
         'data.father_email': 1,
         'data.mother_email': 1,
         father_email: 1,
@@ -84,6 +88,8 @@ export class StudentApplicationService {
     const student_name = get('student_name');
     const father_email = get('father_email');
     const mother_email = get('mother_email');
+    const father_name = get('father_name'); // 👈 added
+    const mother_name = get('mother_name'); // 👈 added
 
     // collect possible phone sources
     const rawPhones = [
@@ -125,6 +131,8 @@ export class StudentApplicationService {
       _id: String(app._id),
       submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
       student_name,
+      father_name, // 👈 return it
+      mother_name, // 👈 return it
       father_email,
       mother_email,
       fatherPhone,

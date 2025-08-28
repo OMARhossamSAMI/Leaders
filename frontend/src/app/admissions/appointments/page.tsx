@@ -19,7 +19,7 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API = "https://leaders-temp-backend.onrender.com";
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -33,7 +33,7 @@ const hasMessage = (v: unknown): v is ApiErrorBody =>
   typeof v === "object" && v !== null && "message" in v;
 
 const hasNewId = (v: unknown): v is CreateApptSuccess =>
-  typeof v === "object" && v !== null && (("_id" in v) || ("id" in v));
+  typeof v === "object" && v !== null && ("_id" in v || "id" in v);
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
@@ -110,8 +110,12 @@ export default function AppointmentPage() {
 
     const load = async () => {
       try {
-        const offsetMin = 0 - new Date().getTimezoneOffset(); // UTC - local
-        const res = await fetch(`${API}/appointments/available-for-date?date=${selectedDate}&offset=${offsetMin}`);
+        // IMPORTANT: JS getTimezoneOffset() already returns (UTC - local) in minutes
+        const offsetMin = new Date().getTimezoneOffset(); // e.g., Cairo summer = -180
+        // Use the new endpoint (alias /available-for-date still exists)
+        const res = await fetch(
+          `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
+        );
 
         const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
         if (!cancelled) {
@@ -151,7 +155,9 @@ export default function AppointmentPage() {
     try {
       setSearching(true);
       const res = await fetch(
-        `${API}/applications/by-parent-email?email=${encodeURIComponent(email.trim())}`
+        `${API}/applications/by-parent-email?email=${encodeURIComponent(
+          email.trim()
+        )}`
       );
       const data = await res.json();
 
@@ -207,14 +213,15 @@ export default function AppointmentPage() {
     };
 
     try {
-      const res = await fetch(`${API}/appointments`, {
+      // 🔹 Step 1: Ask backend to start payment (Unified Checkout)
+      const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const contentType = res.headers.get("content-type") || "";
-      let data: unknown = null;
+      let data: any = null;
       let rawText: string | null = null;
 
       try {
@@ -238,38 +245,25 @@ export default function AppointmentPage() {
           msg = rawText ?? `HTTP ${res.status}`;
         }
 
-        const toLocal = (dt: Date) =>
-          `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(
-            dt.getDate()
-          ).padStart(2, "0")}`;
-        const winFrom = windowStart ? toLocal(windowStart) : null;
-        const winTo = windowEnd ? toLocal(windowEnd) : null;
-
-        if (/weekend|friday|saturday/i.test(msg)) {
-          msg = "Appointments are not available on Friday or Saturday.";
-        } else if (
-          (/outside.*window|range/i.test(msg) || /outside/i.test(msg)) &&
-          winFrom && winTo
-        ) {
-          msg = `Please pick a date within the allowed window (${winFrom} → ${winTo}).`;
-        } else if (res.status === 409 || /conflict|taken|already.*booked/i.test(msg)) {
-          msg = "That time was just booked. Please choose another slot.";
-          // reflect the conflict immediately (remove it if it somehow remained in the list)
-          setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
-          setSelectedTime("");
-        }
-
-        console.error("Appointment booking failed", { status: res.status, data, rawText });
-        setSaveError(msg || "Unable to book this slot. Please choose another.");
+        console.error("Payment initiation failed", {
+          status: res.status,
+          data,
+          rawText,
+        });
+        setSaveError(msg || "Unable to start payment. Please try again.");
         return;
       }
 
-      // success
-      const newId = hasNewId(data) ? (data._id ?? data.id) : undefined;
+      // 🔹 Step 2: Redirect user to Paymob Unified Checkout
+      if (data?.checkout_url) {
+        window.location.href = data.checkout_url;
+        return;
+      }
 
-
+      const newId =
+        hasNewId(data) && (data._id || data.id) ? String(data._id || data.id) : null;
       setSavedId(newId || "OK");
-      // remove the booked time from the list so no one can pick it without refresh
+      // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
     } catch {
@@ -278,7 +272,6 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
-
 
   // -------- UI --------
   const startOfToday = useMemo(() => {
@@ -290,33 +283,34 @@ export default function AppointmentPage() {
     <>
       {/* ===== Header borrowed from Contact page ===== */}
       <div
-            className="page-title dark-background"
-            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
-          >
-            <div className="container position-relative">
-              <h1>Book Assessment Appointment</h1>
-              <p>
-                Schedule your child’s assessment appointment within the available window.
-                Select a convenient date and time, and our admissions team will confirm.
-                Enter the <strong>father</strong> or <strong>mother</strong> email used in your
-                application. If we find your application, you can select a 15-minute slot between{" "}
-                <b>09:00</b> and <b>12:30</b> (Sun–Thu) within two weeks from your application
-                submission date.
-              </p>          
-              <nav className="breadcrumbs">
-                <ol>
-                  <li>
-                    <Link href="/">Home</Link>
-                  </li>
-                  <li className="current">Appointment</li>
-                </ol>
-              </nav>
-            </div>
-          </div>
+        className="page-title dark-background"
+        style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+      >
+        <div className="container position-relative">
+          <h1>Book Assessment Appointment</h1>
+          <p>
+            Schedule your child’s assessment appointment within the available window.
+            Select a convenient date and time. You’ll then be redirected to our secure
+            payment page. <strong>After successful payment</strong>, your reservation is
+            confirmed and <strong>Admissions will receive an email</strong> with your parent
+            email and the booked date &amp; time.
+          </p>
+          <nav className="breadcrumbs">
+            <ol>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li className="current">Appointment</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
       {/* ===== End Header ===== */}
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
+          <h3>Book Your Child’s Assessment in Three Easy Steps</h3>
+          <p>Enter the same parent email you used in your application to locate your file. Once your application is found, you can select the most convenient date and time for your child’s 30-minute assessment. After confirming your slot and completing the assessment fee payment, you’ll immediately receive a confirmation email with all appointment details.</p>
           <h4 className="card-title mb-3" style={{ color: DARK }}>
             Find Your Application
           </h4>
@@ -509,6 +503,13 @@ export default function AppointmentPage() {
                     <span className="text-danger fw-semibold">❌ {saveError}</span>
                   )}
                 </div>
+
+                {/* Email notice about payment success */}
+                <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
+                  After successful payment,{" "}
+                  <strong>Admissions will automatically receive an email</strong> with your
+                  parent email and the reserved date &amp; time.
+                </p>
               </>
             )}
           </div>
@@ -531,6 +532,6 @@ export default function AppointmentPage() {
           }
         }
       `}</style>
-      </>
+    </>
   );
 }

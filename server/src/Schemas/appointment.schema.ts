@@ -12,7 +12,7 @@ export class Appointment {
   @Prop({ required: true, trim: true, lowercase: true })
   parentEmail: string;
 
-  @Prop({ required: true, unique: true }) // one booking per exact slot
+  @Prop({ required: true }) 
   slotISO: string;
 
   createdAt?: Date;
@@ -20,5 +20,5 @@ export class Appointment {
 }
 
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);
-// also ensure unique index in Mongo
-AppointmentSchema.index({ slotISO: 1 }, { unique: true });
+AppointmentSchema.index({ slotISO: 1 });
+
