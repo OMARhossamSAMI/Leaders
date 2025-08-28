@@ -13,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import type { Response } from 'express';
 import { Model, Types } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
-
+import { StudentApplicationService } from '../student-application/student-application.service';
 import {
   Appointment,
   AppointmentDocument,
@@ -23,7 +23,7 @@ import {
   StudentApplicationDocument,
 } from '../Schemas/studentApplication.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-
+import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
 const CLOSE_HOUR = 12; // window closes at 12:30 (last start 12:00)
@@ -46,49 +46,11 @@ export class AppointmentsService {
 
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
-
     private readonly http: HttpService,
     private readonly config: ConfigService,
-
-    // Optional WhatsApp sender — guard all calls
-    @Optional()
-    @Inject('AcceptedStudentService')
-    private readonly acceptedStudentService?: {
-      sendAssessmentMessage: (
-        applicationId: string,
-        payload: {
-          fatherName: string;
-          studentName: string;
-          date: string;
-          time: string;
-          phoneNumber?: string;
-        },
-      ) => Promise<any>;
-    },
-  ) {
-    // --- Mail setup ---
-    const key = this.config.get<string>('SENDGRID_API_KEY');
-    if (key) {
-      try {
-        sgMail.setApiKey(key);
-      } catch (e) {
-        this.logger.error('Failed to init SendGrid', e as any);
-      }
-    } else {
-      this.logger.warn(
-        'SENDGRID_API_KEY is missing — emails will not be sent.',
-      );
-    }
-
-    this.fromEmail =
-      this.config.get('MAIL_FROM_EMAIL') || 'admission@leadersintcollege.com';
-    this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
-    this.admissionsEmail =
-      this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
-
-    this.schoolName =
-      this.config.get('SCHOOL_NAME') || 'Leaders International College';
-  }
+    private readonly studentAppService: StudentApplicationService, // <-- add this
+    private readonly acceptedStudentService: AcceptedStudentService,
+  ) {}
 
   // ------------------------ Utils ------------------------
 
@@ -570,36 +532,40 @@ export class AppointmentsService {
 
   async handlePaymobRedirect(query: any, res: Response) {
     try {
-      this.logger.log(`👉 Redirect query received: ${JSON.stringify(query)}`);
+      console.log('👉 Redirect query received:', query);
 
       const isPaid = query?.success === 'true';
-      this.logger.log(`✅ Success flag: ${isPaid}`);
+      console.log('✅ Success flag:', isPaid);
 
       if (!isPaid) {
-        this.logger.warn('❌ Payment marked as failed in query');
+        console.warn('❌ Payment marked as failed in query');
         return res.redirect(
           'http://localhost:3001/admissions/appointments/Declined',
         );
       }
 
+      // Get the order ID from redirect params
       const orderId = query?.order;
+      console.log('👉 Order ID from query:', orderId);
+
       if (!orderId) {
-        this.logger.error('❌ No order id in redirect query');
+        console.error('❌ No order id in redirect query');
         return res.redirect(
           'http://localhost:3001/admissions/appointments/Declined',
         );
       }
 
-      // === STEP 1: Authenticate
+      // === STEP 1: Authenticate to get auth token ===
       const apiKey = this.config.get<string>('PAYMOB_API_KEY');
       const base = this.config.get<string>('PAYMOB_BASE');
+
       const authRes = await firstValueFrom(
         this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
       );
       const authToken = authRes?.data?.token;
-      this.logger.log(`🔑 Auth token received: ${!!authToken}`);
+      console.log('🔑 Auth token received:', !!authToken);
 
-      // === STEP 2: Inquiry
+      // === STEP 2: Call transaction inquiry with order_id ===
       const trxRes = await firstValueFrom(
         this.http.post(
           `${base}/api/ecommerce/orders/transaction_inquiry`,
@@ -608,112 +574,86 @@ export class AppointmentsService {
         ),
       );
 
-      this.logger.log(
-        `📦 Transaction inquiry response: ${JSON.stringify(trxRes.data)}`,
-      );
+      console.log('📦 Transaction inquiry response:', trxRes.data);
 
-      const extras = trxRes?.data?.payment_key_claims?.extra;
-      this.logger.log(`👉 Extracted extras: ${JSON.stringify(extras)}`);
+      // === STEP 3: Extract extras from payment_key_claims.extra ===
+      const extras = trxRes.data?.payment_key_claims?.extra;
+      console.log('👉 Extracted extras (raw):', extras);
 
-      if (!(extras?.applicationId && extras?.parentEmail && extras?.slotISO)) {
-        this.logger.warn(
-          '⚠️ Extras not found or incomplete in transaction inquiry',
-        );
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
-      }
+      if (extras?.applicationId && extras?.parentEmail && extras?.slotISO) {
+        console.log('✅ Required extras found:', {
+          applicationId: extras.applicationId,
+          parentEmail: extras.parentEmail,
+          slotISO: extras.slotISO,
+        });
 
-      // 🔎 Add logs for slotISO in different views
-      this.logger.log(`🕒 Raw extras.slotISO: ${extras.slotISO}`);
-      const slotFromExtras = new Date(extras.slotISO);
-      this.logger.log(
-        `🕒 Parsed Date (toString): ${slotFromExtras.toString()}`,
-      );
-      this.logger.log(`🕒 Parsed Date (UTC): ${slotFromExtras.toUTCString()}`);
-      this.logger.log(
-        `🕒 Parsed Date (Cairo): ${slotFromExtras.toLocaleString('en-GB', { timeZone: 'Africa/Cairo' })}`,
-      );
+        // 🔎 Log optional extras if present
+        if (extras.student_name)
+          console.log('👦 Student Name:', extras.student_name);
+        if (extras.fatherName)
+          console.log('👨 Father Name:', extras.fatherName);
+        if (extras.fatherPhone)
+          console.log('📞 Father Phone:', extras.fatherPhone);
+        if (extras.motherPhone)
+          console.log('📞 Mother Phone:', extras.motherPhone);
+        if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
-      const slotUtcISO = slotFromExtras.toISOString();
-      this.logger.log(`🕒 Normalized slotUtcISO: ${slotUtcISO}`);
+        // Convert Paymob UTC ISO → Cairo local
+        const utcDate = new Date(extras.slotISO);
+        const cairoOffsetMinutes = 3 * 60; // UTC+3
+        const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
+        const cairoDate = new Date(localMs);
 
-      // ✅ Create appointment
-      const dto: CreateAppointmentDto = {
-        applicationId: String(extras.applicationId),
-        parentEmail: String(extras.parentEmail),
-        slotISO: slotUtcISO,
-      };
-      this.logger.log(`📌 Appointment DTO to create: ${JSON.stringify(dto)}`);
+        console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
 
-      await this.create(dto);
-      this.logger.log('🎉 Appointment created successfully after payment');
+        // ✅ Create appointment
+        const dto: CreateAppointmentDto = {
+          applicationId: extras.applicationId,
+          parentEmail: extras.parentEmail,
+          slotISO: cairoDate.toISOString(),
+        };
 
-      // ✅ Notify Admissions
-      // try {
-      //   const application = await this.findApplication(
-      //     String(extras.applicationId),
-      //     String(extras.parentEmail),
-      //   );
+        await this.create(dto);
+        console.log('🎉 Appointment created successfully');
 
-      //   await this.sendAdmissionsPaidEmail({
-      //     application,
-      //     parentEmail: String(extras.parentEmail),
-      //     slotISO: slotUtcISO,
-      //     orderId,
-      //   });
-
-      //   this.logger.log('📧 Admissions payment email sent.');
-      // } catch (mailErr) {
-      //   this.logger.error(
-      //     'Failed to send admissions payment email',
-      //     mailErr as any,
-      //   );
-      // }
-
-      // ✅ WhatsApp follow-up
-      if (this.acceptedStudentService?.sendAssessmentMessage) {
+        // ✅ Send WhatsApp message using AcceptedStudentService
         try {
-          const cairo = new Date(slotUtcISO);
-          const dateStr = cairo.toLocaleDateString('en-GB', {
-            timeZone: 'Africa/Cairo',
-          });
-          const timeStr = cairo.toLocaleTimeString('en-GB', {
+          const dateStr = cairoDate.toLocaleDateString('en-GB');
+          const timeStr = cairoDate.toLocaleTimeString('en-GB', {
             hour: '2-digit',
             minute: '2-digit',
-            timeZone: 'Africa/Cairo',
           });
-          const phoneNumber =
-            extras.fatherPhone ||
-            extras.motherPhone ||
-            (Array.isArray(extras.allPhones) ? extras.allPhones[0] : undefined);
-
-          this.logger.log(
-            `📲 Preparing WhatsApp message with date=${dateStr} time=${timeStr} phone=${phoneNumber}`,
-          );
 
           const waRes = await this.acceptedStudentService.sendAssessmentMessage(
-            String(extras.applicationId),
+            extras.applicationId, // assuming this id exists in acceptedStudentModel
             {
-              fatherName: String(extras.fatherName || 'Parent'),
-              studentName: String(extras.student_name || 'Student'),
+              fatherName: extras.fatherName || 'Parent',
+              studentName: extras.student_name || 'Student',
               date: dateStr,
               time: timeStr,
-              phoneNumber,
+              phoneNumber:
+                extras.fatherPhone ||
+                extras.motherPhone ||
+                extras.allPhones?.[0],
             },
           );
 
-          this.logger.log(`📲 WhatsApp API response: ${JSON.stringify(waRes)}`);
+          console.log('📲 WhatsApp API response:', waRes);
         } catch (waErr) {
-          this.logger.error(`⚠️ Failed to send WhatsApp message: ${waErr}`);
+          console.error('⚠️ Failed to send WhatsApp message:', waErr);
         }
+      } else {
+        console.warn(
+          '⚠️ Extras not found or incomplete in transaction inquiry',
+        );
       }
 
+      // ✅ Redirect to success page
       return res.redirect(
         'http://localhost:3001/admissions/appointments/Thankyou',
       );
-    } catch (err: any) {
-      this.logger.error('🔥 Redirect error', err?.response?.data || err);
+    } catch (err) {
+      console.error('🔥 Redirect error:', err?.response?.data || err);
       return res.redirect(
         'http://localhost:3001/admissions/appointments/Declined',
       );
