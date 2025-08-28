@@ -610,7 +610,7 @@ export class AppointmentsService {
         const dto: CreateAppointmentDto = {
           applicationId: extras.applicationId,
           parentEmail: extras.parentEmail,
-          slotISO: cairoDate.toISOString(),
+          slotISO: extras.slotISO, // <-- pass as-is
         };
 
         await this.create(dto);
