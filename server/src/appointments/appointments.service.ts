@@ -330,9 +330,16 @@ export class AppointmentsService {
       );
     }
 
-    // 3) 09:00–12:30 window, 30-min steps (last start 12:00)
-    const hh = slot.getHours();
-    const mm = slot.getMinutes();
+    // interpret slot in Cairo local time
+    const cairo = new Date(
+      slot.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }),
+    );
+
+    const hh = cairo.getHours();
+    const mm = cairo.getMinutes();
+
+    this.logger.log(`🕒 Business rule check (Cairo): hh=${hh}, mm=${mm}`);
+
     const totalMin = hh * 60 + mm;
     const openMin = START_HOUR * 60; // 540
     const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN; // 750
