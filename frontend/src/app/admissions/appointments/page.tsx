@@ -115,12 +115,9 @@ export default function AppointmentPage() {
         // Use the new endpoint (alias /available-for-date still exists)
         const res = await fetch(
           `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
-
         );
 
-        const data: { times: string[] } = res.ok
-          ? await res.json()
-          : { times: [] };
+        const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
         if (!cancelled) {
           setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
         }
@@ -176,9 +173,7 @@ export default function AppointmentPage() {
       const a = data.application || {};
       const normalized: Application = {
         _id: String(a?._id ?? a?.id ?? a?.applicationId ?? ""),
-        submittedAt: String(
-          a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()
-        ),
+        submittedAt: String(a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()),
         father_email: a?.father_email ?? a?.data?.father_email,
         mother_email: a?.mother_email ?? a?.data?.mother_email,
         student_name: a?.student_name ?? a?.data?.student_name,
@@ -186,9 +181,7 @@ export default function AppointmentPage() {
 
       // sanity check: must be a 24-hex string
       if (!/^[0-9a-fA-F]{24}$/.test(normalized._id)) {
-        setLookupError(
-          "Found your application but the id is invalid. Please try again."
-        );
+        setLookupError("Found your application but the id is invalid. Please try again.");
         setApp(null);
         return;
       }
@@ -252,7 +245,6 @@ export default function AppointmentPage() {
           msg = rawText ?? `HTTP ${res.status}`;
         }
 
-
         console.error("Payment initiation failed", {
           status: res.status,
           data,
@@ -269,14 +261,11 @@ export default function AppointmentPage() {
       }
 
       const newId =
-        hasNewId(data) && (data._id || data.id)
-          ? String(data._id || data.id)
-          : null;
+        hasNewId(data) && (data._id || data.id) ? String(data._id || data.id) : null;
       setSavedId(newId || "OK");
       // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
-
     } catch {
       setSaveError("Network error. Please try again.");
     } finally {
@@ -296,18 +285,15 @@ export default function AppointmentPage() {
       <div
         className="page-title dark-background"
         style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
-
       >
         <div className="container position-relative">
           <h1>Book Assessment Appointment</h1>
           <p>
             Schedule your child’s assessment appointment within the available window.
-            Select a convenient date and time, and our admissions team will confirm.
-            Enter the <strong>father</strong> or <strong>mother</strong> email used in your
-            application. If we find your application, you can select a <b>30-minute</b> slot between{" "}
-            <b>09:00</b> and <b>12:00</b> (Sun–Thu). The window closes at <b>12:30</b>, so the last
-            start time is <b>12:00</b>.
-
+            Select a convenient date and time. You’ll then be redirected to our secure
+            payment page. <strong>After successful payment</strong>, your reservation is
+            confirmed and <strong>Admissions will receive an email</strong> with your parent
+            email and the booked date &amp; time.
           </p>
           <nav className="breadcrumbs">
             <ol>
@@ -365,11 +351,7 @@ export default function AppointmentPage() {
             {!app && !searching && !lookupError && (
               <div className="col-12 text-muted" style={{ fontSize: 14 }}>
                 Haven’t applied yet?{" "}
-                <Link
-                  href="/admissions"
-                  className="fw-semibold"
-                  style={{ color: ACCENT }}
-                >
+                <Link href="/admissions" className="fw-semibold" style={{ color: ACCENT }}>
                   Submit an application first
                 </Link>
                 .
@@ -387,10 +369,7 @@ export default function AppointmentPage() {
               <h4 className="card-title mb-0" style={{ color: DARK }}>
                 Select Appointment Slot
               </h4>
-              <span
-                className="badge text-dark"
-                style={{ background: ACCENT_LIGHT }}
-              >
+              <span className="badge text-dark" style={{ background: ACCENT_LIGHT }}>
                 Window:{" "}
                 <b>
                   {windowStart ? fmtLocalYYYYMMDD(windowStart) : "—"} →{" "}
@@ -401,8 +380,7 @@ export default function AppointmentPage() {
 
             {allowedDates.length === 0 ? (
               <div className="alert alert-warning mb-0">
-                We couldn’t find a valid scheduling window. Please contact
-                admissions.
+                We couldn’t find a valid scheduling window. Please contact admissions.
               </div>
             ) : (
               <>
@@ -431,11 +409,7 @@ export default function AppointmentPage() {
                           className={`btn btn-sm ${active ? "text-white" : ""}`}
                           disabled={isPast}
                           style={{
-                            background: active
-                              ? ACCENT
-                              : isPast
-                              ? "#e5e7eb"
-                              : ACCENT_LIGHT,
+                            background: active ? ACCENT : isPast ? "#e5e7eb" : ACCENT_LIGHT,
                             color: active ? "#fff" : DARK,
                             borderRadius: 999,
                             fontWeight: 600,
@@ -467,8 +441,7 @@ export default function AppointmentPage() {
                 >
                   {availableTimes.length === 0 && !timesLoading ? (
                     <div className="alert alert-secondary mb-0">
-                      No available times left for this day. Please choose
-                      another date.
+                      No available times left for this day. Please choose another date.
                     </div>
                   ) : (
                     <div className="row g-2">
@@ -480,9 +453,7 @@ export default function AppointmentPage() {
                           <div key={t} className="col-6 col-md-3 col-lg-2">
                             <button
                               type="button"
-                              className={`btn w-100 ${
-                                active ? "text-white" : ""
-                              }`}
+                              className={`btn w-100 ${active ? "text-white" : ""}`}
                               onClick={() => !disabled && setSelectedTime(t)}
                               disabled={disabled}
                               style={{
@@ -527,11 +498,16 @@ export default function AppointmentPage() {
                     </span>
                   )}
                   {saveError && (
-                    <span className="text-danger fw-semibold">
-                      ❌ {saveError}
-                    </span>
+                    <span className="text-danger fw-semibold">❌ {saveError}</span>
                   )}
                 </div>
+
+                {/* Email notice about payment success */}
+                <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
+                  After successful payment,{" "}
+                  <strong>Admissions will automatically receive an email</strong> with your
+                  parent email and the reserved date &amp; time.
+                </p>
               </>
             )}
           </div>

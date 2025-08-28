@@ -7,11 +7,12 @@ import {
   Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { HttpService } from '@nestjs/axios';
+  import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import type { Response } from 'express';
 import { Model, Types } from 'mongoose';
+import * as sgMail from '@sendgrid/mail';
 
 import {
   Appointment,
@@ -34,6 +35,11 @@ const MAX_PER_SLOT = 2;        // <= 2 bookings per slot
 export class AppointmentsService {
   private readonly logger = new Logger(AppointmentsService.name);
 
+  private readonly fromEmail: string;
+  private readonly fromName: string;
+  private readonly admissionsEmail: string;
+  private readonly schoolName: string;
+
   constructor(
     @InjectModel(Appointment.name)
     private readonly apptModel: Model<AppointmentDocument>,
@@ -47,7 +53,6 @@ export class AppointmentsService {
     // Optional WhatsApp sender — guard all calls
     @Optional() @Inject('AcceptedStudentService')
     private readonly acceptedStudentService?: {
-      // shape used below; adapt if your real service differs
       sendAssessmentMessage: (
         applicationId: string,
         payload: {
@@ -59,7 +64,24 @@ export class AppointmentsService {
         },
       ) => Promise<any>;
     },
-  ) {}
+  ) {
+    // --- Mail setup ---
+    const key = this.config.get<string>('SENDGRID_API_KEY');
+    if (key) {
+      try {
+        sgMail.setApiKey(key);
+      } catch (e) {
+        this.logger.error('Failed to init SendGrid', e as any);
+      }
+    } else {
+      this.logger.warn('SENDGRID_API_KEY is missing — emails will not be sent.');
+    }
+
+    this.fromEmail = this.config.get('MAIL_FROM_EMAIL') || 'admission@leadersintcollege.com';
+    this.fromName  = this.config.get('MAIL_FROM_NAME')  || 'Leaders Admissions';
+    this.admissionsEmail = this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
+    this.schoolName = this.config.get('SCHOOL_NAME') || 'Leaders International College';
+  }
 
   // ------------------------ Utils ------------------------
 
@@ -76,7 +98,6 @@ export class AppointmentsService {
     let h = START_HOUR, m = 0;
     const endExclusive = CLOSE_HOUR * 60 + CLOSE_MIN; // 12:30
     while (h * 60 + m < endExclusive) {
-      // include starts strictly before 12:30 → last is 12:00
       times.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
       m += SLOT_MINUTES;
       if (m >= 60) { h += Math.floor(m / 60); m = m % 60; }
@@ -135,6 +156,100 @@ export class AppointmentsService {
     }
 
     return application;
+  }
+
+  // ------------------------ Email helpers (Admissions on payment success) ------------------------
+
+  private canSendMail() {
+    return !!this.config.get<string>('SENDGRID_API_KEY');
+  }
+
+  private s(v: unknown, fallback = ''): string {
+    if (v === null || v === undefined) return fallback;
+    if (typeof v === 'string') return v;
+    try { return JSON.stringify(v); } catch { return String(v); }
+  }
+
+  /** Format the slot in Cairo local (date + time) */
+  private formatCairo(isoUtc: string) {
+    const d = new Date(isoUtc);
+    const date = d.toLocaleDateString('en-GB', { timeZone: 'Africa/Cairo' });
+    const time = d.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Africa/Cairo',
+    });
+    return { date, time };
+  }
+
+  /** HTML for the Admissions "paid successfully" email */
+  private buildAdmissionsPaidHtml(params: {
+    studentName: string;
+    parentName: string;
+    parentEmail: string;
+    slotISO: string;     // UTC ISO
+    orderId?: string;    // optional Paymob order id
+  }) {
+    const { date, time } = this.formatCairo(params.slotISO);
+    const orderLine = params.orderId
+      ? `<p style="margin:8px 0"><strong>Order ID:</strong> ${this.s(params.orderId)}</p>`
+      : '';
+
+    return `
+      <div style="font-family:Arial,sans-serif;background:#f6f8fb;padding:24px;border-radius:8px;border:1px solid #e3e8ef">
+        <h2 style="margin:0 0 12px;background:#0b4b7a;color:#fff;padding:12px 16px;border-radius:6px">
+          Payment Received — Assessment Booking
+        </h2>
+        <p style="margin:8px 0">Dear Admissions,</p>
+        <p style="margin:8px 0">
+          The parent has <strong>paid successfully</strong> and booked an assessment slot.
+        </p>
+        ${orderLine}
+        <table border="1" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;background:#fff;margin-top:8px">
+          <tbody>
+            <tr><td style="padding:8px;font-weight:600">Parent Name</td><td style="padding:8px">${this.s(params.parentName, 'Parent')}</td></tr>
+            <tr><td style="padding:8px;font-weight:600">Parent Email</td><td style="padding:8px">${this.s(params.parentEmail)}</td></tr>
+            <tr><td style="padding:8px;font-weight:600">Student Name</td><td style="padding:8px">${this.s(params.studentName, 'Student')}</td></tr>
+            <tr><td style="padding:8px;font-weight:600">Assessment Date</td><td style="padding:8px">${date}</td></tr>
+            <tr><td style="padding:8px;font-weight:600">Assessment Time</td><td style="padding:8px">${time} (Africa/Cairo)</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:16px;color:#667085;font-size:12px">
+          This message was generated by the ${this.schoolName} admissions system.
+        </p>
+      </div>
+    `;
+  }
+
+  private async sendAdmissionsPaidEmail(opts: {
+    application: any;
+    parentEmail: string;
+    slotISO: string;     // UTC ISO
+    orderId?: string;
+  }) {
+    if (!this.canSendMail()) return;
+
+    const data = (opts.application?.data || {}) as Record<string, any>;
+    const studentName =
+      data.student_name || data.student || opts.application?.student_name || 'Student';
+    const parentName =
+      data.father_name || data.guardian_name || data.mother_name || 'Parent';
+
+    const msg = {
+      to: this.admissionsEmail,
+      from: { email: this.fromEmail, name: this.fromName },
+      subject: `Payment Received — Assessment Booking for ${studentName}`,
+      html: this.buildAdmissionsPaidHtml({
+        studentName,
+        parentName,
+        parentEmail: opts.parentEmail,
+        slotISO: opts.slotISO,
+        orderId: opts.orderId,
+      }),
+    } as sgMail.MailDataRequired;
+
+    await sgMail.send(msg);
   }
 
   // ------------------------ Core booking ------------------------
@@ -219,13 +334,14 @@ export class AppointmentsService {
         );
       });
 
+      // ❗️No emails here. Emails are sent only after payment success in the redirect handler.
+
       return {
         _id: created!.id,
         applicationId: (application._id as Types.ObjectId).toString(),
         slotISO: created!.slotISO,
       };
     } catch (err: any) {
-      // If a lingering unique index on slotISO exists, convert to friendly error
       if (err?.code === 11000) {
         throw new BadRequestException('This slot is full');
       }
@@ -255,10 +371,8 @@ export class AppointmentsService {
   async availableTimesForDate(dateISO: string, offsetMin: number) {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
 
-    // All appointments whose UTC slot falls within that local day
     const docs = await this.apptModel.find({ slotISO: { $gte: startISO, $lte: endISO } }).lean();
 
-    // Count bookings per local HH:mm
     const counts = new Map<string, number>();
     for (const a of docs) {
       const t = this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin);
@@ -268,16 +382,16 @@ export class AppointmentsService {
     const all = this.generateSlots();
     let available = all.filter((t) => (counts.get(t) || 0) < MAX_PER_SLOT);
 
-    // If the requested date is "today" (in local time), cut off past times
+    // Cut off past times for "today"
     const nowUtcMs = Date.now();
-    const nowLocal = new Date(nowUtcMs - offsetMin * 60_000); // local = UTC - offset
+    const nowLocal = new Date(nowUtcMs - offsetMin * 60_000);
     const todayLocalY = nowLocal.getFullYear();
     const todayLocalM = String(nowLocal.getMonth() + 1).padStart(2, '0');
     const todayLocalD = String(nowLocal.getDate()).padStart(2, '0');
     const todayLocalYmd = `${todayLocalY}-${todayLocalM}-${todayLocalD}`;
 
     if (dateISO === todayLocalYmd) {
-      const cutoff = this.nextHalfHourHHmm(nowLocal); // e.g., 10:07 -> 10:30
+      const cutoff = this.nextHalfHourHHmm(nowLocal);
       available = available.filter((t) => t >= cutoff);
     }
 
@@ -306,7 +420,7 @@ export class AppointmentsService {
 
     const amountCents = 500000; // 5000 EGP
 
-    // 🔍 Lookup student application (by id or parent email) to populate billing data
+    // 🔍 Lookup student application
     const appDoc = await this.findApplication(applicationId, parentEmail);
     if (!appDoc) throw new BadRequestException('Application not found for payment');
 
@@ -343,8 +457,8 @@ export class AppointmentsService {
             apartment: 'NA',
             email: (parentEmail || '').toLowerCase(),
             floor: 'NA',
-            first_name: studentName, // child’s name
-            last_name: fatherName,   // father’s name
+            first_name: studentName,
+            last_name: fatherName,
             street: 'NA',
             building: 'NA',
             phone_number: primaryPhone,
@@ -359,11 +473,10 @@ export class AppointmentsService {
             last_name: fatherName,
             email: (parentEmail || '').toLowerCase(),
           },
-          // Store extras so we can retrieve later
           extras: {
             applicationId,
             parentEmail,
-            slotISO,            // keep as given; we will normalize to UTC later
+            slotISO, // keep as provided; normalized later
             student_name: studentName,
             fatherName,
             fatherPhone,
@@ -378,7 +491,6 @@ export class AppointmentsService {
     const clientSecret: string | undefined = intentionRes?.data?.client_secret;
     if (!clientSecret) throw new BadRequestException('Failed to create payment intention');
 
-    // === STEP 2: Build Unified Checkout URL ===
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
     return { checkout_url: checkoutUrl };
   }
@@ -403,7 +515,7 @@ export class AppointmentsService {
         return res.redirect('http://localhost:3001/admissions/appointments/Declined');
       }
 
-      // === STEP 1: Authenticate to get auth token ===
+      // === STEP 1: Authenticate
       const apiKey = this.config.get<string>('PAYMOB_API_KEY');
       const base = this.config.get<string>('PAYMOB_BASE');
       const authRes = await firstValueFrom(
@@ -412,7 +524,7 @@ export class AppointmentsService {
       const authToken = authRes?.data?.token;
       this.logger.log(`🔑 Auth token received: ${!!authToken}`);
 
-      // === STEP 2: Call transaction inquiry with order_id ===
+      // === STEP 2: Inquiry
       const trxRes = await firstValueFrom(
         this.http.post(
           `${base}/api/ecommerce/orders/transaction_inquiry`,
@@ -423,7 +535,6 @@ export class AppointmentsService {
 
       this.logger.log(`📦 Transaction inquiry response: ${JSON.stringify(trxRes.data)}`);
 
-      // === STEP 3: Extract extras from payment_key_claims.extra ===
       const extras = trxRes?.data?.payment_key_claims?.extra;
       this.logger.log(`👉 Extracted extras: ${JSON.stringify(extras)}`);
 
@@ -432,10 +543,9 @@ export class AppointmentsService {
         return res.redirect('http://localhost:3001/admissions/appointments/Declined');
       }
 
-      // Normalize to UTC ISO — do NOT manually add offsets; use the ISO as time intent
       const slotUtcISO = new Date(extras.slotISO).toISOString();
 
-      // ✅ Create appointment (re-uses all business rules & capacity checks)
+      // ✅ Create appointment (uses all business rules & capacity checks)
       const dto: CreateAppointmentDto = {
         applicationId: String(extras.applicationId),
         parentEmail: String(extras.parentEmail),
@@ -445,10 +555,29 @@ export class AppointmentsService {
       await this.create(dto);
       this.logger.log('🎉 Appointment created successfully after payment');
 
-      // ✅ Optional: Send WhatsApp message
+      // ✅ Notify Admissions (paid successfully, include Cairo date/time)
+      try {
+        const application = await this.findApplication(
+          String(extras.applicationId),
+          String(extras.parentEmail),
+        );
+
+        await this.sendAdmissionsPaidEmail({
+          application,
+          parentEmail: String(extras.parentEmail),
+          slotISO: slotUtcISO,
+          orderId,
+        });
+
+        this.logger.log('📧 Admissions payment email sent.');
+      } catch (mailErr) {
+        this.logger.error('Failed to send admissions payment email', mailErr as any);
+      }
+
+      // ✅ Optional: WhatsApp follow-up
       if (this.acceptedStudentService?.sendAssessmentMessage) {
         try {
-          const cairo = new Date(slotUtcISO); // display in Cairo TZ (UTC+3) for message
+          const cairo = new Date(slotUtcISO);
           const dateStr = cairo.toLocaleDateString('en-GB', { timeZone: 'Africa/Cairo' });
           const timeStr = cairo.toLocaleTimeString('en-GB', {
             hour: '2-digit',
@@ -475,7 +604,6 @@ export class AppointmentsService {
         }
       }
 
-      // ✅ Redirect to success page
       return res.redirect('http://localhost:3001/admissions/appointments/Thankyou');
     } catch (err: any) {
       this.logger.error('🔥 Redirect error', err?.response?.data || err);

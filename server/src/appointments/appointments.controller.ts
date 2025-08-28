@@ -1,3 +1,4 @@
+// src/appointments/appointments.controller.ts
 import {
   BadRequestException,
   Body,
@@ -13,13 +14,12 @@ import { Response } from 'express';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
-
 @Controller('appointments')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class AppointmentsController {
   constructor(private readonly service: AppointmentsService) {}
 
-  // Small helper to parse "offset" (minutes, where offset = UTC - local; e.g., Cairo summer = -180)
+  // Helper to parse "offset" (minutes, where offset = UTC - local; e.g., Cairo summer = -180)
   private parseOffset(offset?: string): number {
     if (offset == null) return 0;
     const n = Number(offset);
@@ -31,8 +31,7 @@ export class AppointmentsController {
 
   /**
    * GET /appointments/for-date?date=YYYY-MM-DD&offset=-180
-   * Returns the TAKEN start times (HH:mm) for that local day.
-   * NOTE: This returns taken times, not available ones.
+   * Returns TAKEN start times (HH:mm) for that local day.
    * Response: { times: string[] }
    */
   @Get('for-date')
@@ -40,7 +39,7 @@ export class AppointmentsController {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       throw new BadRequestException('date must be YYYY-MM-DD');
     }
-    const off = this.parseOffset(offset); // JS: UTC - local
+    const off = this.parseOffset(offset);
     const times = await this.service.getTakenTimesForDate(date, off);
     return { times };
   }
@@ -49,6 +48,7 @@ export class AppointmentsController {
    * POST /appointments
    * Body: CreateAppointmentDto { applicationId?, parentEmail?, slotISO }
    * Creates one appointment (enforces: 30-min grid, 09:00–12:00 starts, max 2 per slot).
+   * (Emails to Admissions + Parent are sent inside the service after creation.)
    */
   @Post()
   async create(@Body() dto: CreateAppointmentDto) {
@@ -61,6 +61,25 @@ export class AppointmentsController {
    */
   @Get()
   async list(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
+    const onlyUpcoming = upcoming === '1' || upcoming === 'true';
+    return this.service.listAll({ upcoming: onlyUpcoming, q });
+  }
+
+  /**
+   * ALIAS: GET /appointments/all
+   * Returns full list with no filters. Kept for frontend compatibility.
+   */
+  @Get('all')
+  async listAllAlias() {
+    return this.service.listAll({});
+  }
+
+  /**
+   * ALIAS: GET /appointments/admin-list?upcoming=true&q=foo
+   * Same as GET /appointments with optional filters. Kept for frontend compatibility.
+   */
+  @Get('admin-list')
+  async adminList(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
@@ -95,17 +114,22 @@ export class AppointmentsController {
       throw new BadRequestException('date must be YYYY-MM-DD');
     }
     const off = this.parseOffset(offset);
-
-
-
     return this.service.availableTimesForDate(date, off);
   }
-  // appointments.controller.ts
+
+  /**
+   * POST /appointments/pay
+   * Starts the Paymob payment flow (returns unified checkout URL).
+   */
   @Post('pay')
   async startPayment(@Body() dto: CreateAppointmentDto) {
     return this.service.startPayment(dto);
   }
 
+  /**
+   * GET /appointments/callback
+   * Paymob redirect handler (will create the appointment on success).
+   */
   @Get('callback')
   async paymobRedirect(@Query() query: any, @Res() res: Response) {
     return this.service.handlePaymobRedirect(query, res);
