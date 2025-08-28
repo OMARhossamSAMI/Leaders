@@ -162,7 +162,7 @@ export default function AssessmentAppointmentsPage() {
     return () => {
       ignore = true;
     };
-  }, [authenticated]);
+  }, [authenticated, API]);
 
   // ---------- helpers ----------
   const fmtDate = (iso: string) =>
@@ -178,6 +178,17 @@ export default function AssessmentAppointmentsPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const toYMD = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate()
+    ).padStart(2, "0")}`;
+
+  const toHM = (d: Date) =>
+    `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(
+      2,
+      "0"
+    )}`;
 
   const now = new Date();
 
@@ -203,6 +214,71 @@ export default function AssessmentAppointmentsPage() {
     }
     return list;
   }, [items, q, filterMode, now]);
+
+  // ---- Excel export (filtered list) ----
+  function buildRows(list: Appt[]) {
+    return list.map((a) => {
+      const d = new Date(a.slotISO);
+      return {
+        ID: a._id,
+        "Parent Email": a.parentEmail,
+        "Slot ISO": a.slotISO,
+        "Local Date": toYMD(d),
+        "Local Time": toHM(d),
+        Status: d < now ? "Past" : "Upcoming",
+        "Application ID": a.applicationId ?? "",
+        "Created At": a.createdAt ?? "",
+      };
+    });
+  }
+
+  // autosize columns based on content length
+  function autosizeCols(rows: Array<Record<string, unknown>>) {
+    const keys = rows.length ? Object.keys(rows[0]) : [];
+    return keys.map((k) => {
+      const maxLen = rows.reduce((acc, r) => {
+        const v = r[k];
+        const s =
+          v == null
+            ? ""
+            : typeof v === "string"
+            ? v
+            : typeof v === "number"
+            ? String(v)
+            : JSON.stringify(v);
+        return Math.max(acc, s.length);
+      }, k.length);
+      // A small buffer so Excel doesn't clip
+      return { wch: Math.min(Math.max(maxLen + 2, 10), 60) };
+    });
+  }
+
+  async function handleExportExcel() {
+    try {
+      const xlsx = await import("xlsx");
+      const { utils, writeFile } = xlsx.default ?? xlsx;
+      const rows = buildRows(filtered);
+      if (rows.length === 0) {
+        alert("No rows to export.");
+        return;
+      }
+      const ws = utils.json_to_sheet(rows);
+      (ws as any)["!cols"] = autosizeCols(rows);
+
+      const wb = utils.book_new();
+      utils.book_append_sheet(wb, ws, "Assessments");
+
+      const stamp = toYMD(new Date()).replaceAll("-", "");
+      writeFile(wb, `assessment_appointments_${stamp}.xlsx`, { compression: true });
+    } catch (e) {
+      console.error(e);
+      alert(
+        e instanceof Error
+          ? `Export failed: ${e.message}`
+          : "Export failed. See console for details."
+      );
+    }
+  }
 
   // ---- WhatsApp sending via backend ----
   async function sendWa(a: Appt) {
@@ -310,8 +386,8 @@ export default function AssessmentAppointmentsPage() {
               />
             </div>
 
-            <div className="col-12 col-lg-6 d-flex align-items-center justify-content-lg-end">
-              <div className="btn-group" role="group" aria-label="Filter appointments">
+            <div className="col-12 col-lg-6 d-flex align-items-center justify-content-lg-end gap-2 flex-wrap">
+              <div className="btn-group me-2" role="group" aria-label="Filter appointments">
                 <button
                   type="button"
                   className={`btn btn-outline-primary ${filterMode === "upcoming" ? "active" : ""}`}
@@ -337,6 +413,18 @@ export default function AssessmentAppointmentsPage() {
                   All
                 </button>
               </div>
+
+              {/* NEW: Export Excel button (exports current list) */}
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={handleExportExcel}
+                disabled={loading || loadError !== "" || filtered.length === 0}
+                title="Export the currently displayed assessments to an Excel file"
+              >
+                <i className="bi bi-download me-2"></i>
+                Export Excel (.xlsx)
+              </button>
             </div>
           </div>
 
