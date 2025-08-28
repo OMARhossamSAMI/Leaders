@@ -309,6 +309,8 @@ export default function AppointmentPage() {
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
+          <h3>Book Your Child’s Assessment in Three Easy Steps</h3>
+          <p>Enter the same parent email you used in your application to locate your file. Once your application is found, you can select the most convenient date and time for your child’s 30-minute assessment. After confirming your slot and completing the assessment fee payment, you’ll immediately receive a confirmation email with all appointment details.</p>
           <h4 className="card-title mb-3" style={{ color: DARK }}>
             Find Your Application
           </h4>
