@@ -2,7 +2,7 @@
 .header {
   background-color: #000 !important;
   padding: 18px 0;
-  z-index: 1000;
+  z-index: 3000;               /* ensure above body */
   position: fixed;
   top: 0;
   width: 100%;
@@ -20,7 +20,7 @@
   font-size: 28px;
   cursor: pointer;
   color: white;
-  z-index: 1101;
+  z-index: 3100;
 }
 
 /* Navmenu */
@@ -57,7 +57,7 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  z-index: 1099;
+  z-index: 2900;
 }
 .sidebar-overlay.open {
   opacity: 1;
@@ -70,8 +70,8 @@
   top: 0;
   height: 100vh;
   width: 250px;
-  background-color: #000;
-  z-index: 1100;
+  background-color: #111;   /* dark */
+  z-index: 3001;
   padding: 20px;
   transition: all 0.3s ease;
   display: flex;
@@ -109,7 +109,7 @@
   gap: 15px;
 }
 .sidebar-links li a {
-  color: white;
+  color: #ddd;
   font-size: 1rem;
   text-decoration: none;
   font-weight: 500;
@@ -121,9 +121,83 @@
   font-weight: bold;
 }
 
+/* Sidebar accordion buttons */
+.sidebar-group { margin-top: 8px; }
+.sidebar-accordion {
+  width: 100%;
+  text-align: left;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-sub-links { padding-left: 8px; margin-top: 6px; }
+.sidebar-sub-links a { display: block; padding: 8px 10px; border-radius: 6px; }
+.sidebar-sub-links a:hover { background: rgba(255,255,255,0.08); }
+
 /* Responsive: Hide main nav on small screens */
 @media (max-width: 768px) {
   .navmenu {
     display: none !important;
   }
+}
+
+/* Ensure top nav links show on black header */
+.header .navmenu ul li a,
+.header .navmenu .dropdown-toggle-btn {
+  color: #fff;
+  font-weight: 600;
+}
+
+.header .navmenu ul li a.active,
+.header .navmenu .dropdown-toggle-btn.active {
+  color: #00a6d9; /* accent */
+}
+
+/* Prevent clipping of dropdown */
+.header,
+.header .container-fluid,
+.header .navmenu,
+.header .navmenu ul,
+.header .navmenu li {
+  overflow: visible !important;
+}
+
+/* Dropdown container anchor */
+.navmenu .dropdown { position: relative; }
+
+/* Show dropdown when we add .show class from React state */
+.dropdown-menu { display: none; }
+.dropdown-menu.show { display: block; }     /* <-- IMPORTANT */
+.dropdown.show > .dropdown-menu { display: block; }
+
+.navmenu .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 9999;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 220px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+.navmenu .dropdown-menu a {
+  display: block;
+  color: #eee;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.navmenu .dropdown-menu a:hover,
+.navmenu .dropdown-menu a.active {
+  background: #00a6d9; /* accent */
+  color: #fff !important;
 }
