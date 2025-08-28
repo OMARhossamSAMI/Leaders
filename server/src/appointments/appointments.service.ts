@@ -85,6 +85,7 @@ export class AppointmentsService {
     this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
     this.admissionsEmail =
       this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
+
     this.schoolName =
       this.config.get('SCHOOL_NAME') || 'Leaders International College';
   }
@@ -269,7 +270,7 @@ export class AppointmentsService {
       data.father_name || data.guardian_name || data.mother_name || 'Parent';
 
     const msg = {
-      to: this.admissionsEmail,
+      to: 'ahmedbhaa2004.ab@gmail.com',
       from: { email: this.fromEmail, name: this.fromName },
       subject: `Payment Received — Assessment Booking for ${studentName}`,
       html: this.buildAdmissionsPaidHtml({
@@ -330,9 +331,16 @@ export class AppointmentsService {
       );
     }
 
-    // 3) 09:00–12:30 window, 30-min steps (last start 12:00)
-    const hh = slot.getHours();
-    const mm = slot.getMinutes();
+    // interpret slot in Cairo local time
+    const cairo = new Date(
+      slot.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }),
+    );
+
+    const hh = cairo.getHours();
+    const mm = cairo.getMinutes();
+
+    this.logger.log(`🕒 Business rule check (Cairo): hh=${hh}, mm=${mm}`);
+
     const totalMin = hh * 60 + mm;
     const openMin = START_HOUR * 60; // 540
     const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN; // 750
@@ -642,26 +650,26 @@ export class AppointmentsService {
       this.logger.log('🎉 Appointment created successfully after payment');
 
       // ✅ Notify Admissions
-      try {
-        const application = await this.findApplication(
-          String(extras.applicationId),
-          String(extras.parentEmail),
-        );
+      // try {
+      //   const application = await this.findApplication(
+      //     String(extras.applicationId),
+      //     String(extras.parentEmail),
+      //   );
 
-        await this.sendAdmissionsPaidEmail({
-          application,
-          parentEmail: String(extras.parentEmail),
-          slotISO: slotUtcISO,
-          orderId,
-        });
+      //   await this.sendAdmissionsPaidEmail({
+      //     application,
+      //     parentEmail: String(extras.parentEmail),
+      //     slotISO: slotUtcISO,
+      //     orderId,
+      //   });
 
-        this.logger.log('📧 Admissions payment email sent.');
-      } catch (mailErr) {
-        this.logger.error(
-          'Failed to send admissions payment email',
-          mailErr as any,
-        );
-      }
+      //   this.logger.log('📧 Admissions payment email sent.');
+      // } catch (mailErr) {
+      //   this.logger.error(
+      //     'Failed to send admissions payment email',
+      //     mailErr as any,
+      //   );
+      // }
 
       // ✅ WhatsApp follow-up
       if (this.acceptedStudentService?.sendAssessmentMessage) {
