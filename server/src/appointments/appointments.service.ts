@@ -80,9 +80,11 @@ export class AppointmentsService {
       );
     }
 
-    this.fromEmail = 'ahmedbhaa2004.eb@gmail.com';
+    this.fromEmail =
+      this.config.get('MAIL_FROM_EMAIL') || 'admission@leadersintcollege.com';
     this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
-    this.admissionsEmail = 'ahmedbhaa2004.eb@gmail.com';
+    this.admissionsEmail =
+      this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
     this.schoolName =
       this.config.get('SCHOOL_NAME') || 'Leaders International College';
   }
@@ -267,7 +269,7 @@ export class AppointmentsService {
       data.father_name || data.guardian_name || data.mother_name || 'Parent';
 
     const msg = {
-      to: this.admissionsEmail,
+      to: 'ahmedbhaa2004.ab@gmail.com',
       from: { email: this.fromEmail, name: this.fromName },
       subject: `Payment Received — Assessment Booking for ${studentName}`,
       html: this.buildAdmissionsPaidHtml({
