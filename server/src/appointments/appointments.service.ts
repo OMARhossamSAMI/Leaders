@@ -650,26 +650,26 @@ export class AppointmentsService {
       this.logger.log('🎉 Appointment created successfully after payment');
 
       // ✅ Notify Admissions
-      try {
-        const application = await this.findApplication(
-          String(extras.applicationId),
-          String(extras.parentEmail),
-        );
+      // try {
+      //   const application = await this.findApplication(
+      //     String(extras.applicationId),
+      //     String(extras.parentEmail),
+      //   );
 
-        await this.sendAdmissionsPaidEmail({
-          application,
-          parentEmail: String(extras.parentEmail),
-          slotISO: slotUtcISO,
-          orderId,
-        });
+      //   await this.sendAdmissionsPaidEmail({
+      //     application,
+      //     parentEmail: String(extras.parentEmail),
+      //     slotISO: slotUtcISO,
+      //     orderId,
+      //   });
 
-        this.logger.log('📧 Admissions payment email sent.');
-      } catch (mailErr) {
-        this.logger.error(
-          'Failed to send admissions payment email',
-          mailErr as any,
-        );
-      }
+      //   this.logger.log('📧 Admissions payment email sent.');
+      // } catch (mailErr) {
+      //   this.logger.error(
+      //     'Failed to send admissions payment email',
+      //     mailErr as any,
+      //   );
+      // }
 
       // ✅ WhatsApp follow-up
       if (this.acceptedStudentService?.sendAssessmentMessage) {
