@@ -85,6 +85,7 @@ export class AppointmentsService {
     this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
     this.admissionsEmail =
       this.config.get('ADMISSIONS_EMAIL') || 'admission@leadersintcollege.com';
+
     this.schoolName =
       this.config.get('SCHOOL_NAME') || 'Leaders International College';
   }
