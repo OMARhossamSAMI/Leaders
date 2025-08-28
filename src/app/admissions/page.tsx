@@ -6,12 +6,26 @@ import Link from "next/link";
 import "./page.css";
 import Image from "next/image";
 
+// Tighten field typing to avoid `any`
+type FieldType =
+  | "text"
+  | "email"
+  | "number"
+  | "date"
+  | "radio"
+  | "select"
+  | "tel"
+  | "url"
+  | "file"
+  | "textarea"
+  | "checkbox";
+
 interface FormField {
   field_name: string;
   order: number;
   name: string;
   label?: string;
-  type: string;
+  type: FieldType;
   required?: boolean;
   options?: string[];
   placeholder?: string;
@@ -21,24 +35,34 @@ export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const [fields, setFields] = useState<FormField[]>([]);
 
+  // Single preloader effect (deduped)
   useEffect(() => {
-    // Hide preloader
     const preloader = document.getElementById("preloader");
-    if (preloader) {
-      const timer = setTimeout(() => {
-        preloader.style.display = "none";
-      }, 15);
-      return () => clearTimeout(timer);
-    }
+    if (!preloader) return;
+    const timer = window.setTimeout(() => {
+      preloader.style.display = "none";
+    }, 15);
+    return () => window.clearTimeout(timer);
+  }, []);
 
-    // Fetch dynamic form fields
+  // Fetch dynamic form fields with proper typing
+  useEffect(() => {
     const fetchFields = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/form-fields`
-        );
-        const data = await res.json();
-        setFields(data);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: unknown = await res.json();
+
+        // Basic runtime shape check to keep TS happy without `any`
+        if (!Array.isArray(data)) throw new Error("Invalid response shape");
+        const typed = (data as unknown[]).filter((x): x is FormField => {
+          // minimal guards
+          return (
+            typeof (x as any)?.field_name === "string" &&
+            typeof (x as any)?.type === "string"
+          );
+        });
+        setFields(typed);
       } catch (error) {
         console.error("Failed to fetch form fields", error);
       }
@@ -47,41 +71,30 @@ export default function AdmissionsPage() {
     fetchFields();
   }, []);
 
-  useEffect(() => {
-    const preloader = document.getElementById("preloader");
-    if (preloader) {
-      const timer = setTimeout(() => {
-        preloader.style.display = "none";
-      }, 15);
-      return () => clearTimeout(timer);
-    }
-  }, []); // <-- Dependency array must be here
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const data: Record<string, string | File> = {};
-
+    // FormDataEntryValue = string | File
+    const data: Record<string, FormDataEntryValue> = {};
     formData.forEach((value, key) => {
       data[key] = value;
     });
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/applications`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data), // ✅ Send data directly, NOT { data }
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // If your backend expects raw fields inside `data`, this is correct.
+        // If it expects multipart for files, switch to FormData and remove the JSON header.
+        body: JSON.stringify(data),
+      });
 
-      const result = await response.json();
+      const result: { message?: string } = await response.json();
 
       if (response.ok) {
         alert(result.message || "Application submitted successfully!");
@@ -102,16 +115,13 @@ export default function AdmissionsPage() {
           {/* Page Title */}
           <div
             className="page-title dark-background"
-            style={{
-              backgroundImage:
-                "url(assets/img/education/Background_school.JPG)",
-            }}
+            style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
           >
             <div className="container position-relative">
               <h1>Admissions</h1>
               <p>
-                Start your journey at LIC—apply now to join a community that
-                nurtures excellence, character, and global citizenship.
+                Start your journey at LIC—apply now to join a community that nurtures excellence,
+                character, and global citizenship.
               </p>
               <nav className="breadcrumbs">
                 <ol>
@@ -128,33 +138,25 @@ export default function AdmissionsPage() {
           <div className="container mt-5 text-center">
             <div className="btn-group">
               <button
-                className={`btn custom-tab ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "apply" ? "active" : ""}`}
                 onClick={() => setActiveSection("apply")}
               >
                 <i className="bi bi-pencil-square me-2"></i> How to Apply
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "form" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "form" ? "active" : ""}`}
                 onClick={() => setActiveSection("form")}
               >
                 <i className="bi bi-file-earmark-text me-2"></i> Apply Now
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "requirements" ? "active" : ""}`}
                 onClick={() => setActiveSection("requirements")}
               >
                 <i className="bi bi-people me-2"></i> Age Acceptance Guide
               </button>
               <button
-                className={`btn custom-tab ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
+                className={`btn custom-tab ${activeSection === "deadlines" ? "active" : ""}`}
                 onClick={() => setActiveSection("deadlines")}
               >
                 <i className=" bi bi-camera-video me-2"></i> Virtual Tour
@@ -171,21 +173,18 @@ export default function AdmissionsPage() {
                       <div className="admissions-info">
                         <h2>Begin Your Academic Journey Today</h2>
                         <p>
-                          Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents. We are here to
-                          answer all your questions and guide you through each
-                          step of the admissions process. We look forward to
-                          getting to know your family and exploring how LIC can
-                          support your child&apos;s educational journey.
+                          Please carefully provide the information requested below. Once submitted,
+                          our admissions team will review your application and contact you to arrange
+                          interviews for both the student and parents. We are here to answer all your
+                          questions and guide you through each step of the admissions process. We look
+                          forward to getting to know your family and exploring how LIC can support your
+                          child&apos;s educational journey.
                         </p>
                         <div className="admissions-steps mt-5">
                           <h3>How to Apply</h3>
                           <p>
-                            Applying at LIC is an exciting journey for your
-                            family, and we strive to make the admissions process
-                            as smooth as possible. Here are the steps
+                            Applying at LIC is an exciting journey for your family, and we strive to
+                            make the admissions process as smooth as possible. Here are the steps
                             you&apos;ll need to follow to apply to our school:
                           </p>
                           <div className="steps-wrapper mt-4">
@@ -194,11 +193,9 @@ export default function AdmissionsPage() {
                               <div className="step-content">
                                 <h4>Online Application</h4>
                                 <p>
-                                  Start your application by clicking the Apply
-                                  Now button. You will need to fill out the
-                                  application form. This is your first step
-                                  toward becoming a part of our vibrant learning
-                                  community.
+                                  Start your application by clicking the Apply Now button. You will
+                                  need to fill out the application form. This is your first step
+                                  toward becoming a part of our vibrant learning community.
                                 </p>
                               </div>
                             </div>
@@ -207,23 +204,15 @@ export default function AdmissionsPage() {
                               <div className="step-content">
                                 <h4>Child Assessment</h4>
                                 <p>
-                                  Once your application is received, the
-                                  admission team will schedule an assessment for
-                                  your child to better understand their
-                                  educational needs and abilities. This is a
-                                  great opportunity for us to get to know each
-                                  other and ensure that our school is a good fit
-                                  for your child&apos;s learning style and
-                                  goals.
+                                  Once your application is received, the admission team will schedule
+                                  an assessment for your child to better understand their educational
+                                  needs and abilities.
                                 </p>
                                 <h6>Parents&apos; Interview</h6>
                                 <p>
-                                  On the day of the assessment or at a time
-                                  convenient for you, we will conduct a
-                                  parents&apos; interview. This discussion is
-                                  crucial as it allows us to learn more about
-                                  your expectations and how we can best support
-                                  your child&apos;s educational journey.
+                                  On the day of the assessment or at a time convenient for you, we
+                                  will conduct a parents&apos; interview to learn more about your
+                                  expectations and how we can best support your child.
                                 </p>
                               </div>
                             </div>
@@ -232,14 +221,9 @@ export default function AdmissionsPage() {
                               <div className="step-content">
                                 <h4>Enrollment</h4>
                                 <p>
-                                  Upon acceptance, you will receive an offer for
-                                  your child to join LIC. To finalize the
-                                  enrollment, you will need to complete the
-                                  registration process and fulfill any necessary
-                                  conditions or paperwork. We will guide you
-                                  through every step to ensure your child is
-                                  ready to start their educational journey with
-                                  us.
+                                  Upon acceptance, you will receive an offer to join LIC. To finalize
+                                  enrollment, complete the registration and paperwork—we’ll guide you
+                                  through it.
                                 </p>
                               </div>
                             </div>
@@ -250,18 +234,13 @@ export default function AdmissionsPage() {
 
                     {/* RIGHT IMAGE COLUMN */}
                     <div className="col-lg-4 d-flex align-items-center">
-                      <div
-                        style={{
-                          position: "relative",
-                          width: "100%",
-                          height: "500px",
-                        }}
-                      >
+                      <div style={{ position: "relative", width: "100%", height: "500px" }}>
                         <Image
                           src="/assets/img/education/ApplyNowFINAL.JPG"
                           alt="How to Apply"
-                          layout="fill"
-                          objectFit="cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          style={{ objectFit: "cover" }}
                           className="img-fluid"
                         />
                       </div>
@@ -281,24 +260,19 @@ export default function AdmissionsPage() {
                           </div>
                           <div>
                             <p>
-                              Our Age Guide Chart shows the typical age ranges
-                              for each grade level at Leaders International
-                              College, from Primary Years Program (PYP) through
-                              Middle Years Program (MYP) and Diploma Program
-                              (DP), helping parents understand how students
-                              progress through each stage of their academic
-                              journey.
+                              Our Age Guide Chart shows the typical age ranges for each grade level at
+                              Leaders International College (PYP → MYP → DP).
                             </p>
                           </div>
                         </div>
                       </div>
-                      {/* Full-width image */}
+
                       <div className="requirements-image mb-4">
                         <Image
                           src="/assets/img/education/AGE.jpg"
                           alt="Age Acceptance Guide"
-                          width={1200} // Replace with actual image width
-                          height={800} // Replace with actual image height
+                          width={1200}
+                          height={800}
                           style={{
                             width: "100%",
                             height: "auto",
@@ -315,56 +289,25 @@ export default function AdmissionsPage() {
                   <div className="col-lg-12">
                     <div className="deadlines">
                       <div className="row mt-4">
-                        {/* COLUMN 1: Fall Semester */}
                         <div className="col-lg-6">
                           <div className="deadline-item mb-4">
                             <h4>Virtual Tour</h4>
                             <p>
-                              Explore Leaders International College from the
-                              comfort of your home! Our virtual tour provides
-                              you with a unique opportunity to experience our
-                              campus as if you were here in person. Navigate
-                              through our state-of-the-art facilities, including
-                              classrooms, labs, sports complexes, and more, to
-                              see where our students learn, play, and grow. If
-                              you have any questions or would like more
-                              information about specific areas of our campus,
-                              please do not hesitate to contact our admissions
-                              team.
+                              Explore LIC from home! Walk through classrooms, labs, sports facilities,
+                              and more. If you need details about any area, our admissions team is ready
+                              to help.
                             </p>
                             <p>
-                              Take this chance to discover every corner of
-                              Leaders International College without leaving your
-                              living room. Our immersive virtual tour lets you
-                              walk through our vibrant learning spaces, modern
-                              laboratories, creative studios, sports areas, and
-                              welcoming common spaces. See for yourself how our
-                              students thrive academically and socially in a
-                              safe, inspiring environment. Should you need
-                              further details or wish to explore particular
-                              parts of our campus in more depth, our friendly
-                              admissions team is ready to assist and guide you
-                              every step of the way.
+                              Experience our learning spaces, modern labs, creative studios, and
+                              welcoming common areas. See how students thrive academically and socially.
                             </p>
                             <p>
-                              We invite you to embark on this virtual journey
-                              and get a true feel for what makes Leaders
-                              International College exceptional. Witness
-                              firsthand how our carefully designed campus
-                              supports academic achievement, personal growth,
-                              and community spirit. Explore the innovative
-                              classrooms where curiosity is sparked, the sports
-                              areas where teamwork is strengthened, and the
-                              communal spaces where friendships are built.
-                              Whenever you’re ready to learn more or take the
-                              next step, our dedicated admissions team is eager
-                              to connect with you and make sure you have all the
-                              information you need.
+                              Discover what makes LIC exceptional. When you’re ready to learn more or
+                              take the next step, we’re here to support you.
                             </p>
                           </div>
                         </div>
 
-                        {/* COLUMN 2: Spring Semester */}
                         <div className="col-lg-6">
                           <div className="deadline-item mb-4">
                             <div className="intro-image-container">
@@ -399,64 +342,37 @@ export default function AdmissionsPage() {
                         <i className="bi bi-file-earmark-check" />
                         <h3>Ready to Apply?</h3>
                         <p>
-                          Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents. We are here to
-                          answer all your questions and guide you through each
-                          step of the admissions process.
+                          Provide the requested information. Our team will review and contact you to
+                          arrange interviews for the student and parents.
                         </p>
                       </div>
                     </div>
 
-                    {/* FULL-WIDTH FORM CARD */}
                     <div className="form-wrapper mt-5">
                       <div className="card w-100">
                         <div className="card-body">
-                          <h3 className="card-title">
-                            Admission Application Form
-                          </h3>
-                          <p>
-                            Please complete the form below to apply for
-                            admission at Leaders International College.
-                          </p>
+                          <h3 className="card-title">Admission Application Form</h3>
+                          <p>Please complete the form below to apply for admission at LIC.</p>
 
-                          <form
-                            id="applicationForm"
-                            className="php-email-form mt-4"
-                            onSubmit={handleSubmit}
-                          >
+                          <form id="applicationForm" className="php-email-form mt-4" onSubmit={handleSubmit}>
                             <h5>Applicant Details</h5>
 
                             <div className="row">
                               {[...fields]
                                 .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                                .map((field, index) => {
+                                .map((field) => {
+                                  const key = field.field_name || field.name;
                                   const label =
                                     field.label ||
-                                    (field.field_name
-                                      ? field.field_name.replace(/_/g, " ")
-                                      : "");
+                                    (field.field_name ? field.field_name.replace(/_/g, " ") : field.name);
                                   const required = field.required ?? false;
 
-                                  // RADIO BUTTONS
-                                  if (
-                                    field.type === "radio" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "radio" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label d-block">
-                                          {label}
-                                        </label>
-                                        {field.options.map((opt, i) => (
-                                          <div
-                                            className="form-check form-check-inline"
-                                            key={i}
-                                          >
+                                      <div className="col-md-6 mb-3" key={key}>
+                                        <label className="form-label d-block">{label}</label>
+                                        {field.options.map((opt) => (
+                                          <div className="form-check form-check-inline" key={opt}>
                                             <input
                                               className="form-check-input"
                                               type="radio"
@@ -464,28 +380,17 @@ export default function AdmissionsPage() {
                                               value={opt}
                                               required={required}
                                             />
-                                            <label className="form-check-label">
-                                              {opt}
-                                            </label>
+                                            <label className="form-check-label">{opt}</label>
                                           </div>
                                         ))}
                                       </div>
                                     );
                                   }
 
-                                  // SELECT DROPDOWN
-                                  if (
-                                    field.type === "select" &&
-                                    field.options?.length
-                                  ) {
+                                  if (field.type === "select" && field.options?.length) {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={key}>
+                                        <label className="form-label">{label}</label>
                                         <select
                                           name={field.field_name}
                                           className="form-select"
@@ -493,10 +398,10 @@ export default function AdmissionsPage() {
                                           defaultValue=""
                                         >
                                           <option value="" disabled>
-                                            {label}
+                                            Select {label}
                                           </option>
-                                          {field.options.map((opt, i) => (
-                                            <option key={i} value={opt}>
+                                          {field.options.map((opt) => (
+                                            <option key={opt} value={opt}>
                                               {opt}
                                             </option>
                                           ))}
@@ -505,37 +410,25 @@ export default function AdmissionsPage() {
                                     );
                                   }
 
-                                  // DATE INPUT
                                   if (field.type === "date") {
                                     return (
-                                      <div
-                                        className="col-md-6 mb-3"
-                                        key={index}
-                                      >
-                                        <label className="form-label">
-                                          {label}
-                                        </label>
+                                      <div className="col-md-6 mb-3" key={key}>
+                                        <label className="form-label">{label}</label>
                                         <input
                                           type="date"
                                           name={field.field_name}
                                           className="form-control"
-                                          max={
-                                            new Date()
-                                              .toISOString()
-                                              .split("T")[0]
-                                          }
+                                          max={new Date().toISOString().split("T")[0]}
                                           required={required}
                                         />
                                       </div>
                                     );
                                   }
 
-                                  // DEFAULT INPUTS (text, email, number, etc.)
+                                  // Default inputs
                                   return (
-                                    <div className="col-md-6 mb-3" key={index}>
-                                      <label className="form-label">
-                                        {label}
-                                      </label>
+                                    <div className="col-md-6 mb-3" key={key}>
+                                      <label className="form-label">{label}</label>
                                       <input
                                         type={field.type}
                                         name={field.field_name}
@@ -549,12 +442,8 @@ export default function AdmissionsPage() {
                             </div>
 
                             <div className="text-center mt-4">
-                              <button
-                                type="submit"
-                                className="btn-submit-application"
-                              >
-                                <i className="bi bi-file-earmark-text"></i>{" "}
-                                Submit Application
+                              <button type="submit" className="btn-submit-application">
+                                <i className="bi bi-file-earmark-text" /> Submit Application
                               </button>
                             </div>
                           </form>

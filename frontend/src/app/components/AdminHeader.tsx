@@ -44,9 +44,15 @@ export default function AdminHeader() {
       roles: ["it", "Admission"],
     },
     {
-      href: "/lic-auth-v9v3tz/Admin/accepted_students",
-      label: "Accepted Students",
-      roles: ["it", "Admission"], // or whatever roles should see it
+      href: "/lic-auth-v9v3tz/Admin/assessment-appointments",
+      label: "Assessment appointments",
+      roles: ["it", "Admission"],
+    },
+
+    {
+      href: "/lic-auth-v9v3tz/Admin/booktour",
+      label: "book a tour slots",
+      roles: ["it", "Admission"],
     },
 
     {
