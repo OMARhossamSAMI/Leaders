@@ -80,9 +80,9 @@ export class AppointmentsService {
       );
     }
 
-    this.fromEmail = 'ahmedbhaa2004.eb@gmail.com';
+    this.fromEmail = 'ahmedbhaa2004.ab@gmail.com';
     this.fromName = this.config.get('MAIL_FROM_NAME') || 'Leaders Admissions';
-    this.admissionsEmail = 'ahmedbhaa2004.eb@gmail.com';
+    this.admissionsEmail = 'ahmedbhaa2004.ab@gmail.com';
     this.schoolName =
       this.config.get('SCHOOL_NAME') || 'Leaders International College';
   }
