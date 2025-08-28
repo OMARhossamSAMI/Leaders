@@ -24,7 +24,7 @@ export class BookTourService {
       iso,
       label: dto.label,
       active: dto.active ?? true,
-      capacity: dto.capacity ?? 1,
+      // capacity removed
     });
     return doc.save();
   }
@@ -46,7 +46,7 @@ export class BookTourService {
     }
     if (typeof dto.active === 'boolean') update.active = dto.active;
     if (dto.label !== undefined) update.label = dto.label;
-    if (dto.capacity !== undefined) update.capacity = dto.capacity;
+    // capacity removed
 
     const res = await this.slotModel.findByIdAndUpdate(id, update, { new: true });
     if (!res) throw new NotFoundException('Slot not found');
@@ -73,9 +73,10 @@ export class BookTourService {
   // ------- Booking -------
 
   /**
-   * Capacity-safe booking:
-   * - Atomically increments bookedCount only if below capacity and slot is active & in the future
-   * - Then creates the booking
+   * Unlimited-capacity booking:
+   * - Ensure slot exists, is active, and in the future
+   * - Atomically increments bookedCount
+   * - Creates the booking
    */
   async createBooking(dto: CreateBookingDto) {
     if (!Types.ObjectId.isValid(dto.slotId)) throw new BadRequestException('Invalid slotId');
@@ -85,7 +86,6 @@ export class BookTourService {
         _id: new Types.ObjectId(dto.slotId),
         active: true,
         iso: { $gte: new Date() },
-        $expr: { $lt: ['$bookedCount', '$capacity'] },
       },
       { $inc: { bookedCount: 1 } },
       { new: true },
@@ -96,7 +96,7 @@ export class BookTourService {
       if (!exists) throw new NotFoundException('Slot not found');
       if (!exists.active) throw new BadRequestException('Slot is not active');
       if (exists.iso < new Date()) throw new BadRequestException('Slot has passed');
-      if (exists.bookedCount >= exists.capacity) throw new BadRequestException('Slot is full');
+      // capacity checks removed
       throw new BadRequestException('Booking not allowed');
     }
 
@@ -115,7 +115,7 @@ export class BookTourService {
     return this.bookingModel
       .find({})
       .sort({ createdAt: -1 })
-      .populate({ path: 'slotId', select: 'iso label active capacity' })
+      .populate({ path: 'slotId', select: 'iso label active' }) // removed capacity
       .lean();
   }
 

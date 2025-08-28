@@ -327,69 +327,59 @@ export default function BookTourAdminPage() {
                         <th>Label</th>
                         <th>ISO (UTC)</th>
                         <th className="text-center">Active</th>
-                        <th className="text-center">Capacity</th>
-                        <th className="text-center">Remaining Spots</th>
                         <th className="text-center">Booked</th>
                         <th className="text-end">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedSlotsDesc.map((s) => {
-                        const cap = s.capacity ?? 0;
-                        const booked = s.bookedCount ?? 0;
-                        const remaining = Math.max(0, cap - booked);
+  {sortedSlotsDesc.map((s) => {
+    const booked = s.bookedCount ?? 0;
 
-                        return (
-                          <tr key={s._id}>
-                            <td>{s.label || new Date(s.iso).toLocaleString()}</td>
-                            <td className="small text-muted">
-                              {new Date(s.iso).toLocaleDateString(undefined, {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}{" "}
-                              –{" "}
-                              {new Date(s.iso).toLocaleTimeString(undefined, {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </td>
-                            <td className="text-center">
-                              <span className={`badge ${s.active ? "bg-success" : "bg-secondary"}`} style={{ fontWeight: 600 }}>
-                                {s.active ? "ON" : "OFF"}
-                              </span>
-                            </td>
-                            <td className="text-center">{cap}</td>
-                            <td className="text-center">
-                              {remaining > 0 ? (
-                                remaining
-                              ) : (
-                                <span className="badge bg-danger" style={{ fontWeight: 600 }}>
-                                  Full
-                                </span>
-                              )}
-                            </td>
-                            <td className="text-center">{booked}</td>
-                            <td className="text-end">
-                              <div className="d-inline-flex gap-2">
-                                <button
-                                  className="btn btn-sm btn-outline-primary"
-                                  onClick={() => handleToggle(s._id, !s.active)}
-                                >
-                                  {s.active ? "Deactivate" : "Activate"}
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleDelete(s._id)}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+    return (
+      <tr key={s._id}>
+        <td>{s.label || new Date(s.iso).toLocaleString()}</td>
+        <td className="small text-muted">
+          {new Date(s.iso).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}{" "}
+          –{" "}
+          {new Date(s.iso).toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </td>
+        <td className="text-center">
+          <span
+            className={`badge ${s.active ? "bg-success" : "bg-secondary"}`}
+            style={{ fontWeight: 600 }}
+          >
+            {s.active ? "ON" : "OFF"}
+          </span>
+        </td>
+        <td className="text-center">{booked}</td>
+        <td className="text-end">
+          <div className="d-inline-flex gap-2">
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => handleToggle(s._id, !s.active)}
+            >
+              {s.active ? "Deactivate" : "Activate"}
+            </button>
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={() => handleDelete(s._id)}
+            >
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
                   </table>
                 </div>
               )}

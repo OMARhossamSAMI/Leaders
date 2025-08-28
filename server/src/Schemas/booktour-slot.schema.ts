@@ -14,9 +14,6 @@ export class BookTourSlot {
   @Prop({ type: Boolean, default: true, index: true })
   active!: boolean;
 
-  @Prop({ type: Number, default: 1, min: 1 })
-  capacity!: number;
-
   @Prop({ type: Number, default: 0, min: 0 })
   bookedCount!: number;
 }

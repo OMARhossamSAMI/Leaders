@@ -215,7 +215,7 @@ export default function Header() {
                     href="/admissions"
                     onClick={() => handleAdmissionTab("deadlines")}
                   >
-                    Virtual Tour
+                   Tour
                   </Link>
                 </li>
                 <li>

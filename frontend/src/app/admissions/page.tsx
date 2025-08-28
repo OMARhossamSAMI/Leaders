@@ -24,7 +24,6 @@ type Slot = {
   iso: string;        // ISO in UTC
   label?: string;
   active: boolean;
-  capacity: number;
   bookedCount: number;
 };
 
@@ -279,18 +278,19 @@ const fmtDateTime = (iso: string) => {
 const visibleSlots = useMemo(
   () =>
     (slots || [])
-      .map(s => ({ ...s, bookedCount: s.bookedCount ?? 0, capacity: s.capacity ?? 0 }))
+      .map(s => ({
+        ...s,
+        bookedCount: s.bookedCount ?? 0,   // keep default safeguard
+      }))
       .sort((a, b) => new Date(a.iso).getTime() - new Date(b.iso).getTime()),
   [slots]
 );
 
+const selectedSlotObj = useMemo(
+  () => visibleSlots.find((s) => s._id === selectedSlotId) || null,
+  [visibleSlots, selectedSlotId]
+);
 
-
-
-  const selectedSlotObj = useMemo(
-    () => visibleSlots.find((s) => s._id === selectedSlotId) || null,
-    [visibleSlots, selectedSlotId]
-  );
   // ============================================================================
 
   // Keep your preview submit util if needed
@@ -737,71 +737,92 @@ const visibleSlots = useMemo(
                                   </div>
                                 </div>
                                   {/* Right column: slots with date+time */}
-                                  <div>
-                                    <label className="form-label">Choose a Date & Time</label>
+                                <div>
+  <label className="form-label">Choose a Date & Time</label>
 
-                                    {loadingSlots ? (
-                                      <div className="small text-muted">Loading available slots…</div>
-                                    ) : slotsErr ? (
-                                      <div className="alert alert-danger">{slotsErr}</div>
-                                    ) : visibleSlots.length === 0 ? (
-                                      <div className="small text-muted">No available slots at the moment.</div>
-                                    ) : (
-                                      <div
-                                        style={{
-                                          display: "grid",
-                                          gridTemplateColumns: "1fr",
-                                          gap: "10px",
-                                        }}
-                                      >
-                                        {visibleSlots.map((opt) => {
-                                          const displayLabel = opt.label?.trim() || fmtDateTime(opt.iso);
-                                          const remaining = Math.max(0, (opt.capacity ?? 0) - (opt.bookedCount ?? 0));
-                                          const isFull = remaining === 0;
-                                          const isSelected = selectedSlotId === opt._id;
+  {loadingSlots ? (
+    <div className="small text-muted">Loading available slots…</div>
+  ) : slotsErr ? (
+    <div className="alert alert-danger">{slotsErr}</div>
+  ) : visibleSlots.length === 0 ? (
+    <div className="small text-muted">No available slots at the moment.</div>
+  ) : (
+    <>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: "10px",
+        }}
+      >
+        {visibleSlots.map((opt) => {
+          const displayLabel = opt.label?.trim() || fmtDateTime(opt.iso);
+          const isSelected = selectedSlotId === opt._id;
 
-                                          return (
-                                            <button
-                                              key={opt._id}
-                                              type="button"
-                                              onClick={() => {
-                                                if (isFull) return;                // guard click
-                                                setSelectedSlot(displayLabel);
-                                                setSelectedSlotId(opt._id);
-                                              }}
-                                              className="btn"
-                                              disabled={isFull}                     // not pressable
-                                              aria-disabled={isFull}
-                                              aria-pressed={isSelected}
-                                              style={{
-                                                padding: "12px 16px",
-                                                borderRadius: "8px",
-                                                textAlign: "left",
-                                                border: isSelected
-                                                  ? "2px solid var(--accent-color)"
-                                                  : "1px solid #e5e7eb",
-                                                background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
-                                                fontWeight: isSelected ? 700 : 600,
-                                                opacity: isFull ? 0.6 : 1,
-                                                cursor: isFull ? "not-allowed" : "pointer",
-                                              }}
-                                            >
-                                              {displayLabel}
-                                              <div className="small text-muted" style={{ marginTop: 2 }}>
-                                                {isFull ? "Full" : `${remaining} spots left`}
-                                              </div>
-                                            </button>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
+          return (
+            <button
+              key={opt._id}
+              type="button"
+              onClick={() => {
+                setSelectedSlot(displayLabel);
+                setSelectedSlotId(opt._id);
+              }}
+              className="btn"
+              aria-pressed={isSelected}
+              style={{
+                padding: "12px 16px",
+                borderRadius: "8px",
+                textAlign: "left",
+                border: isSelected
+                  ? "2px solid var(--accent-color)"
+                  : "1px solid #e5e7eb",
+                background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
+                fontWeight: isSelected ? 700 : 600,
+                cursor: "pointer",
+              }}
+            >
+              {displayLabel}
+            </button>
+          );
+        })}
+      </div>
 
-                                    {selectedSlot && (
-                                      <div style={{ marginTop: "10px", fontSize: "0.95rem" }}>
-                                        Selected: <strong>{selectedSlot}</strong>
-                                      </div>
-                                    )}
-                                  </div>
+      {/* Selected summary */}
+      {selectedSlotId && selectedSlotObj && (
+        <div
+          style={{
+            marginTop: 12,
+            padding: "10px 12px",
+            borderRadius: 8,
+            background: "rgba(0,0,0,0.03)",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+          aria-live="polite"
+        >
+          <span className="small text-muted" style={{ fontWeight: 600 }}>
+            Selected:
+          </span>
+          <span
+            className="badge"
+            style={{
+              background: "var(--accent-color)",
+              color: "#fff",
+              padding: "6px 10px",
+              borderRadius: 999,
+              fontWeight: 700,
+            }}
+          >
+            {selectedSlotObj.label?.trim() || fmtDateTime(selectedSlotObj.iso)}
+          </span>
+        </div>
+      )}
+    </>
+  )}
+</div>
+
+
                                 </div>
                               </div>
 

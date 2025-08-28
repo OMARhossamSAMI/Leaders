@@ -53,13 +53,14 @@ export class BookTourController {
     return this.svc.deleteSlot(id);
   }
 
+  // ---------- Admin — bookings ----------
   // Bookings for a specific slot
   @Get('admin/slots/:id/bookings')
   listBookings(@Param('id') slotId: string) {
     return this.svc.listBookingsForSlot(slotId);
   }
 
-  // ---------- Admin — bookings (ALL) ----------
+  // All bookings (global)
   @Get('admin/bookings')
   listAllBookings() {
     return this.svc.listAllBookings();
