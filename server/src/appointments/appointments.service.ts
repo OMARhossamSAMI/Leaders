@@ -527,6 +527,102 @@ export class AppointmentsService {
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
     return { checkout_url: checkoutUrl };
   }
+  private async sendHrAppointmentEmail(extras: any, cairoDate: Date) {
+    console.log('📧 Preparing HR email for appointment:', extras);
+
+    const {
+      student_name,
+      fatherName,
+      parentEmail,
+      fatherPhone,
+      motherPhone,
+      allPhones,
+      applicationId,
+      slotISO,
+    } = extras;
+
+    const dateStr = cairoDate.toLocaleDateString('en-GB');
+    const timeStr = cairoDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const hrHtml = `
+  <div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f9fc; padding: 30px; max-width: 750px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+    <h2 style="color: #ffffff; background-color: #004080; padding: 15px 20px; border-radius: 4px; text-align: center;">
+      ✅ Parent has booked an Assessment Slot
+    </h2>
+
+    <p style="font-size: 16px; margin-bottom: 20px; text-align: center;">
+      A parent has successfully booked a slot at <strong>${timeStr}</strong> on <strong>${dateStr}</strong>.
+    </p>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <tr style="background-color: #e9eff7;">
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Application ID</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${applicationId}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Student Name</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${student_name || 'N/A'}</td>
+      </tr>
+      <tr style="background-color: #e9eff7;">
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Father Name</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${fatherName || 'N/A'}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Parent Email</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${parentEmail}</td>
+      </tr>
+      <tr style="background-color: #e9eff7;">
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Father Phone</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${fatherPhone || 'N/A'}</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Mother Phone</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${motherPhone || 'N/A'}</td>
+      </tr>
+      ${
+        allPhones
+          ? `<tr style="background-color: #e9eff7;">
+               <td style="padding: 10px; border: 1px solid #ccc;"><strong>Other Phones</strong></td>
+               <td style="padding: 10px; border: 1px solid #ccc;">${allPhones.join(', ')}</td>
+             </tr>`
+          : ''
+      }
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Original Slot ISO (UTC)</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${slotISO}</td>
+      </tr>
+      <tr style="background-color: #e9eff7;">
+        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Converted Cairo Time</strong></td>
+        <td style="padding: 10px; border: 1px solid #ccc;">${dateStr} at ${timeStr}</td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 30px; font-style: italic; text-align: center; color: #555;">
+      This appointment was booked via Paymob redirect. Please contact the parent for confirmation if needed.
+    </p>
+  </div>
+  `;
+
+    const hrNotification = {
+      to: 'omar.hossam3@gmail.com', // replace with HR email
+      from: {
+        email: 'admission@leadersintcollege.com',
+        name: 'Admissions Appointments',
+      },
+      subject: `📅 New Appointment Booking - ${student_name || 'Student'} (${applicationId})`,
+      html: hrHtml,
+    };
+
+    try {
+      await sgMail.send(hrNotification);
+      console.log('✅ HR email sent successfully');
+    } catch (err) {
+      console.error('❌ Failed to send HR email:', err?.response?.body || err);
+    }
+  }
 
   // ------------------------ Paymob: Redirect Handler ------------------------
 
@@ -639,6 +735,9 @@ export class AppointmentsService {
           );
 
           console.log('📲 WhatsApp API response:', waRes);
+
+          // ✅ Send HR Email as well
+          await this.sendHrAppointmentEmail(extras, cairoDate);
         } catch (waErr) {
           console.error('⚠️ Failed to send WhatsApp message:', waErr);
         }
