@@ -550,7 +550,7 @@ export class AppointmentsService {
     const hrHtml = `
   <div style="font-family: Arial, sans-serif; color: #333; background-color: #f7f9fc; padding: 30px; max-width: 750px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
     <h2 style="color: #ffffff; background-color: #004080; padding: 15px 20px; border-radius: 4px; text-align: center;">
-      ✅ Parent has booked an Assessment Slot
+      ✅ A Parent has booked an Assessment Slot
     </h2>
 
     <p style="font-size: 16px; margin-bottom: 20px; text-align: center;">
@@ -558,10 +558,7 @@ export class AppointmentsService {
     </p>
 
     <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-      <tr style="background-color: #e9eff7;">
-        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Application ID</strong></td>
-        <td style="padding: 10px; border: 1px solid #ccc;">${applicationId}</td>
-      </tr>
+      
       <tr>
         <td style="padding: 10px; border: 1px solid #ccc;"><strong>Student Name</strong></td>
         <td style="padding: 10px; border: 1px solid #ccc;">${student_name || 'N/A'}</td>
@@ -582,18 +579,6 @@ export class AppointmentsService {
         <td style="padding: 10px; border: 1px solid #ccc;"><strong>Mother Phone</strong></td>
         <td style="padding: 10px; border: 1px solid #ccc;">${motherPhone || 'N/A'}</td>
       </tr>
-      ${
-        allPhones
-          ? `<tr style="background-color: #e9eff7;">
-               <td style="padding: 10px; border: 1px solid #ccc;"><strong>Other Phones</strong></td>
-               <td style="padding: 10px; border: 1px solid #ccc;">${allPhones.join(', ')}</td>
-             </tr>`
-          : ''
-      }
-      <tr>
-        <td style="padding: 10px; border: 1px solid #ccc;"><strong>Original Slot ISO (UTC)</strong></td>
-        <td style="padding: 10px; border: 1px solid #ccc;">${slotISO}</td>
-      </tr>
       <tr style="background-color: #e9eff7;">
         <td style="padding: 10px; border: 1px solid #ccc;"><strong>Converted Cairo Time</strong></td>
         <td style="padding: 10px; border: 1px solid #ccc;">${dateStr} at ${timeStr}</td>
@@ -612,7 +597,7 @@ export class AppointmentsService {
         email: 'admission@leadersintcollege.com',
         name: 'Admissions Appointments',
       },
-      subject: `📅 New Appointment Booking - ${student_name || 'Student'} (${applicationId})`,
+      subject: `📅 New Appointment Booking - ${student_name || 'Student'} `,
       html: hrHtml,
     };
 
@@ -623,7 +608,89 @@ export class AppointmentsService {
       console.error('❌ Failed to send HR email:', err?.response?.body || err);
     }
   }
+  // === WhatsApp: Send Intro PDF ===
+  private async sendIntroPdfMessage(phoneNumber: string, studentName: string) {
+    console.log('📲 Sending admissions_intro_pdf WhatsApp template...');
 
+    try {
+      const response = await this.http
+        .post(
+          `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+          {
+            messaging_product: 'whatsapp',
+            to: phoneNumber,
+            type: 'template',
+            template: {
+              name: 'admissions_intro_pdf', // 👈 must match Meta-approved template
+              language: { code: 'en' },
+              components: [
+                {
+                  type: 'body',
+                },
+              ],
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+            },
+          },
+        )
+        .toPromise();
+
+      console.log('✅ admissions_intro_pdf sent:', response.data);
+      return response.data;
+    } catch (err) {
+      console.error(
+        '❌ Failed to send admissions_intro_pdf:',
+        err?.response?.data || err,
+      );
+      throw err;
+    }
+  }
+  // === WhatsApp: Send Welcome Video ===
+  private async sendWelcomeVideoMessage(
+    phoneNumber: string,
+    studentName: string,
+  ) {
+    console.log('📲 Sending admissions_welcome_video WhatsApp template...');
+
+    try {
+      const response = await this.http
+        .post(
+          `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+          {
+            messaging_product: 'whatsapp',
+            to: phoneNumber,
+            type: 'template',
+            template: {
+              name: 'admissions_welcome_video', // 👈 must match Meta-approved template
+              language: { code: 'en' },
+              components: [
+                {
+                  type: 'body',
+                },
+              ],
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+            },
+          },
+        )
+        .toPromise();
+
+      console.log('✅ admissions_welcome_video sent:', response.data);
+      return response.data;
+    } catch (err) {
+      console.error(
+        '❌ Failed to send admissions_welcome_video:',
+        err?.response?.data || err,
+      );
+      throw err;
+    }
+  }
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -735,6 +802,18 @@ export class AppointmentsService {
           );
 
           console.log('📲 WhatsApp API response:', waRes);
+
+          // === NEW: Send Intro PDF ===
+          await this.sendIntroPdfMessage(
+            extras.fatherPhone || extras.motherPhone,
+            extras.student_name || 'Student',
+          );
+
+          // === NEW: Send Welcome Video ===
+          await this.sendWelcomeVideoMessage(
+            extras.fatherPhone || extras.motherPhone,
+            extras.student_name || 'Student',
+          );
 
           // ✅ Send HR Email as well
           await this.sendHrAppointmentEmail(extras, cairoDate);
