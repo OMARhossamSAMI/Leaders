@@ -24,6 +24,7 @@ import {
 } from '../Schemas/studentApplication.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
+
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
 const CLOSE_HOUR = 12; // window closes at 12:30 (last start 12:00)
@@ -609,12 +610,12 @@ export class AppointmentsService {
     }
   }
   // === WhatsApp: Send Intro PDF ===
-  private async sendIntroPdfMessage(phoneNumber: string, studentName: string) {
+  private async sendIntroPdfMessage(phoneNumber: string) {
     console.log('📲 Sending admissions_intro_pdf WhatsApp template...');
 
     try {
-      const response = await this.http
-        .post(
+      const response = await firstValueFrom(
+        this.http.post(
           `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
           {
             messaging_product: 'whatsapp',
@@ -623,20 +624,16 @@ export class AppointmentsService {
             template: {
               name: 'admissions_intro_pdf', // 👈 must match Meta-approved template
               language: { code: 'en' },
-              components: [
-                {
-                  type: 'body',
-                },
-              ],
             },
           },
           {
             headers: {
               Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json',
             },
           },
-        )
-        .toPromise();
+        ),
+      );
 
       console.log('✅ admissions_intro_pdf sent:', response.data);
       return response.data;
@@ -649,15 +646,12 @@ export class AppointmentsService {
     }
   }
   // === WhatsApp: Send Welcome Video ===
-  private async sendWelcomeVideoMessage(
-    phoneNumber: string,
-    studentName: string,
-  ) {
+  private async sendWelcomeVideoMessage(phoneNumber: string) {
     console.log('📲 Sending admissions_welcome_video WhatsApp template...');
 
     try {
-      const response = await this.http
-        .post(
+      const response = await firstValueFrom(
+        this.http.post(
           `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
           {
             messaging_product: 'whatsapp',
@@ -666,20 +660,16 @@ export class AppointmentsService {
             template: {
               name: 'admissions_welcome_video', // 👈 must match Meta-approved template
               language: { code: 'en' },
-              components: [
-                {
-                  type: 'body',
-                },
-              ],
             },
           },
           {
             headers: {
               Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json',
             },
           },
-        )
-        .toPromise();
+        ),
+      );
 
       console.log('✅ admissions_welcome_video sent:', response.data);
       return response.data;
@@ -806,13 +796,11 @@ export class AppointmentsService {
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
             extras.fatherPhone || extras.motherPhone,
-            extras.student_name || 'Student',
           );
 
           // === NEW: Send Welcome Video ===
           await this.sendWelcomeVideoMessage(
             extras.fatherPhone || extras.motherPhone,
-            extras.student_name || 'Student',
           );
 
           // ✅ Send HR Email as well
