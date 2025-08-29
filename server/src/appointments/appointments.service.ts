@@ -645,6 +645,20 @@ export class AppointmentsService {
             template: {
               name: 'admissions_intro_pdf',
               language: { code: 'en' },
+              components: [
+                {
+                  type: 'header',
+                  parameters: [
+                    {
+                      type: 'document',
+                      document: {
+                        link: 'https://leadersintcollege.com/assets/img/Omar_Hossam_cv.pdf',
+                        filename: 'Omar_Hossam_cv.pdf',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           },
           {
@@ -685,6 +699,19 @@ export class AppointmentsService {
             template: {
               name: 'admissions_welcome_video',
               language: { code: 'en' },
+              components: [
+                {
+                  type: 'header',
+                  parameters: [
+                    {
+                      type: 'video',
+                      video: {
+                        link: 'https://leadersintcollege.com/assets/img/education/Video2.mp4',
+                      },
+                    },
+                  ],
+                },
+              ],
             },
           },
           {
