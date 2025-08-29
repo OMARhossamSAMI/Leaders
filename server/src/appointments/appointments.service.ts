@@ -528,6 +528,24 @@ export class AppointmentsService {
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
     return { checkout_url: checkoutUrl };
   }
+  private normalizePhoneNumber(input: string): string {
+    if (!input) return '';
+    // Remove everything except digits
+    let digits = input.replace(/\D/g, '');
+
+    // If it starts with "0", strip it and prefix with Egypt country code (20)
+    if (digits.startsWith('0')) {
+      digits = '20' + digits.slice(1);
+    }
+
+    // If it doesn’t start with a country code, add Egypt’s
+    if (!digits.startsWith('20') && !digits.startsWith('1')) {
+      digits = '20' + digits;
+    }
+
+    return digits;
+  }
+
   private async sendHrAppointmentEmail(extras: any, cairoDate: Date) {
     console.log('📧 Preparing HR email for appointment:', extras);
 
@@ -609,9 +627,12 @@ export class AppointmentsService {
       console.error('❌ Failed to send HR email:', err?.response?.body || err);
     }
   }
-  // === WhatsApp: Send Intro PDF ===
   private async sendIntroPdfMessage(phoneNumber: string) {
-    console.log('📲 Sending admissions_intro_pdf WhatsApp template...');
+    const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
+    console.log(
+      '📲 Sending admissions_intro_pdf WhatsApp template to:',
+      normalizedPhone,
+    );
 
     try {
       const response = await firstValueFrom(
@@ -619,10 +640,10 @@ export class AppointmentsService {
           `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
           {
             messaging_product: 'whatsapp',
-            to: phoneNumber,
+            to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_intro_pdf', // 👈 must match Meta-approved template
+              name: 'admissions_intro_pdf',
               language: { code: 'en' },
             },
           },
@@ -645,9 +666,13 @@ export class AppointmentsService {
       throw err;
     }
   }
-  // === WhatsApp: Send Welcome Video ===
+
   private async sendWelcomeVideoMessage(phoneNumber: string) {
-    console.log('📲 Sending admissions_welcome_video WhatsApp template...');
+    const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
+    console.log(
+      '📲 Sending admissions_welcome_video WhatsApp template to:',
+      normalizedPhone,
+    );
 
     try {
       const response = await firstValueFrom(
@@ -655,10 +680,10 @@ export class AppointmentsService {
           `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
           {
             messaging_product: 'whatsapp',
-            to: phoneNumber,
+            to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_video', // 👈 must match Meta-approved template
+              name: 'admissions_welcome_video',
               language: { code: 'en' },
             },
           },
@@ -681,6 +706,7 @@ export class AppointmentsService {
       throw err;
     }
   }
+
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
