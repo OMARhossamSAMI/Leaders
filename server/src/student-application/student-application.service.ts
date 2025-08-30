@@ -29,6 +29,7 @@ export class StudentApplicationService {
   constructor(
     @InjectModel(StudentApplication.name)
     private appModel: Model<StudentApplicationDocument>,
+    @InjectModel('Appointment') private readonly apptModel: Model<any>, // <-- add
   ) {}
 
   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
@@ -301,6 +302,56 @@ export class StudentApplicationService {
       );
     }
   }
+
+  // ⬇️ NEW: list applications with no appointments (optionally unpaid only)
+  async listUnbookedOrUnpaid(opts?: { unpaidOnly?: boolean }) {
+  const unpaidOnly = !!opts?.unpaidOnly;
+
+  const pipeline: any[] = [
+    // to be able to match if appointments.applicationId is stored as string
+    { $addFields: { _idStr: { $toString: '$_id' } } },
+    {
+      $lookup: {
+        from: 'appointments',
+        let: {
+          idStr: '$_idStr',
+          father: '$data.father_email',
+          mother: '$data.mother_email',
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  { $eq: ['$applicationId', '$$idStr'] },
+                  { $eq: ['$parentEmail', '$$father'] },
+                  { $eq: ['$parentEmail', '$$mother'] },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'apts',
+      },
+    },
+    // keep only those with NO appointments
+    { $match: { apts: { $eq: [] } } },
+  ];
+
+  if (unpaidOnly) {
+    // Heuristic unpaid check (adjust field names to yours if needed)
+    pipeline.push({
+      $match: {
+        $and: [
+          { 'data.assessment_paid': { $ne: true } },
+          { 'data.payment_status': { $nin: ['paid', 'completed', 'confirmed'] } },
+        ],
+      },
+    });
+  }
+
+  return this.appModel.aggregate(pipeline).exec();
+}
 
   async getAllApplications() {
     const applications = await this.appModel

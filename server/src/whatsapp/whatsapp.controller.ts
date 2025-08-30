@@ -127,4 +127,18 @@ export class WhatsappController {
       throw new BadRequestException(msg);
     }
   }
+
+
+// Custom message to multiple appointments
+  @Post('custom')
+  async sendCustom(@Body() dto: { appointmentIds: string[]; message: string }) {
+    if (!dto?.message?.trim()) {
+      throw new BadRequestException('Message is required.');
+    }
+    if (!Array.isArray(dto?.appointmentIds) || dto.appointmentIds.length === 0) {
+      throw new BadRequestException('No appointments selected.');
+    }
+    const result = await this.svc.sendCustomToAppointments(dto.appointmentIds, dto.message.trim());
+    return result; // { ok: true, results: [...] }
+  }
 }
