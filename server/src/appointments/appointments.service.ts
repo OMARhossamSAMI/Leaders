@@ -726,13 +726,75 @@ export class AppointmentsService {
     }
   }
 
-  private async sendWelcomeVideoMessage(
-    phoneNumber: string,
-    Father_name: string,
-  ) {
+  // private async sendWelcomeVideoMessage(
+  //   phoneNumber: string,
+  //   Father_name: string,
+  // ) {
+  //   const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
+  //   console.log(
+  //     '📲 Sending admissions_welcome_link WhatsApp template to:',
+  //     normalizedPhone,
+  //   );
+
+  //   try {
+  //     const response = await firstValueFrom(
+  //       this.http.post(
+  //         `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+  //         {
+  //           messaging_product: 'whatsapp',
+  //           to: normalizedPhone,
+  //           type: 'template',
+  //           template: {
+  //             name: 'admissions_welcome_link', // template name
+  //             language: { code: 'en' },
+  //             components: [
+  //               {
+  //                 type: 'header',
+  //                 parameters: [
+  //                   {
+  //                     type: 'image',
+  //                     image: {
+  //                       link: 'https://leadersintcollege.com/assets/img/Whatapp_LIC.png',
+  //                     },
+  //                   },
+  //                 ],
+  //               },
+  //               {
+  //                 type: 'body',
+  //                 parameters: [
+  //                   {
+  //                     type: 'text',
+  //                     text: Father_name || 'Parent',
+  //                   },
+  //                 ],
+  //               },
+  //               // ❌ No button.parameters here, since URL is static in template
+  //             ],
+  //           },
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+  //             'Content-Type': 'application/json',
+  //           },
+  //         },
+  //       ),
+  //     );
+
+  //     console.log('✅ admissions_welcome_link sent:', response.data);
+  //     return response.data;
+  //   } catch (err) {
+  //     console.error(
+  //       '❌ Failed to send admissions_welcome_link:',
+  //       err?.response?.data || err,
+  //     );
+  //     throw err;
+  //   }
+  // }
+  private async sendWelcomeVideoMessage(phoneNumber: string) {
     const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
     console.log(
-      '📲 Sending admissions_welcome_link WhatsApp template to:',
+      '📲 Sending admissions_welcome_video WhatsApp template to:',
       normalizedPhone,
     );
 
@@ -745,30 +807,20 @@ export class AppointmentsService {
             to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_link', // template name
+              name: 'admissions_welcome_video',
               language: { code: 'en' },
               components: [
                 {
                   type: 'header',
                   parameters: [
                     {
-                      type: 'image',
-                      image: {
-                        link: 'https://leadersintcollege.com/assets/img/Whatapp_LIC.png',
+                      type: 'video',
+                      video: {
+                        link: 'https://leadersintcollege.com/assets/img/education/Video2.mp4',
                       },
                     },
                   ],
                 },
-                {
-                  type: 'body',
-                  parameters: [
-                    {
-                      type: 'text',
-                      text: Father_name || 'Parent',
-                    },
-                  ],
-                },
-                // ❌ No button.parameters here, since URL is static in template
               ],
             },
           },
@@ -781,11 +833,11 @@ export class AppointmentsService {
         ),
       );
 
-      console.log('✅ admissions_welcome_link sent:', response.data);
+      console.log('✅ admissions_welcome_video sent:', response.data);
       return response.data;
     } catch (err) {
       console.error(
-        '❌ Failed to send admissions_welcome_link:',
+        '❌ Failed to send admissions_welcome_video:',
         err?.response?.data || err,
       );
       throw err;
@@ -912,7 +964,6 @@ export class AppointmentsService {
           // === NEW: Send Welcome Video ===
           await this.sendWelcomeVideoMessage(
             extras.fatherPhone || extras.motherPhone,
-            extras.fatherName || 'Parent',
           );
 
           // ✅ Send HR Email as well
