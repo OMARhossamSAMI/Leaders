@@ -9,6 +9,9 @@ import {
   UsePipes,
   ValidationPipe,
   Res,
+  Delete,
+  NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AppointmentsService } from './appointments.service';
@@ -133,5 +136,12 @@ export class AppointmentsController {
   @Get('callback')
   async paymobRedirect(@Query() query: any, @Res() res: Response) {
     return this.service.handlePaymobRedirect(query, res);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    const ok = await this.service.removeById(id);
+    if (!ok) throw new NotFoundException('Appointment not found');
+    return { ok: true, id };
   }
 }

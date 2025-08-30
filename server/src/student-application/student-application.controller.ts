@@ -74,6 +74,15 @@ export class StudentApplicationController {
     return { application, window: scheduleWindow };
   }
 
+  // GET /applications/unbooked?unpaid=1
+  @Get('unbooked')
+  async listUnbooked(
+    @Query('unpaid') unpaid?: string,
+  ) {
+    const unpaidOnly = unpaid === '1' || unpaid === 'true';
+    return this.appService.listUnbookedOrUnpaid({ unpaidOnly });
+  }
+
   // DELETE /applications/:id
   @Delete(':id')
   async deleteApplication(@Param('id', MongoIdPipe) id: string) {

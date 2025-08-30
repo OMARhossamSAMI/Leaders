@@ -77,46 +77,35 @@ export default function ApplicationsPage() {
     indexOfFirstApp,
     indexOfLastApp
   );
+  const [source, setSource] = useState<'all' | 'unbooked'>('all');
+
 
 
   useEffect(() => {
     setLoadingApplications(true);
 
+    // load form fields (unchanged)
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`)
       .then((res) => res.json())
-      .then((data: FormField[]) => {
-        console.log("✅ Loaded form fields:", data);
-        setFormFields(data);
-      })
-      .catch((err: unknown) =>
-        console.error("Failed to fetch form fields", err)
-      );
+      .then((data: FormField[]) => setFormFields(data))
+      .catch((err) => console.error("Failed to fetch form fields", err));
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
+    // load applications depending on source
+    const url =
+      source === 'all'
+        ? `${process.env.NEXT_PUBLIC_API_URL}/applications`
+        : `${process.env.NEXT_PUBLIC_API_URL}/applications/unbooked?unpaid=1`;
+
+    fetch(url)
       .then((res) => res.json())
       .then((apps: Application[]) => {
-        console.log("📦 Raw applications response:", apps);
-
-        const normalized = apps.map((app) => ({
-          ...app,
-          files: app.files ?? [],
-        }));
-
-        console.log("✅ Normalized apps:", normalized);
-        normalized.forEach((app, idx) => {
-          console.log(
-            `📄 Application #${idx} data keys:`,
-            Object.keys(app.data || {})
-          );
-        });
-
+        const normalized = apps.map((app) => ({ ...app, files: app.files ?? [] }));
         setApplications(normalized);
       })
-      .catch((err: unknown) =>
-        console.error("Failed to fetch applications", err)
-      )
+      .catch((err) => console.error("Failed to fetch applications", err))
       .finally(() => setLoadingApplications(false));
-  }, []);
+  }, [source]);
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -372,9 +361,9 @@ export default function ApplicationsPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
-  
 
-  
+
+
 
   return (
     <>
@@ -401,9 +390,8 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -487,6 +475,19 @@ export default function ApplicationsPage() {
                   ) : (
                     <>
                       <button
+                        className={`btn ${source === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setSource('all')}
+                      >
+                        All applications
+                      </button>
+                      <button
+                        className={`btn ${source === 'unbooked' ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setSource('unbooked')}
+                        title="Show students who submitted but did not book/pay their assessment"
+                      >
+                        No assessment
+                      </button>
+                      <button
                         onClick={exportToExcel}
                         className="btn-primary mb-4"
                         style={{ display: "block", marginLeft: "auto" }}
@@ -519,14 +520,14 @@ export default function ApplicationsPage() {
                           currentApplications.map((app) => {
                             const displayName =
                               typeof app?.data?.student_name === "string" &&
-                              app.data.student_name.trim() !== ""
+                                app.data.student_name.trim() !== ""
                                 ? app.data.student_name.trim()
                                 : Object.entries(app?.data || {}).find(
-                                    ([key, val]) =>
-                                      key.toLowerCase().includes("name") &&
-                                      typeof val === "string" &&
-                                      val.trim() !== ""
-                                  )?.[1] || "Unnamed Applicant";
+                                  ([key, val]) =>
+                                    key.toLowerCase().includes("name") &&
+                                    typeof val === "string" &&
+                                    val.trim() !== ""
+                                )?.[1] || "Unnamed Applicant";
 
                             return (
                               <div
@@ -595,8 +596,8 @@ export default function ApplicationsPage() {
                                   <strong>Submitted:</strong>{" "}
                                   {app.createdAt
                                     ? new Date(
-                                        String(app.createdAt)
-                                      ).toLocaleDateString()
+                                      String(app.createdAt)
+                                    ).toLocaleDateString()
                                     : "N/A"}
                                 </p>
 
@@ -645,7 +646,7 @@ export default function ApplicationsPage() {
                                             <strong>{field.label}:</strong>{" "}
                                             {renderFieldValue(
                                               expandedData[app._id]?.data?.[
-                                                field.field_name
+                                              field.field_name
                                               ]
                                             )}
                                           </p>
@@ -672,7 +673,7 @@ export default function ApplicationsPage() {
                                                 value={
                                                   getSafeInputValue(
                                                     editingApp?.data?.[
-                                                      field.field_name
+                                                    field.field_name
                                                     ]
                                                   ) || ""
                                                 }
@@ -702,7 +703,7 @@ export default function ApplicationsPage() {
                                                 type={field.type}
                                                 value={getSafeInputValue(
                                                   editingApp?.data?.[
-                                                    field.field_name
+                                                  field.field_name
                                                   ]
                                                 )}
                                                 onChange={(e) =>
@@ -765,11 +766,10 @@ export default function ApplicationsPage() {
                             <button
                               key={i + 1}
                               onClick={() => setCurrentPage(i + 1)}
-                              className={`btn btn-sm ${
-                                currentPage === i + 1
-                                  ? "btn-primary"
-                                  : "btn-outline-secondary"
-                              }`}
+                              className={`btn btn-sm ${currentPage === i + 1
+                                ? "btn-primary"
+                                : "btn-outline-secondary"
+                                }`}
                             >
                               {i + 1}
                             </button>

@@ -115,6 +115,7 @@ export class AppointmentsService {
     return local.toISOString().substring(11, 16); // HH:mm
   }
 
+  
   /** Find an application by id or parent email (father/mother). */
   private async findApplication(applicationId?: string, parentEmail?: string) {
     let application: any = null;
@@ -365,25 +366,60 @@ export class AppointmentsService {
     }
   }
 
-  async listAll(opts?: { upcoming?: boolean; q?: string }) {
-    const filter: any = {};
-    if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
-    if (opts?.q)
-      filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
+// …
+async listAll(opts?: { upcoming?: boolean; q?: string }) {
+  const filter: any = {};
+  if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
+  if (opts?.q) filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
 
-    const docs = await this.apptModel
-      .find(filter)
-      .sort({ slotISO: 1 })
-      .lean()
-      .exec();
+  // 1) pull appointments
+  const docs = await this.apptModel
+    .find(filter, { parentEmail: 1, slotISO: 1, applicationId: 1, createdAt: 1 })
+    .sort({ slotISO: 1 })
+    .lean()
+    .exec();
 
-    return docs.map((d) => ({
-      _id: String(d._id),
-      parentEmail: d.parentEmail,
-      slotISO: d.slotISO,
-      applicationId: d.applicationId ? String(d.applicationId) : undefined,
-      createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
-    }));
+  // 2) collect valid application ids (string or ObjectId)
+  const appIds = Array.from(
+    new Set(
+      docs
+        .map(d => d.applicationId)
+        .filter((id: any) => !!id)
+        .map((id: any) => (typeof id === 'string' ? id : String(id)))
+        .filter(id => Types.ObjectId.isValid(id))
+        .map(id => new Types.ObjectId(id))
+    )
+  );
+
+  // 3) fetch student_name in one query
+  const apps = appIds.length
+    ? await this.appModel
+        .find({ _id: { $in: appIds } }, { 'data.student_name': 1 })
+        .lean()
+        .exec()
+    : [];
+
+  const nameById = new Map<string, string | undefined>(
+    apps.map((a: any) => [String(a._id), a?.data?.student_name?.trim?.()])
+  );
+
+  // 4) return appointments with studentName attached
+  return docs.map((d: any) => ({
+    _id: String(d._id),
+    parentEmail: d.parentEmail,
+    slotISO: d.slotISO,
+    applicationId: d.applicationId ? String(d.applicationId) : undefined,
+    createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
+    studentName: d.applicationId ? nameById.get(String(d.applicationId)) || undefined : undefined,
+  }));
+}
+
+async removeById(id: string): Promise<boolean> {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid appointment id');
+    }
+    const res = await this.apptModel.deleteOne({ _id: new Types.ObjectId(id) }).exec();
+    return res.deletedCount === 1;
   }
 
   /** Return only available HH:mm strings for the given local day (hides full slots). */
