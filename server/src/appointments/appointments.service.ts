@@ -952,7 +952,7 @@ export class AppointmentsService {
           );
 
           console.log('📲 WhatsApp API response:', waRes);
-
+          await this.delay(5000);
           
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
