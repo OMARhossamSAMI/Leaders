@@ -23,6 +23,7 @@ import { AcceptedStudentModule } from '../accepted-student/accepted-student.modu
         schema: StudentApplicationSchema,
         collection: 'studentapplications',
       },
+      { name: 'WaSend', schema: require('../Schemas/wa-send.schema').WaSendSchema }, // 👈 add WaSend schema
     ]),
     HttpModule, // 👈 add this
     ConfigModule, // 👈 make sure ConfigModule is available

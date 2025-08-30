@@ -44,6 +44,8 @@ export class AppointmentsService {
   constructor(
     @InjectModel(Appointment.name)
     private readonly apptModel: Model<AppointmentDocument>,
+    @InjectModel('WaSend')
+    private readonly waSendModel: Model<any>,
 
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
@@ -365,59 +367,78 @@ export class AppointmentsService {
     }
   }
 
-  // …
+ 
   async listAll(opts?: { upcoming?: boolean; q?: string }) {
     const filter: any = {};
     if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
     if (opts?.q)
       filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
 
-    // 1) pull appointments
+
     const docs = await this.apptModel
-      .find(filter, {
-        parentEmail: 1,
-        slotISO: 1,
-        applicationId: 1,
-        createdAt: 1,
-      })
+      .find(filter)
       .sort({ slotISO: 1 })
       .lean()
       .exec();
 
-    // 2) collect valid application ids (string or ObjectId)
-    const appIds = Array.from(
-      new Set(
-        docs
-          .map((d) => d.applicationId)
-          .filter((id: any) => !!id)
-          .map((id: any) => (typeof id === 'string' ? id : String(id)))
-          .filter((id) => Types.ObjectId.isValid(id))
-          .map((id) => new Types.ObjectId(id)),
-      ),
+    // Collect ids safely
+    const apptIds: Types.ObjectId[] = [];
+    const appIds: Types.ObjectId[] = [];
+    for (const d of docs) {
+      try {
+        apptIds.push(new Types.ObjectId(String(d._id)));
+      } catch {}
+      if (d.applicationId) {
+        try {
+          appIds.push(new Types.ObjectId(String(d.applicationId)));
+        } catch {}
+      }
+    }
+
+    // Map: appointment -> sentAt (for assessment template)
+    const template = process.env.WA_TEMPLATE_NAME ?? 'assessment_confirmation';
+    const sends = apptIds.length
+      ? await this.waSendModel
+          .find({ apptId: { $in: apptIds }, template })
+          .select({ apptId: 1, sentAt: 1 })
+          .lean()
+      : [];
+    const sentByAppt = new Map<string, Date | null>(
+      sends.map((s) => [String(s.apptId), s.sentAt ?? null]),
     );
 
-    // 3) fetch student_name in one query
+    // Map: application -> studentName
     const apps = appIds.length
       ? await this.appModel
-          .find({ _id: { $in: appIds } }, { 'data.student_name': 1 })
+          .find({ _id: { $in: appIds } })
+          .select({ _id: 1, data: 1, student_name: 1 })
           .lean()
-          .exec()
       : [];
+    const nameByApp = new Map<string, string>();
+    for (const a of apps) {
+      const data: any = a?.data || {};
+      const sn =
+        typeof data.student_name === 'string' && data.student_name.trim()
+          ? data.student_name.trim()
+          : typeof data.student === 'string' && data.student.trim()
+            ? data.student.trim()
+            : typeof data.child_name === 'string' && data.child_name.trim()
+              ? data.child_name.trim()
+              : '';
+      if (sn) nameByApp.set(String(a._id), sn);
+    }
 
-    const nameById = new Map<string, string | undefined>(
-      apps.map((a: any) => [String(a._id), a?.data?.student_name?.trim?.()]),
-    );
-
-    // 4) return appointments with studentName attached
-    return docs.map((d: any) => ({
+    // Shape response for UI
+    return docs.map((d) => ({
       _id: String(d._id),
       parentEmail: d.parentEmail,
       slotISO: d.slotISO,
       applicationId: d.applicationId ? String(d.applicationId) : undefined,
-      createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
       studentName: d.applicationId
-        ? nameById.get(String(d.applicationId)) || undefined
+        ? nameByApp.get(String(d.applicationId)) || undefined
         : undefined,
+      createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
+      waSentAt: sentByAppt.get(String(d._id)) ?? null, // use this to disable the send button
     }));
   }
 
