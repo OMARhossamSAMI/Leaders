@@ -807,7 +807,7 @@ export class AppointmentsService {
             to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_video',
+              name: 'admissions_welcome_video_new',
               language: { code: 'en' },
               components: [
                 {
