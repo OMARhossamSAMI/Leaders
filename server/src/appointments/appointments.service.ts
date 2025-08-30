@@ -367,14 +367,13 @@ export class AppointmentsService {
     }
   }
 
-  // …
-  // src/appointments/appointments.service.ts
-
+ 
   async listAll(opts?: { upcoming?: boolean; q?: string }) {
     const filter: any = {};
     if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
     if (opts?.q)
       filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
+
 
     const docs = await this.apptModel
       .find(filter)
@@ -678,7 +677,7 @@ export class AppointmentsService {
   `;
 
     const hrNotification = {
-      to: 'omar.hossam3@gmail.com', // replace with HR email
+      to: 'ahmed9204.ab@gmail.com', // replace with HR email
       from: {
         email: 'admission@leadersintcollege.com',
         name: 'Admissions Appointments',
@@ -748,10 +747,13 @@ export class AppointmentsService {
     }
   }
 
-  private async sendWelcomeVideoMessage(phoneNumber: string) {
+  private async sendWelcomeVideoMessage(
+    phoneNumber: string,
+    Father_name: string,
+  ) {
     const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
     console.log(
-      '📲 Sending admissions_welcome_video WhatsApp template to:',
+      '📲 Sending admissions_welcome_link WhatsApp template to:',
       normalizedPhone,
     );
 
@@ -764,20 +766,30 @@ export class AppointmentsService {
             to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_video',
+              name: 'admissions_welcome_link', // template name
               language: { code: 'en' },
               components: [
                 {
                   type: 'header',
                   parameters: [
                     {
-                      type: 'video',
-                      video: {
-                        link: 'https://leadersintcollege.com/assets/img/education/Video2.mp4',
+                      type: 'image',
+                      image: {
+                        link: 'https://leadersintcollege.com/assets/img/Whatapp_LIC.png',
                       },
                     },
                   ],
                 },
+                {
+                  type: 'body',
+                  parameters: [
+                    {
+                      type: 'text',
+                      text: Father_name || 'Parent',
+                    },
+                  ],
+                },
+                // ❌ No button.parameters here, since URL is static in template
               ],
             },
           },
@@ -790,17 +802,66 @@ export class AppointmentsService {
         ),
       );
 
-      console.log('✅ admissions_welcome_video sent:', response.data);
+      console.log('✅ admissions_welcome_link sent:', response.data);
       return response.data;
     } catch (err) {
       console.error(
-        '❌ Failed to send admissions_welcome_video:',
+        '❌ Failed to send admissions_welcome_link:',
         err?.response?.data || err,
       );
       throw err;
     }
   }
+  private async sendVideoOptInMessage(phoneNumber: string) {
+    const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
+    console.log(
+      '📲 Sending admissions_video_optin WhatsApp template to:',
+      normalizedPhone,
+    );
 
+    try {
+      const response = await firstValueFrom(
+        this.http.post(
+          `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+          {
+            messaging_product: 'whatsapp',
+            to: normalizedPhone,
+            type: 'template',
+            template: {
+              name: 'admissions_video_optin', // 👈 the Utility template you created
+              language: { code: 'en' },
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+
+      console.log('✅ admissions_video_optin sent:', response.data);
+      return response.data;
+    } catch (err) {
+      console.error(
+        '❌ Failed to send admissions_video_optin:',
+        err?.response?.data || err,
+      );
+      throw err;
+    }
+  }
+  async handleIncomingMessage(msg: any) {
+    const from = msg.from; // phone number in WhatsApp format
+    const text = msg?.text?.body?.trim()?.toLowerCase();
+
+    this.logger.log(`📥 WA message from ${from}: ${text}`);
+
+    await this.sendWelcomeVideoMessage(from, 'Parent');
+  }
+  private async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -913,15 +974,23 @@ export class AppointmentsService {
 
           console.log('📲 WhatsApp API response:', waRes);
 
+          await this.delay(5000);
+
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
             extras.fatherPhone || extras.motherPhone,
           );
-
-          // === NEW: Send Welcome Video ===
-          await this.sendWelcomeVideoMessage(
+          await this.delay(10000);
+          // === NEW: Ask for reply to unlock video ===
+          await this.sendVideoOptInMessage(
             extras.fatherPhone || extras.motherPhone,
           );
+
+          // === NEW: Send Welcome Video ===
+          // await this.sendWelcomeVideoMessage(
+          //   extras.fatherPhone || extras.motherPhone,
+          //   extras.fatherName || 'Parent',
+          // );
 
           // ✅ Send HR Email as well
           await this.sendHrAppointmentEmail(extras, cairoDate);
