@@ -56,46 +56,31 @@ export class WhatsappController {
     };
   }
 
-  /**
-   * WhatsApp Webhook verification (GET).
-   * Meta sends hub.mode, hub.verify_token, hub.challenge.
-   * You MUST echo hub.challenge on success.
-   *
-   * Callback URL you configure in WhatsApp Manager:
-   *   https://<your-public-host>/wa/webhook
-   */
-  @Get('webhook')
-  verifyWebhook(
+  private readonly log = new Logger('WAWebhook');
+
+  // Meta calls this once to verify
+  @Get()
+  verify(
     @Query('hub.mode') mode: string,
     @Query('hub.verify_token') token: string,
     @Query('hub.challenge') challenge: string,
     @Res() res: Response,
   ) {
-    const expected =
-      process.env.WA_WEBHOOK_VERIFY ?? process.env.WEBHOOK_VERIFY_TOKEN;
-
-    if (mode === 'subscribe' && token && token === expected) {
-      // MUST return the challenge verbatim with 200 OK
+    if (mode === 'subscribe' && token === process.env.WA_VERIFY_TOKEN) {
+      // must return the challenge as plain text, 200
       return res.status(200).send(challenge);
     }
     return res.sendStatus(403);
   }
 
-  /**
-   * WhatsApp Webhook receiver (POST).
-   * Handle message/status notifications here. Always return 200 quickly.
-   */
-  @Post('webhook')
-  @HttpCode(200)
-  receiveWebhook(@Body() body: any) {
-    this.logger.debug(`[WA WEBHOOK] ${JSON.stringify(body)}`);
-    // TODO: add your business logic (message/status handling) here if needed
-    return { received: true };
+  // Delivery status / message events (optional but recommended)
+  @Post()
+  receive(@Body() payload: any) {
+    // …log statuses/messages…
+    return { ok: true };
   }
 
-  /**
-   * Sends the assessment confirmation message (template or free text).
-   */
+  // --- send assessment confirmation message
   @Post('assessment-confirmation')
   @HttpCode(202)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

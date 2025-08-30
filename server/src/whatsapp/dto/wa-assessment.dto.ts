@@ -1,18 +1,21 @@
-// dto/wa-assessment.dto.ts
-import { IsEmail, IsISO8601, IsMongoId, ValidateIf } from 'class-validator';
+// src/whatsapp/dto/wa-assessment.dto.ts
+import { IsEmail, IsISO8601, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class WaAssessmentDto {
-  // Require email only when applicationId is missing
-  @ValidateIf(o => !o.applicationId)
+  @IsOptional()
   @IsEmail()
-  parentEmail!: string;
+  parentEmail?: string;
 
-  // Require applicationId only when email is missing
-  @ValidateIf(o => !o.parentEmail)
+  @IsOptional()
   @IsMongoId()
   applicationId?: string;
 
-  // strict ISO8601 validation
-  @IsISO8601({ strict: true })
-  slotISO!: string;
+  // include if you send once-per-appointment logic
+  @IsOptional()
+  @IsMongoId()
+  appointmentId?: string;
+
+  @IsString()
+  @IsISO8601()
+  slotISO!: string;  // <-- MUST be named exactly "slotISO"
 }

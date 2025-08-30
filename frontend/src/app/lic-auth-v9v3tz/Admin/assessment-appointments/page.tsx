@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 
+// 1) add server field to the type
 type Appt = {
   _id: string;
   parentEmail: string;
@@ -13,11 +14,16 @@ type Appt = {
   applicationId?: string;
   createdAt?: string;
   studentName?: string;
+  waSentAt?: string | null;            // <— NEW
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL as string;
-const SENT_LS_KEY = "wa_sent_appts_v1";
+// 2) bump LS key so old appId-based entries don’t poison UI
+const SENT_LS_KEY = "wa_sent_appts_v2";      // <— was v1
 const CUSTOM_SENT_LS_KEY = "wa_custom_sent_v1";
+
+
+const API = process.env.NEXT_PUBLIC_API_URL as string;
+
 
 type FilterMode = "upcoming" | "past" | "all";
 
@@ -89,23 +95,23 @@ export default function AssessmentAppointmentsPage() {
     try {
       const raw = localStorage.getItem(SENT_LS_KEY);
       if (raw) setSentKeys(new Set(JSON.parse(raw)));
-    } catch {}
+    } catch { }
     try {
       const raw2 = localStorage.getItem(CUSTOM_SENT_LS_KEY);
       if (raw2) setCustomSent(new Set(JSON.parse(raw2)));
-    } catch {}
+    } catch { }
   }, []);
   function persist(set: Set<string>, key: string) {
     try {
       localStorage.setItem(key, JSON.stringify(Array.from(set)));
-    } catch {}
+    } catch { }
   }
-  const keyFor = (a: Appt) => (a.applicationId ? a.applicationId : a._id);
+  const keyFor = (a: Appt) => a._id;
   function markSent(a: Appt) {
-    setSentKeys((prev) => {
+    setSentKeys(prev => {
       const next = new Set(prev);
-      next.add(keyFor(a));
-      persist(next, SENT_LS_KEY);
+      next.add(a._id);                              // <-- appointment id
+      localStorage.setItem(SENT_LS_KEY, JSON.stringify([...next]));
       return next;
     });
   }
@@ -117,17 +123,17 @@ export default function AssessmentAppointmentsPage() {
       return next;
     });
   }
-  function unmarkAllFor(apptId: string, appKey: string) {
-    setSentKeys((prev) => {
-      const next = new Set(prev);
-      next.delete(appKey);
-      persist(next, SENT_LS_KEY);
-      return next;
-    });
-    setCustomSent((prev) => {
+  function unmarkAllFor(apptId: string) {
+    setSentKeys(prev => {
       const next = new Set(prev);
       next.delete(apptId);
-      persist(next, CUSTOM_SENT_LS_KEY);
+      localStorage.setItem(SENT_LS_KEY, JSON.stringify([...next]));
+      return next;
+    });
+    setCustomSent(prev => {
+      const next = new Set(prev);
+      next.delete(apptId);
+      localStorage.setItem(CUSTOM_SENT_LS_KEY, JSON.stringify([...next]));
       return next;
     });
   }
@@ -171,9 +177,15 @@ export default function AssessmentAppointmentsPage() {
       if (typeof sn === "string" && sn.trim()) studentName = sn.trim();
     }
 
+
+
     const applicationId = pickStr(v, "applicationId");
     const createdAt = pickStr(v, "createdAt");
-    return { _id, parentEmail, slotISO, applicationId, createdAt, studentName };
+
+    let waSentAt: string | null = null;
+    const ws = (v as any)?.waSentAt;
+    if (typeof ws === "string" && ws.trim()) waSentAt = ws;
+    return { _id, parentEmail, slotISO, applicationId, createdAt, studentName, waSentAt };
   };
 
   useEffect(() => {
@@ -200,7 +212,7 @@ export default function AssessmentAppointmentsPage() {
               ok = true;
               break;
             }
-          } catch {}
+          } catch { }
         }
         if (!ok) throw new Error("No appointment list endpoint responded with data.");
         const rawList = extractArray(payload);
@@ -282,10 +294,10 @@ export default function AssessmentAppointmentsPage() {
           v == null
             ? ""
             : typeof v === "string"
-            ? v
-            : typeof v === "number"
-            ? String(v)
-            : JSON.stringify(v);
+              ? v
+              : typeof v === "number"
+                ? String(v)
+                : JSON.stringify(v);
         return Math.max(acc, s.length);
       }, k.length);
       return { wch: Math.min(Math.max(maxLen + 2, 10), 60) };
@@ -332,14 +344,14 @@ export default function AssessmentAppointmentsPage() {
 
     setSendingIds((prev) => new Set(prev).add(a._id));
     try {
-      const body = { parentEmail: a.parentEmail, slotISO: a.slotISO, applicationId: a.applicationId };
+      const body = { appointmentId: a._id, parentEmail: a.parentEmail, slotISO: a.slotISO, applicationId: a.applicationId };
       const res = await fetch(`${API}/wa/assessment-confirmation`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       });
       const ct = res.headers.get("content-type") || "";
       const raw = await res.text();
       let data: any = raw;
-      try { if (ct.includes("application/json")) data = JSON.parse(raw); } catch {}
+      try { if (ct.includes("application/json")) data = JSON.parse(raw); } catch { }
 
       if (!res.ok) {
         const msg = typeof data === "object" && data !== null && "message" in data ? String(data.message) : raw || `HTTP ${res.status}`;
@@ -374,7 +386,7 @@ export default function AssessmentAppointmentsPage() {
         return;
       }
       setItems((prev) => prev.filter((x) => x._id !== a._id));
-      unmarkAllFor(a._id, keyFor(a));
+      unmarkAllFor(a._id);
       setSelectedIds((prev) => {
         const next = new Set(prev);
         next.delete(a._id);
@@ -544,7 +556,9 @@ export default function AssessmentAppointmentsPage() {
                 const deleting = deletingIds.has(a._id);
                 const okPhones = sendOk[a._id];
                 const errMsg = sendErr[a._id];
-                const alreadySent = sentKeys.has(keyFor(a));
+                // 5) compute alreadySent from server + local optimistic flag
+                const alreadySent = Boolean(a.waSentAt) || sentKeys.has(a._id);
+
                 const isSelected = selectedIds.has(a._id);
                 const alreadyCustom = customSent.has(a._id);
 
@@ -559,9 +573,8 @@ export default function AssessmentAppointmentsPage() {
                 return (
                   <div key={a._id} className="col-12 col-lg-6 col-xxl-4 d-flex">
                     <div
-                      className={`card appt-card shadow-sm border-0 h-100 mx-auto ${
-                        past ? "is-past" : "is-upcoming"
-                      } ${isSelected ? "selected" : ""}`}
+                      className={`card appt-card shadow-sm border-0 h-100 mx-auto ${past ? "is-past" : "is-upcoming"
+                        } ${isSelected ? "selected" : ""}`}
                       style={{ maxWidth: 560, width: "100%" }}
                     >
                       {/* Select checkbox */}
@@ -603,28 +616,34 @@ export default function AssessmentAppointmentsPage() {
 
                       <div className="card-body p-4">
                         {/* Status badges */}
-                        {alreadyCustom && (
-                          <div className="mb-3">
-                            <span className="badge bg-info">
-                              Custom message sent
-                            </span>
-                          </div>
-                        )}
-                        {alreadySent && (
-                          <div className="mb-3">
-                            <span className="badge bg-success">Assessment message sent</span>
-                          </div>
-                        )}
-                        {okPhones && !alreadySent && (
-                          <div className="mb-3">
-                            <span className="badge bg-success-subtle text-success-emphasis border border-success-subtle">
-                              Sent to {okPhones.length || 0} recipient{okPhones.length === 1 ? "" : "s"}
-                            </span>
-                            {okPhones.length > 0 && (
-                              <div className="small text-muted mt-1">{okPhones.join(", ")}</div>
+                        {(alreadyCustom || alreadySent) && (
+                          <div className="mb-3 d-flex flex-wrap gap-2">
+                            {alreadySent && (
+                              <span className="badge bg-success d-inline-flex align-items-center gap-1">
+                                <i className="bi bi-check-circle-fill" />
+                                Assessment message sent
+                              </span>
+                            )}
+                            {alreadyCustom && (
+                              <span className="badge bg-info d-inline-flex align-items-center gap-1">
+                                <i className="bi bi-chat-left-quote-fill" />
+                                Custom message sent
+                              </span>
                             )}
                           </div>
                         )}
+
+                        {/* Local-session success (before refresh) */}
+                        {!!okPhones?.length && !alreadySent && (
+                          <div className="mb-3">
+                            <span className="badge bg-success-subtle text-success-emphasis border border-success-subtle">
+                              Sent to {okPhones.length} recipient{okPhones.length === 1 ? '' : 's'}
+                            </span>
+                            <div className="small text-muted mt-1">{okPhones.join(', ')}</div>
+                          </div>
+                        )}
+
+                        {/* Error */}
                         {errMsg && (
                           <div className="alert alert-danger py-2 px-3 mb-3">
                             <strong>Send failed:</strong> {errMsg}
@@ -632,16 +651,27 @@ export default function AssessmentAppointmentsPage() {
                         )}
 
                         <div className="d-flex gap-2">
+                          {/* Assessment send button (once per appointment) */}
                           <button
                             type="button"
-                            className={`btn ${alreadySent ? "btn-outline-secondary" : "btn-success"} btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
-                            onClick={() => !alreadySent && sendWa(a)}
-                            title={alreadySent ? "Message already sent" : "Send WhatsApp confirmation"}
+                            className={`btn ${alreadySent ? 'btn-outline-secondary' : 'btn-success'
+                              } btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
+                            onClick={() => !alreadySent && sendWa({ ...(a as any), appointmentId: a._id })}
+                            title={
+                              alreadySent
+                                ? 'Message already sent for this appointment'
+                                : 'Send WhatsApp confirmation'
+                            }
                             disabled={sending || alreadySent}
+                            aria-disabled={sending || alreadySent}
                           >
                             {sending ? (
                               <>
-                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
                                 Sending…
                               </>
                             ) : alreadySent ? (
@@ -657,6 +687,7 @@ export default function AssessmentAppointmentsPage() {
                             )}
                           </button>
 
+                          {/* Delete */}
                           <button
                             type="button"
                             className="btn btn-outline-danger btn-lg flex-fill d-flex align-items-center justify-content-center gap-2"
@@ -666,7 +697,11 @@ export default function AssessmentAppointmentsPage() {
                           >
                             {deleting ? (
                               <>
-                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                                <span
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                  aria-hidden="true"
+                                />
                                 Deleting…
                               </>
                             ) : (
@@ -678,6 +713,7 @@ export default function AssessmentAppointmentsPage() {
                           </button>
                         </div>
                       </div>
+
                     </div>
                   </div>
                 );
