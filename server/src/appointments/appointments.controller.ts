@@ -27,7 +27,9 @@ export class AppointmentsController {
     if (offset == null) return 0;
     const n = Number(offset);
     if (!Number.isFinite(n)) {
-      throw new BadRequestException('offset must be a number (UTC - local minutes)');
+      throw new BadRequestException(
+        'offset must be a number (UTC - local minutes)',
+      );
     }
     return Math.trunc(n);
   }
@@ -82,7 +84,10 @@ export class AppointmentsController {
    * Same as GET /appointments with optional filters. Kept for frontend compatibility.
    */
   @Get('admin-list')
-  async adminList(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
+  async adminList(
+    @Query('upcoming') upcoming?: string,
+    @Query('q') q?: string,
+  ) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
@@ -95,7 +100,10 @@ export class AppointmentsController {
    * Response: { times: string[] }
    */
   @Get('available')
-  async available(@Query('date') date: string, @Query('offset') offset?: string) {
+  async available(
+    @Query('date') date: string,
+    @Query('offset') offset?: string,
+  ) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       throw new BadRequestException('date must be YYYY-MM-DD');
     }
@@ -143,5 +151,41 @@ export class AppointmentsController {
     const ok = await this.service.removeById(id);
     if (!ok) throw new NotFoundException('Appointment not found');
     return { ok: true, id };
+  }
+  // ✅ Step 1: Verification endpoint for Meta
+  @Get('webhook')
+  verifyWebhook(@Query() query: any, @Res() res: Response) {
+    const mode = query['hub.mode'];
+    const token = query['hub.verify_token'];
+    const challenge = query['hub.challenge'];
+
+    if (mode === 'subscribe' && token === process.env.WA_VERIFY_TOKEN) {
+      console.log('✅ Webhook verified with Meta');
+      return res.status(200).send(challenge);
+    } else {
+      console.warn('❌ Webhook verification failed');
+      return res.sendStatus(403);
+    }
+  }
+
+  // ✅ Step 2: Webhook for incoming messages
+  @Post('webhook')
+  async handleIncoming(@Body() body: any, @Res() res: Response) {
+    console.log('📥 Incoming WA webhook:', JSON.stringify(body, null, 2));
+
+    try {
+      const changes = body?.entry?.[0]?.changes?.[0]?.value;
+      const messages = changes?.messages;
+
+      if (messages && messages.length > 0) {
+        for (const msg of messages) {
+          await this.service.handleIncomingMessage(msg);
+        }
+      }
+      return res.sendStatus(200);
+    } catch (err) {
+      console.error('❌ Error handling WA webhook:', err);
+      return res.sendStatus(500);
+    }
   }
 }
