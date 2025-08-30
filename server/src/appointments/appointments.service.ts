@@ -656,7 +656,7 @@ export class AppointmentsService {
   `;
 
     const hrNotification = {
-      to: 'omar.hossam3@gmail.com', // replace with HR email
+      to: 'ahmed9204.ab@gmail.com', // replace with HR email
       from: {
         email: 'admission@leadersintcollege.com',
         name: 'Admissions Appointments',
@@ -971,7 +971,7 @@ export class AppointmentsService {
           // );
 
           // ✅ Send HR Email as well
-          // await this.sendHrAppointmentEmail(extras, cairoDate);
+          await this.sendHrAppointmentEmail(extras, cairoDate);
         } catch (waErr) {
           console.error('⚠️ Failed to send WhatsApp message:', waErr);
         }
