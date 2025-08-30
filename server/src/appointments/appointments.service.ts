@@ -953,7 +953,6 @@ export class AppointmentsService {
 
           console.log('📲 WhatsApp API response:', waRes);
 
-          
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
             extras.fatherPhone || extras.motherPhone,
