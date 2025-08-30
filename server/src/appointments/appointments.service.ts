@@ -836,12 +836,11 @@ export class AppointmentsService {
 
     this.logger.log(`📥 WA message from ${from}: ${text}`);
 
-    // If parent replies "hi", trigger the video
-    if (text === 'hi') {
-      await this.sendWelcomeVideoMessage(from, 'Parent');
-    }
+    await this.sendWelcomeVideoMessage(from, 'Parent');
   }
-
+  private async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -954,10 +953,12 @@ export class AppointmentsService {
 
           console.log('📲 WhatsApp API response:', waRes);
 
+          await this.delay(1000);
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
             extras.fatherPhone || extras.motherPhone,
           );
+          await this.delay(1000);
           // === NEW: Ask for reply to unlock video ===
           await this.sendVideoOptInMessage(
             extras.fatherPhone || extras.motherPhone,
