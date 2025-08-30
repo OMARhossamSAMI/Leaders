@@ -746,7 +746,7 @@ export class AppointmentsService {
             to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_video', // your template name
+              name: 'admissions_welcome_link', // your template name
               language: { code: 'en' },
               components: [
                 {
