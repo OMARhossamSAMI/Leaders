@@ -953,12 +953,12 @@ export class AppointmentsService {
 
           console.log('📲 WhatsApp API response:', waRes);
 
-          await this.delay(1000);
+          await this.delay(5000);
           // === NEW: Send Intro PDF ===
           await this.sendIntroPdfMessage(
             extras.fatherPhone || extras.motherPhone,
           );
-          await this.delay(1000);
+          await this.delay(5000);
           // === NEW: Ask for reply to unlock video ===
           await this.sendVideoOptInMessage(
             extras.fatherPhone || extras.motherPhone,
