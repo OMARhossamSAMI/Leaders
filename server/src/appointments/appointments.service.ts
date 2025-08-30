@@ -729,11 +729,10 @@ export class AppointmentsService {
   private async sendWelcomeVideoMessage(
     phoneNumber: string,
     Father_name: string,
-    videoLink: string,
   ) {
     const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
     console.log(
-      '📲 Sending admissions_welcome_video WhatsApp template to:',
+      '📲 Sending admissions_welcome_link WhatsApp template to:',
       normalizedPhone,
     );
 
@@ -746,7 +745,7 @@ export class AppointmentsService {
             to: normalizedPhone,
             type: 'template',
             template: {
-              name: 'admissions_welcome_link', // your template name
+              name: 'admissions_welcome_link', // template name
               language: { code: 'en' },
               components: [
                 {
@@ -765,21 +764,11 @@ export class AppointmentsService {
                   parameters: [
                     {
                       type: 'text',
-                      text: Father_name || 'Parent', // 👈 insert real father name
+                      text: Father_name || 'Parent',
                     },
                   ],
                 },
-                {
-                  type: 'button',
-                  sub_type: 'url',
-                  index: 0,
-                  parameters: [
-                    {
-                      type: 'text',
-                      text: videoLink, // 👈 insert video link here
-                    },
-                  ],
-                },
+                // ❌ No button.parameters here, since URL is static in template
               ],
             },
           },
@@ -792,11 +781,11 @@ export class AppointmentsService {
         ),
       );
 
-      console.log('✅ admissions_welcome_video sent:', response.data);
+      console.log('✅ admissions_welcome_link sent:', response.data);
       return response.data;
     } catch (err) {
       console.error(
-        '❌ Failed to send admissions_welcome_video:',
+        '❌ Failed to send admissions_welcome_link:',
         err?.response?.data || err,
       );
       throw err;
@@ -924,7 +913,6 @@ export class AppointmentsService {
           await this.sendWelcomeVideoMessage(
             extras.fatherPhone || extras.motherPhone,
             extras.fatherName || 'Parent',
-            'https://leadersintcollege.com/assets/img/education/Video2.mp4',
           );
 
           // ✅ Send HR Email as well
