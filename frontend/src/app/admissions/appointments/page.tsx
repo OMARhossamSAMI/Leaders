@@ -53,6 +53,10 @@ export default function AppointmentPage() {
     startISO: string;
     endISO: string;
   } | null>(null);
+  const [showAppointments, setShowAppointments] = useState<boolean | null>(
+    null
+  );
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
@@ -139,6 +143,28 @@ export default function AppointmentPage() {
       clearInterval(id);
     };
   }, [selectedDate, app?._id]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:3000/settings/show-appointments`,
+          {
+            cache: "no-store",
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setShowAppointments(Boolean(data.showAppointments));
+        } else {
+          setShowAppointments(true); // fallback to true if API fails
+        }
+      } catch {
+        setShowAppointments(true);
+      } finally {
+        setSettingsLoading(false);
+      }
+    })();
+  }, []);
 
   // -------- Actions --------
   const onLookup = async (e: React.FormEvent) => {
@@ -384,172 +410,189 @@ export default function AppointmentPage() {
       </div>
 
       {/* Appointment Picker */}
-      {app && (
-        <div className="card shadow-sm border-0 wide-card">
-          <div className="card-body">
-            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-              <h4 className="card-title mb-0" style={{ color: DARK }}>
-                Select Appointment Slot
-              </h4>
-              <span
-                className="badge text-dark"
-                style={{ background: ACCENT_LIGHT }}
-              >
-                Window:{" "}
-                <b>
-                  {windowStart ? fmtLocalYYYYMMDD(windowStart) : "—"} →{" "}
-                  {windowEnd ? fmtLocalYYYYMMDD(windowEnd) : "—"}
-                </b>
-              </span>
-            </div>
-
-            {allowedDates.length === 0 ? (
-              <div className="alert alert-warning mb-0">
-                We couldn’t find a valid scheduling window. Please contact
-                admissions.
-              </div>
-            ) : (
-              <>
-                {/* Date Pills */}
-                <div className="mb-3">
-                  <div className="d-flex flex-wrap gap-2">
-                    {allowedDates.map((d) => {
-                      const dt = new Date(d + "T00:00:00");
-                      const nice = dt.toLocaleDateString(undefined, {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      });
-                      const active = selectedDate === d;
-                      const isPast = dt < startOfToday;
-
-                      return (
-                        <button
-                          key={d}
-                          type="button"
-                          onClick={() => {
-                            if (isPast) return;
-                            setSelectedDate(d);
-                            // selectedTime cleared in the fetch effect
-                          }}
-                          className={`btn btn-sm ${active ? "text-white" : ""}`}
-                          disabled={isPast}
-                          style={{
-                            background: active
-                              ? ACCENT
-                              : isPast
-                              ? "#e5e7eb"
-                              : ACCENT_LIGHT,
-                            color: active ? "#fff" : DARK,
-                            borderRadius: 999,
-                            fontWeight: 600,
-                            padding: "10px 16px",
-                            border: "none",
-                            opacity: isPast ? 0.6 : 1,
-                            cursor: isPast ? "not-allowed" : "pointer",
-                          }}
-                          title={isPast ? "This date has already passed" : ""}
-                        >
-                          {nice}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Times loading note */}
-                {timesLoading && (
-                  <div className="text-muted mb-2" style={{ fontSize: 13 }}>
-                    Loading available times…
-                  </div>
-                )}
-
-                {/* Time Grid — shows ONLY available times */}
-                <div
-                  className="p-3 rounded"
-                  style={{ background: "#f8fafc", border: "1px solid #eef2f7" }}
+      {app &&
+        (showAppointments ? (
+          <div className="card shadow-sm border-0 wide-card">
+            <div className="card-body">
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <h4 className="card-title mb-0" style={{ color: DARK }}>
+                  Select Appointment Slot
+                </h4>
+                <span
+                  className="badge text-dark"
+                  style={{ background: ACCENT_LIGHT }}
                 >
-                  {availableTimes.length === 0 && !timesLoading ? (
-                    <div className="alert alert-secondary mb-0">
-                      No available times left for this day. Please choose
-                      another date.
-                    </div>
-                  ) : (
-                    <div className="row g-2">
-                      {availableTimes.map((t) => {
-                        const active = selectedTime === t;
-                        const disabled = timesLoading || !selectedDate;
+                  Window:{" "}
+                  <b>
+                    {windowStart ? fmtLocalYYYYMMDD(windowStart) : "—"} →{" "}
+                    {windowEnd ? fmtLocalYYYYMMDD(windowEnd) : "—"}
+                  </b>
+                </span>
+              </div>
+
+              {allowedDates.length === 0 ? (
+                <div className="alert alert-warning mb-0">
+                  We couldn’t find a valid scheduling window. Please contact
+                  admissions.
+                </div>
+              ) : (
+                <>
+                  {/* Date Pills */}
+                  <div className="mb-3">
+                    <div className="d-flex flex-wrap gap-2">
+                      {allowedDates.map((d) => {
+                        const dt = new Date(d + "T00:00:00");
+                        const nice = dt.toLocaleDateString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        });
+                        const active = selectedDate === d;
+                        const isPast = dt < startOfToday;
 
                         return (
-                          <div key={t} className="col-6 col-md-3 col-lg-2">
-                            <button
-                              type="button"
-                              className={`btn w-100 ${
-                                active ? "text-white" : ""
-                              }`}
-                              onClick={() => !disabled && setSelectedTime(t)}
-                              disabled={disabled}
-                              style={{
-                                background: active ? ACCENT : "#ffffff",
-                                color: active ? "#fff" : DARK,
-                                border: "1px solid #e5e7eb",
-                                borderRadius: 12,
-                                fontWeight: 600,
-                                opacity: disabled ? 0.5 : 1,
-                              }}
-                            >
-                              {t}
-                            </button>
-                          </div>
+                          <button
+                            key={d}
+                            type="button"
+                            onClick={() => {
+                              if (isPast) return;
+                              setSelectedDate(d);
+                            }}
+                            className={`btn btn-sm ${
+                              active ? "text-white" : ""
+                            }`}
+                            disabled={isPast}
+                            style={{
+                              background: active
+                                ? ACCENT
+                                : isPast
+                                ? "#e5e7eb"
+                                : ACCENT_LIGHT,
+                              color: active ? "#fff" : DARK,
+                              borderRadius: 999,
+                              fontWeight: 600,
+                              padding: "10px 16px",
+                              border: "none",
+                              opacity: isPast ? 0.6 : 1,
+                              cursor: isPast ? "not-allowed" : "pointer",
+                            }}
+                            title={isPast ? "This date has already passed" : ""}
+                          >
+                            {nice}
+                          </button>
                         );
                       })}
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* Save */}
-                <div className="d-flex align-items-center gap-2 mt-3">
-                  <button
-                    type="button"
-                    onClick={onSave}
-                    className="btn"
+                  {/* Times loading note */}
+                  {timesLoading && (
+                    <div className="text-muted mb-2" style={{ fontSize: 13 }}>
+                      Loading available times…
+                    </div>
+                  )}
+
+                  {/* Time Grid */}
+                  <div
+                    className="p-3 rounded"
                     style={{
-                      background: ACCENT,
-                      color: "white",
-                      fontWeight: 700,
-                      borderRadius: 12,
-                      padding: "10px 18px",
+                      background: "#f8fafc",
+                      border: "1px solid #eef2f7",
                     }}
-                    disabled={!selectedDate || !selectedTime || saving}
                   >
-                    {saving ? "Booking..." : "Submit Appointment"}
-                  </button>
+                    {availableTimes.length === 0 && !timesLoading ? (
+                      <div className="alert alert-secondary mb-0">
+                        No available times left for this day. Please choose
+                        another date.
+                      </div>
+                    ) : (
+                      <div className="row g-2">
+                        {availableTimes.map((t) => {
+                          const active = selectedTime === t;
+                          const disabled = timesLoading || !selectedDate;
 
-                  {savedId && (
-                    <span className="text-success fw-semibold">
-                      ✅ Appointment booked successfully.
-                    </span>
-                  )}
-                  {saveError && (
-                    <span className="text-danger fw-semibold">
-                      ❌ {saveError}
-                    </span>
-                  )}
-                </div>
+                          return (
+                            <div key={t} className="col-6 col-md-3 col-lg-2">
+                              <button
+                                type="button"
+                                className={`btn w-100 ${
+                                  active ? "text-white" : ""
+                                }`}
+                                onClick={() => !disabled && setSelectedTime(t)}
+                                disabled={disabled}
+                                style={{
+                                  background: active ? ACCENT : "#ffffff",
+                                  color: active ? "#fff" : DARK,
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: 12,
+                                  fontWeight: 600,
+                                  opacity: disabled ? 0.5 : 1,
+                                }}
+                              >
+                                {t}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
 
-                {/* Email notice about payment success */}
-                <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
-                  After successful payment,{" "}
-                  <strong>
-                    Admissions will automatically receive an email
-                  </strong>{" "}
-                  with your parent email and the reserved date &amp; time.
-                </p>
-              </>
-            )}
+                  {/* Save */}
+                  <div className="d-flex align-items-center gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={onSave}
+                      className="btn"
+                      style={{
+                        background: ACCENT,
+                        color: "white",
+                        fontWeight: 700,
+                        borderRadius: 12,
+                        padding: "10px 18px",
+                      }}
+                      disabled={!selectedDate || !selectedTime || saving}
+                    >
+                      {saving ? "Booking..." : "Submit Appointment"}
+                    </button>
+
+                    {savedId && (
+                      <span className="text-success fw-semibold">
+                        ✅ Appointment booked successfully.
+                      </span>
+                    )}
+                    {saveError && (
+                      <span className="text-danger fw-semibold">
+                        ❌ {saveError}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
+                    After successful payment,{" "}
+                    <strong>
+                      Admissions will automatically receive an email
+                    </strong>{" "}
+                    with your parent email and the reserved date &amp; time.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="card shadow-sm border-0 wide-card">
+            <div className="card-body text-center p-5">
+              <h4 className="mb-3" style={{ color: DARK, fontWeight: 700 }}>
+                Admission Appointments Unavailable
+              </h4>
+              <p className="mb-4" style={{ fontSize: "1.1rem", color: "#555" }}>
+                Admission appointments are not open for booking at the moment.
+                <br />
+                Please contact our Admissions Office for more information.
+              </p>
+            </div>
+          </div>
+        ))}
 
       {/* Wider layout + small style touch for consistency */}
       <style jsx global>{`

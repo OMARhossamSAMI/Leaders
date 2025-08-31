@@ -8,6 +8,11 @@ export type SettingsDocument = Settings & Document;
 export class Settings {
   @Prop({ default: true })
   showEvents: boolean;
+  // add another one for appointments
+  @Prop({ default: true })
+  showAppointments: boolean;
+  @Prop({ type: Number, default: 0 }) // float value
+  amount: number;
 }
 
 export const SettingsSchema = SchemaFactory.createForClass(Settings);
