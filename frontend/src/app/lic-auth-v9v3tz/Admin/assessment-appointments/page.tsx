@@ -14,7 +14,8 @@ type Appt = {
   applicationId?: string;
   createdAt?: string;
   studentName?: string;
-  waSentAt?: string | null; // <— NEW
+  studentGrade?: string;
+  waSentAt?: string | null;            // <— NEW
 };
 
 // 2) bump LS key so old appId-based entries don’t poison UI
@@ -210,21 +211,38 @@ export default function AssessmentAppointmentsPage() {
       if (typeof sn === "string" && sn.trim()) studentName = sn.trim();
     }
 
+
+    let studentGrade =
+      pickStr(v as any, "studentGrade", "grade", "grade_applying_for", "gradeApplyingFor") ?? undefined;
+
+    if (!studentGrade) {
+      const app = (v as any)?.application;
+      const data = app && typeof app === "object" ? (app as any).data : undefined;
+      if (data && typeof data === "object") {
+        studentGrade =
+          pickStr(data as any,
+            "grade_applying_for",
+            "gradeApplyingFor",
+            "applied_grade",
+            "target_grade",
+            "desired_grade",
+            "entry_grade",
+            "grade"
+          ) ?? undefined;
+      }
+    }
+
+
+
+
     const applicationId = pickStr(v, "applicationId");
     const createdAt = pickStr(v, "createdAt");
 
     let waSentAt: string | null = null;
     const ws = (v as any)?.waSentAt;
     if (typeof ws === "string" && ws.trim()) waSentAt = ws;
-    return {
-      _id,
-      parentEmail,
-      slotISO,
-      applicationId,
-      createdAt,
-      studentName,
-      waSentAt,
-    };
+
+    return { _id, parentEmail, slotISO, applicationId, createdAt, studentName, studentGrade, waSentAt };
   };
 
   useEffect(() => {
@@ -314,6 +332,16 @@ export default function AssessmentAppointmentsPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+    const fmtDateTimePretty = (iso: string) =>
+  new Date(iso).toLocaleString(undefined, {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }); // e.g., "Sun, Aug 31, 2025, 03:04 PM"
+
 
   const toYMD = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -339,8 +367,10 @@ export default function AssessmentAppointmentsPage() {
       list = list.filter(
         (a) =>
           a.parentEmail.toLowerCase().includes(needle) ||
-          (a.studentName ? a.studentName.toLowerCase().includes(needle) : false)
+          (a.studentName ? a.studentName.toLowerCase().includes(needle) : false) ||
+          (a.studentGrade ? a.studentGrade.toLowerCase().includes(needle) : false)   // ← NEW
       );
+
     }
 
     if (filterMode === "past") {
@@ -380,12 +410,12 @@ export default function AssessmentAppointmentsPage() {
           ID: a._id,
           "Parent Email": a.parentEmail,
           "Student Name": a.studentName ?? "",
-          "Slot ISO": a.slotISO,
+          "Student Grade": a.studentGrade ?? "",
           "Local Date": toYMD(d),
           "Local Time": toHM(d),
           Status: d < now ? "Past" : "Upcoming",
           "Application ID": a.applicationId ?? "",
-          "Created At": a.createdAt ?? "",
+          "Created At": a.createdAt ? fmtDateTimePretty(a.createdAt) : "",
         };
       });
       if (rows.length === 0) {
@@ -699,7 +729,7 @@ export default function AssessmentAppointmentsPage() {
                 type="search"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Filter by email or student name…"
+                placeholder="Filter by email, grade or student name…"
                 className="form-control form-control-lg"
               />
             </div>
@@ -836,6 +866,13 @@ export default function AssessmentAppointmentsPage() {
                               <i className="bi bi-envelope-fill me-2"></i>
                               {a.parentEmail}
                             </div>
+                            {a.studentGrade && (
+                              <div className="small text-muted">
+                                <i className="bi bi-mortarboard-fill me-2" />
+                                Grade: {a.studentGrade}
+                              </div>
+                            )}
+
                           </div>
                         </div>
                         <div className="date-stack text-end">

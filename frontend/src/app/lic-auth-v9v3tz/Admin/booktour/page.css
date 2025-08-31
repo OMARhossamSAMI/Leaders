@@ -157,3 +157,40 @@
 /* in page.css */
 .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-btn   { cursor: pointer; pointer-events: auto; }
+
+.btn-export {
+  background: #22c5e5;               /* cyan like your screenshot */
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(34,197,229,0.35);
+  transition: transform 0.02s ease-in, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-export:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 8px 18px rgba(34,197,229,0.45);
+}
+
+.btn-export:active {
+  transform: translateY(1px);
+}
+
+.btn-export:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.export-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
