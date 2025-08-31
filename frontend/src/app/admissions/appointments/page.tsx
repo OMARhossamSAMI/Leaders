@@ -353,16 +353,41 @@ export default function AppointmentPage() {
       {/* Lookup Card */}
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
-          <h3>Book Your Child’s Assessment in Three Easy Steps</h3>
-          <p>
-            Enter the same parent email you used in your application to locate
-            your file. Once your application is found, you can select the most
-            convenient date and time for your child’s 30-minute assessment.
-            After confirming your slot and completing the assessment fee
-            payment, you’ll immediately receive a confirmation email with all
-            appointment details.
-          </p>
-          <h4 className="card-title mb-3" style={{ color: DARK }}>
+          <div className="row align-items-center">
+            {/* Left side: Text */}
+            <div className="col-lg-7">
+              <h3>Reserve Your Child’s Assessment Appointment</h3>
+              <p>
+                After you submit your application, you will need to book an assessment date for your child. This is done fully online in just a few simple steps — no phone calls or visits are required.
+              </p>
+
+              <p>
+                To <strong>confirm the booking</strong>, please note that both steps are required:
+              </p>
+
+              <ol>
+                <li><strong>Book the assessment date</strong> using your reservation code.</li>
+                <li><strong>Pay the assessment fees</strong> during the booking process.</li>
+              </ol>
+
+              <p>
+                Once these steps are completed, your child’s assessment and the parents’ interview will be officially confirmed. Our admissions team will then promptly share all the necessary details to help you prepare for the assessment day.
+              </p>
+            </div>
+
+            {/* Right side: Image */}
+            <div className="col-lg-5 text-center mt-4 mt-lg-0">
+              <img
+                src="/assets/img/education/appointment.JPG"
+                alt="Child assessment booking"
+                className="img-fluid rounded shadow-sm"
+                style={{ maxHeight: 300 }}
+              />
+            </div>
+          </div>
+
+          {/* Form below text + image */}
+          <h4 className="card-title mb-3 mt-4" style={{ color: DARK }}>
             Find Your Application
           </h4>
           <form onSubmit={onLookup} className="row g-3 align-items-end">

@@ -439,52 +439,34 @@ const selectedSlotObj = useMemo(
                               <div className="step-content">
                                 <h4>Online Application</h4>
                                 <p>
-                                  Start your application by clicking the Apply
-                                  Now button. You will need to fill out the
-                                  application form. This is your first step
-                                  toward becoming a part of our vibrant learning
-                                  community.
+                                  Begin by filling out the online application form through our website. Please ensure that all information is provided carefully and accurately.
                                 </p>
                               </div>
                             </div>
                             <div className="step-item">
                               <div className="step-number">2</div>
                               <div className="step-content">
-                                <h4>Child Assessment</h4>
+                                <h4>Book Assessment & Pay Application Fees</h4>
                                 <p>
-                                  Once your application is received, the
-                                  admission team will schedule an assessment for
-                                  your child to better understand their
-                                  educational needs and abilities. This is a
-                                  great opportunity for us to get to know each
-                                  other and ensure that our school is a good fit
-                                  for your child&apos;s learning style and
-                                  goals.
-                                </p>
-                                <h6>Parents&apos; Interview</h6>
-                                <p>
-                                  On the day of the assessment or at a time
-                                  convenient for you, we will conduct a
-                                  parents&apos; interview. This discussion is
-                                  crucial as it allows us to learn more about
-                                  your expectations and how we can best support
-                                  your child&apos;s educational journey.
+                                  After you submit your child’s application, you will receive a booking code via email. Using this code, you will be able to select and confirm the assessment date for your child and the parents’ interview. Once the booking is completed, you will be prompted to pay the application fees. This step secures the assessment appointment and confirms your place in the admissions process.
                                 </p>
                               </div>
                             </div>
                             <div className="step-item">
                               <div className="step-number">3</div>
                               <div className="step-content">
+                                <h4>Child Assessment</h4>
+                                <p>
+                                  On the scheduled date, your child will complete the assessment while parents attend an interview. This is an important opportunity for us to understand your child’s educational needs and for you to learn more about how LIC can support their journey.
+                                </p>
+                              </div>
+                            </div>
+                            <div className="step-item">
+                              <div className="step-number">4</div>
+                              <div className="step-content">
                                 <h4>Enrollment</h4>
                                 <p>
-                                  Upon acceptance, you will receive an offer for
-                                  your child to join LIC. To finalize the
-                                  enrollment, you will need to complete the
-                                  registration process and fulfill any necessary
-                                  conditions or paperwork. We will guide you
-                                  through every step to ensure your child is
-                                  ready to start their educational journey with
-                                  us.
+                                  Once the assessment and parents’ interview are complete, our admissions team will share the next steps with you. At this stage, you will receive an offer to join Leaders International College. To finalize enrollment, you simply need to complete the registration process and submit the required documents. Our admissions team will be with you every step of the way to ensure a smooth and welcoming start to your child’s journey at LIC.
                                 </p>
                               </div>
                             </div>
@@ -499,7 +481,7 @@ const selectedSlotObj = useMemo(
                         style={{
                           position: "relative",
                           width: "100%",
-                          height: "500px",
+                          height: "950px",
                         }}
                       >
                         <Image
