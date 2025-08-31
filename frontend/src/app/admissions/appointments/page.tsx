@@ -572,7 +572,7 @@ export default function AppointmentPage() {
                             <div key={t} className="col-6 col-md-3 col-lg-2">
                               <button
                                 type="button"
-                                className={`btn w-100 ${
+                                className={`btn w-100 d-flex flex-column justify-content-center align-items-center ${
                                   active ? "text-white" : ""
                                 }`}
                                 onClick={() => !disabled && setSelectedTime(t)}
@@ -587,14 +587,25 @@ export default function AppointmentPage() {
                                   border: "1px solid #e5e7eb",
                                   borderRadius: 12,
                                   fontWeight: 600,
-                                  opacity: disabled ? 0.5 : 1,
+                                  opacity: disabled ? 0.7 : 1,
                                   cursor: isAvailable
                                     ? "pointer"
                                     : "not-allowed",
+                                  minHeight: 60, // ✅ makes all buttons equal height
                                 }}
                                 title={isAvailable ? "" : "Fully booked"}
                               >
-                                {t} {!isAvailable && "(Fully booked)"}
+                                <span>{t}</span>
+                                {!isAvailable && (
+                                  <small
+                                    style={{
+                                      fontSize: "0.75rem",
+                                      color: "#c00",
+                                    }}
+                                  >
+                                    Fully booked
+                                  </small>
+                                )}
                               </button>
                             </div>
                           );

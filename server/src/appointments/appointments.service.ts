@@ -1041,7 +1041,7 @@ export class AppointmentsService {
       );
     }
   }
-  @Cron(CronExpression.EVERY_10_SECONDS) // runs every hour
+  @Cron(CronExpression.EVERY_MINUTE) // runs every hour
   async sendRemindersForUpcomingAppointments() {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
