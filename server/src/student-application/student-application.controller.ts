@@ -76,9 +76,7 @@ export class StudentApplicationController {
 
   // GET /applications/unbooked?unpaid=1
   @Get('unbooked')
-  async listUnbooked(
-    @Query('unpaid') unpaid?: string,
-  ) {
+  async listUnbooked(@Query('unpaid') unpaid?: string) {
     const unpaidOnly = unpaid === '1' || unpaid === 'true';
     return this.appService.listUnbookedOrUnpaid({ unpaidOnly });
   }
@@ -102,5 +100,30 @@ export class StudentApplicationController {
   @Get(':id')
   async getApplicationById(@Param('id', MongoIdPipe) id: string) {
     return this.appService.getApplicationById(id);
+  }
+  // GET /applications/by-id/:id
+  @Get('by-id/:id')
+  async byId(@Param('id', MongoIdPipe) id: string) {
+    const app = await this.appService.findByIdLean(id);
+    if (!app) return { application: null, window: null };
+
+    // Always compute scheduling window from today
+    const today = new Date();
+    const start = new Date(today);
+    const end = new Date(today);
+    end.setDate(end.getDate() + 14);
+
+    const scheduleWindow = {
+      startISO: start.toISOString(),
+      endISO: end.toISOString(),
+    };
+
+    return {
+      application: {
+        ...app,
+        submittedAt: app.submittedAt ?? today.toISOString(), // keep field for compatibility
+      },
+      window: scheduleWindow,
+    };
   }
 }

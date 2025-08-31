@@ -15,7 +15,6 @@ type Application = {
 type Appointment = {
   _id?: string;
   applicationId: string;
-  parentEmail: string;
   slotISO: string; // ISO datetime
 };
 
@@ -37,7 +36,7 @@ const hasNewId = (v: unknown): v is CreateApptSuccess =>
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
-  const [email, setEmail] = useState("");
+  const [appId, setAppId] = useState(""); // <-- new Application ID field
   const [searching, setSearching] = useState(false);
   const [app, setApp] = useState<Application | null>(null);
   const [lookupError, setLookupError] = useState("");
@@ -50,6 +49,10 @@ export default function AppointmentPage() {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saveError, setSaveError] = useState("");
+  const [scheduleWindow, setScheduleWindow] = useState<{
+    startISO: string;
+    endISO: string;
+  } | null>(null);
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
@@ -61,18 +64,15 @@ export default function AppointmentPage() {
   };
 
   // Build the 2-week window from application submittedAt
-  const windowStart = useMemo(() => {
-    if (!app?.submittedAt) return null;
-    const s = new Date(app.submittedAt);
-    return new Date(s.getFullYear(), s.getMonth(), s.getDate()); // midnight local
-  }, [app?.submittedAt]);
+  const windowStart = useMemo(
+    () => (scheduleWindow ? new Date(scheduleWindow.startISO) : null),
+    [scheduleWindow]
+  );
 
-  const windowEnd = useMemo(() => {
-    if (!windowStart) return null;
-    const e = new Date(windowStart);
-    e.setDate(e.getDate() + 14); // inclusive-ish two weeks window
-    return e;
-  }, [windowStart]);
+  const windowEnd = useMemo(
+    () => (scheduleWindow ? new Date(scheduleWindow.endISO) : null),
+    [scheduleWindow]
+  );
 
   // Dates the user can pick (Sun–Thu only, within window)
   const allowedDates = useMemo(() => {
@@ -117,7 +117,9 @@ export default function AppointmentPage() {
           `${API}/appointments/available?date=${selectedDate}&offset=${offsetMin}`
         );
 
-        const data: { times: string[] } = res.ok ? await res.json() : { times: [] };
+        const data: { times: string[] } = res.ok
+          ? await res.json()
+          : { times: [] };
         if (!cancelled) {
           setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
         }
@@ -147,23 +149,21 @@ export default function AppointmentPage() {
     setSelectedTime("");
     setSavedId(null);
 
-    if (!email.trim()) {
-      setLookupError("Please enter a father or mother email.");
+    if (!appId.trim()) {
+      setLookupError("Please enter your application ID.");
       return;
     }
 
     try {
       setSearching(true);
       const res = await fetch(
-        `${API}/applications/by-parent-email?email=${encodeURIComponent(
-          email.trim()
-        )}`
+        `${API}/applications/by-id/${encodeURIComponent(appId.trim())}`
       );
       const data = await res.json();
 
       if (!res.ok || !data?.application) {
         setLookupError(
-          "We couldn't find an application for this email. Please submit an application first."
+          "We couldn't find an application for this ID. Please check your code and try again."
         );
         setApp(null);
         return;
@@ -172,8 +172,10 @@ export default function AppointmentPage() {
       // normalize the application
       const a = data.application || {};
       const normalized: Application = {
-        _id: String(a?._id ?? a?.id ?? a?.applicationId ?? ""),
-        submittedAt: String(a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()),
+        _id: String(a?._id ?? ""),
+        submittedAt: String(
+          a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()
+        ),
         father_email: a?.father_email ?? a?.data?.father_email,
         mother_email: a?.mother_email ?? a?.data?.mother_email,
         student_name: a?.student_name ?? a?.data?.student_name,
@@ -181,12 +183,15 @@ export default function AppointmentPage() {
 
       // sanity check: must be a 24-hex string
       if (!/^[0-9a-fA-F]{24}$/.test(normalized._id)) {
-        setLookupError("Found your application but the id is invalid. Please try again.");
+        setLookupError(
+          "Found your application but the ID is invalid. Please try again."
+        );
         setApp(null);
         return;
       }
 
       setApp(normalized);
+      setScheduleWindow(data.window); // ✅ save backend window
     } catch {
       setLookupError("Something went wrong. Please try again.");
     } finally {
@@ -208,7 +213,6 @@ export default function AppointmentPage() {
 
     const payload: Appointment = {
       applicationId: app._id,
-      parentEmail: email.trim(),
       slotISO: local.toISOString(),
     };
 
@@ -261,7 +265,9 @@ export default function AppointmentPage() {
       }
 
       const newId =
-        hasNewId(data) && (data._id || data.id) ? String(data._id || data.id) : null;
+        hasNewId(data) && (data._id || data.id)
+          ? String(data._id || data.id)
+          : null;
       setSavedId(newId || "OK");
       // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
@@ -284,16 +290,19 @@ export default function AppointmentPage() {
       {/* ===== Header borrowed from Contact page ===== */}
       <div
         className="page-title dark-background"
-        style={{ backgroundImage: "url(assets/img/education/Background_school.JPG)" }}
+        style={{
+          backgroundImage: "url(assets/img/education/Background_school.JPG)",
+        }}
       >
         <div className="container position-relative">
           <h1>Book Assessment Appointment</h1>
           <p>
-            Schedule your child’s assessment appointment within the available window.
-            Select a convenient date and time. You’ll then be redirected to our secure
-            payment page. <strong>After successful payment</strong>, your reservation is
-            confirmed and <strong>Admissions will receive an email</strong> with your parent
-            email and the booked date &amp; time.
+            Schedule your child’s assessment appointment within the available
+            window. Select a convenient date and time. You’ll then be redirected
+            to our secure payment page.{" "}
+            <strong>After successful payment</strong>, your reservation is
+            confirmed and <strong>Admissions will receive an email</strong> with
+            your parent email and the booked date &amp; time.
           </p>
           <nav className="breadcrumbs">
             <ol>
@@ -310,19 +319,26 @@ export default function AppointmentPage() {
       <div className="card shadow-sm border-0 mb-4 wide-card">
         <div className="card-body">
           <h3>Book Your Child’s Assessment in Three Easy Steps</h3>
-          <p>Enter the same parent email you used in your application to locate your file. Once your application is found, you can select the most convenient date and time for your child’s 30-minute assessment. After confirming your slot and completing the assessment fee payment, you’ll immediately receive a confirmation email with all appointment details.</p>
+          <p>
+            Enter the same parent email you used in your application to locate
+            your file. Once your application is found, you can select the most
+            convenient date and time for your child’s 30-minute assessment.
+            After confirming your slot and completing the assessment fee
+            payment, you’ll immediately receive a confirmation email with all
+            appointment details.
+          </p>
           <h4 className="card-title mb-3" style={{ color: DARK }}>
             Find Your Application
           </h4>
           <form onSubmit={onLookup} className="row g-3 align-items-end">
             <div className="col-12 col-md-9 col-lg-10">
-              <label className="form-label">Parent Email</label>
+              <label className="form-label">Application ID</label>
               <input
-                type="email"
+                type="text"
                 className="form-control"
-                placeholder="father@example.com or mother@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter the code sent to your email (e.g. 6899a093b70c9c3f1564a7c5)"
+                value={appId}
+                onChange={(e) => setAppId(e.target.value)}
                 required
               />
             </div>
@@ -353,7 +369,11 @@ export default function AppointmentPage() {
             {!app && !searching && !lookupError && (
               <div className="col-12 text-muted" style={{ fontSize: 14 }}>
                 Haven’t applied yet?{" "}
-                <Link href="/admissions" className="fw-semibold" style={{ color: ACCENT }}>
+                <Link
+                  href="/admissions"
+                  className="fw-semibold"
+                  style={{ color: ACCENT }}
+                >
                   Submit an application first
                 </Link>
                 .
@@ -371,7 +391,10 @@ export default function AppointmentPage() {
               <h4 className="card-title mb-0" style={{ color: DARK }}>
                 Select Appointment Slot
               </h4>
-              <span className="badge text-dark" style={{ background: ACCENT_LIGHT }}>
+              <span
+                className="badge text-dark"
+                style={{ background: ACCENT_LIGHT }}
+              >
                 Window:{" "}
                 <b>
                   {windowStart ? fmtLocalYYYYMMDD(windowStart) : "—"} →{" "}
@@ -382,7 +405,8 @@ export default function AppointmentPage() {
 
             {allowedDates.length === 0 ? (
               <div className="alert alert-warning mb-0">
-                We couldn’t find a valid scheduling window. Please contact admissions.
+                We couldn’t find a valid scheduling window. Please contact
+                admissions.
               </div>
             ) : (
               <>
@@ -411,7 +435,11 @@ export default function AppointmentPage() {
                           className={`btn btn-sm ${active ? "text-white" : ""}`}
                           disabled={isPast}
                           style={{
-                            background: active ? ACCENT : isPast ? "#e5e7eb" : ACCENT_LIGHT,
+                            background: active
+                              ? ACCENT
+                              : isPast
+                              ? "#e5e7eb"
+                              : ACCENT_LIGHT,
                             color: active ? "#fff" : DARK,
                             borderRadius: 999,
                             fontWeight: 600,
@@ -443,7 +471,8 @@ export default function AppointmentPage() {
                 >
                   {availableTimes.length === 0 && !timesLoading ? (
                     <div className="alert alert-secondary mb-0">
-                      No available times left for this day. Please choose another date.
+                      No available times left for this day. Please choose
+                      another date.
                     </div>
                   ) : (
                     <div className="row g-2">
@@ -455,7 +484,9 @@ export default function AppointmentPage() {
                           <div key={t} className="col-6 col-md-3 col-lg-2">
                             <button
                               type="button"
-                              className={`btn w-100 ${active ? "text-white" : ""}`}
+                              className={`btn w-100 ${
+                                active ? "text-white" : ""
+                              }`}
                               onClick={() => !disabled && setSelectedTime(t)}
                               disabled={disabled}
                               style={{
@@ -500,15 +531,19 @@ export default function AppointmentPage() {
                     </span>
                   )}
                   {saveError && (
-                    <span className="text-danger fw-semibold">❌ {saveError}</span>
+                    <span className="text-danger fw-semibold">
+                      ❌ {saveError}
+                    </span>
                   )}
                 </div>
 
                 {/* Email notice about payment success */}
                 <p className="text-muted mt-2 mb-0" style={{ fontSize: 13 }}>
                   After successful payment,{" "}
-                  <strong>Admissions will automatically receive an email</strong> with your
-                  parent email and the reserved date &amp; time.
+                  <strong>
+                    Admissions will automatically receive an email
+                  </strong>{" "}
+                  with your parent email and the reserved date &amp; time.
                 </p>
               </>
             )}
