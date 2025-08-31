@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -16,7 +20,10 @@ import { UpdateSlotDto } from './dto/update-slot.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
 
 // ✅ Log & set SendGrid (like student application service)
-console.log('SENDGRID API KEY (partial):', process.env.SENDGRID_API_KEY?.slice(0, 10) || 'Not found');
+console.log(
+  'SENDGRID API KEY (partial):',
+  process.env.SENDGRID_API_KEY?.slice(0, 10) || 'Not found',
+);
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
@@ -38,14 +45,16 @@ function fmtDate(dt: Date) {
 @Injectable()
 export class BookTourService {
   constructor(
-    @InjectModel(BookTourSlot.name) private slotModel: Model<BookTourSlotDocument>,
-    @InjectModel(BookTourBooking.name) private bookingModel: Model<BookTourBookingDocument>,
+    @InjectModel(BookTourSlot.name)
+    private slotModel: Model<BookTourSlotDocument>,
+    @InjectModel(BookTourBooking.name)
+    private bookingModel: Model<BookTourBookingDocument>,
   ) {}
 
   // ------- CRON JOBS -------
 
   // Deactivate passed slots periodically
-  @Cron(CronExpression.EVERY_11_HOURS)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async deactivatePastSlots() {
     const now = new Date();
     const res = await this.slotModel.updateMany(
@@ -66,10 +75,9 @@ export class BookTourService {
     const threshold = new Date(today);
     threshold.setDate(threshold.getDate() - 1); // keep 1 extra day
 
-    const oldSlots = await this.slotModel.find(
-      { iso: { $lt: threshold } },
-      { _id: 1 },
-    ).lean();
+    const oldSlots = await this.slotModel
+      .find({ iso: { $lt: threshold } }, { _id: 1 })
+      .lean();
 
     if (!oldSlots.length) return;
 
@@ -88,7 +96,8 @@ export class BookTourService {
 
   async createSlot(dto: CreateSlotDto) {
     const iso = new Date(dto.iso);
-    if (Number.isNaN(+iso)) throw new BadRequestException('Invalid iso datetime');
+    if (Number.isNaN(+iso))
+      throw new BadRequestException('Invalid iso datetime');
 
     const doc = new this.slotModel({
       iso,
@@ -105,24 +114,29 @@ export class BookTourService {
   }
 
   async updateSlot(id: string, dto: UpdateSlotDto) {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid id');
+    if (!Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid id');
 
     const update: Record<string, any> = {};
     if (dto.iso) {
       const d = new Date(dto.iso);
-      if (Number.isNaN(+d)) throw new BadRequestException('Invalid iso datetime');
+      if (Number.isNaN(+d))
+        throw new BadRequestException('Invalid iso datetime');
       update.iso = d;
     }
     if (typeof dto.active === 'boolean') update.active = dto.active;
     if (dto.label !== undefined) update.label = dto.label;
 
-    const res = await this.slotModel.findByIdAndUpdate(id, update, { new: true });
+    const res = await this.slotModel.findByIdAndUpdate(id, update, {
+      new: true,
+    });
     if (!res) throw new NotFoundException('Slot not found');
     return res;
   }
 
   async deleteSlot(id: string) {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid id');
+    if (!Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid id');
     const res = await this.slotModel.findByIdAndDelete(id);
     if (!res) throw new NotFoundException('Slot not found');
     await this.bookingModel.deleteMany({ slotId: res._id });
@@ -146,7 +160,8 @@ export class BookTourService {
    *  - Parent: confirmation & details
    */
   async createBooking(dto: CreateBookingDto) {
-    if (!Types.ObjectId.isValid(dto.slotId)) throw new BadRequestException('Invalid slotId');
+    if (!Types.ObjectId.isValid(dto.slotId))
+      throw new BadRequestException('Invalid slotId');
 
     // Atomically increment bookedCount on an active, future slot
     const slot = await this.slotModel.findOneAndUpdate(
@@ -163,7 +178,8 @@ export class BookTourService {
       const exists = await this.slotModel.findById(dto.slotId);
       if (!exists) throw new NotFoundException('Slot not found');
       if (!exists.active) throw new BadRequestException('Slot is not active');
-      if (exists.iso < new Date()) throw new BadRequestException('Slot has passed');
+      if (exists.iso < new Date())
+        throw new BadRequestException('Slot has passed');
       throw new BadRequestException('Booking not allowed');
     }
 
@@ -177,7 +193,7 @@ export class BookTourService {
     });
 
     // --- EMAILS (mirroring your student app approach) ---
-    const admissionsTo = 'Admission@leadersintcollege.com';
+    const admissionsTo = 'omar.hossam3@gmail.com';
     const fromIdentity = {
       email: 'Admission@leadersintcollege.com',
       name: 'Book a Tour',
@@ -236,7 +252,7 @@ export class BookTourService {
 
     const parentEmailMsg = parentEmail
       ? {
-          to: parentEmail,
+          to: 'omar.hossam3@gmail.com',
           from: {
             email: 'Admission@leadersintcollege.com',
             name: 'Leaders International College',
@@ -251,9 +267,14 @@ export class BookTourService {
       if (parentEmailMsg) tasks.push(sgMail.send(parentEmailMsg));
       await Promise.all(tasks);
     } catch (err: any) {
-      console.error('❌ SendGrid Email Error (BookTour):', err?.response?.body || err?.message || err);
+      console.error(
+        '❌ SendGrid Email Error (BookTour):',
+        err?.response?.body || err?.message || err,
+      );
       // We mimic the student app behavior: booking saved but emails failed.
-      throw new Error('Booking saved, but failed to send confirmation email(s).');
+      throw new Error(
+        'Booking saved, but failed to send confirmation email(s).',
+      );
     }
 
     return {
@@ -269,15 +290,19 @@ export class BookTourService {
    * - Safely decrements the parent slot's bookedCount (never below 0)
    */
   async deleteBooking(id: string) {
-    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid booking id');
+    if (!Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid booking id');
 
     // Find the booking first to know its slotId
     const booking = await this.bookingModel.findById(id).lean();
     if (!booking) throw new NotFoundException('Booking not found');
 
     // Delete the booking
-    const delRes = await this.bookingModel.deleteOne({ _id: new Types.ObjectId(id) });
-    if (delRes.deletedCount !== 1) throw new NotFoundException('Booking not found');
+    const delRes = await this.bookingModel.deleteOne({
+      _id: new Types.ObjectId(id),
+    });
+    if (delRes.deletedCount !== 1)
+      throw new NotFoundException('Booking not found');
 
     // Safely decrement bookedCount on the slot (never below 0)
     await this.slotModel.updateOne(
@@ -307,7 +332,8 @@ export class BookTourService {
   }
 
   async listBookingsForSlot(slotId: string) {
-    if (!Types.ObjectId.isValid(slotId)) throw new BadRequestException('Invalid slot id');
+    if (!Types.ObjectId.isValid(slotId))
+      throw new BadRequestException('Invalid slot id');
 
     const slot = await this.slotModel.findById(slotId).lean();
     if (!slot) throw new NotFoundException('Slot not found');
