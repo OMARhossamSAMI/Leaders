@@ -514,7 +514,7 @@ export class AppointmentsService {
       throw new BadRequestException('Payment configuration is missing');
     }
 
-    const amountCents = 500000; // 5000 EGP
+    const amountCents = 400000; // 5000 EGP
 
     // 🔍 Lookup student application (by ID only now)
     if (!applicationId || !Types.ObjectId.isValid(applicationId)) {
