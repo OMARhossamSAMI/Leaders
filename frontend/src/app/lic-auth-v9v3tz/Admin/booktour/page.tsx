@@ -6,6 +6,8 @@ import axios from "axios";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import "./page.css";
+import * as XLSX from "xlsx";                 // ← NEW
+
 
 // ---- Types ----
 type Slot = {
@@ -253,30 +255,30 @@ export default function BookTourAdminPage() {
   };
 
   const handleDeleteBooking = async (bookingId: string, slotId: string) => {
-  if (!confirm("Delete this booking?")) return;
-  setBookingsErr("");
+    if (!confirm("Delete this booking?")) return;
+    setBookingsErr("");
 
-  try {
-    await axios.delete(`${API}/booktour/admin/bookings/${bookingId}`, {
-      headers: { "Content-Type": "application/json" },
-    });
+    try {
+      await axios.delete(`${API}/booktour/admin/bookings/${bookingId}`, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-    // Remove booking from table
-    setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+      // Remove booking from table
+      setBookings((prev) => prev.filter((b) => b._id !== bookingId));
 
-    // Optimistically decrement bookedCount for that slot in the slots list
-    setSlots((prev) =>
-      prev.map((s) =>
-        s._id === (slotId as unknown as string)
-          ? { ...s, bookedCount: Math.max(0, (s.bookedCount ?? 0) - 1) }
-          : s
-      )
-    );
-  } catch (e: any) {
-    console.error("[Booking] delete error:", e?.response?.status, e?.response?.data || e);
-    setBookingsErr(e?.response?.data?.message || e.message || "Failed to delete booking");
-  }
-};
+      // Optimistically decrement bookedCount for that slot in the slots list
+      setSlots((prev) =>
+        prev.map((s) =>
+          s._id === (slotId as unknown as string)
+            ? { ...s, bookedCount: Math.max(0, (s.bookedCount ?? 0) - 1) }
+            : s
+        )
+      );
+    } catch (e: any) {
+      console.error("[Booking] delete error:", e?.response?.status, e?.response?.data || e);
+      setBookingsErr(e?.response?.data?.message || e.message || "Failed to delete booking");
+    }
+  };
 
   const autoLabel = () => {
     if (!date || !time) return "";
@@ -295,6 +297,57 @@ export default function BookTourAdminPage() {
       })
     );
   };
+
+  // ---- Export current view (Bookings tab) to Excel ----
+  const exportCurrentBookingsToExcel = () => {
+    if (bookings.length === 0) return;
+
+    // Map slotId -> Slot for quick lookup
+    const slotMap = new Map(slots.map((s) => [s._id, s]));
+    const rows = bookings.map((b) => {
+      const s = slotMap.get(b.slotId as unknown as string);
+      const label =
+        b.selectedLabel || (s ? slotDisplayLabel(s) : "");
+      return {
+        Student: b.studentName,
+        "Parent Email": b.parentEmail,
+        "Parent Phone": b.parentPhone,
+        "Selected Label": label,
+        "Booked At": b.createdAt
+          ? new Date(b.createdAt).toLocaleString()
+          : "",
+      };
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(rows);
+
+    // Optional: set column widths for nicer display
+    type SheetWithCols = XLSX.WorkSheet & { ["!cols"]?: { wch: number }[] };
+    (ws as SheetWithCols)["!cols"] = [
+      { wch: 24 }, // Student
+      { wch: 32 }, // Parent Email
+      { wch: 18 }, // Parent Phone
+      { wch: 32 }, // Selected Label
+      { wch: 24 }, // Booked At
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+
+    // Filename reflects current filter (All vs. specific slot)
+    const pageName = (() => {
+      if (!selectedSlotForBookings) return "All";
+      const s = slotMap.get(selectedSlotForBookings);
+      if (!s) return "All";
+      const label = slotDisplayLabel(s);
+      return label || "Slot";
+    })();
+
+    const safe = pageName.replace(/[^\w\-]+/g, "_");
+    const stamp = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `bookings_${safe}_${stamp}.xlsx`);
+  };
+
 
   // ---- Render ----
   if (!authenticated) return null;
@@ -483,12 +536,27 @@ export default function BookTourAdminPage() {
 
                 <div className="d-flex gap-2">
                   <button
+                    className="btn-export"
+                    onClick={exportCurrentBookingsToExcel}
+                    disabled={loadingBookings || bookings.length === 0}
+                    title="Export the currently visible bookings to CSV"
+                  >
+                    <span className="export-icon" aria-hidden="true">
+                      {/* inline SVG icon */}
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M5 20h14a1 1 0 0 0 1-1v-4h-2v3H6v-3H4v4a1 1 0 0 0 1 1z"></path>
+                        <path d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293 1.414 1.414L12 16.414l-4.707-4.707 1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z"></path>
+                      </svg>
+                    </span>
+                    {selectedSlotForBookings ? "Export to excel" : "Export All to excel"}
+                  </button>
+
+                  <button
                     className="btn btn-accent"
                     onClick={() => {
                       if (selectedSlotForBookings) {
                         void loadBookingsForSlot(selectedSlotForBookings);
                       } else {
-                        // refresh "All"
                         (async () => {
                           try {
                             setLoadingBookings(true);
@@ -508,65 +576,66 @@ export default function BookTourAdminPage() {
                     {loadingBookings ? "Refreshing…" : "Refresh"}
                   </button>
                 </div>
+
               </div>
 
               {/* Info / alerts */}
               {bookingsErr && <div className="alert alert-danger">{bookingsErr}</div>}
 
               {loadingBookings ? (
-                  <div className="loader-container">
-                    <div className="spinner" />
-                    <p className="loading-text">Loading Bookings...</p>
-                  </div>
-                ) : bookings.length === 0 ? (
-                  <p className="text-muted" style={{ padding: "0.5rem" }}>
-                    No bookings found{selectedSlotForBookings ? " for this slot." : "."}
-                  </p>
-                ) : (
-                  <div className="table-responsive">
-                    <table className="table align-middle">
-                      <thead>
-                        <tr>
-                          <th>Student</th>
-                          <th>Parent Email</th>
-                          <th>Parent Phone</th>
-                          <th>Selected Label</th>
-                          <th>Booked At</th>
-                          <th className="text-end">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bookings.map((b) => {
-                          const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
-                          return (
-                            <tr key={b._id}>
-                              <td>{b.studentName}</td>
-                              <td>
-                                <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
-                              </td>
-                              <td>
-                                <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
-                              </td>
-                              <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
-                              <td className="small text-muted">
-                                {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
-                              </td>
-                              <td className="text-end">
-                                <button
-                                  className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleDeleteBooking(b._id, b.slotId as unknown as string)}
-                                  title="Delete booking"
-                                >
-                                  Delete
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                <div className="loader-container">
+                  <div className="spinner" />
+                  <p className="loading-text">Loading Bookings...</p>
+                </div>
+              ) : bookings.length === 0 ? (
+                <p className="text-muted" style={{ padding: "0.5rem" }}>
+                  No bookings found{selectedSlotForBookings ? " for this slot." : "."}
+                </p>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Student</th>
+                        <th>Parent Email</th>
+                        <th>Parent Phone</th>
+                        <th>Selected Label</th>
+                        <th>Booked At</th>
+                        <th className="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bookings.map((b) => {
+                        const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
+                        return (
+                          <tr key={b._id}>
+                            <td>{b.studentName}</td>
+                            <td>
+                              <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
+                            </td>
+                            <td>
+                              <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
+                            </td>
+                            <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
+                            <td className="small text-muted">
+                              {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
+                            </td>
+                            <td className="text-end">
+                              <button
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleDeleteBooking(b._id, b.slotId as unknown as string)}
+                                title="Delete booking"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
 
             </div>
