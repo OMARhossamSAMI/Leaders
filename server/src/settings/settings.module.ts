@@ -12,5 +12,6 @@ import { Settings, SettingsSchema } from '../Schemas/settings.schema';
   ],
   controllers: [SettingsController],
   providers: [SettingsService],
+  exports: [SettingsService], // 👈 allow other modules to inject it
 })
 export class SettingsModule {}

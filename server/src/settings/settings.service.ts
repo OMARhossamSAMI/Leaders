@@ -12,9 +12,10 @@ export class SettingsService {
 
   async getSettings() {
     const [settings] = await this.model.find();
-    return settings || this.model.create({}); // default to true
+    return settings || this.model.create({});
   }
 
+  // ---- EVENTS ----
   async updateShowEvents(value: boolean) {
     const existing = await this.model.findOne();
     if (existing) {
@@ -23,5 +24,24 @@ export class SettingsService {
     } else {
       return this.model.create({ showEvents: value });
     }
+  }
+
+  // ---- APPOINTMENTS ----
+  async updateShowAppointments(value: boolean) {
+    const existing = await this.model.findOne();
+    if (existing) {
+      existing.showAppointments = value;
+      return existing.save();
+    } else {
+      return this.model.create({ showAppointments: value });
+    }
+  }
+  // ---- AMOUNT ----
+  async updateAmount(value: number) {
+    return this.model.findOneAndUpdate(
+      {},
+      { $set: { amount: value } },
+      { new: true, upsert: true },
+    );
   }
 }
