@@ -313,7 +313,16 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
-
+  // Fixed daily slots
+  const dailySlots = [
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+  ];
   // -------- UI --------
   const startOfToday = useMemo(() => {
     const now = new Date();
@@ -358,20 +367,32 @@ export default function AppointmentPage() {
             <div className="col-lg-7">
               <h3>Reserve Your Child’s Assessment Appointment</h3>
               <p>
-                After you submit your application, you will need to book an assessment date for your child. This is done fully online in just a few simple steps — no phone calls or visits are required.
+                After you submit your application, you will need to book an
+                assessment date for your child. This is done fully online in
+                just a few simple steps — no phone calls or visits are required.
               </p>
 
               <p>
-                To <strong>confirm the booking</strong>, please note that both steps are required:
+                To <strong>confirm the booking</strong>, please note that both
+                steps are required:
               </p>
 
               <ol>
-                <li><strong>Book the assessment date</strong> using your reservation code.</li>
-                <li><strong>Pay the assessment fees</strong> during the booking process.</li>
+                <li>
+                  <strong>Book the assessment date</strong> using your
+                  reservation code.
+                </li>
+                <li>
+                  <strong>Pay the assessment fees</strong> during the booking
+                  process.
+                </li>
               </ol>
 
               <p>
-                Once these steps are completed, your child’s assessment and the parents’ interview will be officially confirmed. Our admissions team will then promptly share all the necessary details to help you prepare for the assessment day.
+                Once these steps are completed, your child’s assessment and the
+                parents’ interview will be officially confirmed. Our admissions
+                team will then promptly share all the necessary details to help
+                you prepare for the assessment day.
               </p>
             </div>
 
@@ -541,9 +562,11 @@ export default function AppointmentPage() {
                       </div>
                     ) : (
                       <div className="row g-2">
-                        {availableTimes.map((t) => {
+                        {dailySlots.map((t) => {
                           const active = selectedTime === t;
-                          const disabled = timesLoading || !selectedDate;
+                          const isAvailable = availableTimes.includes(t);
+                          const disabled =
+                            timesLoading || !selectedDate || !isAvailable;
 
                           return (
                             <div key={t} className="col-6 col-md-3 col-lg-2">
@@ -556,14 +579,22 @@ export default function AppointmentPage() {
                                 disabled={disabled}
                                 style={{
                                   background: active ? ACCENT : "#ffffff",
-                                  color: active ? "#fff" : DARK,
+                                  color: isAvailable
+                                    ? active
+                                      ? "#fff"
+                                      : DARK
+                                    : "#999",
                                   border: "1px solid #e5e7eb",
                                   borderRadius: 12,
                                   fontWeight: 600,
                                   opacity: disabled ? 0.5 : 1,
+                                  cursor: isAvailable
+                                    ? "pointer"
+                                    : "not-allowed",
                                 }}
+                                title={isAvailable ? "" : "Fully booked"}
                               >
-                                {t}
+                                {t} {!isAvailable && "(Fully booked)"}
                               </button>
                             </div>
                           );
