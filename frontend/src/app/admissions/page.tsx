@@ -54,12 +54,21 @@ const [bookedTimer, setBookedTimer] = useState<number | null>(null);
 
   // UX state
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState<{
+  bookingId: string;
+  parentEmail?: string;
+  slotLabel: string;
+  slotIso: string;
+} | null>(null);
+
   const [bookingErr, setBookingErr] = useState<string | null>(null);
   const [bookingOk, setBookingOk] = useState<string | null>(null);
 
 
   const [bookedPopup, setBookedPopup] = useState<{ title: string; message: string; kind: 'success' | 'error' } | null>(null);
 
+
+  
 useEffect(() => {
   return () => { if (bookedTimer !== null) window.clearTimeout(bookedTimer); };
 }, [bookedTimer]);
@@ -75,11 +84,10 @@ const handleBookingSubmit = async () => {
   if (!parentEmail.trim()) missing.push("parent email");
   if (!parentPhone.trim()) missing.push("parent phone");
 
-  const list = (arr: string[]) => (
+  const list = (arr: string[]) =>
     arr.length === 1 ? arr[0]
-    : arr.length === 2 ? `${arr[0]} and ${arr[1]}`
-    : `${arr.slice(0, -1).join(", ")}, and ${arr[arr.length - 1]}`
-  );
+      : arr.length === 2 ? `${arr[0]} and ${arr[1]}`
+      : `${arr.slice(0, -1).join(", ")}, and ${arr[arr.length - 1]}`;
 
   if (missing.length) {
     const msg = `Please fill ${list(missing)}.`;
@@ -112,13 +120,23 @@ const handleBookingSubmit = async () => {
       throw new Error(msg);
     }
 
-    // SUCCESS
-    setBookingOk("Successfully booked! We’ve saved your details.");
-    setOpen(false); // close big popup
+    // SUCCESS — backend returns { ok: true, bookingId }
+    const bookingId = data?.bookingId ? String(data.bookingId) : "";
+    const successMsg = [
+      "We’ve received your request.",
+      "You will receive the booking details on your email shortly.",
+    ].join(" ");
 
-    setBookedPopup({ title: "Successfully booked!", message: "We’ve received your request. A confirmation will be sent to your email.", kind: "success" });
+    setBookingOk("Successfully booked! " + (bookingId ? `Code: ${bookingId}` : ""));
+    setOpen(false); // close big modal
+
+    setBookedPopup({
+      title: "Successfully booked!",
+      message: successMsg,
+      kind: "success",
+    });
     setShowBookedPopup(true);
-    const t = window.setTimeout(() => setShowBookedPopup(false), 2500);
+    const t = window.setTimeout(() => setShowBookedPopup(false), 3500);
     setBookedTimer(t);
 
     // clear fields
@@ -127,7 +145,10 @@ const handleBookingSubmit = async () => {
 
     // refresh slots so "spots left" updates
     try {
-      const refresh = await fetch(`${API}/booktour/admin/slots?active=true`, { headers: { "Content-Type": "application/json" }, cache: "no-store" });
+      const refresh = await fetch(`${API}/booktour/admin/slots?active=true`, {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
       const refreshed = await refresh.json();
       if (Array.isArray(refreshed)) setSlots(refreshed);
     } catch { /* ignore */ }
@@ -142,6 +163,7 @@ const handleBookingSubmit = async () => {
     setBookingLoading(false);
   }
 };
+
 
 
 
@@ -617,255 +639,330 @@ const selectedSlotObj = useMemo(
                           </div>
                         </div>
 
-                        {/* Popup */}
                         {open && (
-                          <div
-                            className="tour-modal-backdrop"
-                            style={{
-                              position: "fixed",
-                              inset: 0,
-                              background: "rgba(0,0,0,0.5)",
-                              zIndex: 1050,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              padding: "16px",
-                            }}
-                            onClick={() => setOpen(false)}
-                          >
-                            <div
-                              className="tour-modal"
-                              style={{
-                                width: "min(900px, 100%)",
-                                maxHeight: "90vh",
-                                overflow: "auto",
-                                background: "#fff",
-                                borderRadius: "16px",
-                                boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div
-                                className="tour-modal-header"
-                                style={{
-                                  padding: "20px 24px",
-                                  borderBottom: "1px solid #eee",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <h2 style={{ margin: 0 }}>Book a Campus Tour</h2>
-                                <button
-                                  aria-label="Close"
-                                  onClick={() => setOpen(false)}
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    fontSize: "24px",
-                                    lineHeight: 1,
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              </div>
-
-                              <div className="tour-modal-body" style={{ padding: "24px" }}>
-                                <p style={{ marginTop: 0 }}>
-                                  Please enter your details, then choose one of the available dates & times below.
-                                </p>
-
-                                <div
-                                  style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "1fr 1fr",
-                                    gap: "16px",
-                                  }}
-                                >
-                                  {/* Left column: fields */}
-                                <div>
-                                 <div>
-                                    <div className="mb-3">
-                                      <label className="form-label" htmlFor="tourStudentName">Student Name</label>
-                                      <input
-                                        id="tourStudentName"
-                                        name="studentName"
-                                        className="form-control"
-                                        type="text"
-                                        placeholder="e.g. Sarah Ahmed"
-                                        value={studentName}
-                                        onChange={(e) => setStudentName(e.target.value)}
-                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
-                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
-                                      />
-                                    </div>
-
-                                    <div className="mb-3">
-                                      <label className="form-label" htmlFor="tourParentEmail">Parent Email</label>
-                                      <input
-                                        id="tourParentEmail"
-                                        name="parentEmail"
-                                        className="form-control"
-                                        type="email"
-                                        placeholder="name@example.com"
-                                        value={parentEmail}
-                                        onChange={(e) => setParentEmail(e.target.value)}
-                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
-                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
-                                      />
-                                    </div>
-
-                                    <div className="mb-3">
-                                      <label className="form-label" htmlFor="tourParentPhone">Parent Phone</label>
-                                      <input
-                                        id="tourParentPhone"
-                                        name="parentPhone"
-                                        className="form-control"
-                                        type="tel"
-                                        placeholder="+20 1X XXX XXXX"
-                                        value={parentPhone}
-                                        onChange={(e) => setParentPhone(e.target.value)}
-                                        style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
-                                        onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
-                                        onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
-                                      />
-                                    </div>
-
-                                  </div>
-                                </div>
-                                  {/* Right column: slots with date+time */}
-                                <div>
-  <label className="form-label">Choose a Date & Time</label>
-
-  {loadingSlots ? (
-    <div className="small text-muted">Loading available slots…</div>
-  ) : slotsErr ? (
-    <div className="alert alert-danger">{slotsErr}</div>
-  ) : visibleSlots.length === 0 ? (
-    <div className="small text-muted">No available slots at the moment.</div>
-  ) : (
-    <>
+  <div
+    className="tour-modal-backdrop"
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.5)",
+      zIndex: 1050,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "16px",
+    }}
+    onClick={() => setOpen(false)}
+  >
+    <div
+      className="tour-modal"
+      style={{
+        width: "min(900px, 100%)",
+        maxHeight: "90vh",
+        overflow: "auto",
+        background: "#fff",
+        borderRadius: "16px",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
       <div
+        className="tour-modal-header"
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
+          padding: "20px 24px",
+          borderBottom: "1px solid #eee",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>
+          {bookingSuccess ? "Booking Confirmed" : "Book a Campus Tour"}
+        </h2>
+        <button
+          aria-label="Close"
+          onClick={() => setOpen(false)}
+          style={{
+            border: "none",
+            background: "transparent",
+            fontSize: "24px",
+            lineHeight: 1,
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="tour-modal-body" style={{ padding: "24px" }}>
+        {!bookingSuccess ? (
+          <>
+            <p style={{ marginTop: 0 }}>
+              Please enter your details, then choose one of the available dates & times below.
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+              }}
+            >
+              {/* Left column: fields */}
+              <div>
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="tourStudentName">Student Name</label>
+                  <input
+                    id="tourStudentName"
+                    name="studentName"
+                    className="form-control"
+                    type="text"
+                    placeholder="e.g. Sarah Ahmed"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                    onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                    onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="tourParentEmail">Parent Email</label>
+                  <input
+                    id="tourParentEmail"
+                    name="parentEmail"
+                    className="form-control"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={parentEmail}
+                    onChange={(e) => setParentEmail(e.target.value)}
+                    style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                    onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                    onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label" htmlFor="tourParentPhone">Parent Phone</label>
+                  <input
+                    id="tourParentPhone"
+                    name="parentPhone"
+                    className="form-control"
+                    type="tel"
+                    placeholder="+20 1X XXX XXXX"
+                    value={parentPhone}
+                    onChange={(e) => setParentPhone(e.target.value)}
+                    style={{ borderRadius: "8px", border: "1px solid #e5e7eb" }}
+                    onFocus={(e) => (e.currentTarget.style.border = "2px solid var(--accent-color)")}
+                    onBlur={(e) => (e.currentTarget.style.border = "1px solid #e5e7eb")}
+                  />
+                </div>
+              </div>
+
+              {/* Right column: slots */}
+              <div>
+                <label className="form-label">Choose a Date & Time</label>
+
+                {loadingSlots ? (
+                  <div className="small text-muted">Loading available slots…</div>
+                ) : slotsErr ? (
+                  <div className="alert alert-danger">{slotsErr}</div>
+                ) : visibleSlots.length === 0 ? (
+                  <div className="small text-muted">No available slots at the moment.</div>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr",
+                        gap: "10px",
+                      }}
+                    >
+                      {visibleSlots.map((opt) => {
+                        const displayLabel = opt.label?.trim() || fmtDateTime(opt.iso);
+                        const isSelected = selectedSlotId === opt._id;
+                        return (
+                          <button
+                            key={opt._id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSlot(displayLabel);
+                              setSelectedSlotId(opt._id);
+                            }}
+                            className="btn"
+                            aria-pressed={isSelected}
+                            style={{
+                              padding: "12px 16px",
+                              borderRadius: "8px",
+                              textAlign: "left",
+                              border: isSelected
+                                ? "2px solid var(--accent-color)"
+                                : "1px solid #e5e7eb",
+                              background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
+                              fontWeight: isSelected ? 700 : 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            {displayLabel}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {selectedSlotId && selectedSlotObj && (
+                      <div
+                        style={{
+                          marginTop: 12,
+                          padding: "10px 12px",
+                          borderRadius: 8,
+                          background: "rgba(0,0,0,0.03)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                        aria-live="polite"
+                      >
+                        <span className="small text-muted" style={{ fontWeight: 600 }}>
+                          Selected:
+                        </span>
+                        <span
+                          className="badge"
+                          style={{
+                            background: "var(--accent-color)",
+                            color: "#fff",
+                            padding: "6px 10px",
+                            borderRadius: 999,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {selectedSlotObj.label?.trim() || fmtDateTime(selectedSlotObj.iso)}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          // ===== Success view =====
+          <div role="status" aria-live="polite">
+            <div
+              className="alert alert-success"
+              style={{ fontSize: 16, fontWeight: 600 }}
+            >
+              ✅ Booking submitted successfully!
+            </div>
+
+            <div className="mb-3">
+              <p style={{ marginBottom: 8 }}>
+                Your booking code is <strong>{bookingSuccess.bookingId}</strong>.
+              </p>
+              <p style={{ marginBottom: 8 }}>
+                We’ve sent <strong>two emails</strong>:
+              </p>
+              <ul style={{ marginTop: 0 }}>
+                <li>
+                  <strong>Admissions</strong>: A summary email was sent to{" "}
+                  <code>Admission@leadersintcollege.com</code>.
+                </li>
+                <li>
+                  <strong>Parent confirmation</strong>
+                  {bookingSuccess.parentEmail
+                    ? <>: sent to <code>{bookingSuccess.parentEmail}</code>.</>
+                    : <>: (no parent email provided).</>}
+                </li>
+              </ul>
+            </div>
+
+            <div
+              style={{
+                padding: "12px 14px",
+                borderRadius: 8,
+                background: "rgba(0,0,0,0.03)",
+                marginBottom: 12,
+              }}
+            >
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Visit Details</div>
+              <div>Slot: {bookingSuccess.slotLabel || "—"}</div>
+              {bookingSuccess.slotIso && (
+                <div>
+                  ISO (UTC):{" "}
+                  <code>{new Date(bookingSuccess.slotIso).toISOString()}</code>
+                </div>
+              )}
+            </div>
+
+            <p className="small text-muted">
+              Please keep your booking code safe. You’ll need it when contacting the admissions team.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div
+        className="tour-modal-footer"
+        style={{
+          padding: "16px 24px",
+          borderTop: "1px solid #eee",
+          display: "flex",
+          justifyContent: "flex-end",
           gap: "10px",
         }}
       >
-        {visibleSlots.map((opt) => {
-          const displayLabel = opt.label?.trim() || fmtDateTime(opt.iso);
-          const isSelected = selectedSlotId === opt._id;
-
-          return (
+        {!bookingSuccess ? (
+          <>
             <button
-              key={opt._id}
-              type="button"
-              onClick={() => {
-                setSelectedSlot(displayLabel);
-                setSelectedSlotId(opt._id);
-              }}
               className="btn"
-              aria-pressed={isSelected}
               style={{
-                padding: "12px 16px",
+                backgroundColor: "#f1f1f1",
+                padding: "10px 22px",
                 borderRadius: "8px",
-                textAlign: "left",
-                border: isSelected
-                  ? "2px solid var(--accent-color)"
-                  : "1px solid #e5e7eb",
-                background: isSelected ? "rgba(0,0,0,0.03)" : "#fff",
-                fontWeight: isSelected ? 700 : 600,
-                cursor: "pointer",
+                fontWeight: 500,
               }}
+              onClick={() => setOpen(false)}
             >
-              {displayLabel}
+              Cancel
             </button>
-          );
-        })}
-      </div>
-
-      {/* Selected summary */}
-      {selectedSlotId && selectedSlotObj && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: "10px 12px",
-            borderRadius: 8,
-            background: "rgba(0,0,0,0.03)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-          }}
-          aria-live="polite"
-        >
-          <span className="small text-muted" style={{ fontWeight: 600 }}>
-            Selected:
-          </span>
-          <span
-            className="badge"
+            <button
+              className="btn"
+              style={{
+                backgroundColor: "var(--accent-color)",
+                color: "#fff",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                fontWeight: 600,
+              }}
+              onClick={handleBookingSubmit}
+              disabled={bookingLoading}
+            >
+              {bookingLoading ? "Submitting…" : "Submit Request"}
+            </button>
+          </>
+        ) : (
+          <button
+            className="btn"
             style={{
-              background: "var(--accent-color)",
+              backgroundColor: "var(--accent-color)",
               color: "#fff",
-              padding: "6px 10px",
-              borderRadius: 999,
-              fontWeight: 700,
+              padding: "12px 24px",
+              borderRadius: "8px",
+              fontWeight: 600,
+            }}
+            onClick={() => {
+              setOpen(false);
+              setBookingSuccess(null);
             }}
           >
-            {selectedSlotObj.label?.trim() || fmtDateTime(selectedSlotObj.iso)}
-          </span>
-        </div>
-      )}
-    </>
-  )}
-</div>
+            Done
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
 
-                                </div>
-                              </div>
-
-                              <div
-                                className="tour-modal-footer"
-                                style={{
-                                  padding: "16px 24px",
-                                  borderTop: "1px solid #eee",
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  gap: "10px",
-                                }}
-                              >
-                                <button
-                                  className="btn"
-                                  style={{
-                                    backgroundColor: "#f1f1f1",
-                                    padding: "10px 22px",
-                                    borderRadius: "8px",
-                                    fontWeight: 500,
-                                  }}
-                                  onClick={() => setOpen(false)}
-                                >
-                                  Cancel
-                                </button>
-                                  <button
-                                    className="btn"
-                                    style={{
-                                      backgroundColor: "var(--accent-color)",
-                                      color: "#fff",
-                                      padding: "12px 24px",
-                                      borderRadius: "8px",
-                                      fontWeight: 600,
-                                    }}
-                                    onClick={handleBookingSubmit}
-                                    disabled={bookingLoading}
-                                  >
-                                    {bookingLoading ? "Submitting…" : "Submit Request"}
-                                  </button>
-                              </div>
-                            </div>
-                          </div>
-                          )}
                         </div>
                       </div>
                     </div>
