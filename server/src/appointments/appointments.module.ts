@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppointmentsController } from './appointments.controller';
 import { AppointmentsService } from './appointments.service';
-
+import { SettingsModule } from '../settings/settings.module';
 import { Appointment, AppointmentSchema } from '../Schemas/appointment.schema';
 import {
   StudentApplication,
@@ -23,12 +23,16 @@ import { AcceptedStudentModule } from '../accepted-student/accepted-student.modu
         schema: StudentApplicationSchema,
         collection: 'studentapplications',
       },
-      { name: 'WaSend', schema: require('../Schemas/wa-send.schema').WaSendSchema }, // 👈 add WaSend schema
+      {
+        name: 'WaSend',
+        schema: require('../Schemas/wa-send.schema').WaSendSchema,
+      }, // 👈 add WaSend schema
     ]),
     HttpModule, // 👈 add this
     ConfigModule, // 👈 make sure ConfigModule is available
     StudentApplicationModule,
     AcceptedStudentModule, // 👈 added here
+    SettingsModule, // 👈 make available here
   ],
   controllers: [AppointmentsController],
   providers: [AppointmentsService],

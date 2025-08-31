@@ -25,6 +25,7 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { SettingsService } from '../settings/settings.service';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -54,6 +55,7 @@ export class AppointmentsService {
     private readonly config: ConfigService,
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
+    private readonly settingsService: SettingsService,
   ) {}
 
   // ------------------------ Utils ------------------------
@@ -514,7 +516,14 @@ export class AppointmentsService {
       throw new BadRequestException('Payment configuration is missing');
     }
 
-    const amountCents = 400000; // 5000 EGP
+    // 🔹 Get amount dynamically from settings
+    const settings = await this.settingsService.getSettings();
+    if (settings?.amount == null) {
+      throw new BadRequestException('Appointment fee not configured');
+    }
+
+    // Already stored in "cents" (e.g. 400000 for 4000 EGP)
+    const amountCents = settings.amount;
 
     // 🔍 Lookup student application (by ID only now)
     if (!applicationId || !Types.ObjectId.isValid(applicationId)) {
@@ -1025,7 +1034,7 @@ export class AppointmentsService {
       );
     }
   }
-  @Cron(CronExpression.EVERY_2_HOURS) // runs every hour
+  @Cron(CronExpression.EVERY_10_SECONDS) // runs every hour
   async sendRemindersForUpcomingAppointments() {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
