@@ -185,9 +185,20 @@ export default function AppointmentPage() {
       const res = await fetch(
         `${API}/applications/by-id/${encodeURIComponent(appId.trim())}`
       );
+
       const data = await res.json();
 
-      if (!res.ok || !data?.application) {
+      if (!res.ok) {
+        // 👇 Handle custom error message from backend
+        const msg =
+          data?.message ||
+          "We couldn't find an application for this ID. Please check your code and try again.";
+        setLookupError(msg);
+        setApp(null);
+        return;
+      }
+
+      if (!data?.application) {
         setLookupError(
           "We couldn't find an application for this ID. Please check your code and try again."
         );
@@ -195,7 +206,7 @@ export default function AppointmentPage() {
         return;
       }
 
-      // normalize the application
+      // normalize
       const a = data.application || {};
       const normalized: Application = {
         _id: String(a?._id ?? ""),
@@ -207,18 +218,16 @@ export default function AppointmentPage() {
         student_name: a?.student_name ?? a?.data?.student_name,
       };
 
-      // sanity check: must be a 24-hex string
       if (!/^[0-9a-fA-F]{24}$/.test(normalized._id)) {
-        setLookupError(
-          "Found your application but the ID is invalid. Please try again."
-        );
+        setLookupError("Found your application but the ID is invalid.");
         setApp(null);
         return;
       }
 
       setApp(normalized);
-      setScheduleWindow(data.window); // ✅ save backend window
-    } catch {
+      setScheduleWindow(data.window);
+    } catch (err) {
+      console.error(err);
       setLookupError("Something went wrong. Please try again.");
     } finally {
       setSearching(false);

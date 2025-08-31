@@ -19,11 +19,20 @@ export class StudentApplication {
   // NEW: static status field
   @Prop({
     type: String,
-    enum: ['applied', 'waiting_for_assessment', 'assessed', 'accepted', 'rejected'],
+    enum: [
+      'applied',
+      'waiting_for_assessment',
+      'assessed',
+      'accepted',
+      'rejected',
+    ],
     default: 'applied',
     index: true,
   })
   state: ApplicationState;
+  // ✅ new field
+  @Prop({ type: Boolean, default: false })
+  hasBookedAppointment: boolean;
 
   createdAt?: Date;
   updatedAt?: Date;

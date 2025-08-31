@@ -9,7 +9,19 @@ import * as sgMail from '@sendgrid/mail';
 import { join } from 'path';
 import { unlink } from 'fs/promises';
 import * as fs from 'fs';
-
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 // ✅ Confirm API key
 console.log(
   'SENDGRID API KEY (partial):',
@@ -190,6 +202,7 @@ export class StudentApplicationService {
     const createdApp = new this.appModel({
       data: formData,
       files: fileMetadata,
+      hasBookedAppointment: false, // 👈 ensure default is set
     });
 
     await createdApp.save();
@@ -438,6 +451,7 @@ export class StudentApplicationService {
       .select({
         _id: 1,
         createdAt: 1,
+        hasBookedAppointment: 1, // 👈 select the new field
         'data.student_name': 1,
         'data.father_name': 1,
         'data.mother_name': 1,
@@ -450,11 +464,18 @@ export class StudentApplicationService {
 
     if (!app) return null;
 
+    if (app.hasBookedAppointment) {
+      // 👈 throw or return a clear error
+      throw new BadRequestException(
+        'This application has already booked an assessment appointment.',
+      );
+    }
+
     const data: any = app.data || {};
 
     return {
       _id: String(app._id),
-      submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(), // 👈 normalize like before
+      submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
       student_name: data.student_name,
       father_name: data.father_name,
       mother_name: data.mother_name,
