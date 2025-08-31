@@ -1,12 +1,39 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule'; // ⬅️ add this
-import { BookTourSlot, BookTourSlotDocument } from '../Schemas/booktour-slot.schema';
-import { BookTourBooking, BookTourBookingDocument } from '../Schemas/booktour-booking.schema';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import * as sgMail from '@sendgrid/mail';
+import {
+  BookTourSlot,
+  BookTourSlotDocument,
+} from '../Schemas/booktour-slot.schema';
+import {
+  BookTourBooking,
+  BookTourBookingDocument,
+} from '../Schemas/booktour-booking.schema';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { UpdateSlotDto } from './dto/update-slot.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
+
+// ✅ Log & set SendGrid (like student application service)
+console.log('SENDGRID API KEY (partial):', process.env.SENDGRID_API_KEY?.slice(0, 10) || 'Not found');
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
+
+// Small helpers
+function fmtDate(dt: Date) {
+  // pretty label (e.g., "Mon, Sep 1, 2025 – 11:00")
+  return `${dt.toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })} – ${dt.toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  })}`;
+}
 
 @Injectable()
 export class BookTourService {
@@ -16,6 +43,8 @@ export class BookTourService {
   ) {}
 
   // ------- CRON JOBS -------
+
+  // Deactivate passed slots periodically
   @Cron(CronExpression.EVERY_11_HOURS)
   async deactivatePastSlots() {
     const now = new Date();
@@ -29,15 +58,14 @@ export class BookTourService {
     }
   }
 
+  // Nightly cleanup: delete expired slots (older than "yesterday 00:00") and their bookings
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async deleteExpiredEvents() {
-    // Set threshold to "yesterday 00:00"
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const threshold = new Date(today);
     threshold.setDate(threshold.getDate() - 1); // keep 1 extra day
 
-    // Find slots to purge (iso date strictly < threshold)
     const oldSlots = await this.slotModel.find(
       { iso: { $lt: threshold } },
       { _id: 1 },
@@ -45,12 +73,9 @@ export class BookTourService {
 
     if (!oldSlots.length) return;
 
-    const ids = oldSlots.map(s => s._id as Types.ObjectId);
+    const ids = oldSlots.map((s) => s._id as Types.ObjectId);
 
-    // Delete their bookings first (avoid orphans)
     const bDel = await this.bookingModel.deleteMany({ slotId: { $in: ids } });
-
-    // Delete the slots themselves
     const sDel = await this.slotModel.deleteMany({ _id: { $in: ids } });
 
     // eslint-disable-next-line no-console
@@ -115,9 +140,15 @@ export class BookTourService {
 
   // ------- Booking -------
 
+  /**
+   * Create a booking, increment bookedCount, then email:
+   *  - Admissions: summary of booking
+   *  - Parent: confirmation & details
+   */
   async createBooking(dto: CreateBookingDto) {
     if (!Types.ObjectId.isValid(dto.slotId)) throw new BadRequestException('Invalid slotId');
 
+    // Atomically increment bookedCount on an active, future slot
     const slot = await this.slotModel.findOneAndUpdate(
       {
         _id: new Types.ObjectId(dto.slotId),
@@ -136,17 +167,107 @@ export class BookTourService {
       throw new BadRequestException('Booking not allowed');
     }
 
-    return this.bookingModel.create({
+    // Create booking doc
+    const booking = await this.bookingModel.create({
       slotId: slot._id,
       studentName: dto.studentName,
       parentEmail: dto.parentEmail,
       parentPhone: dto.parentPhone,
       selectedLabel: dto.selectedLabel ?? slot.label,
     });
+
+    // --- EMAILS (mirroring your student app approach) ---
+    const admissionsTo = 'Admission@leadersintcollege.com';
+    const fromIdentity = {
+      email: 'Admission@leadersintcollege.com',
+      name: 'Book a Tour',
+    };
+
+    const slotTime = new Date(slot.iso);
+    const prettyTime = fmtDate(slotTime);
+    const bookingCode = String(booking._id);
+    const parentEmail = dto.parentEmail?.trim();
+
+    // Admissions email (HTML summary)
+    const admissionsHtml = `
+<div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 30px; max-width: 750px; margin: auto; border-radius: 8px; border: 1px solid #d3d3d3;">
+  <h2 style="background-color: #004080; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+    🗓️ New Campus Tour Booking
+  </h2>
+  <p style="font-size: 15px;">A new booking has been made via the website.</p>
+  <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; background-color: #fff; margin-top: 20px;">
+    <thead style="background-color: #e8eef5;">
+      <tr><th>Field</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding:8px; font-weight:bold;">Student Name</td><td style="padding:8px;">${dto.studentName || ''}</td></tr>
+      <tr><td style="padding:8px; font-weight:bold;">Parent Email</td><td style="padding:8px;">${parentEmail || ''}</td></tr>
+      <tr><td style="padding:8px; font-weight:bold;">Parent Phone</td><td style="padding:8px;">${dto.parentPhone || ''}</td></tr>
+      <tr><td style="padding:8px; font-weight:bold;">Slot Label</td><td style="padding:8px;">${booking.selectedLabel || slot.label || ''}</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 30px; font-size: 13px; color: #888;">This message was generated by the Leaders International College tour booking portal.</p>
+</div>`.trim();
+
+    const admissionsEmail = {
+      to: admissionsTo,
+      from: fromIdentity,
+      subject: `🗓️ New Tour Booking – ${dto.studentName || 'Student'} (${prettyTime})`,
+      html: admissionsHtml,
+    };
+
+    // Parent confirmation email (if email provided)
+    const parentHtml = `
+<div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
+  <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+    Tour Booking Confirmed
+  </h2>
+  <p style="font-size: 15px;">Dear Parent of <strong>${dto.studentName || 'Student'}</strong>,</p>
+  <p style="font-size: 15px;">Thank you for booking a campus tour with Leaders International College.</p>
+
+  <p style="font-size: 15px; margin-top: 16px;">
+    Slot: ${booking.selectedLabel || slot.label || '—'}
+  </p>
+
+  <p style="font-size: 15px;">We look forward to seeing you on campus.</p>
+  <p style="margin-top: 30px;">Warm regards,<br/><strong>Leaders International College – Admissions Department</strong></p>
+</div>
+`.trim();
+
+    const parentEmailMsg = parentEmail
+      ? {
+          to: parentEmail,
+          from: {
+            email: 'Admission@leadersintcollege.com',
+            name: 'Leaders International College',
+          },
+          subject: `✅ Tour Booking Confirmed – ${prettyTime}`,
+          html: parentHtml,
+        }
+      : null;
+
+    try {
+      const tasks: Promise<any>[] = [sgMail.send(admissionsEmail)];
+      if (parentEmailMsg) tasks.push(sgMail.send(parentEmailMsg));
+      await Promise.all(tasks);
+    } catch (err: any) {
+      console.error('❌ SendGrid Email Error (BookTour):', err?.response?.body || err?.message || err);
+      // We mimic the student app behavior: booking saved but emails failed.
+      throw new Error('Booking saved, but failed to send confirmation email(s).');
+    }
+
+    return {
+      ok: true,
+      bookingId: bookingCode,
+    };
   }
 
-
-   
+  /**
+   * Delete a booking by id.
+   * - Validates ObjectId
+   * - Removes the booking
+   * - Safely decrements the parent slot's bookedCount (never below 0)
+   */
   async deleteBooking(id: string) {
     if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid booking id');
 
@@ -158,26 +279,22 @@ export class BookTourService {
     const delRes = await this.bookingModel.deleteOne({ _id: new Types.ObjectId(id) });
     if (delRes.deletedCount !== 1) throw new NotFoundException('Booking not found');
 
-
+    // Safely decrement bookedCount on the slot (never below 0)
     await this.slotModel.updateOne(
       { _id: new Types.ObjectId(booking.slotId as any) },
       [
         {
           $set: {
             bookedCount: {
-              $max: [
-                { $subtract: ["$bookedCount", 1] },
-                0
-              ]
-            }
-          }
-        }
-      ]
+              $max: [{ $subtract: ['$bookedCount', 1] }, 0],
+            },
+          },
+        },
+      ],
     );
 
     return { ok: true, deleted: true };
   }
-
 
   // ------- Admin helpers -------
 
