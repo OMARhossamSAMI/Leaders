@@ -1,5 +1,6 @@
 // whatsapp.service.ts
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import fetch from 'node-fetch';
@@ -107,6 +108,7 @@ export class WhatsappService {
   }
 
   constructor(
+    private readonly config: ConfigService,
     @InjectModel('Application') private readonly appModel: Model<AppDoc>,
     @InjectModel(WaSend.name) private readonly waSendModel: Model<WaSend>,
     @InjectModel('Appointment') private readonly apptModel: Model<ApptDoc>,
@@ -206,18 +208,35 @@ export class WhatsappService {
   }
 
   // ---------- Meta senders ----------
-  private async sendViaMetaTemplate(toRaw: string) {
+  private async sendViaMetaTemplate(
+    toRaw: string,
+    bodyParams: Array<string | number> = [], // ← NEW
+  ) {
     const to = toRaw.replace(/^\+/, ''); // WABA expects digits only
     const url = this.apiUrl();
+
+    // Build components only if you actually have params
+    const components =
+      bodyParams.length > 0
+        ? [
+            {
+              type: 'body',
+              parameters: bodyParams.map((p) => ({
+                type: 'text',
+                text: String(p),
+              })),
+            },
+          ]
+        : undefined;
 
     const payload = {
       messaging_product: 'whatsapp' as const,
       to,
       type: 'template' as const,
       template: {
-        name: this.TEMPLATE_NAME, // "post_message"
+        name: this.TEMPLATE_NAME, // e.g. "post_message"
         language: { code: this.TEMPLATE_LANG }, // e.g. "en"
-        // ⚠️ NO components since the template has no header/body variables
+        ...(components ? { components } : {}), // include only when present
       },
     };
 
@@ -305,103 +324,90 @@ export class WhatsappService {
 
   // ---------- Public API ----------
   async sendAssessment(dto: {
-    parentEmail?: string;
-    applicationId?: string;
-    appointmentId?: string; // required here for idempotency
-    slotISO: string;
-  }) {
-    this.log.log(`[IN] sendAssessment dto=${JSON.stringify(dto)}`);
+  parentEmail?: string;
+  applicationId?: string;
+  appointmentId?: string; // required here for idempotency
+  slotISO: string;
+}) {
+  this.log.log(`[IN] sendAssessment dto=${JSON.stringify(dto)}`);
 
-    // ---- Resolve application (id first, then parent email)
-    let app: AppDoc | null = null;
-    if (dto.applicationId && Types.ObjectId.isValid(dto.applicationId)) {
-      app = await this.appModel.findById(dto.applicationId).lean();
-    }
-    if (!app && dto.parentEmail) {
-      const email = dto.parentEmail.trim();
-      const query = {
-        $or: [
-          {
-            'data.father_email': {
-              $regex: `^${this.escape(email)}$`,
-              $options: 'i',
-            },
-          },
-          {
-            'data.mother_email': {
-              $regex: `^${this.escape(email)}$`,
-              $options: 'i',
-            },
-          },
-        ],
-      };
-      app = await this.appModel.findOne(query).lean();
-    }
-    if (!app)
-      throw new BadRequestException(
-        'Application not found for provided email/id',
-      );
-
-    if (!dto.appointmentId || !Types.ObjectId.isValid(dto.appointmentId)) {
-      throw new BadRequestException(
-        'appointmentId is required and must be valid.',
-      );
-    }
-    const apptId = new Types.ObjectId(dto.appointmentId);
-
-    // ---- Idempotent claim (relies on your unique indexes)
-    const { inserted, alreadySent, filter } =
-      await this.claimSendOnceByApptOrAppSlot({
-        template: this.TEMPLATE_NAME, // "post_message"
-        apptId,
-        appId: app._id as any,
-        slotISO: dto.slotISO,
-      });
-
-    if (!inserted && alreadySent) {
-      this.log.log(
-        `[SKIP] already sent for appointment/app+slot: ${JSON.stringify(filter)}`,
-      );
-      return { ok: true, sent: [], skipped: ['already-sent-for-appointment'] };
-    }
-
-    // ---- Collect phones
-    const raw = [app.data?.father_phone, app.data?.mother_phone].filter(
-      Boolean,
-    ) as string[];
-    const phones = [
-      ...new Set(raw.map((p) => this.normPhoneEgypt(p)).filter(Boolean)),
-    ] as string[];
-    if (phones.length === 0)
-      throw new BadRequestException(
-        'No valid phone numbers on the application.',
-      );
-
-    const sent: string[] = [];
-
-    try {
-      for (const to of phones) {
-        await this.sendViaMetaTemplate(to); // simple template call
-        sent.push(to);
-      }
-
-      await this.waSendModel.updateOne(filter, {
-        $set: { sentAt: new Date(), phonesTried: phones, phonesSent: sent },
-      });
-
-      return { ok: true, sent, skipped: [] };
-    } catch (e) {
-      // keep a record; a later retry will reuse the same wa_sends row
-      await this.waSendModel.updateOne(filter, {
-        $set: {
-          error: e instanceof Error ? e.message : String(e),
-          phonesTried: phones,
-          phonesSent: sent,
-        },
-      });
-      throw e;
-    }
+  // ---- Resolve application (id first, then parent email)
+  let app: AppDoc | null = null;
+  if (dto.applicationId && Types.ObjectId.isValid(dto.applicationId)) {
+    app = await this.appModel.findById(dto.applicationId).lean();
   }
+  if (!app && dto.parentEmail) {
+    const email = dto.parentEmail.trim();
+    const query = {
+      $or: [
+        { 'data.father_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
+        { 'data.mother_email': { $regex: `^${this.escape(email)}$`, $options: 'i' } },
+      ],
+    };
+    app = await this.appModel.findOne(query).lean();
+  }
+  if (!app) {
+    throw new BadRequestException('Application not found for provided email/id');
+  }
+
+  if (!dto.appointmentId || !Types.ObjectId.isValid(dto.appointmentId)) {
+    throw new BadRequestException('appointmentId is required and must be valid.');
+  }
+  const apptId = new Types.ObjectId(dto.appointmentId);
+
+  // ---- Idempotent claim (relies on your unique indexes)
+  const { inserted, alreadySent, filter } = await this.claimSendOnceByApptOrAppSlot({
+    template: this.TEMPLATE_NAME, // e.g. "post_message"
+    apptId,
+    appId: app._id as any,
+    slotISO: dto.slotISO,
+  });
+
+  if (!inserted && alreadySent) {
+    this.log.log(`[SKIP] already sent for appointment/app+slot: ${JSON.stringify(filter)}`);
+    return { ok: true, sent: [], skipped: ['already-sent-for-appointment'] };
+  }
+
+  // ---- Collect phones
+  const raw = [app.data?.father_phone, app.data?.mother_phone].filter(Boolean) as string[];
+  const phones = [...new Set(raw.map((p) => this.normPhoneEgypt(p)).filter(Boolean))] as string[];
+  if (phones.length === 0) {
+    throw new BadRequestException('No valid phone numbers on the application.');
+  }
+
+  // ---- Body parameter (survey link)
+  const surveyUrl = this.config.get<string>('SURVEY_URL');
+  if (!surveyUrl) {
+    throw new BadRequestException('SURVEY_URL is not configured.');
+  }
+
+  const sent: string[] = [];
+
+  try {
+    for (const to of phones) {
+      // Template now has ONE body placeholder => pass as a single parameter
+      await this.sendViaMetaTemplate(to, [surveyUrl]);
+      sent.push(to);
+    }
+
+    await this.waSendModel.updateOne(filter, {
+      $set: { sentAt: new Date(), phonesTried: phones, phonesSent: sent },
+    });
+
+    return { ok: true, sent, skipped: [] };
+  } catch (e) {
+    // keep a record; a later retry will reuse the same wa_sends row
+    await this.waSendModel.updateOne(filter, {
+      $set: {
+        error: e instanceof Error ? e.message : String(e),
+        phonesTried: phones,
+        phonesSent: sent,
+      },
+    });
+    throw e;
+  }
+}
+
 
   // Send custom message to multiple appointments (unlimited; no idempotency)
   async sendCustomToAppointments(appointmentIds: string[], message: string) {
