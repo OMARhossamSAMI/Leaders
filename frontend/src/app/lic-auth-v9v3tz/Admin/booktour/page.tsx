@@ -97,6 +97,10 @@ export default function BookTourAdminPage() {
     [slots]
   );
 
+  // Treat slots whose ISO is in the past as OFF in the UI (effective active flag)
+  const effectiveActive = (s: Slot) =>
+    s.active && new Date(s.iso).getTime() >= Date.now();
+
   // ---- Data loaders ----
 
   const loadSlots = async () => {
@@ -203,6 +207,19 @@ export default function BookTourAdminPage() {
   const handleToggle = async (id: string, newState: boolean) => {
     setMsg("");
     setErr("");
+
+    const slot = slots.find((x) => x._id === id);
+    if (!slot) {
+      setErr("Slot not found");
+      return;
+    }
+
+    // Block activating a past slot
+    if (newState && new Date(slot.iso).getTime() < Date.now()) {
+      setErr("Cannot activate a past slot.");
+      return;
+    }
+
     try {
       await axios.patch<Slot>(
         `${API}/booktour/admin/slots/${id}`,
@@ -234,6 +251,32 @@ export default function BookTourAdminPage() {
       setErr(e?.response?.data?.message || e.message || "Delete failed");
     }
   };
+
+  const handleDeleteBooking = async (bookingId: string, slotId: string) => {
+  if (!confirm("Delete this booking?")) return;
+  setBookingsErr("");
+
+  try {
+    await axios.delete(`${API}/booktour/admin/bookings/${bookingId}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Remove booking from table
+    setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+
+    // Optimistically decrement bookedCount for that slot in the slots list
+    setSlots((prev) =>
+      prev.map((s) =>
+        s._id === (slotId as unknown as string)
+          ? { ...s, bookedCount: Math.max(0, (s.bookedCount ?? 0) - 1) }
+          : s
+      )
+    );
+  } catch (e: any) {
+    console.error("[Booking] delete error:", e?.response?.status, e?.response?.data || e);
+    setBookingsErr(e?.response?.data?.message || e.message || "Failed to delete booking");
+  }
+};
 
   const autoLabel = () => {
     if (!date || !time) return "";
@@ -332,54 +375,55 @@ export default function BookTourAdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-  {sortedSlotsDesc.map((s) => {
-    const booked = s.bookedCount ?? 0;
+                      {sortedSlotsDesc.map((s) => {
+                        const booked = s.bookedCount ?? 0;
+                        const isPast = new Date(s.iso).getTime() < Date.now();
 
-    return (
-      <tr key={s._id}>
-        <td>{s.label || new Date(s.iso).toLocaleString()}</td>
-        <td className="small text-muted">
-          {new Date(s.iso).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}{" "}
-          –{" "}
-          {new Date(s.iso).toLocaleTimeString(undefined, {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </td>
-        <td className="text-center">
-          <span
-            className={`badge ${s.active ? "bg-success" : "bg-secondary"}`}
-            style={{ fontWeight: 600 }}
-          >
-            {s.active ? "ON" : "OFF"}
-          </span>
-        </td>
-        <td className="text-center">{booked}</td>
-        <td className="text-end">
-          <div className="d-inline-flex gap-2">
-            <button
-              className="btn btn-sm btn-outline-primary"
-              onClick={() => handleToggle(s._id, !s.active)}
-            >
-              {s.active ? "Deactivate" : "Activate"}
-            </button>
-            <button
-              className="btn btn-sm btn-outline-danger"
-              onClick={() => handleDelete(s._id)}
-            >
-              Delete
-            </button>
-          </div>
-        </td>
-      </tr>
-    );
-  })}
-</tbody>
-
+                        return (
+                          <tr key={s._id} className={isPast ? "table-light" : ""}>
+                            <td>{s.label || new Date(s.iso).toLocaleString()}</td>
+                            <td className="small text-muted">
+                              {new Date(s.iso).toLocaleDateString(undefined, {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}{" "}
+                              –{" "}
+                              {new Date(s.iso).toLocaleTimeString(undefined, {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`badge ${effectiveActive(s) ? "bg-success" : "bg-secondary"}`}
+                                style={{ fontWeight: 600 }}
+                              >
+                                {effectiveActive(s) ? "ON" : "OFF"}
+                              </span>
+                              {isPast && <div className="small text-muted">Past</div>}
+                            </td>
+                            <td className="text-center">{booked}</td>
+                            <td className="text-end">
+                              <div className="d-inline-flex gap-2">
+                                <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() => handleToggle(s._id, !s.active)}
+                                >
+                                  {s.active ? "Deactivate" : "Activate"}
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => handleDelete(s._id)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
                   </table>
                 </div>
               )}
@@ -470,49 +514,61 @@ export default function BookTourAdminPage() {
               {bookingsErr && <div className="alert alert-danger">{bookingsErr}</div>}
 
               {loadingBookings ? (
-                <div className="loader-container">
-                  <div className="spinner" />
-                  <p className="loading-text">Loading Bookings...</p>
-                </div>
-              ) : bookings.length === 0 ? (
-                <p className="text-muted" style={{ padding: "0.5rem" }}>
-                  No bookings found{selectedSlotForBookings ? " for this slot." : "."}
-                </p>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table align-middle">
-                    <thead>
-                      <tr>
-                        <th>Student</th>
-                        <th>Parent Email</th>
-                        <th>Parent Phone</th>
-                        <th>Selected Label</th>
-                        <th>Booked At</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bookings.map((b) => {
-                        const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
-                        return (
-                          <tr key={b._id}>
-                            <td>{b.studentName}</td>
-                            <td>
-                              <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
-                            </td>
-                            <td>
-                              <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
-                            </td>
-                            <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
-                            <td className="small text-muted">
-                              {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                  <div className="loader-container">
+                    <div className="spinner" />
+                    <p className="loading-text">Loading Bookings...</p>
+                  </div>
+                ) : bookings.length === 0 ? (
+                  <p className="text-muted" style={{ padding: "0.5rem" }}>
+                    No bookings found{selectedSlotForBookings ? " for this slot." : "."}
+                  </p>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead>
+                        <tr>
+                          <th>Student</th>
+                          <th>Parent Email</th>
+                          <th>Parent Phone</th>
+                          <th>Selected Label</th>
+                          <th>Booked At</th>
+                          <th className="text-end">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bookings.map((b) => {
+                          const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
+                          return (
+                            <tr key={b._id}>
+                              <td>{b.studentName}</td>
+                              <td>
+                                <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
+                              </td>
+                              <td>
+                                <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
+                              </td>
+                              <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
+                              <td className="small text-muted">
+                                {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
+                              </td>
+                              <td className="text-end">
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => handleDeleteBooking(b._id, b.slotId as unknown as string)}
+                                  title="Delete booking"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+
             </div>
           )}
         </section>
@@ -556,7 +612,7 @@ export default function BookTourAdminPage() {
 
             <div style={{ padding: 20 }}>
               <div className="row g-3">
-                <div className="col-12 col-md-4">
+                <div className="col-12 col-md-6">
                   <label className="form-label">Date</label>
                   <input
                     type="date"
@@ -566,7 +622,7 @@ export default function BookTourAdminPage() {
                   />
                 </div>
 
-                <div className="col-12 col-md-4">
+                <div className="col-12 col-md-6">
                   <label className="form-label">Time</label>
                   <input
                     type="time"
@@ -574,17 +630,6 @@ export default function BookTourAdminPage() {
                     className="form-control"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                  />
-                </div>
-
-                <div className="col-12 col-md-4">
-                  <label className="form-label">Capacity</label>
-                  <input
-                    type="number"
-                    min={1}
-                    className="form-control"
-                    value={capacity}
-                    onChange={(e) => setCapacity(Number(e.target.value))}
                   />
                 </div>
 

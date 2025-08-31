@@ -66,6 +66,11 @@ export class BookTourController {
     return this.svc.listAllBookings();
   }
 
+    @Delete('admin/bookings/:id')
+  deleteBooking(@Param('id') id: string) {
+    return this.svc.deleteBooking(id);
+  }
+
   // ---------- Public ----------
   @Get('slots/active')
   listActiveSlots() {

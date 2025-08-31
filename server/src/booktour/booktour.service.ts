@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { Cron, CronExpression } from '@nestjs/schedule'; // ⬅️ add this
 import { BookTourSlot, BookTourSlotDocument } from '../Schemas/booktour-slot.schema';
 import { BookTourBooking, BookTourBookingDocument } from '../Schemas/booktour-booking.schema';
 import { CreateSlotDto } from './dto/create-slot.dto';
@@ -14,6 +15,50 @@ export class BookTourService {
     @InjectModel(BookTourBooking.name) private bookingModel: Model<BookTourBookingDocument>,
   ) {}
 
+  // ------- CRON JOBS -------
+  @Cron(CronExpression.EVERY_11_HOURS)
+  async deactivatePastSlots() {
+    const now = new Date();
+    const res = await this.slotModel.updateMany(
+      { active: true, iso: { $lt: now } },
+      { $set: { active: false } },
+    );
+    if (res.modifiedCount) {
+      // eslint-disable-next-line no-console
+      console.log(`[Scheduler] Deactivated ${res.modifiedCount} past slots`);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async deleteExpiredEvents() {
+    // Set threshold to "yesterday 00:00"
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const threshold = new Date(today);
+    threshold.setDate(threshold.getDate() - 1); // keep 1 extra day
+
+    // Find slots to purge (iso date strictly < threshold)
+    const oldSlots = await this.slotModel.find(
+      { iso: { $lt: threshold } },
+      { _id: 1 },
+    ).lean();
+
+    if (!oldSlots.length) return;
+
+    const ids = oldSlots.map(s => s._id as Types.ObjectId);
+
+    // Delete their bookings first (avoid orphans)
+    const bDel = await this.bookingModel.deleteMany({ slotId: { $in: ids } });
+
+    // Delete the slots themselves
+    const sDel = await this.slotModel.deleteMany({ _id: { $in: ids } });
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `[Scheduler] Deleted ${sDel.deletedCount} expired slots and ${bDel.deletedCount} related bookings`,
+    );
+  }
+
   // ------- Slots -------
 
   async createSlot(dto: CreateSlotDto) {
@@ -24,7 +69,6 @@ export class BookTourService {
       iso,
       label: dto.label,
       active: dto.active ?? true,
-      // capacity removed
     });
     return doc.save();
   }
@@ -46,7 +90,6 @@ export class BookTourService {
     }
     if (typeof dto.active === 'boolean') update.active = dto.active;
     if (dto.label !== undefined) update.label = dto.label;
-    // capacity removed
 
     const res = await this.slotModel.findByIdAndUpdate(id, update, { new: true });
     if (!res) throw new NotFoundException('Slot not found');
@@ -72,12 +115,6 @@ export class BookTourService {
 
   // ------- Booking -------
 
-  /**
-   * Unlimited-capacity booking:
-   * - Ensure slot exists, is active, and in the future
-   * - Atomically increments bookedCount
-   * - Creates the booking
-   */
   async createBooking(dto: CreateBookingDto) {
     if (!Types.ObjectId.isValid(dto.slotId)) throw new BadRequestException('Invalid slotId');
 
@@ -96,7 +133,6 @@ export class BookTourService {
       if (!exists) throw new NotFoundException('Slot not found');
       if (!exists.active) throw new BadRequestException('Slot is not active');
       if (exists.iso < new Date()) throw new BadRequestException('Slot has passed');
-      // capacity checks removed
       throw new BadRequestException('Booking not allowed');
     }
 
@@ -109,13 +145,47 @@ export class BookTourService {
     });
   }
 
+
+   
+  async deleteBooking(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException('Invalid booking id');
+
+    // Find the booking first to know its slotId
+    const booking = await this.bookingModel.findById(id).lean();
+    if (!booking) throw new NotFoundException('Booking not found');
+
+    // Delete the booking
+    const delRes = await this.bookingModel.deleteOne({ _id: new Types.ObjectId(id) });
+    if (delRes.deletedCount !== 1) throw new NotFoundException('Booking not found');
+
+
+    await this.slotModel.updateOne(
+      { _id: new Types.ObjectId(booking.slotId as any) },
+      [
+        {
+          $set: {
+            bookedCount: {
+              $max: [
+                { $subtract: ["$bookedCount", 1] },
+                0
+              ]
+            }
+          }
+        }
+      ]
+    );
+
+    return { ok: true, deleted: true };
+  }
+
+
   // ------- Admin helpers -------
 
   async listAllBookings() {
     return this.bookingModel
       .find({})
       .sort({ createdAt: -1 })
-      .populate({ path: 'slotId', select: 'iso label active' }) // removed capacity
+      .populate({ path: 'slotId', select: 'iso label active' })
       .lean();
   }
 
@@ -126,9 +196,6 @@ export class BookTourService {
     if (!slot) throw new NotFoundException('Slot not found');
 
     const oid = new Types.ObjectId(slotId);
-
-    // Primary: exact ObjectId match
-    // Safeties: legacy string match OR label match if your old data only stored labels
     const or: any[] = [{ slotId: oid }, { slotId: slotId }];
     if (slot.label?.trim()) or.push({ selectedLabel: slot.label.trim() });
 
