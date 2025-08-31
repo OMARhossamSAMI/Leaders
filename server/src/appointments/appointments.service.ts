@@ -503,7 +503,7 @@ export class AppointmentsService {
   // ------------------------ Paymob: Start Payment ------------------------
 
   async startPayment(dto: CreateAppointmentDto) {
-    const { applicationId, parentEmail, slotISO } = dto;
+    const { applicationId, slotISO } = dto;
 
     // Config
     const secretKey = this.config.get<string>('PAYMOB_SECRET_KEY');
@@ -516,15 +516,26 @@ export class AppointmentsService {
 
     const amountCents = 500000; // 5000 EGP
 
-    // 🔍 Lookup student application
-    const appDoc = await this.findApplication(applicationId, parentEmail);
+    // 🔍 Lookup student application (by ID only now)
+    if (!applicationId || !Types.ObjectId.isValid(applicationId)) {
+      throw new BadRequestException('Valid applicationId is required');
+    }
+
+    const appDoc = await this.appModel.findById(applicationId).lean();
     if (!appDoc)
       throw new BadRequestException('Application not found for payment');
 
     const data = appDoc.data || {};
-    const studentName =
-      data.student_name || data.student || appDoc.student_name || 'Student';
+
+    // Extract required info
+    const studentName = data.student_name || data.student || 'Student';
     const fatherName = data.father_name || data.guardian_name || 'Parent';
+    const parentEmail = data.father_email || data.mother_email;
+    if (!parentEmail) {
+      throw new BadRequestException(
+        'No parent email found for this application',
+      );
+    }
 
     const fatherPhone = data.father_phone || data.fatherPhone;
     const motherPhone = data.mother_phone || data.motherPhone;
@@ -553,7 +564,7 @@ export class AppointmentsService {
           ],
           billing_data: {
             apartment: 'NA',
-            email: (parentEmail || '').toLowerCase(),
+            email: parentEmail.toLowerCase(),
             floor: 'NA',
             first_name: studentName,
             last_name: fatherName,
@@ -569,7 +580,7 @@ export class AppointmentsService {
           customer: {
             first_name: studentName,
             last_name: fatherName,
-            email: (parentEmail || '').toLowerCase(),
+            email: parentEmail.toLowerCase(),
           },
           extras: {
             applicationId,
@@ -593,6 +604,7 @@ export class AppointmentsService {
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
     return { checkout_url: checkoutUrl };
   }
+
   private normalizePhoneNumber(input: string): string {
     if (!input) return '';
     // Remove everything except digits
@@ -1013,7 +1025,7 @@ export class AppointmentsService {
       );
     }
   }
-  @Cron(CronExpression.EVERY_10_SECONDS) // runs every hour
+  @Cron(CronExpression.EVERY_2_HOURS) // runs every hour
   async sendRemindersForUpcomingAppointments() {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -1067,7 +1079,7 @@ export class AppointmentsService {
               to: this.normalizePhoneNumber(phone),
               type: 'template',
               template: {
-                name: 'admissions_reminder',
+                name: 'assessment_reminder',
                 language: { code: 'en' },
                 components: [
                   {
