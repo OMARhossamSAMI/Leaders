@@ -6,9 +6,11 @@ import { WhatsappController } from './whatsapp.controller';
 import {  StudentApplicationSchema } from '../Schemas/studentApplication.schema';
 import { WaSend, WaSendSchema } from 'src/Schemas/wa-send.schema';
 import { AppointmentSchema } from 'src/Schemas/appointment.schema';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     MongooseModule.forFeature([
       {
         name: 'Application',                 // ← token used by @InjectModel('Application')
