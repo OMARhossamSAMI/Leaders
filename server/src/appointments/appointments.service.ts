@@ -24,6 +24,7 @@ import {
 } from '../Schemas/studentApplication.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -367,13 +368,11 @@ export class AppointmentsService {
     }
   }
 
- 
   async listAll(opts?: { upcoming?: boolean; q?: string }) {
     const filter: any = {};
     if (opts?.upcoming) filter.slotISO = { $gte: new Date().toISOString() };
     if (opts?.q)
       filter.parentEmail = { $regex: this.escapeRegex(opts.q), $options: 'i' };
-
 
     const docs = await this.apptModel
       .find(filter)
@@ -1012,6 +1011,99 @@ export class AppointmentsService {
       return res.redirect(
         'http://localhost:3001/admissions/appointments/Declined',
       );
+    }
+  }
+  @Cron(CronExpression.EVERY_10_SECONDS) // runs every hour
+  async sendRemindersForUpcomingAppointments() {
+    const now = new Date();
+    const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    // find appointments within the next 24h, not already reminded
+    const upcoming = await this.apptModel
+      .find({
+        reminderSent: false,
+        slotISO: { $gte: now.toISOString(), $lte: in24h.toISOString() },
+      })
+      .lean();
+
+    for (const appt of upcoming) {
+      try {
+        const app = await this.appModel.findById(appt.applicationId).lean();
+        if (!app) continue;
+
+        const data = app.data || {};
+        const studentName = data.student_name || 'Student';
+        const parentName =
+          data.father_name ||
+          data.guardian_name ||
+          data.mother_name ||
+          'Parent';
+        const fatherPhone = data.father_phone || '';
+        const motherPhone = data.mother_phone || '';
+
+        const phone = fatherPhone || motherPhone;
+        if (!phone) {
+          this.logger.warn(`⚠️ No phone number for appointment ${appt._id}`);
+          continue;
+        }
+
+        // Format date/time for Cairo
+        const d = new Date(appt.slotISO);
+        const dateStr = d.toLocaleDateString('en-GB', {
+          timeZone: 'Africa/Cairo',
+        });
+        const timeStr = d.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Africa/Cairo',
+        });
+
+        // 👉 send WA template "admissions_reminder"
+        await firstValueFrom(
+          this.http.post(
+            `https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+            {
+              messaging_product: 'whatsapp',
+              to: this.normalizePhoneNumber(phone),
+              type: 'template',
+              template: {
+                name: 'admissions_reminder',
+                language: { code: 'en' },
+                components: [
+                  {
+                    type: 'body',
+                    parameters: [
+                      { type: 'text', text: parentName },
+                      { type: 'text', text: studentName },
+                      { type: 'text', text: dateStr },
+                      { type: 'text', text: timeStr },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+            },
+          ),
+        );
+
+        this.logger.log(`✅ Reminder sent for appointment ${appt._id}`);
+
+        // mark as sent
+        await this.apptModel.updateOne(
+          { _id: appt._id },
+          { $set: { reminderSent: true } },
+        );
+      } catch (err) {
+        this.logger.error(
+          `❌ Failed to send reminder for ${appt._id}:`,
+          err?.response?.data || err,
+        );
+      }
     }
   }
 }

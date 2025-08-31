@@ -12,8 +12,10 @@ export class Appointment {
   @Prop({ required: true, trim: true, lowercase: true })
   parentEmail: string;
 
-  @Prop({ required: true }) 
+  @Prop({ required: true })
   slotISO: string;
+  @Prop({ default: false }) // 👈 new field
+  reminderSent: boolean;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -21,4 +23,3 @@ export class Appointment {
 
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);
 AppointmentSchema.index({ slotISO: 1 });
-
