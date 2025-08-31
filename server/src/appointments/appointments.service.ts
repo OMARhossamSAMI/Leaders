@@ -688,7 +688,7 @@ export class AppointmentsService {
   `;
 
     const hrNotification = {
-      to: 'ahmed9204.ab@gmail.com', // replace with HR email
+      to: 'omar.hossam3@gmail.com', // replace with HR email
       from: {
         email: 'admission@leadersintcollege.com',
         name: 'Admissions Appointments',
