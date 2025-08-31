@@ -970,6 +970,13 @@ export class AppointmentsService {
         await this.create(dto);
         console.log('🎉 Appointment created successfully');
 
+        await this.appModel.findByIdAndUpdate(
+          extras.applicationId,
+          { hasBookedAppointment: true },
+          { new: true },
+        );
+        console.log('📌 Application marked as booked:', extras.applicationId);
+
         // ✅ Send WhatsApp message using AcceptedStudentService
         try {
           const dateStr = cairoDate.toLocaleDateString('en-GB');
