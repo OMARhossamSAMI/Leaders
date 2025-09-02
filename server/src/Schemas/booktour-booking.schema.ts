@@ -21,6 +21,10 @@ export class BookTourBooking {
   // optional snapshot of what user saw
   @Prop({ type: String, trim: true })
   selectedLabel?: string;
+
+
+  @Prop({ type: String, trim: true })
+  gradeApplyingFor?: string;
 }
 
 export const BookTourBookingSchema = SchemaFactory.createForClass(BookTourBooking);

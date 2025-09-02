@@ -64,6 +64,8 @@ export default function AdmissionsPage() {
   const [bookingErr, setBookingErr] = useState<string | null>(null);
   const [bookingOk, setBookingOk] = useState<string | null>(null);
 
+  const [gradeApplyingFor, setGradeApplyingFor] = useState('');
+
   const [bookedPopup, setBookedPopup] = useState<{
     title: string;
     message: string;
@@ -86,6 +88,8 @@ export default function AdmissionsPage() {
     if (!studentName.trim()) missing.push("student name");
     if (!parentEmail.trim()) missing.push("parent email");
     if (!parentPhone.trim()) missing.push("parent phone");
+    if (!gradeApplyingFor.trim()) missing.push("grade applying for"); // ✅ NEW
+
 
     const list = (arr: string[]) =>
       arr.length === 1
@@ -120,6 +124,7 @@ export default function AdmissionsPage() {
           parentEmail: parentEmail.trim(),
           parentPhone: parentPhone.trim(),
           selectedLabel: selectedSlot ?? undefined,
+          gradeApplyingFor: gradeApplyingFor.trim(), 
         }),
       });
 
@@ -861,6 +866,36 @@ export default function AdmissionsPage() {
                                               onFocus={(e) =>
                                                 (e.currentTarget.style.border =
                                                   "2px solid var(--accent-color)")
+                                              }
+                                              onBlur={(e) =>
+                                                (e.currentTarget.style.border =
+                                                  "1px solid #e5e7eb")
+                                              }
+                                            />
+                                          </div>
+
+                                          <div className="mb-3">
+                                            <label className="form-label" htmlFor="tourGradeApplyingFor">
+                                              Grade Applying For
+                                            </label>
+                                            <input
+                                              id="tourGradeApplyingFor"
+                                              name="gradeApplyingFor"
+                                              className="form-control"
+                                              type="text"
+                                              placeholder="e.g. PYP 2"
+                                              value={gradeApplyingFor}
+                                              onChange={(e) => setGradeApplyingFor(e.target.value)}
+                                              required
+                                              aria-required="true"
+                                              aria-invalid={!gradeApplyingFor.trim()}
+                                              style={{
+                                                borderRadius: "8px",
+                                                border: "1px solid #e5e7eb",
+                                                outline: "none",
+                                              }}
+                                              onFocus={(e) =>
+                                                (e.currentTarget.style.border = "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
                                                 (e.currentTarget.style.border =

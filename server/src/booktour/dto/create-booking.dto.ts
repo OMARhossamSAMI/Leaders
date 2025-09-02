@@ -18,4 +18,8 @@ export class CreateBookingDto {
   @IsOptional()
   @IsString()
   selectedLabel?: string;
+
+  @IsOptional()
+  @IsString()
+  gradeApplyingFor: string;
 }

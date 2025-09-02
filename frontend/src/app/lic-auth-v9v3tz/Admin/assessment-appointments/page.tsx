@@ -683,11 +683,15 @@ export default function AssessmentAppointmentsPage() {
                   checked={showAppointments}
                   disabled={savingToggle}
                   onChange={(e) => handleToggleAppointments(e.target.checked)}
+                  style={{
+                    backgroundColor: showAppointments ? "var(--accent-color)" : "",
+                    borderColor: showAppointments ? "var(--accent-color)" : "",
+                  }}
                 />
               </div>
             </div>
 
-            {/* Amount Editor */}
+
             {/* Amount Editor */}
             <div className="d-flex flex-column gap-2">
               <div className="d-flex align-items-center gap-3 flex-wrap">
@@ -706,9 +710,14 @@ export default function AssessmentAppointmentsPage() {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn"
                   onClick={handleSaveAmount}
                   disabled={savingAmount}
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "#fff",
+                  }}
                 >
                   {savingAmount ? "Saving…" : "Save"}
                 </button>
@@ -735,22 +744,34 @@ export default function AssessmentAppointmentsPage() {
             </div>
             <div className="col-12 col-xl-6 d-flex align-items-center justify-content-xl-end gap-2 flex-wrap">
               <div className="filters d-flex gap-2">
-                {(["upcoming", "past", "all"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    className={`filter-tab ${filterMode === m ? "active" : ""}`}
-                    aria-pressed={filterMode === m}
-                    onClick={() => setFilterMode(m)}
-                  >
-                    {m === "upcoming"
-                      ? "Upcoming"
-                      : m === "past"
-                      ? "Past"
-                      : "All"}
-                  </button>
-                ))}
+                {(["upcoming", "past", "all"] as const).map((m) => {
+                  const isActive = filterMode === m;
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      className="filter-tab"
+                      aria-pressed={isActive}
+                      onClick={() => setFilterMode(m)}
+                      style={{
+                        backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                        border: `1px solid ${isActive ? "var(--accent-color)" : "#e5e7eb"}`,
+                        color: isActive ? "#fff" : "#000",
+                        borderRadius: "6px",
+                        padding: "6px 14px",
+                        fontWeight: isActive ? 600 : 500,
+                      }}
+                    >
+                      {m === "upcoming"
+                        ? "Upcoming"
+                        : m === "past"
+                        ? "Past"
+                        : "All"}
+                    </button>
+                  );
+                })}
               </div>
+
 
               <button
                 type="button"

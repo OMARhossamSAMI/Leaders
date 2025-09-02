@@ -29,6 +29,7 @@ type Booking = {
   parentPhone: string;
   selectedLabel?: string;
   createdAt?: string;
+  gradeApplyingFor?: string; // ✅ NEW
 };
 
 export default function BookTourAdminPage() {
@@ -299,54 +300,57 @@ export default function BookTourAdminPage() {
   };
 
   // ---- Export current view (Bookings tab) to Excel ----
-  const exportCurrentBookingsToExcel = () => {
-    if (bookings.length === 0) return;
+const exportCurrentBookingsToExcel = () => {
+  if (bookings.length === 0) return;
 
-    // Map slotId -> Slot for quick lookup
-    const slotMap = new Map(slots.map((s) => [s._id, s]));
-    const rows = bookings.map((b) => {
-      const s = slotMap.get(b.slotId as unknown as string);
-      const label =
-        b.selectedLabel || (s ? slotDisplayLabel(s) : "");
-      return {
-        Student: b.studentName,
-        "Parent Email": b.parentEmail,
-        "Parent Phone": b.parentPhone,
-        "Selected Label": label,
-        "Booked At": b.createdAt
-          ? new Date(b.createdAt).toLocaleString()
-          : "",
-      };
-    });
+  // Map slotId -> Slot for quick lookup
+  const slotMap = new Map(slots.map((s) => [s._id, s]));
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(rows);
+  const rows = bookings.map((b) => {
+    const s = slotMap.get(b.slotId as unknown as string);
+    const label = b.selectedLabel || (s ? slotDisplayLabel(s) : "");
+    const grade = (b as any).gradeApplyingFor?.toString().trim() || "";
 
-    // Optional: set column widths for nicer display
-    type SheetWithCols = XLSX.WorkSheet & { ["!cols"]?: { wch: number }[] };
-    (ws as SheetWithCols)["!cols"] = [
-      { wch: 24 }, // Student
-      { wch: 32 }, // Parent Email
-      { wch: 18 }, // Parent Phone
-      { wch: 32 }, // Selected Label
-      { wch: 24 }, // Booked At
-    ];
+    return {
+      Student: b.studentName,
+      "Parent Email": b.parentEmail,
+      "Parent Phone": b.parentPhone,
+      "Selected Label": label,
+      "Grade Applying For": grade,     
+      "Booked At": b.createdAt ? new Date(b.createdAt).toLocaleString() : "",
+    };
+  });
 
-    XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows);
 
-    // Filename reflects current filter (All vs. specific slot)
-    const pageName = (() => {
-      if (!selectedSlotForBookings) return "All";
-      const s = slotMap.get(selectedSlotForBookings);
-      if (!s) return "All";
-      const label = slotDisplayLabel(s);
-      return label || "Slot";
-    })();
+  // Optional: set column widths for nicer display
+  type SheetWithCols = XLSX.WorkSheet & { ["!cols"]?: { wch: number }[] };
+  (ws as SheetWithCols)["!cols"] = [
+    { wch: 24 }, // Student
+    { wch: 32 }, // Parent Email
+    { wch: 18 }, // Parent Phone
+    { wch: 32 }, // Selected Label
+    { wch: 22 }, // Grade Applying For  
+    { wch: 24 }, // Booked At
+  ];
 
-    const safe = pageName.replace(/[^\w\-]+/g, "_");
-    const stamp = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `bookings_${safe}_${stamp}.xlsx`);
-  };
+  XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+
+  // Filename reflects current filter (All vs. specific slot)
+  const pageName = (() => {
+    if (!selectedSlotForBookings) return "All";
+    const s = slotMap.get(selectedSlotForBookings);
+    if (!s) return "All";
+    const label = slotDisplayLabel(s);
+    return label || "Slot";
+  })();
+
+  const safe = pageName.replace(/[^\w\-]+/g, "_");
+  const stamp = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `bookings_${safe}_${stamp}.xlsx`);
+};
+
 
 
   // ---- Render ----
@@ -600,7 +604,7 @@ export default function BookTourAdminPage() {
                         <th>Parent Email</th>
                         <th>Parent Phone</th>
                         <th>Selected Label</th>
-                        <th>Booked At</th>
+                        <th>Grade Applying For</th> {/* ✅ NEW */}
                         <th className="text-end">Actions</th>
                       </tr>
                     </thead>
@@ -610,16 +614,10 @@ export default function BookTourAdminPage() {
                         return (
                           <tr key={b._id}>
                             <td>{b.studentName}</td>
-                            <td>
-                              <a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a>
-                            </td>
-                            <td>
-                              <a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a>
-                            </td>
+                            <td><a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a></td>
+                            <td><a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a></td>
                             <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
-                            <td className="small text-muted">
-                              {b.createdAt ? new Date(b.createdAt).toLocaleString() : "—"}
-                            </td>
+                            <td>{b.gradeApplyingFor?.trim() || "—"}</td> {/* ✅ NEW */}
                             <td className="text-end">
                               <button
                                 className="btn btn-sm btn-outline-danger"
@@ -636,8 +634,6 @@ export default function BookTourAdminPage() {
                   </table>
                 </div>
               )}
-
-
             </div>
           )}
         </section>

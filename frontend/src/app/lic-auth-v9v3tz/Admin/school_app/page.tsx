@@ -475,25 +475,50 @@ export default function ApplicationsPage() {
                   ) : (
                     <>
                       <button
-                        className={`btn ${source === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
-                        onClick={() => setSource('all')}
+                        onClick={() => setSource("all")}
+                        style={{
+                          backgroundColor: source === "all" ? "var(--accent-color)" : "#fff",
+                          border: `1px solid var(--accent-color)`,
+                          color: source === "all" ? "#fff" : "var(--accent-color)",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                        }}
                       >
                         All applications
                       </button>
+
                       <button
-                        className={`btn ${source === 'unbooked' ? 'btn-primary' : 'btn-outline-primary'}`}
-                        onClick={() => setSource('unbooked')}
+                        onClick={() => setSource("unbooked")}
                         title="Show students who submitted but did not book/pay their assessment"
+                        style={{
+                          backgroundColor: source === "unbooked" ? "var(--accent-color)" : "#fff",
+                          border: `1px solid var(--accent-color)`,
+                          color: source === "unbooked" ? "#fff" : "var(--accent-color)",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                        }}
                       >
                         No assessment
                       </button>
+
                       <button
                         onClick={exportToExcel}
-                        className="btn-primary mb-4"
-                        style={{ display: "block", marginLeft: "auto" }}
+                        style={{
+                          backgroundColor: "var(--accent-color)",
+                          border: `1px solid var(--accent-color)`,
+                          color: "#fff",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                          display: "block",
+                          marginLeft: "auto",
+                        }}
                       >
                         📥 Export All as CSV
                       </button>
+
 
                       <div className="application-stats mt-4">
                         <h4>📊 Applications Submitted Per Day</h4>
@@ -753,39 +778,61 @@ export default function ApplicationsPage() {
                       {totalPages > 1 && (
                         <div className="pagination mt-4 d-flex justify-content-center gap-2">
                           <button
-                            onClick={() =>
-                              setCurrentPage((prev) => Math.max(prev - 1, 1))
-                            }
-                            className="btn btn-sm btn-outline-primary"
-                            disabled={currentPage === 1}
-                          >
-                            ⬅ Prev
-                          </button>
-
-                          {[...Array(totalPages)].map((_, i) => (
-                            <button
-                              key={i + 1}
-                              onClick={() => setCurrentPage(i + 1)}
-                              className={`btn btn-sm ${currentPage === i + 1
-                                ? "btn-primary"
-                                : "btn-outline-secondary"
-                                }`}
+                              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                              disabled={currentPage === 1}
+                              style={{
+                                backgroundColor: currentPage === 1 ? "#f5f5f5" : "#fff",
+                                border: `1px solid var(--accent-color)`,
+                                color: currentPage === 1 ? "#999" : "var(--accent-color)",
+                                borderRadius: "6px",
+                                padding: "4px 10px",
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                              }}
                             >
-                              {i + 1}
+                              ⬅ Prev
                             </button>
-                          ))}
 
-                          <button
-                            onClick={() =>
-                              setCurrentPage((prev) =>
-                                Math.min(prev + 1, totalPages)
-                              )
-                            }
-                            className="btn btn-sm btn-outline-primary"
-                            disabled={currentPage === totalPages}
-                          >
-                            Next ➡
-                          </button>
+                            {[...Array(totalPages)].map((_, i) => {
+                              const page = i + 1;
+                              const isActive = currentPage === page;
+                              return (
+                                <button
+                                  key={page}
+                                  onClick={() => setCurrentPage(page)}
+                                  style={{
+                                    backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                                    border: `1px solid var(--accent-color)`,
+                                    color: isActive ? "#fff" : "var(--accent-color)",
+                                    borderRadius: "6px",
+                                    padding: "4px 10px",
+                                    fontSize: "0.875rem",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {page}
+                                </button>
+                              );
+                            })}
+
+                            <button
+                              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                              disabled={currentPage === totalPages}
+                              style={{
+                                backgroundColor: currentPage === totalPages ? "#f5f5f5" : "#fff",
+                                border: `1px solid var(--accent-color)`,
+                                color: currentPage === totalPages ? "#999" : "var(--accent-color)",
+                                borderRadius: "6px",
+                                padding: "4px 10px",
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                              }}
+                            >
+                              Next ➡
+                            </button>
+
                         </div>
                       )}
                     </>
