@@ -466,10 +466,10 @@ export class StudentApplicationService {
     return this.appModel.findById(id).exec();
   }
   async findByIdLean(id: string) {
-    if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) return null;
+    if (!id) return null;
 
     const app = await this.appModel
-      .findById({ appointmentCode: id })
+      .findOne({ appointmentCode: id })
       .select({
         _id: 1,
         createdAt: 1,
