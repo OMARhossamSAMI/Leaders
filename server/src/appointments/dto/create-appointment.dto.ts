@@ -8,7 +8,7 @@ import {
 
 export class CreateAppointmentDto {
   @IsOptional()
-  @IsMongoId()
+  @IsString()
   applicationId?: string;
 
   @IsOptional()

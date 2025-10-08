@@ -183,7 +183,9 @@ export default function AppointmentPage() {
     try {
       setSearching(true);
       const res = await fetch(
-        `${API}/applications/by-id/${encodeURIComponent(appId.trim())}`
+        `http://localhost:3000/applications/by-id/${encodeURIComponent(
+          appId.trim()
+        )}`
       );
 
       const data = await res.json();
