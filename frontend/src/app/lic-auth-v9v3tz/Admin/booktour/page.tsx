@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import "./page.css";
-import * as XLSX from "xlsx";                 // ← NEW
-
+import * as XLSX from "xlsx"; // ← NEW
+import axios from "axios";
 
 // ---- Types ----
 type Slot = {
@@ -57,7 +57,9 @@ export default function BookTourAdminPage() {
   const [label, setLabel] = useState<string>("");
 
   // ---- Bookings tab state ----
-  const [selectedSlotForBookings, setSelectedSlotForBookings] = useState<string | null>(null);
+  const [selectedSlotForBookings, setSelectedSlotForBookings] = useState<
+    string | null
+  >(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loadingBookings, setLoadingBookings] = useState<boolean>(false);
   const [bookingsErr, setBookingsErr] = useState<string>("");
@@ -104,38 +106,84 @@ export default function BookTourAdminPage() {
   const effectiveActive = (s: Slot) =>
     s.active && new Date(s.iso).getTime() >= Date.now();
 
-  // ---- Data loaders ----
-
-  const loadSlots = async () => {
+  const loadSlots = async (): Promise<void> => {
     try {
       setLoadingSlots(true);
       setErr("");
+
       const res = await axios.get<Slot[]>(`${API}/booktour/admin/slots`, {
         headers: { "Content-Type": "application/json" },
       });
       setSlots(res.data || []);
-    } catch (e: any) {
-      console.error("[Slots] load error:", e?.response?.status, e?.response?.data || e);
-      setErr(e?.response?.data?.message || e.message || "Failed to load slots");
+    } catch (e: unknown) {
+      let message = "Failed to load slots";
+
+      if (e instanceof Error) {
+        message = e.message;
+      } else if (typeof e === "object" && e !== null && "message" in e) {
+        message = String((e as { message?: string }).message);
+      }
+
+      console.error("[Slots] load error:", e);
+      setErr(message);
     } finally {
       setLoadingSlots(false);
     }
   };
 
-  const loadBookingsForSlot = async (slotId: string) => {
+  const loadBookingsForSlot = async (slotId: string): Promise<void> => {
     try {
       setLoadingBookings(true);
       setBookingsErr("");
-      const url = `${API}/booktour/admin/slots/${encodeURIComponent(slotId)}/bookings`;
+
+      const url = `${API}/booktour/admin/slots/${encodeURIComponent(
+        slotId
+      )}/bookings`;
       console.log("[Bookings] fetching:", url);
+
       const res = await axios.get<Booking[]>(url, {
         headers: { "Content-Type": "application/json" },
       });
+
       console.log("[Bookings] response:", res.status, res.data);
       setBookings(Array.isArray(res.data) ? res.data : []);
-    } catch (e: any) {
-      console.error("[Bookings] load error:", e?.response?.status, e?.response?.data || e);
-      setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+    } catch (e: unknown) {
+      let message = "Failed to load bookings";
+
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "response" in e &&
+        typeof (e as Record<string, unknown>).response === "object"
+      ) {
+        const errObj = e as {
+          response?: {
+            status?: number;
+            data?: { message?: string; [key: string]: unknown };
+          };
+        };
+
+        console.error(
+          "[Bookings] load error:",
+          errObj.response?.status,
+          errObj.response?.data || e
+        );
+
+        message = errObj.response?.data?.message ?? message;
+      }
+
+      // ✅ 2. Handle normal JS Error
+      else if (e instanceof Error) {
+        console.error("[Bookings] load error:", e.message);
+        message = e.message;
+      }
+
+      // ✅ 3. Handle non-object (string, number, etc.)
+      else {
+        console.error("[Bookings] load error:", e);
+      }
+
+      setBookingsErr(message);
       setBookings([]);
     } finally {
       setLoadingBookings(false);
@@ -170,7 +218,7 @@ export default function BookTourAdminPage() {
 
   // ---- Actions ----
 
-  const handleCreate = async () => {
+  const handleCreate = async (): Promise<void> => {
     setMsg("");
     setErr("");
 
@@ -190,9 +238,15 @@ export default function BookTourAdminPage() {
         active,
         capacity: Number(capacity) || 1,
       };
-      const res = await axios.post<Slot>(`${API}/booktour/admin/slots`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+
+      const res = await axios.post<Slot>(
+        `${API}/booktour/admin/slots`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
       setMsg(`Created ✔ (${res.data?._id || ""})`);
       setShowCreate(false);
       setDate("");
@@ -201,13 +255,47 @@ export default function BookTourAdminPage() {
       setActive(true);
       setLabel("");
       await loadSlots();
-    } catch (e: any) {
-      console.error("[Slot] create error:", e?.response?.status, e?.response?.data || e);
-      setErr(e?.response?.data?.message || e.message || "Create failed");
+    } catch (e: unknown) {
+      let message = "Create failed";
+
+      // ✅ Type-safe Axios-like error detection (no 'a')
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "response" in e &&
+        typeof (e as Record<string, unknown>).response === "object"
+      ) {
+        const errObj = e as {
+          response?: {
+            status?: number;
+            data?: { message?: string; [key: string]: unknown };
+          };
+        };
+
+        console.error(
+          "[Slot] create error:",
+          errObj.response?.status,
+          errObj.response?.data || e
+        );
+        message = errObj.response?.data?.message ?? message;
+      }
+
+      // ✅ Standard JavaScript Error
+      else if (e instanceof Error) {
+        console.error("[Slot] create error:", e.message);
+        message = e.message;
+      }
+
+      // ✅ Other unknown errors (e.g. string)
+      else {
+        console.error("[Slot] create error:", e);
+      }
+
+      setErr(message);
     }
   };
 
-  const handleToggle = async (id: string, newState: boolean) => {
+  const handleToggle = async (id: string, newState: boolean): Promise<void> => {
     setMsg("");
     setErr("");
 
@@ -229,34 +317,115 @@ export default function BookTourAdminPage() {
         { active: newState },
         { headers: { "Content-Type": "application/json" } }
       );
-      setSlots((prev) => prev.map((s) => (s._id === id ? { ...s, active: newState } : s)));
+
+      setSlots((prev) =>
+        prev.map((s) => (s._id === id ? { ...s, active: newState } : s))
+      );
+
       setMsg(`Slot ${newState ? "activated" : "deactivated"} ✔`);
-    } catch (e: any) {
-      console.error("[Slot] toggle error:", e?.response?.status, e?.response?.data || e);
-      setErr(e?.response?.data?.message || e.message || "Toggle failed");
+    } catch (e: unknown) {
+      let message = "Toggle failed";
+
+      // ✅ Type-safe handling for Axios-style errors
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "response" in e &&
+        typeof (e as Record<string, unknown>).response === "object"
+      ) {
+        const errObj = e as {
+          response?: {
+            status?: number;
+            data?: { message?: string; [key: string]: unknown };
+          };
+        };
+
+        console.error(
+          "[Slot] toggle error:",
+          errObj.response?.status,
+          errObj.response?.data || e
+        );
+
+        message = errObj.response?.data?.message ?? message;
+      }
+
+      // ✅ Standard JS Error
+      else if (e instanceof Error) {
+        console.error("[Slot] toggle error:", e.message);
+        message = e.message;
+      }
+
+      // ✅ Fallback for unknown error shapes
+      else {
+        console.error("[Slot] toggle error:", e);
+      }
+
+      setErr(message);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string): Promise<void> => {
     if (!confirm("Delete this slot (and its bookings)?")) return;
+
     setMsg("");
     setErr("");
+
     try {
       await axios.delete(`${API}/booktour/admin/slots/${id}`);
       setSlots((prev) => prev.filter((s) => s._id !== id));
       setMsg("Deleted ✔");
+
       if (selectedSlotForBookings === id) {
         setSelectedSlotForBookings(null);
         setBookings([]);
       }
-    } catch (e: any) {
-      console.error("[Slot] delete error:", e?.response?.status, e?.response?.data || e);
-      setErr(e?.response?.data?.message || e.message || "Delete failed");
+    } catch (e: unknown) {
+      let message = "Delete failed";
+
+      // ✅ Handle Axios-style errors safely (no a)
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "response" in e &&
+        typeof (e as Record<string, unknown>).response === "object"
+      ) {
+        const errObj = e as {
+          response?: {
+            status?: number;
+            data?: { message?: string; [key: string]: unknown };
+          };
+        };
+
+        console.error(
+          "[Slot] delete error:",
+          errObj.response?.status,
+          errObj.response?.data || e
+        );
+
+        message = errObj.response?.data?.message ?? message;
+      }
+
+      // ✅ Normal JS error
+      else if (e instanceof Error) {
+        console.error("[Slot] delete error:", e.message);
+        message = e.message;
+      }
+
+      // ✅ Other unknown types (string, number, etc.)
+      else {
+        console.error("[Slot] delete error:", e);
+      }
+
+      setErr(message);
     }
   };
 
-  const handleDeleteBooking = async (bookingId: string, slotId: string) => {
+  const handleDeleteBooking = async (
+    bookingId: string,
+    slotId: string
+  ): Promise<void> => {
     if (!confirm("Delete this booking?")) return;
+
     setBookingsErr("");
 
     try {
@@ -264,20 +433,55 @@ export default function BookTourAdminPage() {
         headers: { "Content-Type": "application/json" },
       });
 
-      // Remove booking from table
+      // ✅ Remove booking from table
       setBookings((prev) => prev.filter((b) => b._id !== bookingId));
 
-      // Optimistically decrement bookedCount for that slot in the slots list
+      // ✅ Decrement bookedCount safely
       setSlots((prev) =>
         prev.map((s) =>
-          s._id === (slotId as unknown as string)
+          s._id === slotId
             ? { ...s, bookedCount: Math.max(0, (s.bookedCount ?? 0) - 1) }
             : s
         )
       );
-    } catch (e: any) {
-      console.error("[Booking] delete error:", e?.response?.status, e?.response?.data || e);
-      setBookingsErr(e?.response?.data?.message || e.message || "Failed to delete booking");
+    } catch (e: unknown) {
+      let message = "Failed to delete booking";
+
+      // ✅ Handle Axios-style error safely (no a)
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "response" in e &&
+        typeof (e as Record<string, unknown>).response === "object"
+      ) {
+        const errObj = e as {
+          response?: {
+            status?: number;
+            data?: { message?: string; [key: string]: unknown };
+          };
+        };
+
+        console.error(
+          "[Booking] delete error:",
+          errObj.response?.status,
+          errObj.response?.data || e
+        );
+
+        message = errObj.response?.data?.message ?? message;
+      }
+
+      // ✅ Standard JS error
+      else if (e instanceof Error) {
+        console.error("[Booking] delete error:", e.message);
+        message = e.message;
+      }
+
+      // ✅ Unknown non-object (string, etc.)
+      else {
+        console.error("[Booking] delete error:", e);
+      }
+
+      setBookingsErr(message);
     }
   };
 
@@ -300,58 +504,57 @@ export default function BookTourAdminPage() {
   };
 
   // ---- Export current view (Bookings tab) to Excel ----
-const exportCurrentBookingsToExcel = () => {
-  if (bookings.length === 0) return;
+  const exportCurrentBookingsToExcel = (): void => {
+    if (bookings.length === 0) return;
 
-  // Map slotId -> Slot for quick lookup
-  const slotMap = new Map(slots.map((s) => [s._id, s]));
+    // Map slotId → Slot for quick lookup
+    const slotMap = new Map(slots.map((s) => [s._id, s]));
 
-  const rows = bookings.map((b) => {
-    const s = slotMap.get(b.slotId as unknown as string);
-    const label = b.selectedLabel || (s ? slotDisplayLabel(s) : "");
-    const grade = (b as any).gradeApplyingFor?.toString().trim() || "";
+    const rows = bookings.map((b) => {
+      const s = slotMap.get(String(b.slotId));
+      const label = b.selectedLabel || (s ? slotDisplayLabel(s) : "");
 
-    return {
-      Student: b.studentName,
-      "Parent Email": b.parentEmail,
-      "Parent Phone": b.parentPhone,
-      "Selected Label": label,
-      "Grade Applying For": grade,     
-      "Booked At": b.createdAt ? new Date(b.createdAt).toLocaleString() : "",
-    };
-  });
+      // ✅ Safely read "gradeApplyingFor" even if not declared in Booking type
+      const grade = b.gradeApplyingFor?.trim() ?? "";
+      return {
+        Student: b.studentName,
+        "Parent Email": b.parentEmail,
+        "Parent Phone": b.parentPhone,
+        "Selected Label": label,
+        "Grade Applying For": grade,
+        "Booked At": b.createdAt ? new Date(b.createdAt).toLocaleString() : "",
+      };
+    });
 
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(rows);
 
-  // Optional: set column widths for nicer display
-  type SheetWithCols = XLSX.WorkSheet & { ["!cols"]?: { wch: number }[] };
-  (ws as SheetWithCols)["!cols"] = [
-    { wch: 24 }, // Student
-    { wch: 32 }, // Parent Email
-    { wch: 18 }, // Parent Phone
-    { wch: 32 }, // Selected Label
-    { wch: 22 }, // Grade Applying For  
-    { wch: 24 }, // Booked At
-  ];
+    // ✅ Type-safe column widths
+    type SheetWithCols = XLSX.WorkSheet & { ["!cols"]?: { wch: number }[] };
+    (ws as SheetWithCols)["!cols"] = [
+      { wch: 24 }, // Student
+      { wch: 32 }, // Parent Email
+      { wch: 18 }, // Parent Phone
+      { wch: 32 }, // Selected Label
+      { wch: 22 }, // Grade Applying For
+      { wch: 24 }, // Booked At
+    ];
 
-  XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+    XLSX.utils.book_append_sheet(wb, ws, "Bookings");
 
-  // Filename reflects current filter (All vs. specific slot)
-  const pageName = (() => {
-    if (!selectedSlotForBookings) return "All";
-    const s = slotMap.get(selectedSlotForBookings);
-    if (!s) return "All";
-    const label = slotDisplayLabel(s);
-    return label || "Slot";
-  })();
+    // Filename reflects current filter (All vs. specific slot)
+    const pageName = (() => {
+      if (!selectedSlotForBookings) return "All";
+      const s = slotMap.get(selectedSlotForBookings);
+      if (!s) return "All";
+      const label = slotDisplayLabel(s);
+      return label || "Slot";
+    })();
 
-  const safe = pageName.replace(/[^\w\-]+/g, "_");
-  const stamp = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(wb, `bookings_${safe}_${stamp}.xlsx`);
-};
-
-
+    const safe = pageName.replace(/[^\w\-]+/g, "_");
+    const stamp = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `bookings_${safe}_${stamp}.xlsx`);
+  };
 
   // ---- Render ----
   if (!authenticated) return null;
@@ -360,20 +563,35 @@ const exportCurrentBookingsToExcel = () => {
     <>
       <AdminHeader />
 
-      <div style={{ paddingTop: "130px", backgroundColor: "#f5f9fa", minHeight: "100vh" }}>
+      <div
+        style={{
+          paddingTop: "130px",
+          backgroundColor: "#f5f9fa",
+          minHeight: "100vh",
+        }}
+      >
         <section className="admin-section">
           {/* Header */}
           <div className="container section-title">
             <h2>Book a Tour</h2>
-            <p>Create, activate, and manage campus tour slots — and view bookings.</p>
+            <p>
+              Create, activate, and manage campus tour slots — and view
+              bookings.
+            </p>
             <br />
 
             {/* Tabs */}
-            <div className="tabs-container" role="tablist" aria-label="Book a Tour Tabs">
+            <div
+              className="tabs-container"
+              role="tablist"
+              aria-label="Book a Tour Tabs"
+            >
               <button
                 role="tab"
                 aria-selected={activeTab === "slots"}
-                className={`tab-btn ${activeTab === "slots" ? "active-tab" : ""}`}
+                className={`tab-btn ${
+                  activeTab === "slots" ? "active-tab" : ""
+                }`}
                 onClick={() => setActiveTab("slots")}
               >
                 Slots
@@ -381,7 +599,9 @@ const exportCurrentBookingsToExcel = () => {
               <button
                 role="tab"
                 aria-selected={activeTab === "bookings"}
-                className={`tab-btn ${activeTab === "bookings" ? "active-tab" : ""}`}
+                className={`tab-btn ${
+                  activeTab === "bookings" ? "active-tab" : ""
+                }`}
                 onClick={() => setActiveTab("bookings")}
               >
                 Bookings
@@ -393,12 +613,19 @@ const exportCurrentBookingsToExcel = () => {
           {activeTab === "slots" && (
             <div className="testimonial-box admin-shadow-box">
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <button className="btn btn-accent" onClick={loadSlots} disabled={loadingSlots}>
+                <button
+                  className="btn btn-accent"
+                  onClick={loadSlots}
+                  disabled={loadingSlots}
+                >
                   {loadingSlots ? "Refreshing…" : "Refresh"}
                 </button>
                 <button
                   className="btn btn-primary"
-                  style={{ backgroundColor: "var(--accent-color)", color: "#fff" }}
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "#fff",
+                  }}
                   onClick={() => setShowCreate(true)}
                 >
                   + Add Slot
@@ -406,8 +633,16 @@ const exportCurrentBookingsToExcel = () => {
               </div>
 
               {/* Alerts */}
-              {msg && <div className="alert alert-success" role="alert">{msg}</div>}
-              {err && <div className="alert alert-danger" role="alert">{err}</div>}
+              {msg && (
+                <div className="alert alert-success" role="alert">
+                  {msg}
+                </div>
+              )}
+              {err && (
+                <div className="alert alert-danger" role="alert">
+                  {err}
+                </div>
+              )}
 
               {/* Content */}
               {loadingSlots ? (
@@ -416,7 +651,13 @@ const exportCurrentBookingsToExcel = () => {
                   <p className="loading-text">Loading Slots...</p>
                 </div>
               ) : slots.length === 0 ? (
-                <p style={{ color: "#888", fontStyle: "italic", padding: "1rem" }}>
+                <p
+                  style={{
+                    color: "#888",
+                    fontStyle: "italic",
+                    padding: "1rem",
+                  }}
+                >
                   No slots yet — click “+ Add Slot”.
                 </p>
               ) : (
@@ -437,8 +678,13 @@ const exportCurrentBookingsToExcel = () => {
                         const isPast = new Date(s.iso).getTime() < Date.now();
 
                         return (
-                          <tr key={s._id} className={isPast ? "table-light" : ""}>
-                            <td>{s.label || new Date(s.iso).toLocaleString()}</td>
+                          <tr
+                            key={s._id}
+                            className={isPast ? "table-light" : ""}
+                          >
+                            <td>
+                              {s.label || new Date(s.iso).toLocaleString()}
+                            </td>
                             <td className="small text-muted">
                               {new Date(s.iso).toLocaleDateString(undefined, {
                                 year: "numeric",
@@ -453,12 +699,18 @@ const exportCurrentBookingsToExcel = () => {
                             </td>
                             <td className="text-center">
                               <span
-                                className={`badge ${effectiveActive(s) ? "bg-success" : "bg-secondary"}`}
+                                className={`badge ${
+                                  effectiveActive(s)
+                                    ? "bg-success"
+                                    : "bg-secondary"
+                                }`}
                                 style={{ fontWeight: 600 }}
                               >
                                 {effectiveActive(s) ? "ON" : "OFF"}
                               </span>
-                              {isPast && <div className="small text-muted">Past</div>}
+                              {isPast && (
+                                <div className="small text-muted">Past</div>
+                              )}
                             </td>
                             <td className="text-center">{booked}</td>
                             <td className="text-end">
@@ -492,24 +744,76 @@ const exportCurrentBookingsToExcel = () => {
             <div className="testimonial-box admin-shadow-box">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="d-flex align-items-center gap-2 flex-wrap">
-                  <span className="me-2 fw-semibold">Filter by date/label:</span>
+                  <span className="me-2 fw-semibold">
+                    Filter by date/label:
+                  </span>
 
                   <div className="filter-chips">
                     {/* Optional "All" chip to show every booking */}
                     <button
                       type="button"
-                      className={`filter-btn ${selectedSlotForBookings === null ? "active-filter" : ""}`}
-                      onClick={async () => {
+                      className={`filter-btn ${
+                        selectedSlotForBookings === null ? "active-filter" : ""
+                      }`}
+                      onClick={async (): Promise<void> => {
                         setSelectedSlotForBookings(null);
                         setBookingsErr("");
+
                         try {
                           setLoadingBookings(true);
-                          const res = await axios.get<Booking[]>(`${API}/booktour/admin/bookings`);
+
+                          const res = await axios.get<Booking[]>(
+                            `${API}/booktour/admin/bookings`
+                          );
                           setBookings(Array.isArray(res.data) ? res.data : []);
-                          console.log("[Bookings] ALL response:", res.status, res.data);
-                        } catch (e: any) {
-                          console.error("[Bookings] ALL error:", e?.response?.status, e?.response?.data || e);
-                          setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+
+                          console.log(
+                            "[Bookings] ALL response:",
+                            res.status,
+                            res.data
+                          );
+                        } catch (e: unknown) {
+                          let message = "Failed to load bookings";
+
+                          // ✅ Type-safe Axios error guard
+                          if (
+                            typeof e === "object" &&
+                            e !== null &&
+                            "response" in e &&
+                            typeof (e as Record<string, unknown>).response ===
+                              "object"
+                          ) {
+                            const errObj = e as {
+                              response?: {
+                                status?: number;
+                                data?: {
+                                  message?: string;
+                                  [key: string]: unknown;
+                                };
+                              };
+                            };
+
+                            console.error(
+                              "[Bookings] ALL error:",
+                              errObj.response?.status,
+                              errObj.response?.data || e
+                            );
+
+                            message = errObj.response?.data?.message ?? message;
+                          }
+
+                          // ✅ Standard JS error
+                          else if (e instanceof Error) {
+                            console.error("[Bookings] ALL error:", e.message);
+                            message = e.message;
+                          }
+
+                          // ✅ Unknown type (string, etc.)
+                          else {
+                            console.error("[Bookings] ALL error:", e);
+                          }
+
+                          setBookingsErr(message);
                           setBookings([]);
                         } finally {
                           setLoadingBookings(false);
@@ -526,7 +830,9 @@ const exportCurrentBookingsToExcel = () => {
                         <button
                           key={s._id}
                           type="button"
-                          className={`filter-btn ${isActiveChip ? "active-filter" : ""}`}
+                          className={`filter-btn ${
+                            isActiveChip ? "active-filter" : ""
+                          }`}
                           aria-pressed={isActiveChip}
                           onClick={() => handleFilterClick(s)}
                           title={label}
@@ -547,12 +853,19 @@ const exportCurrentBookingsToExcel = () => {
                   >
                     <span className="export-icon" aria-hidden="true">
                       {/* inline SVG icon */}
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                      >
                         <path d="M5 20h14a1 1 0 0 0 1-1v-4h-2v3H6v-3H4v4a1 1 0 0 0 1 1z"></path>
                         <path d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293 1.414 1.414L12 16.414l-4.707-4.707 1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z"></path>
                       </svg>
                     </span>
-                    {selectedSlotForBookings ? "Export to excel" : "Export All to excel"}
+                    {selectedSlotForBookings
+                      ? "Export to excel"
+                      : "Export All to excel"}
                   </button>
 
                   <button
@@ -561,14 +874,59 @@ const exportCurrentBookingsToExcel = () => {
                       if (selectedSlotForBookings) {
                         void loadBookingsForSlot(selectedSlotForBookings);
                       } else {
-                        (async () => {
+                        (async (): Promise<void> => {
                           try {
                             setLoadingBookings(true);
                             setBookingsErr("");
-                            const res = await axios.get<Booking[]>(`${API}/booktour/admin/bookings`);
-                            setBookings(Array.isArray(res.data) ? res.data : []);
-                          } catch (e: any) {
-                            setBookingsErr(e?.response?.data?.message || e.message || "Failed to load bookings");
+
+                            const res = await axios.get<Booking[]>(
+                              `${API}/booktour/admin/bookings`
+                            );
+                            setBookings(
+                              Array.isArray(res.data) ? res.data : []
+                            );
+                          } catch (e: unknown) {
+                            let message = "Failed to load bookings";
+
+                            // ✅ Axios-style error narrowing
+                            if (
+                              typeof e === "object" &&
+                              e !== null &&
+                              "response" in e &&
+                              typeof (e as Record<string, unknown>).response ===
+                                "object"
+                            ) {
+                              const errObj = e as {
+                                response?: {
+                                  status?: number;
+                                  data?: {
+                                    message?: string;
+                                    [key: string]: unknown;
+                                  };
+                                };
+                              };
+
+                              console.error(
+                                "[Bookings] load error:",
+                                errObj.response?.status,
+                                errObj.response?.data || e
+                              );
+
+                              message =
+                                errObj.response?.data?.message ?? message;
+                            } else if (e instanceof Error) {
+                              // ✅ Standard JavaScript error
+                              console.error(
+                                "[Bookings] load error:",
+                                e.message
+                              );
+                              message = e.message;
+                            } else {
+                              // ✅ Unknown fallback
+                              console.error("[Bookings] load error:", e);
+                            }
+
+                            setBookingsErr(message);
                           } finally {
                             setLoadingBookings(false);
                           }
@@ -580,11 +938,12 @@ const exportCurrentBookingsToExcel = () => {
                     {loadingBookings ? "Refreshing…" : "Refresh"}
                   </button>
                 </div>
-
               </div>
 
               {/* Info / alerts */}
-              {bookingsErr && <div className="alert alert-danger">{bookingsErr}</div>}
+              {bookingsErr && (
+                <div className="alert alert-danger">{bookingsErr}</div>
+              )}
 
               {loadingBookings ? (
                 <div className="loader-container">
@@ -593,7 +952,8 @@ const exportCurrentBookingsToExcel = () => {
                 </div>
               ) : bookings.length === 0 ? (
                 <p className="text-muted" style={{ padding: "0.5rem" }}>
-                  No bookings found{selectedSlotForBookings ? " for this slot." : "."}
+                  No bookings found
+                  {selectedSlotForBookings ? " for this slot." : "."}
                 </p>
               ) : (
                 <div className="table-responsive">
@@ -610,18 +970,37 @@ const exportCurrentBookingsToExcel = () => {
                     </thead>
                     <tbody>
                       {bookings.map((b) => {
-                        const slot = slots.find((s) => s._id === (b.slotId as unknown as string));
+                        const slot = slots.find(
+                          (s) => s._id === (b.slotId as unknown as string)
+                        );
                         return (
                           <tr key={b._id}>
                             <td>{b.studentName}</td>
-                            <td><a href={`mailto:${b.parentEmail}`}>{b.parentEmail}</a></td>
-                            <td><a href={`tel:${b.parentPhone}`}>{b.parentPhone}</a></td>
-                            <td>{b.selectedLabel || (slot ? slotDisplayLabel(slot) : "—")}</td>
-                            <td>{b.gradeApplyingFor?.trim() || "—"}</td> {/* ✅ NEW */}
+                            <td>
+                              <a href={`mailto:${b.parentEmail}`}>
+                                {b.parentEmail}
+                              </a>
+                            </td>
+                            <td>
+                              <a href={`tel:${b.parentPhone}`}>
+                                {b.parentPhone}
+                              </a>
+                            </td>
+                            <td>
+                              {b.selectedLabel ||
+                                (slot ? slotDisplayLabel(slot) : "—")}
+                            </td>
+                            <td>{b.gradeApplyingFor?.trim() || "—"}</td>{" "}
+                            {/* ✅ NEW */}
                             <td className="text-end">
                               <button
                                 className="btn btn-sm btn-outline-danger"
-                                onClick={() => handleDeleteBooking(b._id, b.slotId as unknown as string)}
+                                onClick={() =>
+                                  handleDeleteBooking(
+                                    b._id,
+                                    b.slotId as unknown as string
+                                  )
+                                }
                                 title="Delete booking"
                               >
                                 Delete
@@ -670,7 +1049,10 @@ const exportCurrentBookingsToExcel = () => {
               style={{ padding: "16px 20px", borderBottom: "1px solid #eee" }}
             >
               <h5 className="m-0">Create Slot</h5>
-              <button className="btn btn-sm btn-light" onClick={() => setShowCreate(false)}>
+              <button
+                className="btn btn-sm btn-light"
+                onClick={() => setShowCreate(false)}
+              >
                 ✕
               </button>
             </div>
@@ -707,7 +1089,10 @@ const exportCurrentBookingsToExcel = () => {
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
                   />
-                  <div className="form-text">If left empty, your typed date/time will be shown to parents.</div>
+                  <div className="form-text">
+                    If left empty, your typed date/time will be shown to
+                    parents.
+                  </div>
                 </div>
 
                 <div className="col-12 d-flex align-items-center gap-3">
@@ -738,12 +1123,18 @@ const exportCurrentBookingsToExcel = () => {
               </div>
 
               <div className="d-flex justify-content-end gap-2 mt-3">
-                <button className="btn btn-light" onClick={() => setShowCreate(false)}>
+                <button
+                  className="btn btn-light"
+                  onClick={() => setShowCreate(false)}
+                >
                   Cancel
                 </button>
                 <button
                   className="btn"
-                  style={{ backgroundColor: "var(--accent-color)", color: "#fff" }}
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "#fff",
+                  }}
                   onClick={handleCreate}
                 >
                   Create Slot
