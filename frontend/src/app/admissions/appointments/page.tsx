@@ -176,7 +176,7 @@ export default function AppointmentPage() {
     setSavedId(null);
 
     if (!appId.trim()) {
-      setLookupError("Please enter your application ID.");
+      setLookupError("Please enter the Code for your apointment.");
       return;
     }
 
@@ -209,7 +209,7 @@ export default function AppointmentPage() {
       // normalize
       const a = data.application || {};
       const normalized: Application = {
-        _id: String(a?._id ?? ""),
+        _id: String(a?.appointmentCode ?? appId.trim()),
         submittedAt: String(
           a?.submittedAt ?? a?.createdAt ?? new Date().toISOString()
         ),
@@ -217,12 +217,6 @@ export default function AppointmentPage() {
         mother_email: a?.mother_email ?? a?.data?.mother_email,
         student_name: a?.student_name ?? a?.data?.student_name,
       };
-
-      if (!/^[0-9a-fA-F]{24}$/.test(normalized._id)) {
-        setLookupError("Found your application but the ID is invalid.");
-        setApp(null);
-        return;
-      }
 
       setApp(normalized);
       setScheduleWindow(data.window);

@@ -33,6 +33,9 @@ export class StudentApplication {
   // ✅ new field
   @Prop({ type: Boolean, default: false })
   hasBookedAppointment: boolean;
+  // ✅ Apointment code for booking
+  @Prop({ type: String, unique: true, required: true })
+  appointmentCode: string;
 
   createdAt?: Date;
   updatedAt?: Date;

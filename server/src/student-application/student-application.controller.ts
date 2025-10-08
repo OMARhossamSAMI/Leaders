@@ -103,7 +103,7 @@ export class StudentApplicationController {
   }
   // GET /applications/by-id/:id
   @Get('by-id/:id')
-  async byId(@Param('id', MongoIdPipe) id: string) {
+  async byId(@Param('id') id: string) {
     const app = await this.appService.findByIdLean(id);
     if (!app) return { application: null, window: null };
 
