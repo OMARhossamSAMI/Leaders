@@ -158,12 +158,33 @@ export class StudentApplicationService {
   private escape(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
+  //Code Generator:
+  private async generateUniqueCode(): Promise<string> {
+    const charset =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code: string = '';
+    let exists = true;
+
+    // repeat until unique
+    while (exists) {
+      code = Array.from({ length: 6 }, () =>
+        charset.charAt(Math.floor(Math.random() * charset.length)),
+      ).join('');
+
+      const found = await this.appModel.findOne({ appointmentCode: code });
+      exists = !!found;
+    }
+    return code;
+  }
 
   async submitApplication(
     formData: Record<string, any>,
     files?: Express.Multer.File[],
   ): Promise<any> {
     console.log('📥 Incoming application data:', formData);
+
+    // ✅ Generate unique appointment code
+    const appointmentCode = await this.generateUniqueCode();
 
     const fileMetadata = Array.isArray(files)
       ? files.map((file) => ({
@@ -203,6 +224,7 @@ export class StudentApplicationService {
       data: formData,
       files: fileMetadata,
       hasBookedAppointment: false, // 👈 ensure default is set
+      appointmentCode,
     });
 
     await createdApp.save();
@@ -288,7 +310,7 @@ export class StudentApplicationService {
   <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
   
   <p style="font-size: 16px; color: #d32f2f; font-weight: bold; margin-top: 20px;">
-    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${applicationId}</strong>  
+    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>  
   </p>
   <p style="font-size: 15px;">
     Please keep this code safe. You will need to enter it in order to book your child’s assessment appointment.
@@ -447,7 +469,7 @@ export class StudentApplicationService {
     if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) return null;
 
     const app = await this.appModel
-      .findById(id)
+      .findById({ appointmentCode: id })
       .select({
         _id: 1,
         createdAt: 1,
@@ -475,6 +497,7 @@ export class StudentApplicationService {
 
     return {
       _id: String(app._id),
+      appointmentCode: id, // 👈 include the code in the response
       submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
       student_name: data.student_name,
       father_name: data.father_name,
