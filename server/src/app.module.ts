@@ -21,6 +21,9 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AcceptedStudentModule } from './accepted-student/accepted-student.module';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
+import { BookTourModule } from './booktour/booktour.module';
 @Module({
   imports: [
     MulterModule.register({
@@ -35,6 +38,7 @@ import { AcceptedStudentModule } from './accepted-student/accepted-student.modul
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.local', '.env'], // load local first, then .env
     }),
     MongooseModule.forRoot(
       'mongodb://Behz92:Behz9204@ac-o8nt2z7-shard-00-00.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-01.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-02.icdejxj.mongodb.net:27017/?replicaSet=atlas-12nls9-shard-0&ssl=true&authSource=admin',
@@ -53,6 +57,9 @@ import { AcceptedStudentModule } from './accepted-student/accepted-student.modul
     InternshipModule,
     AuthModule,
     AcceptedStudentModule,
+    AppointmentsModule,
+    WhatsappModule,
+    BookTourModule,
   ],
   controllers: [AppController], // ✅ Add this line
   providers: [

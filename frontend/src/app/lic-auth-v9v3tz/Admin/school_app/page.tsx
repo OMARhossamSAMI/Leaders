@@ -8,7 +8,6 @@ import {
   PencilLine,
   Save,
   XCircle,
-  CheckCircle2,
 } from "lucide-react";
 import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
@@ -78,53 +77,35 @@ export default function ApplicationsPage() {
     indexOfFirstApp,
     indexOfLastApp
   );
-  // Accept confirmation modal state
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
-  // Accept API loading state
-  const [acceptLoading, setAcceptLoading] = useState(false);
+  const [source, setSource] = useState<'all' | 'unbooked'>('all');
+
+
 
   useEffect(() => {
     setLoadingApplications(true);
 
+    // load form fields (unchanged)
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/form-fields`)
       .then((res) => res.json())
-      .then((data: FormField[]) => {
-        console.log("✅ Loaded form fields:", data);
-        setFormFields(data);
-      })
-      .catch((err: unknown) =>
-        console.error("Failed to fetch form fields", err)
-      );
+      .then((data: FormField[]) => setFormFields(data))
+      .catch((err) => console.error("Failed to fetch form fields", err));
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`)
+    // load applications depending on source
+    const url =
+      source === 'all'
+        ? `${process.env.NEXT_PUBLIC_API_URL}/applications`
+        : `${process.env.NEXT_PUBLIC_API_URL}/applications/unbooked?unpaid=1`;
+
+    fetch(url)
       .then((res) => res.json())
       .then((apps: Application[]) => {
-        console.log("📦 Raw applications response:", apps);
-
-        const normalized = apps.map((app) => ({
-          ...app,
-          files: app.files ?? [],
-        }));
-
-        console.log("✅ Normalized apps:", normalized);
-        normalized.forEach((app, idx) => {
-          console.log(
-            `📄 Application #${idx} data keys:`,
-            Object.keys(app.data || {})
-          );
-        });
-
+        const normalized = apps.map((app) => ({ ...app, files: app.files ?? [] }));
         setApplications(normalized);
       })
-      .catch((err: unknown) =>
-        console.error("Failed to fetch applications", err)
-      )
+      .catch((err) => console.error("Failed to fetch applications", err))
       .finally(() => setLoadingApplications(false));
-  }, []);
+  }, [source]);
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -380,65 +361,9 @@ export default function ApplicationsPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
-  // Open/close helpers
-  const openAcceptConfirm = (id: string, name: string) => {
-    setConfirmTarget({ id, name });
-    setConfirmOpen(true);
-  };
-  const closeAcceptConfirm = () => {
-    setConfirmOpen(false);
-    setConfirmTarget(null);
-  };
 
-  // Placeholder for later API integration
-  const handleConfirmAccept = async () => {
-    if (!confirmTarget?.id) return;
 
-    try {
-      setAcceptLoading(true);
 
-      const token =
-        typeof window !== "undefined"
-          ? sessionStorage.getItem("admin_token")
-          : null;
-
-      const res = await fetch(
-        `http://localhost:3000/accepted-student/${confirmTarget.id}/accept`,
-        {
-          method: "POST",
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        // try to show backend message if any
-        let msg = "Failed to accept student.";
-        try {
-          const data = await res.json();
-          if (data?.message)
-            msg = Array.isArray(data.message)
-              ? data.message.join(", ")
-              : data.message;
-        } catch {}
-        alert(msg);
-        return;
-      }
-
-      // ✅ Success – remove from local list and reset UI
-      setApplications((prev) => prev.filter((a) => a._id !== confirmTarget.id));
-      if (expandedId === confirmTarget.id) setExpandedId(null);
-      alert("Student accepted successfully.");
-    } catch (e) {
-      console.error(e);
-      alert("Network error: could not accept student.");
-    } finally {
-      setAcceptLoading(false);
-      closeAcceptConfirm();
-    }
-  };
 
   return (
     <>
@@ -465,9 +390,8 @@ export default function ApplicationsPage() {
         {/* Tabs (outside shadow box) */}
         <div className="tabs-container">
           <button
-            className={`tab-btn ${
-              activeTab === "applications" ? "active-tab" : ""
-            }`}
+            className={`tab-btn ${activeTab === "applications" ? "active-tab" : ""
+              }`}
             onClick={() => setActiveTab("applications")}
           >
             Submitted Applications
@@ -551,12 +475,50 @@ export default function ApplicationsPage() {
                   ) : (
                     <>
                       <button
+                        onClick={() => setSource("all")}
+                        style={{
+                          backgroundColor: source === "all" ? "var(--accent-color)" : "#fff",
+                          border: `1px solid var(--accent-color)`,
+                          color: source === "all" ? "#fff" : "var(--accent-color)",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        All applications
+                      </button>
+
+                      <button
+                        onClick={() => setSource("unbooked")}
+                        title="Show students who submitted but did not book/pay their assessment"
+                        style={{
+                          backgroundColor: source === "unbooked" ? "var(--accent-color)" : "#fff",
+                          border: `1px solid var(--accent-color)`,
+                          color: source === "unbooked" ? "#fff" : "var(--accent-color)",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        No assessment
+                      </button>
+
+                      <button
                         onClick={exportToExcel}
-                        className="btn-primary mb-4"
-                        style={{ display: "block", marginLeft: "auto" }}
+                        style={{
+                          backgroundColor: "var(--accent-color)",
+                          border: `1px solid var(--accent-color)`,
+                          color: "#fff",
+                          borderRadius: "6px",
+                          padding: "6px 14px",
+                          fontWeight: 500,
+                          display: "block",
+                          marginLeft: "auto",
+                        }}
                       >
                         📥 Export All as CSV
                       </button>
+
 
                       <div className="application-stats mt-4">
                         <h4>📊 Applications Submitted Per Day</h4>
@@ -583,14 +545,14 @@ export default function ApplicationsPage() {
                           currentApplications.map((app) => {
                             const displayName =
                               typeof app?.data?.student_name === "string" &&
-                              app.data.student_name.trim() !== ""
+                                app.data.student_name.trim() !== ""
                                 ? app.data.student_name.trim()
                                 : Object.entries(app?.data || {}).find(
-                                    ([key, val]) =>
-                                      key.toLowerCase().includes("name") &&
-                                      typeof val === "string" &&
-                                      val.trim() !== ""
-                                  )?.[1] || "Unnamed Applicant";
+                                  ([key, val]) =>
+                                    key.toLowerCase().includes("name") &&
+                                    typeof val === "string" &&
+                                    val.trim() !== ""
+                                )?.[1] || "Unnamed Applicant";
 
                             return (
                               <div
@@ -633,25 +595,6 @@ export default function ApplicationsPage() {
                                       )}
                                     </button>
 
-                                    {/* ✅ new: Accept button (compact, professional) */}
-                                    <button
-                                      onClick={() =>
-                                        openAcceptConfirm(
-                                          app._id,
-                                          String(renderFieldValue(displayName))
-                                        )
-                                      }
-                                      className="btn-accept"
-                                      aria-label="Accept applicant"
-                                      title="Accept applicant"
-                                      type="button"
-                                    >
-                                      <CheckCircle2
-                                        size={18}
-                                        className="me-1"
-                                      />
-                                      Accept
-                                    </button>
 
                                     {/* keep delete */}
                                     <button
@@ -678,8 +621,8 @@ export default function ApplicationsPage() {
                                   <strong>Submitted:</strong>{" "}
                                   {app.createdAt
                                     ? new Date(
-                                        String(app.createdAt)
-                                      ).toLocaleDateString()
+                                      String(app.createdAt)
+                                    ).toLocaleDateString()
                                     : "N/A"}
                                 </p>
 
@@ -728,7 +671,7 @@ export default function ApplicationsPage() {
                                             <strong>{field.label}:</strong>{" "}
                                             {renderFieldValue(
                                               expandedData[app._id]?.data?.[
-                                                field.field_name
+                                              field.field_name
                                               ]
                                             )}
                                           </p>
@@ -755,7 +698,7 @@ export default function ApplicationsPage() {
                                                 value={
                                                   getSafeInputValue(
                                                     editingApp?.data?.[
-                                                      field.field_name
+                                                    field.field_name
                                                     ]
                                                   ) || ""
                                                 }
@@ -785,7 +728,7 @@ export default function ApplicationsPage() {
                                                 type={field.type}
                                                 value={getSafeInputValue(
                                                   editingApp?.data?.[
-                                                    field.field_name
+                                                  field.field_name
                                                   ]
                                                 )}
                                                 onChange={(e) =>
@@ -835,40 +778,61 @@ export default function ApplicationsPage() {
                       {totalPages > 1 && (
                         <div className="pagination mt-4 d-flex justify-content-center gap-2">
                           <button
-                            onClick={() =>
-                              setCurrentPage((prev) => Math.max(prev - 1, 1))
-                            }
-                            className="btn btn-sm btn-outline-primary"
-                            disabled={currentPage === 1}
-                          >
-                            ⬅ Prev
-                          </button>
-
-                          {[...Array(totalPages)].map((_, i) => (
-                            <button
-                              key={i + 1}
-                              onClick={() => setCurrentPage(i + 1)}
-                              className={`btn btn-sm ${
-                                currentPage === i + 1
-                                  ? "btn-primary"
-                                  : "btn-outline-secondary"
-                              }`}
+                              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                              disabled={currentPage === 1}
+                              style={{
+                                backgroundColor: currentPage === 1 ? "#f5f5f5" : "#fff",
+                                border: `1px solid var(--accent-color)`,
+                                color: currentPage === 1 ? "#999" : "var(--accent-color)",
+                                borderRadius: "6px",
+                                padding: "4px 10px",
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                              }}
                             >
-                              {i + 1}
+                              ⬅ Prev
                             </button>
-                          ))}
 
-                          <button
-                            onClick={() =>
-                              setCurrentPage((prev) =>
-                                Math.min(prev + 1, totalPages)
-                              )
-                            }
-                            className="btn btn-sm btn-outline-primary"
-                            disabled={currentPage === totalPages}
-                          >
-                            Next ➡
-                          </button>
+                            {[...Array(totalPages)].map((_, i) => {
+                              const page = i + 1;
+                              const isActive = currentPage === page;
+                              return (
+                                <button
+                                  key={page}
+                                  onClick={() => setCurrentPage(page)}
+                                  style={{
+                                    backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                                    border: `1px solid var(--accent-color)`,
+                                    color: isActive ? "#fff" : "var(--accent-color)",
+                                    borderRadius: "6px",
+                                    padding: "4px 10px",
+                                    fontSize: "0.875rem",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {page}
+                                </button>
+                              );
+                            })}
+
+                            <button
+                              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                              disabled={currentPage === totalPages}
+                              style={{
+                                backgroundColor: currentPage === totalPages ? "#f5f5f5" : "#fff",
+                                border: `1px solid var(--accent-color)`,
+                                color: currentPage === totalPages ? "#999" : "var(--accent-color)",
+                                borderRadius: "6px",
+                                padding: "4px 10px",
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                              }}
+                            >
+                              Next ➡
+                            </button>
+
                         </div>
                       )}
                     </>
@@ -1027,47 +991,6 @@ export default function ApplicationsPage() {
         </div>{" "}
         {/* end of white shadow box */}
       </div>
-      {confirmOpen && (
-        <div
-          className="confirm-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirmTitle"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeAcceptConfirm();
-          }}
-        >
-          <div className="confirm-dialog" role="document">
-            <div className="confirm-header">
-              <CheckCircle2 />
-              <h5 id="confirmTitle">Accept Student</h5>
-            </div>
-            <p className="confirm-text">
-              Are you sure you want to <b>accept</b>{" "}
-              <span className="confirm-name">
-                {confirmTarget?.name || "this applicant"}
-              </span>
-              ?
-            </p>
-            <div className="confirm-actions">
-              <button
-                className="btn-danger-outline"
-                onClick={closeAcceptConfirm}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn-success-solid"
-                onClick={handleConfirmAccept}
-                disabled={acceptLoading}
-              >
-                {acceptLoading ? "Accepting..." : "Yes, Accept"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <AdminFooter />
     </>
   );

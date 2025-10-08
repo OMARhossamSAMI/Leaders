@@ -9,7 +9,19 @@ import * as sgMail from '@sendgrid/mail';
 import { join } from 'path';
 import { unlink } from 'fs/promises';
 import * as fs from 'fs';
-
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 // ✅ Confirm API key
 console.log(
   'SENDGRID API KEY (partial):',
@@ -19,18 +31,160 @@ console.log(
 // ✅ Set SendGrid API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
+// ⬇️ helper to safely build a regex from arbitrary input
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 @Injectable()
 export class StudentApplicationService {
   constructor(
     @InjectModel(StudentApplication.name)
     private appModel: Model<StudentApplicationDocument>,
+    @InjectModel('Appointment') private readonly apptModel: Model<any>, // <-- add
   ) {}
+
+  // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
+  // student-application.service.ts
+  async findByParentEmail(rawEmail: string) {
+    const email = rawEmail.trim();
+
+    const query = {
+      $or: [
+        { 'data.father_email': new RegExp(`^${this.escape(email)}$`, 'i') },
+        { 'data.mother_email': new RegExp(`^${this.escape(email)}$`, 'i') },
+        { father_email: new RegExp(`^${this.escape(email)}$`, 'i') },
+        { mother_email: new RegExp(`^${this.escape(email)}$`, 'i') },
+      ],
+    };
+
+    const app = await this.appModel
+      .findOne(query)
+      .select({
+        _id: 1,
+        createdAt: 1,
+
+        // names
+        'data.student_name': 1,
+        'data.father_name': 1,
+        'data.mother_name': 1,
+
+        // emails
+        'data.father_email': 1,
+        'data.mother_email': 1,
+        father_email: 1,
+        mother_email: 1,
+
+        // phones (cover common variants)
+        'data.father_phone': 1,
+        'data.mother_phone': 1,
+        'data.father_mobile': 1,
+        'data.mother_mobile': 1,
+        'data.father_whatsapp': 1,
+        'data.mother_whatsapp': 1,
+
+        father_phone: 1,
+        mother_phone: 1,
+        father_mobile: 1,
+        mother_mobile: 1,
+        father_whatsapp: 1,
+        mother_whatsapp: 1,
+      })
+      .lean();
+
+    if (!app) return null;
+
+    // handy getter that checks both data.* and root
+    const get = (key: string) =>
+      (app as any)?.data?.[key] ?? (app as any)?.[key];
+
+    const student_name = get('student_name');
+    const father_email = get('father_email');
+    const mother_email = get('mother_email');
+    const father_name = get('father_name'); // 👈 added
+    const mother_name = get('mother_name'); // 👈 added
+
+    // collect possible phone sources
+    const rawPhones = [
+      get('father_phone'),
+      get('mother_phone'),
+      get('father_mobile'),
+      get('mother_mobile'),
+      get('father_whatsapp'),
+      get('mother_whatsapp'),
+    ]
+      .filter(
+        (v: unknown): v is string => typeof v === 'string' && v.trim() !== '',
+      )
+      .map((s: string) => s.trim());
+
+    // basic normalization & de-dup
+    const digitsOnly = (s: string) => s.replace(/[^\d]/g, '');
+    const uniquePhones = Array.from(
+      new Set(rawPhones.map(digitsOnly).filter(Boolean)),
+    );
+
+    // pick one for father/mother if present
+    const fatherPhone =
+      digitsOnly(
+        get('father_phone') ||
+          get('father_mobile') ||
+          get('father_whatsapp') ||
+          '',
+      ) || undefined;
+    const motherPhone =
+      digitsOnly(
+        get('mother_phone') ||
+          get('mother_mobile') ||
+          get('mother_whatsapp') ||
+          '',
+      ) || undefined;
+
+    return {
+      _id: String(app._id),
+      submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
+      student_name,
+      father_name, // 👈 return it
+      mother_name, // 👈 return it
+      father_email,
+      mother_email,
+      fatherPhone,
+      motherPhone,
+      phones: uniquePhones, // all available numbers (digits-only)
+    };
+  }
+
+  // (optional helper)
+  private escape(s: string) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  //Code Generator:
+  private async generateUniqueCode(): Promise<string> {
+    const charset =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code: string = '';
+    let exists = true;
+
+    // repeat until unique
+    while (exists) {
+      code = Array.from({ length: 6 }, () =>
+        charset.charAt(Math.floor(Math.random() * charset.length)),
+      ).join('');
+
+      const found = await this.appModel.findOne({ appointmentCode: code });
+      exists = !!found;
+    }
+    return code;
+  }
 
   async submitApplication(
     formData: Record<string, any>,
     files?: Express.Multer.File[],
   ): Promise<any> {
     console.log('📥 Incoming application data:', formData);
+
+    // ✅ Generate unique appointment code
+    const appointmentCode = await this.generateUniqueCode();
 
     const fileMetadata = Array.isArray(files)
       ? files.map((file) => ({
@@ -69,13 +223,17 @@ export class StudentApplicationService {
     const createdApp = new this.appModel({
       data: formData,
       files: fileMetadata,
+      hasBookedAppointment: false, // 👈 ensure default is set
+      appointmentCode,
     });
 
     await createdApp.save();
 
     const studentName = formData.student_name || 'Student';
     const studentEmail = formData.father_email;
+    const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
 
+    // Build table for admissions email
     const tableRows = Object.entries(formData)
       .map(([key, value]) => {
         const safeValue =
@@ -86,9 +244,9 @@ export class StudentApplicationService {
               : String(value);
 
         return `<tr>
-                <td style="padding: 8px; font-weight: bold;">${key}</td>
-                <td style="padding: 8px;">${safeValue}</td>
-              </tr>`;
+              <td style="padding: 8px; font-weight: bold;">${key}</td>
+              <td style="padding: 8px;">${safeValue}</td>
+            </tr>`;
       })
       .join('');
 
@@ -112,23 +270,23 @@ export class StudentApplicationService {
       },
       subject: `📥 New Student Application from ${studentName}`,
       html: `
-    <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 30px; max-width: 750px; margin: auto; border-radius: 8px; border: 1px solid #d3d3d3;">
-      <h2 style="background-color: #004080; color: white; padding: 16px; text-align: center; border-radius: 6px;">
-        📚 New Student Application Submitted
-      </h2>
-      <p style="font-size: 15px;">Dear Admissions Team,</p>
-      <p style="font-size: 15px;">You have received a new student application via the website. Below are the submitted details:</p>
-      <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; background-color: #fff; margin-top: 20px;">
-        <thead style="background-color: #e8eef5;">
-          <tr><th>Field</th><th>Value</th></tr>
-        </thead>
-        <tbody>${tableRows}</tbody>
-      </table>
-      <p style="margin-top: 20px;"><strong>Attached Files:</strong></p>
-      ${fileListHtml}
-      <p style="margin-top: 30px; font-size: 13px; color: #888;">This message was generated by the Leaders International College student application portal.</p>
-    </div>
-    `,
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 30px; max-width: 750px; margin: auto; border-radius: 8px; border: 1px solid #d3d3d3;">
+    <h2 style="background-color: #004080; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+      📚 New Student Application Submitted
+    </h2>
+    <p style="font-size: 15px;">Dear Admissions Team,</p>
+    <p style="font-size: 15px;">You have received a new student application via the website. Below are the submitted details:</p>
+    <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; background-color: #fff; margin-top: 20px;">
+      <thead style="background-color: #e8eef5;">
+        <tr><th>Field</th><th>Value</th></tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+    <p style="margin-top: 20px;"><strong>Attached Files:</strong></p>
+    ${fileListHtml}
+    <p style="margin-top: 30px; font-size: 13px; color: #888;">This message was generated by the Leaders International College student application portal.</p>
+  </div>
+  `,
       attachments: attachments.length > 0 ? attachments : undefined,
     };
 
@@ -144,17 +302,24 @@ export class StudentApplicationService {
           },
           subject: `✅ We've received your child's application, Parent of ${studentName}`,
           html: `
-  <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
-    <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
-      Application Received
-    </h2>
-    <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
-    <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
-    <p style="font-size: 15px;">Our Admissions Team is currently reviewing the submitted information and will be in touch with you as soon as possible regarding the next steps.</p>
-    <p style="margin-top: 25px;">We’re honored by your interest in joining our community and appreciate the trust you’ve placed in us to be part of your child’s educational journey.</p>
-    <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong><br/></p>
-  </div>
-  `,
+<div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
+  <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+    Application Received
+  </h2>
+  <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
+  <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
+  
+  <p style="font-size: 16px; color: #d32f2f; font-weight: bold; margin-top: 20px;">
+    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>  
+  </p>
+  <p style="font-size: 15px;">
+    Please keep this code safe. You will need to enter it in order to book your child’s assessment appointment.
+  </p>
+
+  <p style="font-size: 15px;">Our Admissions Team will review your application and guide you through the next steps.</p>
+  <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong></p>
+</div>
+`,
         }
       : null;
 
@@ -170,6 +335,7 @@ export class StudentApplicationService {
       return {
         message:
           '✅ Application saved and emails sent to both student and admissions.',
+        applicationId, // 👈 also return booking code in API response
       };
     } catch (err) {
       console.error(
@@ -180,6 +346,60 @@ export class StudentApplicationService {
         'Application saved, but failed to send confirmation email.',
       );
     }
+  }
+
+  // ⬇️ NEW: list applications with no appointments (optionally unpaid only)
+  async listUnbookedOrUnpaid(opts?: { unpaidOnly?: boolean }) {
+    const unpaidOnly = !!opts?.unpaidOnly;
+
+    const pipeline: any[] = [
+      // to be able to match if appointments.applicationId is stored as string
+      { $addFields: { _idStr: { $toString: '$_id' } } },
+      {
+        $lookup: {
+          from: 'appointments',
+          let: {
+            idStr: '$_idStr',
+            father: '$data.father_email',
+            mother: '$data.mother_email',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    { $eq: ['$applicationId', '$$idStr'] },
+                    { $eq: ['$parentEmail', '$$father'] },
+                    { $eq: ['$parentEmail', '$$mother'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'apts',
+        },
+      },
+      // keep only those with NO appointments
+      { $match: { apts: { $eq: [] } } },
+    ];
+
+    if (unpaidOnly) {
+      // Heuristic unpaid check (adjust field names to yours if needed)
+      pipeline.push({
+        $match: {
+          $and: [
+            { 'data.assessment_paid': { $ne: true } },
+            {
+              'data.payment_status': {
+                $nin: ['paid', 'completed', 'confirmed'],
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    return this.appModel.aggregate(pipeline).exec();
   }
 
   async getAllApplications() {
@@ -244,5 +464,48 @@ export class StudentApplicationService {
 
   async getApplicationById(id: string) {
     return this.appModel.findById(id).exec();
+  }
+  async findByIdLean(id: string) {
+    if (!id) return null;
+
+    const app = await this.appModel
+      .findOne({ appointmentCode: id })
+      .select({
+        _id: 1,
+        createdAt: 1,
+        hasBookedAppointment: 1, // 👈 select the new field
+        'data.student_name': 1,
+        'data.father_name': 1,
+        'data.mother_name': 1,
+        'data.father_email': 1,
+        'data.mother_email': 1,
+        'data.father_phone': 1,
+        'data.mother_phone': 1,
+      })
+      .lean();
+
+    if (!app) return null;
+
+    if (app.hasBookedAppointment) {
+      // 👈 throw or return a clear error
+      throw new BadRequestException(
+        'This application has already booked an assessment appointment.',
+      );
+    }
+
+    const data: any = app.data || {};
+
+    return {
+      _id: String(app._id),
+      appointmentCode: id, // 👈 include the code in the response
+      submittedAt: app.createdAt?.toISOString?.() ?? new Date().toISOString(),
+      student_name: data.student_name,
+      father_name: data.father_name,
+      mother_name: data.mother_name,
+      father_email: data.father_email,
+      mother_email: data.mother_email,
+      father_phone: data.father_phone,
+      mother_phone: data.mother_phone,
+    };
   }
 }
