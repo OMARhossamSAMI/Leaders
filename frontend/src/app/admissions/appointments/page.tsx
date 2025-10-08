@@ -25,8 +25,7 @@ const ACCENT_LIGHT = "#def2f6";
 const DARK = "#1a1a1a";
 
 // ---- helpers/types for robust API handling ----
-type CreateApptSuccess = { _id?: string; id?: string };
-type ApiErrorBody = { message?: string | string[] };
+
 
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
