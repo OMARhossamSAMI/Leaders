@@ -18,7 +18,7 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = "https://leaders-temp-backend.onrender.com";
+const API = "https://leaders-bf42.onrender.com";
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -147,7 +147,7 @@ export default function AppointmentPage() {
     (async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/settings/show-appointments`,
+          `${process.env.NEXT_PUBLIC_API_URL}/settings/show-appointments`,
           {
             cache: "no-store",
           }
