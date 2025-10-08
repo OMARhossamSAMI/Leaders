@@ -27,6 +27,7 @@ const DARK = "#1a1a1a";
 // ---- helpers/types for robust API handling ----
 
 
+
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
   const [appId, setAppId] = useState(""); // <-- new Application ID field
@@ -51,7 +52,6 @@ export default function AppointmentPage() {
   );
 
   const [, setSettingsLoading] = useState(true);
-
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
