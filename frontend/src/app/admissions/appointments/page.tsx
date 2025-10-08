@@ -56,7 +56,7 @@ export default function AppointmentPage() {
   const [showAppointments, setShowAppointments] = useState<boolean | null>(
     null
   );
-  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settingsoading, setSettingsLoading] = useState(true);
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)

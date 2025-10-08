@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from "react";
@@ -95,8 +96,8 @@ export default function AdmissionsPage() {
       arr.length === 1
         ? arr[0]
         : arr.length === 2
-        ? `${arr[0]} and ${arr[1]}`
-        : `${arr.slice(0, -1).join(", ")}, and ${arr[arr.length - 1]}`;
+          ? `${arr[0]} and ${arr[1]}`
+          : `${arr.slice(0, -1).join(", ")}, and ${arr[arr.length - 1]}`;
 
     if (missing.length) {
       const msg = `Please fill ${list(missing)}.`;
@@ -124,7 +125,7 @@ export default function AdmissionsPage() {
           parentEmail: parentEmail.trim(),
           parentPhone: parentPhone.trim(),
           selectedLabel: selectedSlot ?? undefined,
-          gradeApplyingFor: gradeApplyingFor.trim(), 
+          gradeApplyingFor: gradeApplyingFor.trim(),
         }),
       });
 
@@ -395,9 +396,8 @@ export default function AdmissionsPage() {
             <div className="admission-tab-wrapper">
               <button
                 type="button"
-                className={`admission-tab-btn ${
-                  activeSection === "apply" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "apply" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("apply")}
               >
                 <i className="bi bi-pencil-square"></i> How to Apply
@@ -405,9 +405,8 @@ export default function AdmissionsPage() {
 
               <button
                 type="button"
-                className={`admission-tab-btn ${
-                  activeSection === "form" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "form" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("form")}
               >
                 <i className="bi bi-file-earmark-text"></i> Apply Now
@@ -415,9 +414,8 @@ export default function AdmissionsPage() {
 
               <button
                 type="button"
-                className={`admission-tab-btn ${
-                  activeSection === "requirements" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "requirements" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("requirements")}
               >
                 <i className="bi bi-people"></i> Age Acceptance Guide
@@ -425,9 +423,8 @@ export default function AdmissionsPage() {
 
               <button
                 type="button"
-                className={`admission-tab-btn ${
-                  activeSection === "deadlines" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "deadlines" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("deadlines")}
               >
                 <i className="bi bi-camera-video"></i> Tour
@@ -435,9 +432,8 @@ export default function AdmissionsPage() {
 
               <button
                 type="button"
-                className={`admission-tab-btn ${
-                  activeSection === "reserve" ? "active" : ""
-                }`}
+                className={`admission-tab-btn ${activeSection === "reserve" ? "active" : ""
+                  }`}
                 onClick={() => setActiveSection("reserve")}
               >
                 <i className="bi bi-calendar-check"></i> Reserve Assessment Date
@@ -608,32 +604,33 @@ export default function AdmissionsPage() {
                         {/* COLUMN 1: Fall Semester */}
                         <div className="col-lg-6">
                           <div className="deadline-item mb-4">
-                            <h2>Virtual Tour</h2>
-                            <p>
-                              Explore Leaders International College from the
-                              comfort of your home! Our virtual tour provides
-                              you with a unique opportunity to experience our
-                              campus as if you were here in person. Navigate
-                              through our state-of-the-art facilities, including
-                              classrooms, labs, sports complexes, and more, to
-                              see where our students learn, play, and grow. If
-                              you have any questions or would like more
-                              information about specific areas of our campus,
-                              please do not hesitate to contact our team.
+                            <h2>Campus Tour</h2>
+
+                            <p className="mt-3">
+                              Discover Leaders International College in
+                              person! Our campus tour invites you to step
+                              into the heart of our school, explore our
+                              modern classrooms, science and computer labs,
+                              libraries, and sports facilities, and
+                              experience the lively atmosphere that makes
+                              our community unique. During the tour, you’ll
+                              have the chance to meet our dedicated staff,
+                              ask questions about academics and student
+                              life, and see first-hand how we support every
+                              child’s growth.
                             </p>
-                            <p>
-                              Take a step into our world from the comfort of
-                              your home. Our virtual tour offers a detailed look
-                              at the vibrant learning spaces, cutting-edge
-                              technology, and welcoming community that define
-                              Leaders International College. Explore classrooms,
-                              labs, sports facilities, and more — all in just a
-                              few clicks
+                            <p className="mt-3">
+                              Booking a tour is simple — just select a
+                              convenient day and provide your details. Our
+                              Admissions team will confirm your visit and
+                              guide you through everything you need to know.
+                              We look forward to welcoming you and showing
+                              you why Leaders International College is the
+                              perfect place for your child’s educational
+                              journey.
                             </p>
-                            <a
-                              href="http://vrtour.leadersintcollege.com/"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              onClick={() => setOpen(true)}
                               className="btn btn-accent"
                               style={{
                                 backgroundColor: "var(--accent-color)",
@@ -645,60 +642,37 @@ export default function AdmissionsPage() {
                                 textDecoration: "none",
                               }}
                             >
-                              Explore Virtual Tour
-                            </a>
+                              Book a Tour
+                            </button>
                           </div>
                         </div>
 
                         {/* COLUMN 2: Spring Semester */}
                         <div className="col-lg-6">
                           <div className="deadline-item mb-4">
-                            <div className="intro-image-container">
-                              <div className="intro-image main-image">
-                                <h2>Campus Tour</h2>
-
-                                <p className="mt-3">
-                                  Discover Leaders International College in
-                                  person! Our campus tour invites you to step
-                                  into the heart of our school, explore our
-                                  modern classrooms, science and computer labs,
-                                  libraries, and sports facilities, and
-                                  experience the lively atmosphere that makes
-                                  our community unique. During the tour, you’ll
-                                  have the chance to meet our dedicated staff,
-                                  ask questions about academics and student
-                                  life, and see first-hand how we support every
-                                  child’s growth.
-                                </p>
-                                <p className="mt-3">
-                                  Booking a tour is simple — just select a
-                                  convenient day and provide your details. Our
-                                  Admissions team will confirm your visit and
-                                  guide you through everything you need to know.
-                                  We look forward to welcoming you and showing
-                                  you why Leaders International College is the
-                                  perfect place for your child’s educational
-                                  journey.
-                                </p>
-
-                                <button
-                                  onClick={() => setOpen(true)}
-                                  className="btn btn-accent"
-                                  style={{
-                                    backgroundColor: "var(--accent-color)",
-                                    color: "#fff",
-                                    padding: "12px 24px",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                    display: "inline-block",
-                                    textDecoration: "none",
-                                  }}
-                                >
-                                  Book a Tour
-                                </button>
-                              </div>
+                            <div
+                              className="intro-image-container d-flex justify-content-center align-items-center"
+                              style={{
+                                height: "100%", // ensures equal height as text card
+                                minHeight: "395px", // matches Campus Tour box visually
+                              }}
+                            >
+                              <img
+                                src="/assets/img/education/CampusH.JPG"
+                                alt="Leaders International College Campus"
+                                className="img-fluid rounded shadow"
+                                style={{
+                                  width: "95%",
+                                  height: "95%",
+                                  borderRadius: "12px",
+                                  objectFit: "cover",
+                                }}
+                                data-aos="zoom-in"
+                                data-aos-delay="200"
+                              />
                             </div>
                           </div>
+
 
                           {open && (
                             <div
@@ -800,12 +774,12 @@ export default function AdmissionsPage() {
                                                 border: "1px solid #e5e7eb",
                                               }}
                                               onFocus={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "2px solid var(--accent-color)")
+                                              (e.currentTarget.style.border =
+                                                "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "1px solid #e5e7eb")
+                                              (e.currentTarget.style.border =
+                                                "1px solid #e5e7eb")
                                               }
                                             />
                                           </div>
@@ -832,12 +806,12 @@ export default function AdmissionsPage() {
                                                 border: "1px solid #e5e7eb",
                                               }}
                                               onFocus={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "2px solid var(--accent-color)")
+                                              (e.currentTarget.style.border =
+                                                "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "1px solid #e5e7eb")
+                                              (e.currentTarget.style.border =
+                                                "1px solid #e5e7eb")
                                               }
                                             />
                                           </div>
@@ -864,12 +838,12 @@ export default function AdmissionsPage() {
                                                 border: "1px solid #e5e7eb",
                                               }}
                                               onFocus={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "2px solid var(--accent-color)")
+                                              (e.currentTarget.style.border =
+                                                "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "1px solid #e5e7eb")
+                                              (e.currentTarget.style.border =
+                                                "1px solid #e5e7eb")
                                               }
                                             />
                                           </div>
@@ -898,8 +872,8 @@ export default function AdmissionsPage() {
                                                 (e.currentTarget.style.border = "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
-                                                (e.currentTarget.style.border =
-                                                  "1px solid #e5e7eb")
+                                              (e.currentTarget.style.border =
+                                                "1px solid #e5e7eb")
                                               }
                                             />
                                           </div>
