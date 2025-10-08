@@ -100,16 +100,6 @@ export default function CampusFacilitiesPage() {
                           height={800}
                         />
                       </div>
-                      <div className="tour-button">
-                        <Link
-                          href="http://vrtour.leadersintcollege.com/"
-                          className="btn-tour"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <i className="bi bi-play-circle-fill" /> Virtual Tour
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </div>

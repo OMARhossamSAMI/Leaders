@@ -269,7 +269,7 @@ export default function Home() {
                           <p>Dual</p>
                           <p>Certificate</p>
                         </div>
-                      </div>  
+                      </div>
                       <div className="stat-item">
                         <div className="stat-icon">
                           <i className="bi bi-building" />
@@ -941,20 +941,24 @@ export default function Home() {
                       Safety is ensured through 24/7 security, surveillance
                       systems, and controlled access.
                     </p>
-                    <div className="stats-cta">
-                      <Link
-                        href="/campus-facilities"
-                        className="btn btn-primary"
-                      >
-                        Learn More
-                      </Link>
-                      <Link
-                        href="http://vrtour.leadersintcollege.com/"
-                        className="btn btn-outline"
-                      >
-                        Virtual Tour
-                      </Link>
-                    </div>
+                    
+                    <div
+  className="stats-cta mt-3 d-flex justify-content-center"
+  style={{ marginTop: "1.2rem" }}
+>
+  <Link
+    href="/campus-facilities"
+    className="btn btn-primary px-4 py-2 fw-semibold"
+    style={{
+      fontSize: "1rem",
+      display: "inline-block",
+    }}
+  >
+    Learn More
+  </Link>
+</div>
+
+
                   </div>
                 </div>
               </div>
