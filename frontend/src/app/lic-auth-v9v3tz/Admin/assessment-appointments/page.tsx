@@ -18,6 +18,23 @@ type Appt = {
   waSentAt?: string | null; // <— NEW
 };
 
+interface ApplicationData {
+  student_name?: string;
+  grade_applying_for?: string;
+  gradeApplyingFor?: string;
+  applied_grade?: string;
+  target_grade?: string;
+  desired_grade?: string;
+  entry_grade?: string;
+  grade?: string;
+  [key: string]: unknown;
+}
+
+interface Application {
+  data?: ApplicationData;
+  [key: string]: unknown;
+}
+
 // 2) bump LS key so old appId-based entries don’t poison UI
 const SENT_LS_KEY = "wa_sent_appts_v2"; // <— was v1
 const CUSTOM_SENT_LS_KEY = "wa_custom_sent_v1";
@@ -120,16 +137,16 @@ export default function AssessmentAppointmentsPage() {
     try {
       const raw = localStorage.getItem(SENT_LS_KEY);
       if (raw) setSentKeys(new Set(JSON.parse(raw)));
-    } catch {}
+    } catch { }
     try {
       const raw2 = localStorage.getItem(CUSTOM_SENT_LS_KEY);
       if (raw2) setCustomSent(new Set(JSON.parse(raw2)));
-    } catch {}
+    } catch { }
   }, []);
   function persist(set: Set<string>, key: string) {
     try {
       localStorage.setItem(key, JSON.stringify(Array.from(set)));
-    } catch {}
+    } catch { }
   }
 
   function markSent(a: Appt) {
@@ -168,10 +185,13 @@ export default function AssessmentAppointmentsPage() {
   const isRecord = (v: unknown): v is UnknownRecord =>
     typeof v === "object" && v !== null;
 
+  type RecordWithArray = { items?: unknown[]; data?: unknown[] };
+
   const extractArray = (payload: unknown): unknown[] | null => {
     if (Array.isArray(payload)) return payload;
     if (isRecord(payload)) {
-      const maybe = (payload as any).items ?? (payload as any).data;
+      const record = payload as RecordWithArray;
+      const maybe = record.items ?? record.data;
       if (Array.isArray(maybe)) return maybe;
     }
     return null;
@@ -190,11 +210,13 @@ export default function AssessmentAppointmentsPage() {
 
   const normalizeAppt = (v: unknown): Appt | null => {
     if (!isRecord(v)) return null;
+
     const _id = pickStr(v, "_id", "id");
     const parentEmail = pickStr(v, "parentEmail", "email", "parent_email");
     const slotISO = pickStr(v, "slotISO", "slot", "date");
     if (!_id || !parentEmail || !slotISO) return null;
 
+    // studentName
     let studentName =
       pickStr(
         v,
@@ -203,20 +225,20 @@ export default function AssessmentAppointmentsPage() {
         "studentFullName",
         "fullName"
       ) ?? undefined;
+
     if (!studentName) {
-      const app = (v as any)?.application;
-      const data =
-        app && typeof app === "object" ? (app as any).data : undefined;
-      const sn =
-        data && typeof data === "object"
-          ? (data as any).student_name
-          : undefined;
+      const app = (v as Record<string, unknown>)?.application as
+        | Application
+        | undefined;
+      const data = app?.data;
+      const sn = typeof data?.student_name === "string" ? data.student_name : undefined;
       if (typeof sn === "string" && sn.trim()) studentName = sn.trim();
     }
 
+    // studentGrade
     let studentGrade =
       pickStr(
-        v as any,
+        v,
         "studentGrade",
         "grade",
         "grade_applying_for",
@@ -224,13 +246,14 @@ export default function AssessmentAppointmentsPage() {
       ) ?? undefined;
 
     if (!studentGrade) {
-      const app = (v as any)?.application;
-      const data =
-        app && typeof app === "object" ? (app as any).data : undefined;
+      const app = (v as Record<string, unknown>)?.application as
+        | Application
+        | undefined;
+      const data = app?.data;
       if (data && typeof data === "object") {
         studentGrade =
           pickStr(
-            data as any,
+            data,
             "grade_applying_for",
             "gradeApplyingFor",
             "applied_grade",
@@ -245,8 +268,9 @@ export default function AssessmentAppointmentsPage() {
     const applicationId = pickStr(v, "applicationId");
     const createdAt = pickStr(v, "createdAt");
 
+    // waSentAt
     let waSentAt: string | null = null;
-    const ws = (v as any)?.waSentAt;
+    const ws = (v as Record<string, unknown>)?.waSentAt;
     if (typeof ws === "string" && ws.trim()) waSentAt = ws;
 
     return {
@@ -285,7 +309,7 @@ export default function AssessmentAppointmentsPage() {
               ok = true;
               break;
             }
-          } catch {}
+          } catch { }
         }
         if (!ok)
           throw new Error("No appointment list endpoint responded with data.");
@@ -409,19 +433,22 @@ export default function AssessmentAppointmentsPage() {
           v == null
             ? ""
             : typeof v === "string"
-            ? v
-            : typeof v === "number"
-            ? String(v)
-            : JSON.stringify(v);
+              ? v
+              : typeof v === "number"
+                ? String(v)
+                : JSON.stringify(v);
         return Math.max(acc, s.length);
       }, k.length);
       return { wch: Math.min(Math.max(maxLen + 2, 10), 60) };
     });
   }
+
+
   async function handleExportExcel() {
     try {
       const xlsx = await import("xlsx");
       const { utils, writeFile } = xlsx.default ?? xlsx;
+
       const rows = filtered.map((a) => {
         const d = new Date(a.slotISO);
         return {
@@ -436,14 +463,24 @@ export default function AssessmentAppointmentsPage() {
           "Created At": a.createdAt ? fmtDateTimePretty(a.createdAt) : "",
         };
       });
+
       if (rows.length === 0) {
         alert("No rows to export.");
         return;
       }
-      const ws = utils.json_to_sheet(rows);
-      (ws as any)["!cols"] = autosizeCols(rows);
+
+      const ws: import("xlsx").WorkSheet = utils.json_to_sheet(rows);
+
+      // ✅ Correct type extension — use `wch` like xlsx does
+      type WorksheetWithCols = import("xlsx").WorkSheet & {
+        ['!cols']?: { wch: number }[];
+      };
+
+      (ws as WorksheetWithCols)['!cols'] = autosizeCols(rows);
+
       const wb = utils.book_new();
       utils.book_append_sheet(wb, ws, "Assessments");
+
       const stamp = toYMD(new Date()).replaceAll("-", "");
       writeFile(wb, `assessment_appointments_${stamp}.xlsx`, {
         compression: true,
@@ -455,6 +492,8 @@ export default function AssessmentAppointmentsPage() {
       );
     }
   }
+
+
 
   // confirm-send (existing)
   async function sendWa(a: Appt) {
@@ -473,6 +512,7 @@ export default function AssessmentAppointmentsPage() {
     });
 
     setSendingIds((prev) => new Set(prev).add(a._id));
+
     try {
       const body = {
         appointmentId: a._id,
@@ -480,35 +520,60 @@ export default function AssessmentAppointmentsPage() {
         slotISO: a.slotISO,
         applicationId: a.applicationId,
       };
+
       const res = await fetch(`${API}/wa/assessment-confirmation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
       const ct = res.headers.get("content-type") || "";
       const raw = await res.text();
-      let data: any = raw;
+
+      let data: unknown = raw;
       try {
-        if (ct.includes("application/json")) data = JSON.parse(raw);
-      } catch {}
+        if (ct.includes("application/json")) {
+          data = JSON.parse(raw) as unknown;
+        }
+      } catch {
+        /* ignore malformed JSON */
+      }
 
       if (!res.ok) {
+        // ✅ Type-narrow before reading properties
         const msg =
-          typeof data === "object" && data !== null && "message" in data
-            ? String(data.message)
+          typeof data === "object" &&
+            data !== null &&
+            "message" in data &&
+            typeof (data as { message?: unknown }).message === "string"
+            ? (data as { message: string }).message
             : raw || `HTTP ${res.status}`;
+
         setSendErr((prev) => ({ ...prev, [a._id]: msg }));
         return;
       }
-      // success
+
+      // ✅ Success path
       markSent(a);
-      if (data && Array.isArray(data.sent))
-        setSendOk((prev) => ({ ...prev, [a._id]: data.sent as string[] }));
-      else setSendOk((prev) => ({ ...prev, [a._id]: [] }));
+
+      if (
+        data &&
+        typeof data === "object" &&
+        "sent" in data &&
+        Array.isArray((data as { sent?: unknown }).sent)
+      ) {
+        setSendOk((prev) => ({
+          ...prev,
+          [a._id]: (data as { sent: string[] }).sent,
+        }));
+      } else {
+        setSendOk((prev) => ({ ...prev, [a._id]: [] }));
+      }
     } catch (e) {
       setSendErr((prev) => ({
         ...prev,
-        [a._id]: e instanceof Error ? e.message : "Network error.",
+        [a._id]:
+          e instanceof Error ? e.message : "Network error.",
       }));
     } finally {
       setSendingIds((prev) => {
@@ -519,12 +584,12 @@ export default function AssessmentAppointmentsPage() {
     }
   }
 
+
   // delete
   async function handleDelete(a: Appt) {
     if (
       !confirm(
-        `Delete this appointment?\n\nStudent: ${
-          a.studentName || "Unknown"
+        `Delete this appointment?\n\nStudent: ${a.studentName || "Unknown"
         }\nEmail: ${a.parentEmail}\nDate: ${fmtDate(a.slotISO)} ${fmtTime(
           a.slotISO
         )}`
@@ -781,9 +846,8 @@ export default function AssessmentAppointmentsPage() {
                         backgroundColor: isActive
                           ? "var(--accent-color)"
                           : "#fff",
-                        border: `1px solid ${
-                          isActive ? "var(--accent-color)" : "#e5e7eb"
-                        }`,
+                        border: `1px solid ${isActive ? "var(--accent-color)" : "#e5e7eb"
+                          }`,
                         color: isActive ? "#fff" : "#000",
                         borderRadius: "6px",
                         padding: "6px 14px",
@@ -793,8 +857,8 @@ export default function AssessmentAppointmentsPage() {
                       {m === "upcoming"
                         ? "Upcoming"
                         : m === "past"
-                        ? "Past"
-                        : "All"}
+                          ? "Past"
+                          : "All"}
                     </button>
                   );
                 })}
@@ -883,9 +947,8 @@ export default function AssessmentAppointmentsPage() {
                 return (
                   <div key={a._id} className="col-12 col-lg-6 col-xxl-4 d-flex">
                     <div
-                      className={`card appt-card shadow-sm border-0 h-100 mx-auto ${
-                        past ? "is-past" : "is-upcoming"
-                      } ${isSelected ? "selected" : ""}`}
+                      className={`card appt-card shadow-sm border-0 h-100 mx-auto ${past ? "is-past" : "is-upcoming"
+                        } ${isSelected ? "selected" : ""}`}
                       style={{ maxWidth: 560, width: "100%" }}
                     >
                       {/* Select checkbox */}
@@ -977,15 +1040,15 @@ export default function AssessmentAppointmentsPage() {
                           {/* Assessment send button (once per appointment) */}
                           <button
                             type="button"
-                            className={`btn ${
-                              alreadySent
-                                ? "btn-outline-secondary"
-                                : "btn-success"
-                            } btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
+                            className={`btn ${alreadySent
+                              ? "btn-outline-secondary"
+                              : "btn-success"
+                              } btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
                             onClick={() =>
                               !alreadySent &&
-                              sendWa({ ...(a as any), appointmentId: a._id })
+                              sendWa({ ...a, appointmentId: a._id } as Appt)
                             }
+
                             title={
                               alreadySent
                                 ? "Message already sent for this appointment"
