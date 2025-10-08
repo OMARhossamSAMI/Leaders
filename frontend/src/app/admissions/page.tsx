@@ -18,6 +18,11 @@ interface FormField {
   options?: string[];
   placeholder?: string;
 }
+interface BookingResponse {
+  ok?: boolean;
+  bookingId?: string;
+  message?: string | string[];
+}
 
 type Slot = {
   _id: string;
@@ -61,10 +66,10 @@ export default function AdmissionsPage() {
     slotIso: string;
   } | null>(null);
 
-  const [bookingErr, setBookingErr] = useState<string | null>(null);
-  const [bookingOk, setBookingOk] = useState<string | null>(null);
+  const [, setBookingErr] = useState<string | null>(null);
+  const [, setBookingOk] = useState<string | null>(null);
 
-  const [gradeApplyingFor, setGradeApplyingFor] = useState('');
+  const [gradeApplyingFor, setGradeApplyingFor] = useState("");
 
   const [bookedPopup, setBookedPopup] = useState<{
     title: string;
@@ -89,7 +94,6 @@ export default function AdmissionsPage() {
     if (!parentEmail.trim()) missing.push("parent email");
     if (!parentPhone.trim()) missing.push("parent phone");
     if (!gradeApplyingFor.trim()) missing.push("grade applying for"); // ✅ NEW
-
 
     const list = (arr: string[]) =>
       arr.length === 1
@@ -124,11 +128,11 @@ export default function AdmissionsPage() {
           parentEmail: parentEmail.trim(),
           parentPhone: parentPhone.trim(),
           selectedLabel: selectedSlot ?? undefined,
-          gradeApplyingFor: gradeApplyingFor.trim(), 
+          gradeApplyingFor: gradeApplyingFor.trim(),
         }),
       });
 
-      const data = await res.json();
+      const data: BookingResponse = await res.json();
       if (!res.ok) {
         const msg = Array.isArray(data?.message)
           ? data.message.join(" • ")
@@ -175,8 +179,9 @@ export default function AdmissionsPage() {
       } catch {
         /* ignore */
       }
-    } catch (err: any) {
-      const msg = err?.message || "Booking failed";
+    } catch (err) {
+      const error = err as Error;
+      const msg = error.message || "Booking failed";
       setBookingErr(msg);
       setBookedPopup({ title: "Booking failed", message: msg, kind: "error" });
       setShowBookedPopup(true);
@@ -306,12 +311,18 @@ export default function AdmissionsPage() {
           headers: { "Content-Type": "application/json" },
           cache: "no-store", // avoid stale caching in browsers
         });
-        const data = await res.json();
+        const data: unknown = await res.json();
+
         if (!alive) return;
-        setSlots(Array.isArray(data) ? data : []);
-      } catch (e: any) {
+        if (Array.isArray(data)) {
+          setSlots(data as Slot[]);
+        } else {
+          setSlots([]);
+        }
+      } catch (e) {
         if (!alive) return;
-        setSlotsErr(e?.message || "Failed to load tour slots");
+        const error = e as Error;
+        setSlotsErr(error.message || "Failed to load tour slots");
       } finally {
         if (alive) setLoadingSlots(false);
       }
@@ -342,16 +353,6 @@ export default function AdmissionsPage() {
   // ============================================================================
 
   // Keep your preview submit util if needed
-  const submit = () => {
-    if (!selectedSlot) {
-      alert("Please choose a date & time first.");
-      return;
-    }
-    alert(`Frontend-only preview:\nBooked campus tour for ${selectedSlot}`);
-    setOpen(false);
-    setSelectedSlot(null);
-    setSelectedSlotId(null);
-  };
 
   return (
     <>
@@ -875,7 +876,10 @@ export default function AdmissionsPage() {
                                           </div>
 
                                           <div className="mb-3">
-                                            <label className="form-label" htmlFor="tourGradeApplyingFor">
+                                            <label
+                                              className="form-label"
+                                              htmlFor="tourGradeApplyingFor"
+                                            >
                                               Grade Applying For
                                             </label>
                                             <input
@@ -885,17 +889,24 @@ export default function AdmissionsPage() {
                                               type="text"
                                               placeholder="e.g. PYP 2"
                                               value={gradeApplyingFor}
-                                              onChange={(e) => setGradeApplyingFor(e.target.value)}
+                                              onChange={(e) =>
+                                                setGradeApplyingFor(
+                                                  e.target.value
+                                                )
+                                              }
                                               required
                                               aria-required="true"
-                                              aria-invalid={!gradeApplyingFor.trim()}
+                                              aria-invalid={
+                                                !gradeApplyingFor.trim()
+                                              }
                                               style={{
                                                 borderRadius: "8px",
                                                 border: "1px solid #e5e7eb",
                                                 outline: "none",
                                               }}
                                               onFocus={(e) =>
-                                                (e.currentTarget.style.border = "2px solid var(--accent-color)")
+                                                (e.currentTarget.style.border =
+                                                  "2px solid var(--accent-color)")
                                               }
                                               onBlur={(e) =>
                                                 (e.currentTarget.style.border =

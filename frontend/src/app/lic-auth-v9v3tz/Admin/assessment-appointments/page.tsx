@@ -62,7 +62,7 @@ export default function AssessmentAppointmentsPage() {
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [showAppointments, setShowAppointments] = useState<boolean>(true);
   const [savingToggle, setSavingToggle] = useState(false);
-  const [amount, setAmount] = useState<number>(0); // stored in cents from backend
+  const [, setAmount] = useState<number>(0); // stored in cents from backend
   const [amountMajor, setAmountMajor] = useState<string>("0"); // before decimal
   const [amountMinor, setAmountMinor] = useState<string>("00"); // after decimal
   const [savingAmount, setSavingAmount] = useState(false);
@@ -131,7 +131,7 @@ export default function AssessmentAppointmentsPage() {
       localStorage.setItem(key, JSON.stringify(Array.from(set)));
     } catch {}
   }
-  const keyFor = (a: Appt) => a._id;
+
   function markSent(a: Appt) {
     setSentKeys((prev) => {
       const next = new Set(prev);
@@ -459,11 +459,16 @@ export default function AssessmentAppointmentsPage() {
   // confirm-send (existing)
   async function sendWa(a: Appt) {
     setSendErr((prev) => {
-      const { [a._id]: _, ...rest } = prev;
+      const rest = Object.fromEntries(
+        Object.entries(prev).filter(([key]) => key !== a._id)
+      );
       return rest;
     });
+
     setSendOk((prev) => {
-      const { [a._id]: _, ...rest } = prev;
+      const rest = Object.fromEntries(
+        Object.entries(prev).filter(([key]) => key !== a._id)
+      );
       return rest;
     });
 

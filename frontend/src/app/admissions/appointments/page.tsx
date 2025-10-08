@@ -28,12 +28,6 @@ const DARK = "#1a1a1a";
 type CreateApptSuccess = { _id?: string; id?: string };
 type ApiErrorBody = { message?: string | string[] };
 
-const hasMessage = (v: unknown): v is ApiErrorBody =>
-  typeof v === "object" && v !== null && "message" in v;
-
-const hasNewId = (v: unknown): v is CreateApptSuccess =>
-  typeof v === "object" && v !== null && ("_id" in v || "id" in v);
-
 export default function AppointmentPage() {
   // Step 1 — lookup by parent email
   const [appId, setAppId] = useState(""); // <-- new Application ID field
@@ -56,7 +50,7 @@ export default function AppointmentPage() {
   const [showAppointments, setShowAppointments] = useState<boolean | null>(
     null
   );
-  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [, setSettingsLoading] = useState(true);
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
@@ -227,8 +221,12 @@ export default function AppointmentPage() {
       setSearching(false);
     }
   };
+  type PayResponse =
+    | { checkout_url: string }
+    | { message?: string; _id?: string; id?: string }
+    | Record<string, unknown>;
 
-  const onSave = async () => {
+  const onSave = async (): Promise<void> => {
     if (!app?._id || !selectedDate || !selectedTime) return;
 
     setSaveError("");
@@ -246,7 +244,6 @@ export default function AppointmentPage() {
     };
 
     try {
-      // 🔹 Step 1: Ask backend to start payment (Unified Checkout)
       const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -254,12 +251,12 @@ export default function AppointmentPage() {
       });
 
       const contentType = res.headers.get("content-type") || "";
-      let data: any = null;
+      let data: PayResponse | null = null;
       let rawText: string | null = null;
 
       try {
         if (contentType.includes("application/json")) {
-          data = await res.json();
+          data = (await res.json()) as PayResponse;
         } else {
           rawText = await res.text();
         }
@@ -268,12 +265,13 @@ export default function AppointmentPage() {
       }
 
       if (!res.ok) {
-        // Build a friendly error message
         let msg: string;
-        if (hasMessage(data)) {
-          msg = Array.isArray(data.message)
-            ? data.message.join(" ")
-            : data.message ?? rawText ?? `HTTP ${res.status}`;
+        if (data && "message" in data) {
+          msg = Array.isArray((data as { message: string[] }).message)
+            ? (data as { message: string[] }).message.join(" ")
+            : (data as { message?: string }).message ??
+              rawText ??
+              `HTTP ${res.status}`;
         } else {
           msg = rawText ?? `HTTP ${res.status}`;
         }
@@ -288,16 +286,20 @@ export default function AppointmentPage() {
       }
 
       // 🔹 Step 2: Redirect user to Paymob Unified Checkout
-      if (data?.checkout_url) {
-        window.location.href = data.checkout_url;
+      if (data && "checkout_url" in data && data.checkout_url) {
+        window.location.href = (data as { checkout_url: string }).checkout_url;
         return;
       }
 
       const newId =
-        hasNewId(data) && (data._id || data.id)
-          ? String(data._id || data.id)
+        data && ("_id" in data || "id" in data)
+          ? String(
+              (data as { _id?: string; id?: string })._id ??
+                (data as { id?: string }).id
+            )
           : null;
       setSavedId(newId || "OK");
+
       // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
@@ -307,6 +309,7 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
+
   // Fixed daily slots
   const dailySlots = [
     "09:00",
