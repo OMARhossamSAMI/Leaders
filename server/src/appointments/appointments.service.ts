@@ -911,6 +911,76 @@ export class AppointmentsService {
   private async delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+  private async sendParentPaymentConfirmationEmail(
+    extras: any,
+    cairoDate: Date,
+  ) {
+    console.log('📧 Preparing parent confirmation email:', extras);
+
+    const { student_name, fatherName, parentEmail, slotISO } = extras;
+
+    const dateStr = cairoDate.toLocaleDateString('en-GB');
+    const timeStr = cairoDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const html = `
+  <div style="font-family: Arial, sans-serif; color:#333; background:#f7f9fc; padding:30px; max-width:700px; margin:auto; border-radius:8px; border:1px solid #e0e0e0;">
+    <h2 style="background:#004080; color:white; padding:15px; text-align:center; border-radius:4px;">
+      🎉 Payment Confirmation & Appointment Details
+    </h2>
+    <p style="font-size:16px;">Dear <strong>${fatherName || 'Parent'}</strong>,</p>
+    <p style="font-size:15px; line-height:1.6;">
+      We are pleased to confirm that your payment has been successfully received for your child’s assessment appointment.
+    </p>
+    <h3 style="color:#004080;">📅 Appointment Details</h3>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Student Name</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${student_name || 'N/A'}</td>
+      </tr>
+      <tr style="background:#e9eff7;">
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Date</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${dateStr}</td>
+      </tr>
+      <tr>
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Time</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${timeStr}</td>
+      </tr>
+    </table>
+    <p style="margin-top:20px; font-size:15px;">
+      Kindly make sure to arrive 10–15 minutes before the scheduled time.  
+      Our admissions team looks forward to meeting you and your child.
+    </p>
+    <p style="margin-top:30px; color:#555; font-style:italic;">
+      This is an automated message confirming your booking.  
+      For any questions, please contact us at <a href="mailto:admission@leadersintcollege.com">admission@leadersintcollege.com</a>.
+    </p>
+  </div>
+  `;
+
+    const parentEmailMsg = {
+      to: parentEmail,
+      from: {
+        email: 'admission@leadersintcollege.com',
+        name: 'Leaders International College Admissions',
+      },
+      subject: `✅ Payment Confirmation - Assessment Appointment for ${student_name || 'Student'}`,
+      html,
+    };
+
+    try {
+      await sgMail.send(parentEmailMsg);
+      console.log('✅ Parent confirmation email sent successfully');
+    } catch (err) {
+      console.error(
+        '❌ Failed to send parent email:',
+        err?.response?.body || err,
+      );
+    }
+  }
+
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -1038,7 +1108,7 @@ export class AppointmentsService {
           // await this.sendIntroPdfMessage(
           //   extras.fatherPhone || extras.motherPhone,
           // );
-          await this.delay(10000);
+          // await this.delay(10000);
           // === NEW: Ask for reply to unlock video ===
           // await this.sendVideoOptInMessage(
           //   extras.fatherPhone || extras.motherPhone,
@@ -1052,6 +1122,7 @@ export class AppointmentsService {
 
           // ✅ Send HR Email as well
           await this.sendHrAppointmentEmail(extras, cairoDate);
+          await this.sendParentPaymentConfirmationEmail(extras, cairoDate);
         } catch (waErr) {
           console.error('⚠️ Failed to send WhatsApp message:', waErr);
         }

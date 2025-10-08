@@ -41,7 +41,7 @@ export default function ThankYouPage() {
           assessment booking is confirmed.
         </p>
         <p className="thankyou-subtext">
-          We will send you a WhatsApp confirmation with all details shortly.
+          We will send you an Email confirmation with all details shortly.
         </p>
 
         {/* Button */}
