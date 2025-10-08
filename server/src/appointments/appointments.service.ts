@@ -726,7 +726,7 @@ export class AppointmentsService {
   `;
 
     const hrNotification = {
-      to: 'omar.hossam3@gmail.com', // replace with HR email
+      to: 'Admission@leadersintcollege.com', // replace with HR email
       from: {
         email: 'admission@leadersintcollege.com',
         name: 'Admissions Appointments',
@@ -1016,33 +1016,33 @@ export class AppointmentsService {
             minute: '2-digit',
           });
 
-          const waRes = await this.acceptedStudentService.sendAssessmentMessage(
-            extras.applicationId, // assuming this id exists in acceptedStudentModel
-            {
-              fatherName: extras.fatherName || 'Parent',
-              studentName: extras.student_name || 'Student',
-              date: dateStr,
-              time: timeStr,
-              phoneNumber:
-                extras.fatherPhone ||
-                extras.motherPhone ||
-                extras.allPhones?.[0],
-            },
-          );
+          // const waRes = await this.acceptedStudentService.sendAssessmentMessage(
+          //   extras.applicationId, // assuming this id exists in acceptedStudentModel
+          //   {
+          //     fatherName: extras.fatherName || 'Parent',
+          //     studentName: extras.student_name || 'Student',
+          //     date: dateStr,
+          //     time: timeStr,
+          //     phoneNumber:
+          //       extras.fatherPhone ||
+          //       extras.motherPhone ||
+          //       extras.allPhones?.[0],
+          //   },
+          // );
 
-          console.log('📲 WhatsApp API response:', waRes);
+          // console.log('📲 WhatsApp API response:', waRes);
 
           await this.delay(5000);
 
           // === NEW: Send Intro PDF ===
-          await this.sendIntroPdfMessage(
-            extras.fatherPhone || extras.motherPhone,
-          );
+          // await this.sendIntroPdfMessage(
+          //   extras.fatherPhone || extras.motherPhone,
+          // );
           await this.delay(10000);
           // === NEW: Ask for reply to unlock video ===
-          await this.sendVideoOptInMessage(
-            extras.fatherPhone || extras.motherPhone,
-          );
+          // await this.sendVideoOptInMessage(
+          //   extras.fatherPhone || extras.motherPhone,
+          // );
 
           // === NEW: Send Welcome Video ===
           // await this.sendWelcomeVideoMessage(
@@ -1063,16 +1063,16 @@ export class AppointmentsService {
 
       // ✅ Redirect to success page
       return res.redirect(
-        'http://localhost:3001/admissions/appointments/Thankyou',
+        'https://leadersintcollege.com/admissions/appointments/Thankyou',
       );
     } catch (err) {
       console.error('🔥 Redirect error:', err?.response?.data || err);
       return res.redirect(
-        'http://localhost:3001/admissions/appointments/Declined',
+        'https://leadersintcollege.com/admissions/appointments/Declined',
       );
     }
   }
-  @Cron(CronExpression.EVERY_MINUTE) // runs every hour
+  @Cron(CronExpression.EVERY_2_HOURS) // runs every hour
   async sendRemindersForUpcomingAppointments() {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);

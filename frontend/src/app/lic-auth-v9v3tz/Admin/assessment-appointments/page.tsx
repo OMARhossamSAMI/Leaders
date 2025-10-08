@@ -15,7 +15,7 @@ type Appt = {
   createdAt?: string;
   studentName?: string;
   studentGrade?: string;
-  waSentAt?: string | null;            // <— NEW
+  waSentAt?: string | null; // <— NEW
 };
 
 // 2) bump LS key so old appId-based entries don’t poison UI
@@ -84,9 +84,12 @@ export default function AssessmentAppointmentsPage() {
     if (!authenticated) return;
     (async () => {
       try {
-        const res = await fetch(`http://localhost:3000/settings/show-events`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/settings/show-events`,
+          {
+            cache: "no-store",
+          }
+        );
         if (res.ok) {
           const data = await res.json();
           // backend returns { showAppointments: true/false }
@@ -211,16 +214,23 @@ export default function AssessmentAppointmentsPage() {
       if (typeof sn === "string" && sn.trim()) studentName = sn.trim();
     }
 
-
     let studentGrade =
-      pickStr(v as any, "studentGrade", "grade", "grade_applying_for", "gradeApplyingFor") ?? undefined;
+      pickStr(
+        v as any,
+        "studentGrade",
+        "grade",
+        "grade_applying_for",
+        "gradeApplyingFor"
+      ) ?? undefined;
 
     if (!studentGrade) {
       const app = (v as any)?.application;
-      const data = app && typeof app === "object" ? (app as any).data : undefined;
+      const data =
+        app && typeof app === "object" ? (app as any).data : undefined;
       if (data && typeof data === "object") {
         studentGrade =
-          pickStr(data as any,
+          pickStr(
+            data as any,
             "grade_applying_for",
             "gradeApplyingFor",
             "applied_grade",
@@ -232,9 +242,6 @@ export default function AssessmentAppointmentsPage() {
       }
     }
 
-
-
-
     const applicationId = pickStr(v, "applicationId");
     const createdAt = pickStr(v, "createdAt");
 
@@ -242,7 +249,16 @@ export default function AssessmentAppointmentsPage() {
     const ws = (v as any)?.waSentAt;
     if (typeof ws === "string" && ws.trim()) waSentAt = ws;
 
-    return { _id, parentEmail, slotISO, applicationId, createdAt, studentName, studentGrade, waSentAt };
+    return {
+      _id,
+      parentEmail,
+      slotISO,
+      applicationId,
+      createdAt,
+      studentName,
+      studentGrade,
+      waSentAt,
+    };
   };
 
   useEffect(() => {
@@ -332,16 +348,15 @@ export default function AssessmentAppointmentsPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
-    const fmtDateTimePretty = (iso: string) =>
-  new Date(iso).toLocaleString(undefined, {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }); // e.g., "Sun, Aug 31, 2025, 03:04 PM"
-
+  const fmtDateTimePretty = (iso: string) =>
+    new Date(iso).toLocaleString(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }); // e.g., "Sun, Aug 31, 2025, 03:04 PM"
 
   const toYMD = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -367,10 +382,13 @@ export default function AssessmentAppointmentsPage() {
       list = list.filter(
         (a) =>
           a.parentEmail.toLowerCase().includes(needle) ||
-          (a.studentName ? a.studentName.toLowerCase().includes(needle) : false) ||
-          (a.studentGrade ? a.studentGrade.toLowerCase().includes(needle) : false)   // ← NEW
+          (a.studentName
+            ? a.studentName.toLowerCase().includes(needle)
+            : false) ||
+          (a.studentGrade
+            ? a.studentGrade.toLowerCase().includes(needle)
+            : false) // ← NEW
       );
-
     }
 
     if (filterMode === "past") {
@@ -600,7 +618,7 @@ export default function AssessmentAppointmentsPage() {
     setSavingToggle(true);
     try {
       const res = await fetch(
-        `http://localhost:3000/settings/show-appointments`,
+        `${process.env.NEXT_PUBLIC_API_URL}/settings/show-appointments`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -684,13 +702,14 @@ export default function AssessmentAppointmentsPage() {
                   disabled={savingToggle}
                   onChange={(e) => handleToggleAppointments(e.target.checked)}
                   style={{
-                    backgroundColor: showAppointments ? "var(--accent-color)" : "",
+                    backgroundColor: showAppointments
+                      ? "var(--accent-color)"
+                      : "",
                     borderColor: showAppointments ? "var(--accent-color)" : "",
                   }}
                 />
               </div>
             </div>
-
 
             {/* Amount Editor */}
             <div className="d-flex flex-column gap-2">
@@ -754,8 +773,12 @@ export default function AssessmentAppointmentsPage() {
                       aria-pressed={isActive}
                       onClick={() => setFilterMode(m)}
                       style={{
-                        backgroundColor: isActive ? "var(--accent-color)" : "#fff",
-                        border: `1px solid ${isActive ? "var(--accent-color)" : "#e5e7eb"}`,
+                        backgroundColor: isActive
+                          ? "var(--accent-color)"
+                          : "#fff",
+                        border: `1px solid ${
+                          isActive ? "var(--accent-color)" : "#e5e7eb"
+                        }`,
                         color: isActive ? "#fff" : "#000",
                         borderRadius: "6px",
                         padding: "6px 14px",
@@ -771,7 +794,6 @@ export default function AssessmentAppointmentsPage() {
                   );
                 })}
               </div>
-
 
               <button
                 type="button"
@@ -893,7 +915,6 @@ export default function AssessmentAppointmentsPage() {
                                 Grade: {a.studentGrade}
                               </div>
                             )}
-
                           </div>
                         </div>
                         <div className="date-stack text-end">
