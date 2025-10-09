@@ -274,7 +274,6 @@ export class AppointmentsService {
     if (!application) throw new BadRequestException('Application not found');
 
     // Business rules
-    // 1) No Fri/Sat
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
     if (dow === 5 || dow === 6) {
       throw new BadRequestException(
@@ -282,7 +281,7 @@ export class AppointmentsService {
       );
     }
 
-    // 2) Within two weeks from application createdAt (compare date-only)
+    // Within two weeks from application createdAt
     const submitted = application.createdAt
       ? new Date(application.createdAt)
       : new Date();
@@ -334,10 +333,13 @@ export class AppointmentsService {
           throw new BadRequestException('This slot is full');
         }
 
+        // ✅ FIX: Save the appointmentCode if available; fallback to _id for old data
+        const idToSave = application.appointmentCode || String(application._id);
+
         const [doc] = await this.apptModel.create(
           [
             {
-              applicationId: application._id as Types.ObjectId,
+              applicationId: idToSave, // ✅ no longer forced ObjectId
               parentEmail,
               slotISO: slotUtcISO,
             },
@@ -353,11 +355,14 @@ export class AppointmentsService {
         );
       });
 
-      // ❗️No emails here. Emails are sent only after payment success in the redirect handler.
+      // ✅ Log to confirm what got saved
+      this.logger.log(
+        `🎯 Appointment saved with applicationId=${dto.applicationId}`,
+      );
 
       return {
         _id: created!.id,
-        applicationId: (application._id as Types.ObjectId).toString(),
+        applicationId: application.appointmentCode || String(application._id),
         slotISO: created!.slotISO,
       };
     } catch (err: any) {
