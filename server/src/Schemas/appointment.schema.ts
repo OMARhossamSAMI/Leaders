@@ -7,7 +7,7 @@ export type AppointmentDocument = HydratedDocument<Appointment>;
 @Schema({ timestamps: true, collection: 'appointments' })
 export class Appointment {
   @Prop({ type: String, required: true, trim: true })
-  applicationId: Types.ObjectId;
+  applicationId: string;
 
   @Prop({ required: true, trim: true, lowercase: true })
   parentEmail: string;
