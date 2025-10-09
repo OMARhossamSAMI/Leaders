@@ -382,17 +382,27 @@ export class AppointmentsService {
       .lean()
       .exec();
 
-    // Collect ids safely
+    // Collect appointment & application identifiers
     const apptIds: Types.ObjectId[] = [];
-    const appIds: Types.ObjectId[] = [];
+    const appObjectIds: Types.ObjectId[] = [];
+    const appCodes: string[] = [];
+
     for (const d of docs) {
+      // appointment ObjectId
       try {
         apptIds.push(new Types.ObjectId(String(d._id)));
       } catch {}
+
+      // application reference (can be ObjectId or code)
       if (d.applicationId) {
-        try {
-          appIds.push(new Types.ObjectId(String(d.applicationId)));
-        } catch {}
+        const val = String(d.applicationId);
+        if (/^[0-9a-fA-F]{24}$/.test(val)) {
+          // looks like ObjectId
+          appObjectIds.push(new Types.ObjectId(val));
+        } else {
+          // treat as appointmentCode
+          appCodes.push(val);
+        }
       }
     }
 
@@ -408,21 +418,26 @@ export class AppointmentsService {
       sends.map((s) => [String(s.apptId), s.sentAt ?? null]),
     );
 
-    // Map: application -> studentName + studentGrade (from flexible data fields)
-    const apps = appIds.length
+    // --- Fetch related applications ---
+    const orConditions: Record<string, unknown>[] = [];
+    if (appObjectIds.length) orConditions.push({ _id: { $in: appObjectIds } });
+    if (appCodes.length)
+      orConditions.push({ appointmentCode: { $in: appCodes } });
+
+    const apps = orConditions.length
       ? await this.appModel
-          .find({ _id: { $in: appIds } })
-          .select({ _id: 1, data: 1, student_name: 1 })
+          .find({ $or: orConditions })
+          .select({ _id: 1, appointmentCode: 1, data: 1, student_name: 1 })
           .lean()
       : [];
 
+    // --- Map application ID/code → name & grade ---
     const nameByApp = new Map<string, string>();
     const gradeByApp = new Map<string, string>();
 
     for (const a of apps) {
       const data: any = a?.data || {};
 
-      // --- name (existing logic) ---
       const sn =
         typeof data.student_name === 'string' && data.student_name.trim()
           ? data.student_name.trim()
@@ -431,9 +446,11 @@ export class AppointmentsService {
             : typeof data.child_name === 'string' && data.child_name.trim()
               ? data.child_name.trim()
               : '';
-      if (sn) nameByApp.set(String(a._id), sn);
+      if (sn) {
+        nameByApp.set(String(a._id), sn);
+        if (a.appointmentCode) nameByApp.set(String(a.appointmentCode), sn);
+      }
 
-      // --- grade (NEW) ---
       const asText = (v: any) =>
         typeof v === 'string'
           ? v.trim()
@@ -447,13 +464,16 @@ export class AppointmentsService {
         data.target_grade,
         data.desired_grade,
         data.entry_grade,
-        data.grade, // generic fallback
+        data.grade,
       ];
       const sg = gradeCandidates.map(asText).find((x) => x);
-      if (sg) gradeByApp.set(String(a._id), sg);
+      if (sg) {
+        gradeByApp.set(String(a._id), sg);
+        if (a.appointmentCode) gradeByApp.set(String(a.appointmentCode), sg);
+      }
     }
 
-    // Shape response for UI
+    // --- Build final response ---
     return docs.map((d) => ({
       _id: String(d._id),
       parentEmail: d.parentEmail,
@@ -464,7 +484,7 @@ export class AppointmentsService {
         : undefined,
       studentGrade: d.applicationId
         ? gradeByApp.get(String(d.applicationId)) || undefined
-        : undefined, // ← NEW field
+        : undefined,
       createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
       waSentAt: sentByAppt.get(String(d._id)) ?? null,
     }));
@@ -533,7 +553,7 @@ export class AppointmentsService {
 
   async startPayment(dto: CreateAppointmentDto) {
     const { applicationId, slotISO } = dto;
-
+    console.log('💰 Application called with:', applicationId);
     // Config
     const secretKey = this.config.get<string>('PAYMOB_SECRET_KEY');
     const publicKey = this.config.get<string>('PAYMOB_PUBLIC_KEY');
@@ -955,7 +975,6 @@ export class AppointmentsService {
     </p>
     <p style="margin-top:30px; color:#555; font-style:italic;">
       This is an automated message confirming your booking.  
-      For any questions, please contact us at <a href="mailto:admission@leadersintcollege.com">admission@leadersintcollege.com</a>.
     </p>
   </div>
   `;
@@ -1034,7 +1053,7 @@ export class AppointmentsService {
       console.log('👉 Extracted extras (raw):', extras);
       // 🔹 Support both appointmentCode (new) and applicationId (old)
       const code = extras?.appointmentCode || null;
-
+      console.log('👉 Using appointmentCode:', code);
       if (code && extras?.parentEmail && extras?.slotISO) {
         console.log('✅ Required extras found:', {
           appointmentCode: code,
