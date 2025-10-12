@@ -1238,20 +1238,21 @@ export default function AssessmentAppointmentsPage() {
                                 return (
                                   <td key={timeStr} className="text-center">
                                     <button
-                                      className={`btn btn-sm ${closed ? "btn-danger" : "btn-outline-success"
-                                        }`}
+                                      className={`btn btn-sm ${closed ? "btn-danger" : "btn-outline-success"}`}
                                       disabled={savingClosed}
                                       onClick={() => {
-                                        console.log("🧩 Sending:", { dateStr, timeStr }); // <-- debug
-                                        closed
-                                          ? handleReopenSlot(dateStr, timeStr)
-                                          : handleCloseSlot(dateStr, timeStr);
+                                        if (closed) {
+                                          handleReopenSlot(dateStr, timeStr);
+                                        } else {
+                                          handleCloseSlot(dateStr, timeStr);
+                                        }
                                       }}
                                     >
                                       {closed ? "Closed" : "Open"}
                                     </button>
                                   </td>
                                 );
+
                               })}
 
 

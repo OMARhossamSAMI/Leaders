@@ -449,7 +449,7 @@ const res = await fetch(`${API}/appointments/closed`);
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter the code sent to your email (e.g. 6899a093b70c9c3f1564a7c5)"
+                placeholder="Enter the code sent to your email (e.g. XXXXXX)"
                 value={appId}
                 onChange={(e) => setAppId(e.target.value)}
                 required
