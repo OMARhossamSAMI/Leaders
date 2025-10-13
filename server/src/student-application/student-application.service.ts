@@ -236,9 +236,12 @@ const fatherEmail = formData.father_email?.trim();
 const motherEmail = formData.mother_email?.trim();
 
 // ✅ Combine both into one array (SendGrid supports multiple recipients)
-const parentEmails = [fatherEmail, motherEmail].filter(
-  (e) => typeof e === 'string' && e.length > 0
-);
+const parentEmails = [...new Set(
+  [fatherEmail, motherEmail].filter(
+    (e) => typeof e === "string" && e.trim().length > 0
+  )
+)];
+
 
 const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
 
