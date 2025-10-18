@@ -396,7 +396,7 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
         }
 
         // ✅ FIX: Save the appointmentCode if available; fallback to _id for old data
-        const idToSave = application.appointmentCode || String(application._id);
+        const idToSave = String(application._id);
 
         const [doc] = await this.apptModel.create(
           [
