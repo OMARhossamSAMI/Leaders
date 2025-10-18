@@ -1088,47 +1088,54 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
     try {
       console.log('👉 Redirect query received:', query);
 
-      const isPaid = query?.success === 'true';
-      console.log('✅ Success flag:', isPaid);
+      // ⚠️ Do NOT trust query.success anymore
+const orderId = query?.order;
+console.log('👉 Order ID from query:', orderId);
 
-      if (!isPaid) {
-        console.warn('❌ Payment marked as failed in query');
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
-      }
+if (!orderId) {
+  console.error('❌ No order id in redirect query');
+  return res.redirect(
+    'http://localhost:3001/admissions/appointments/Declined',
+  );
+}
 
-      // Get the order ID from redirect params
-      const orderId = query?.order;
-      console.log('👉 Order ID from query:', orderId);
+// === STEP 1: Authenticate to get auth token ===
+const apiKey = this.config.get<string>('PAYMOB_API_KEY');
+const base = this.config.get<string>('PAYMOB_BASE');
 
-      if (!orderId) {
-        console.error('❌ No order id in redirect query');
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
-      }
+const authRes = await firstValueFrom(
+  this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
+);
+const authToken = authRes?.data?.token;
+console.log('🔑 Auth token received:', !!authToken);
 
-      // === STEP 1: Authenticate to get auth token ===
-      const apiKey = this.config.get<string>('PAYMOB_API_KEY');
-      const base = this.config.get<string>('PAYMOB_BASE');
+// === STEP 2: Call transaction inquiry with order_id ===
+const trxRes = await firstValueFrom(
+  this.http.post(
+    `${base}/api/ecommerce/orders/transaction_inquiry`,
+    { order_id: orderId },
+    { headers: { Authorization: `Bearer ${authToken}` } },
+  ),
+);
 
-      const authRes = await firstValueFrom(
-        this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
-      );
-      const authToken = authRes?.data?.token;
-      console.log('🔑 Auth token received:', !!authToken);
+console.log('📦 Transaction inquiry response:', trxRes.data);
 
-      // === STEP 2: Call transaction inquiry with order_id ===
-      const trxRes = await firstValueFrom(
-        this.http.post(
-          `${base}/api/ecommerce/orders/transaction_inquiry`,
-          { order_id: orderId },
-          { headers: { Authorization: `Bearer ${authToken}` } },
-        ),
-      );
+// ✅ New: Check actual payment status
+const trxData = Array.isArray(trxRes.data) ? trxRes.data[0] : trxRes.data;
+const realStatus =
+  trxData?.success === true ||
+  trxData?.is_paid === true ||
+  trxData?.pending === false;
 
-      console.log('📦 Transaction inquiry response:', trxRes.data);
+console.log('✅ Verified real payment status:', realStatus);
+
+if (!realStatus) {
+  console.warn('❌ Transaction not confirmed as paid by Paymob');
+  return res.redirect(
+    'http://localhost:3001/admissions/appointments/Declined',
+  );
+}
+
 
       // === STEP 3: Extract extras from payment_key_claims.extra ===
       const extras = trxRes.data?.payment_key_claims?.extra;
