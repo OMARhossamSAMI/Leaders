@@ -16,131 +16,106 @@ import {
 import { Response } from 'express';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { ClosedSlotDto } from './dto/closed-slot.dto';
 
 @Controller('appointments')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class AppointmentsController {
   constructor(private readonly service: AppointmentsService) {}
 
-  // Helper to parse "offset" (minutes, where offset = UTC - local; e.g., Cairo summer = -180)
+  // Helper for timezone offset parsing
   private parseOffset(offset?: string): number {
     if (offset == null) return 0;
     const n = Number(offset);
     if (!Number.isFinite(n)) {
-      throw new BadRequestException(
-        'offset must be a number (UTC - local minutes)',
-      );
+      throw new BadRequestException('offset must be a number (UTC - local minutes)');
     }
     return Math.trunc(n);
   }
 
-  /**
-   * GET /appointments/for-date?date=YYYY-MM-DD&offset=-180
-   * Returns TAKEN start times (HH:mm) for that local day.
-   * Response: { times: string[] }
-   */
+  // ------------------------------------------------------------
+  // 📅 CLOSED SLOTS MANAGEMENT (ADMIN)
+  // ------------------------------------------------------------
+
+  /** POST /appointments/closed — close a slot */
+ @Post('closed')
+async closeSlot(@Body() body: { date: string; time: string }) {
+  if (!body.date || !body.time) {
+    throw new BadRequestException('Date and time are required');
+  }
+  return this.service.closeSlot(body);
+}
+
+@Delete('closed')
+async reopenSlot(@Body() body: { date: string; time: string }) {
+  if (!body.date || !body.time) {
+    throw new BadRequestException('Date and time are required');
+  }
+  return this.service.reopenSlot(body);
+}
+
+  /** GET /appointments/closed?date=YYYY-MM-DD — list closed slots */
+  @Get('closed')
+  async getClosedSlots(@Query('date') date?: string) {
+    return this.service.getClosedSlots(date);
+  }
+
+  // ------------------------------------------------------------
+  // APPOINTMENT CORE ENDPOINTS
+  // ------------------------------------------------------------
+
   @Get('for-date')
   async forDate(@Query('date') date: string, @Query('offset') offset?: string) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
       throw new BadRequestException('date must be YYYY-MM-DD');
-    }
     const off = this.parseOffset(offset);
     const times = await this.service.getTakenTimesForDate(date, off);
     return { times };
   }
 
-  /**
-   * POST /appointments
-   * Body: CreateAppointmentDto { applicationId?, parentEmail?, slotISO }
-   * Creates one appointment (enforces: 30-min grid, 09:00–12:00 starts, max 2 per slot).
-   * (Emails to Admissions + Parent are sent inside the service after creation.)
-   */
   @Post()
   async create(@Body() dto: CreateAppointmentDto) {
     return this.service.create(dto);
   }
 
-  /**
-   * GET /appointments?upcoming=true&q=foo
-   * Admin listing (optionally upcoming-only and/or search by parentEmail).
-   */
   @Get()
   async list(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
 
-  /**
-   * ALIAS: GET /appointments/all
-   * Returns full list with no filters. Kept for frontend compatibility.
-   */
   @Get('all')
   async listAllAlias() {
     return this.service.listAll({});
   }
 
-  /**
-   * ALIAS: GET /appointments/admin-list?upcoming=true&q=foo
-   * Same as GET /appointments with optional filters. Kept for frontend compatibility.
-   */
   @Get('admin-list')
-  async adminList(
-    @Query('upcoming') upcoming?: string,
-    @Query('q') q?: string,
-  ) {
+  async adminList(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
 
-  /**
-   * GET /appointments/available?date=YYYY-MM-DD&offset=-180
-   * Returns AVAILABLE 30-min start times (HH:mm) for that local day.
-   * - Hides full slots (>= 2 bookings)
-   * - If date is today (local), hides past times (rounded to next half hour)
-   * Response: { times: string[] }
-   */
   @Get('available')
-  async available(
-    @Query('date') date: string,
-    @Query('offset') offset?: string,
-  ) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  async available(@Query('date') date: string, @Query('offset') offset?: string) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
       throw new BadRequestException('date must be YYYY-MM-DD');
-    }
     const off = this.parseOffset(offset);
     return this.service.availableTimesForDate(date, off);
   }
 
-  /**
-   * DEPRECATED ALIAS (kept for compatibility):
-   * GET /appointments/available-for-date?date=YYYY-MM-DD&offset=-180
-   * Same output as /appointments/available
-   */
   @Get('available-for-date')
-  async availableForDate(
-    @Query('date') date: string,
-    @Query('offset') offset?: string,
-  ) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  async availableForDate(@Query('date') date: string, @Query('offset') offset?: string) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
       throw new BadRequestException('date must be YYYY-MM-DD');
-    }
     const off = this.parseOffset(offset);
     return this.service.availableTimesForDate(date, off);
   }
 
-  /**
-   * POST /appointments/pay
-   * Starts the Paymob payment flow (returns unified checkout URL).
-   */
   @Post('pay')
   async startPayment(@Body() dto: CreateAppointmentDto) {
     return this.service.startPayment(dto);
   }
 
-  /**
-   * GET /appointments/callback
-   * Paymob redirect handler (will create the appointment on success).
-   */
   @Get('callback')
   async paymobRedirect(@Query() query: any, @Res() res: Response) {
     return this.service.handlePaymobRedirect(query, res);
@@ -152,7 +127,12 @@ export class AppointmentsController {
     if (!ok) throw new NotFoundException('Appointment not found');
     return { ok: true, id };
   }
-  // ✅ Step 1: Verification endpoint for Meta
+
+  // ------------------------------------------------------------
+  // ✅ META WHATSAPP WEBHOOK ENDPOINTS
+  // ------------------------------------------------------------
+
+  /** Step 1: Verification endpoint for Meta (GET webhook) */
   @Get('webhook')
   verifyWebhook(@Query() query: any, @Res() res: Response) {
     const mode = query['hub.mode'];
@@ -168,7 +148,7 @@ export class AppointmentsController {
     }
   }
 
-  // ✅ Step 2: Webhook for incoming messages
+  /** Step 2: Receive messages from WhatsApp (POST webhook) */
   @Post('webhook')
   async handleIncoming(@Body() body: any, @Res() res: Response) {
     console.log('📥 Incoming WA webhook:', JSON.stringify(body, null, 2));

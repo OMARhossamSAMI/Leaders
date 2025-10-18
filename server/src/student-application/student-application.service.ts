@@ -229,9 +229,22 @@ export class StudentApplicationService {
 
     await createdApp.save();
 
-    const studentName = formData.student_name || 'Student';
-    const studentEmail = formData.father_email;
-    const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
+const studentName = formData.student_name || 'Student';
+
+// ✅ Collect both emails (if provided)
+const fatherEmail = formData.father_email?.trim();
+const motherEmail = formData.mother_email?.trim();
+
+// ✅ Combine both into one array (SendGrid supports multiple recipients)
+const parentEmails = [...new Set(
+  [fatherEmail, motherEmail].filter(
+    (e) => typeof e === "string" && e.trim().length > 0
+  )
+)];
+
+
+const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
+
 
     // Build table for admissions email
     const tableRows = Object.entries(formData)
@@ -293,24 +306,25 @@ export class StudentApplicationService {
     // ========================
     // ✅ Email to Student
     // ========================
-    const userConfirmationEmail = studentEmail
-      ? {
-          to: studentEmail,
-          from: {
-            email: 'Admission@leadersintcollege.com',
-            name: 'Leaders International College',
-          },
-          subject: `✅ We've received your child's application, Parent of ${studentName}`,
-          html: `
+ const userConfirmationEmail =
+  parentEmails.length > 0
+    ? {
+        to: parentEmails, // 👈 send to both parents if available
+        from: {
+          email: 'Admission@leadersintcollege.com',
+          name: 'Leaders International College',
+        },
+        subject: `✅ We've received your child's application, Parent of ${studentName}`,
+        html: `
 <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
   <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
     Application Received
   </h2>
   <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
   <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
-  
+
   <p style="font-size: 16px; color: #d32f2f; font-weight: bold; margin-top: 20px;">
-    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>  
+    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>
   </p>
   <p style="font-size: 15px;">
     Please keep this code safe. You will need to enter it in order to book your child’s assessment appointment.
@@ -320,8 +334,9 @@ export class StudentApplicationService {
   <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong></p>
 </div>
 `,
-        }
-      : null;
+      }
+    : null;
+
 
     // ========================
     // ✅ Send Both Emails

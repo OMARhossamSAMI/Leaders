@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
+import "./page.css";
 
 // 1) add server field to the type
 type Appt = {
@@ -45,6 +46,7 @@ type FilterMode = "upcoming" | "past" | "all";
 
 export default function AssessmentAppointmentsPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"paid" | "slots">("paid");
   const [authenticated, setAuthenticated] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [readyToRender, setReadyToRender] = useState(false);
@@ -83,6 +85,14 @@ export default function AssessmentAppointmentsPage() {
   const [amountMajor, setAmountMajor] = useState<string>("0"); // before decimal
   const [amountMinor, setAmountMinor] = useState<string>("00"); // after decimal
   const [savingAmount, setSavingAmount] = useState(false);
+
+  const [closedSlots, setClosedSlots] = useState<Record<string, string[]>>({});
+  const [loadingClosed, setLoadingClosed] = useState(false);
+  const [savingClosed, setSavingClosed] = useState(false);
+
+  // time range
+  const dailySlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
+  const fmtLocalYMD = (d: Date) => d.toISOString().substring(0, 10);
 
   // ---------- auth gate ----------
   useEffect(() => {
@@ -358,6 +368,30 @@ export default function AssessmentAppointmentsPage() {
       }
     })();
   }, [authenticated, API]);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    (async () => {
+      setLoadingClosed(true);
+      try {
+        const res = await fetch(`${API}/appointments/closed`);
+        if (res.ok) {
+          const data = await res.json();
+          const grouped: Record<string, string[]> = {};
+          for (const c of data) {
+            if (!grouped[c.date]) grouped[c.date] = [];
+            grouped[c.date].push(c.time);
+          }
+          setClosedSlots(grouped);
+        }
+      } catch (e) {
+        console.error("Failed to load closed slots", e);
+      } finally {
+        setLoadingClosed(false);
+      }
+    })();
+  }, [authenticated]);
+
 
   // ---------- helpers ----------
   const fmtDate = (iso: string) =>
@@ -735,6 +769,51 @@ export default function AssessmentAppointmentsPage() {
     }
   }
 
+  async function handleCloseSlot(date: string, time: string) {
+    if (!confirm(`Close slot ${date} ${time}?`)) return;
+    setSavingClosed(true);
+    try {
+      const res = await fetch(`${API}/appointments/closed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, time }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setClosedSlots((prev) => ({
+        ...prev,
+        [date]: [...(prev[date] || []), time],
+      }));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed to close slot");
+    } finally {
+      setSavingClosed(false);
+    }
+  }
+
+  async function handleReopenSlot(date: string, time: string) {
+    if (!confirm(`Reopen slot ${date} ${time}?`)) return;
+    setSavingClosed(true);
+    try {
+      const res = await fetch(`${API}/appointments/closed`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, time }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setClosedSlots((prev) => ({
+        ...prev,
+        [date]: (prev[date] || []).filter((t) => t !== time),
+      }));
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed to reopen slot");
+    } finally {
+      setSavingClosed(false);
+    }
+  }
+
+
+
+
   // ---------- gates ----------
   if (!readyToRender || loadingAuth) return <div id="preloader"></div>;
   if (!authenticated) return null;
@@ -756,359 +835,435 @@ export default function AssessmentAppointmentsPage() {
               ← Back to Dashboard
             </Link>
           </div>
-          <div className="mb-4 d-flex flex-wrap align-items-center gap-4">
-            {/* Toggle */}
-            <div className="d-flex align-items-center gap-2">
-              <label className="form-check-label fw-bold" htmlFor="apptSwitch">
-                Show Appointments to Users
-              </label>
-              <div className="form-check form-switch">
-                <input
-                  id="apptSwitch"
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  checked={showAppointments}
-                  disabled={savingToggle}
-                  onChange={(e) => handleToggleAppointments(e.target.checked)}
-                  style={{
-                    backgroundColor: showAppointments
-                      ? "var(--accent-color)"
-                      : "",
-                    borderColor: showAppointments ? "var(--accent-color)" : "",
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Amount Editor */}
-            <div className="d-flex flex-column gap-2">
-              <div className="d-flex align-items-center gap-3 flex-wrap">
-                <label className="fw-bold mb-0">Appointment Fee:</label>
-                <div className="input-group" style={{ maxWidth: "220px" }}>
-                  <input
-                    type="number"
-                    className="form-control text-end"
-                    value={amountMajor}
-                    onChange={(e) => setAmountMajor(e.target.value)}
-                    min="0"
-                    step="1"
-                    style={{ borderRadius: "8px 0 0 8px", fontWeight: 600 }}
-                  />
-                  <span className="input-group-text">EGP</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={handleSaveAmount}
-                  disabled={savingAmount}
-                  style={{
-                    backgroundColor: "var(--accent-color)",
-                    borderColor: "var(--accent-color)",
-                    color: "#fff",
-                  }}
-                >
-                  {savingAmount ? "Saving…" : "Save"}
-                </button>
-              </div>
-
-              {/* Helper message */}
-              <small className="text-muted ms-1">
-                💡 Example: To set <strong>4000 EGP</strong>, type{" "}
-                <code>4000</code>.
-              </small>
-            </div>
+          {/* === Tabs === */}
+          <div className="mt-4 mb-4 border-bottom d-flex gap-3">
+            <button
+              className={`btn btn-link fw-bold pb-2 ${activeTab === "paid"
+                ? "border-bottom border-3 border-primary text-primary"
+                : "text-secondary"
+                }`}
+              onClick={() => setActiveTab("paid")}
+            >
+              Paid Applicants
+            </button>
+            <button
+              className={`btn btn-link fw-bold pb-2 ${activeTab === "slots"
+                ? "border-bottom border-3 border-primary text-primary"
+                : "text-secondary"
+                }`}
+              onClick={() => setActiveTab("slots")}
+            >
+              Slot Management
+            </button>
           </div>
 
-          {/* Controls */}
-          <div className="row g-3 mb-3 align-items-center">
-            <div className="col-12 col-xl-6">
-              <input
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Filter by email, grade or student name…"
-                className="form-control form-control-lg"
-              />
-            </div>
-            <div className="col-12 col-xl-6 d-flex align-items-center justify-content-xl-end gap-2 flex-wrap">
-              <div className="filters d-flex gap-2">
-                {(["upcoming", "past", "all"] as const).map((m) => {
-                  const isActive = filterMode === m;
-                  return (
-                    <button
-                      key={m}
-                      type="button"
-                      className="filter-tab"
-                      aria-pressed={isActive}
-                      onClick={() => setFilterMode(m)}
+          {/* === PAID APPLICANTS TAB === */}
+          {activeTab === "paid" && (
+            <>
+              <div className="mb-4 d-flex flex-wrap align-items-center gap-4">
+                {/* Toggle */}
+                <div className="d-flex align-items-center gap-2">
+                  <label className="form-check-label fw-bold" htmlFor="apptSwitch">
+                    Show Appointments to Users
+                  </label>
+                  <div className="form-check form-switch">
+                    <input
+                      id="apptSwitch"
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      checked={showAppointments}
+                      disabled={savingToggle}
+                      onChange={(e) => handleToggleAppointments(e.target.checked)}
                       style={{
-                        backgroundColor: isActive
-                          ? "var(--accent-color)"
-                          : "#fff",
-                        border: `1px solid ${isActive ? "var(--accent-color)" : "#e5e7eb"
-                          }`,
-                        color: isActive ? "#fff" : "#000",
-                        borderRadius: "6px",
-                        padding: "6px 14px",
-                        fontWeight: isActive ? 600 : 500,
+                        backgroundColor: showAppointments ? "var(--accent-color)" : "",
+                        borderColor: showAppointments ? "var(--accent-color)" : "",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Amount Editor */}
+                <div className="d-flex flex-column gap-2">
+                  <div className="d-flex align-items-center gap-3 flex-wrap">
+                    <label className="fw-bold mb-0">Appointment Fee:</label>
+                    <div className="input-group" style={{ maxWidth: "220px" }}>
+                      <input
+                        type="number"
+                        className="form-control text-end"
+                        value={amountMajor}
+                        onChange={(e) => setAmountMajor(e.target.value)}
+                        min="0"
+                        step="1"
+                        style={{ borderRadius: "8px 0 0 8px", fontWeight: 600 }}
+                      />
+                      <span className="input-group-text">EGP</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={handleSaveAmount}
+                      disabled={savingAmount}
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        borderColor: "var(--accent-color)",
+                        color: "#fff",
                       }}
                     >
-                      {m === "upcoming"
-                        ? "Upcoming"
-                        : m === "past"
-                          ? "Past"
-                          : "All"}
+                      {savingAmount ? "Saving…" : "Save"}
                     </button>
-                  );
-                })}
+                  </div>
+
+                  {/* Helper message */}
+                  <small className="text-muted ms-1">
+                    💡 Example: To set <strong>4000 EGP</strong>, type <code>4000</code>.
+                  </small>
+                </div>
               </div>
 
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={handleExportExcel}
-                disabled={loading || loadError !== "" || filtered.length === 0}
-                title="Export the currently displayed assessments to an Excel file"
-              >
-                <i className="bi bi-download me-2"></i>
-                Export Excel (.xlsx)
-              </button>
-            </div>
-          </div>
+              {/* Controls */}
+              <div className="row g-3 mb-3 align-items-center">
+                <div className="col-12 col-xl-6">
+                  <input
+                    type="search"
+                    value={q}
+                    onChange={(e) => setQ(e.target.value)}
+                    placeholder="Filter by email, grade or student name…"
+                    className="form-control form-control-lg"
+                  />
+                </div>
+                <div className="col-12 col-xl-6 d-flex align-items-center justify-content-xl-end gap-2 flex-wrap">
+                  <div className="filters d-flex gap-2">
+                    {(["upcoming", "past", "all"] as const).map((m) => {
+                      const isActive = filterMode === m;
+                      return (
+                        <button
+                          key={m}
+                          type="button"
+                          className="filter-tab"
+                          aria-pressed={isActive}
+                          onClick={() => setFilterMode(m)}
+                          style={{
+                            backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                            border: `1px solid ${isActive ? "var(--accent-color)" : "#e5e7eb"
+                              }`,
+                            color: isActive ? "#fff" : "#000",
+                            borderRadius: "6px",
+                            padding: "6px 14px",
+                            fontWeight: isActive ? 600 : 500,
+                          }}
+                        >
+                          {m === "upcoming" ? "Upcoming" : m === "past" ? "Past" : "All"}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-          {/* Bulk action bar (NEW) */}
-          {selectedIds.size > 0 && (
-            <div className="alert alert-primary d-flex align-items-center justify-content-between">
-              <div>
-                <strong>{selectedIds.size}</strong> selected
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handleExportExcel}
+                    disabled={loading || loadError !== "" || filtered.length === 0}
+                    title="Export the currently displayed assessments to an Excel file"
+                  >
+                    <i className="bi bi-download me-2"></i>
+                    Export Excel (.xlsx)
+                  </button>
+                </div>
               </div>
-              <div className="d-flex gap-2">
-                <button
-                  className="btn btn-outline-primary"
-                  onClick={selectAllFiltered}
-                >
-                  Select all in view
-                </button>
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={clearSelection}
-                >
-                  Clear
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={openCustomModal}
-                  title="Send a custom WhatsApp message to selected parents"
-                >
-                  <i className="bi bi-chat-dots me-1" />
-                  Send custom WhatsApp
-                </button>
-              </div>
-            </div>
-          )}
 
-          {/* Content */}
-          {loading ? (
-            <div className="alert alert-info">Loading appointments…</div>
-          ) : loadError ? (
-            <div className="alert alert-danger">
-              {loadError}
-              <div className="small mt-2">
-                Ensure <code>GET /appointments</code> returns an array of{" "}
-                <code>{`{ _id, parentEmail, slotISO }`}</code>.
-              </div>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="alert alert-warning">No appointments found.</div>
-          ) : (
-            <div className="row gy-4 gx-4">
-              {filtered.map((a) => {
-                const d = new Date(a.slotISO);
-                const past = d < now;
-                const sending = sendingIds.has(a._id);
-                const deleting = deletingIds.has(a._id);
-                const okPhones = sendOk[a._id];
-                const errMsg = sendErr[a._id];
-                // 5) compute alreadySent from server + local optimistic flag
-                const alreadySent = Boolean(a.waSentAt) || sentKeys.has(a._id);
-
-                const isSelected = selectedIds.has(a._id);
-                const alreadyCustom = customSent.has(a._id);
-
-                const initials =
-                  (a.studentName ?? "")
-                    .split(/\s+/)
-                    .filter(Boolean)
-                    .slice(0, 2)
-                    .map((s) => s.charAt(0).toUpperCase())
-                    .join("") || "U";
-
-                return (
-                  <div key={a._id} className="col-12 col-lg-6 col-xxl-4 d-flex">
-                    <div
-                      className={`card appt-card shadow-sm border-0 h-100 mx-auto ${past ? "is-past" : "is-upcoming"
-                        } ${isSelected ? "selected" : ""}`}
-                      style={{ maxWidth: 560, width: "100%" }}
+              {/* Bulk action bar (NEW) */}
+              {selectedIds.size > 0 && (
+                <div className="alert alert-primary d-flex align-items-center justify-content-between">
+                  <div>
+                    <strong>{selectedIds.size}</strong> selected
+                  </div>
+                  <div className="d-flex gap-2">
+                    <button className="btn btn-outline-primary" onClick={selectAllFiltered}>
+                      Select all in view
+                    </button>
+                    <button className="btn btn-outline-secondary" onClick={clearSelection}>
+                      Clear
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={openCustomModal}
+                      title="Send a custom WhatsApp message to selected parents"
                     >
-                      {/* Select checkbox */}
-                      <div className="select-box">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={isSelected}
-                          onChange={() => toggleSelected(a._id)}
-                          aria-label="Select appointment"
-                        />
-                      </div>
+                      <i className="bi bi-chat-dots me-1" />
+                      Send custom WhatsApp
+                    </button>
+                  </div>
+                </div>
+              )}
 
-                      {/* Header */}
-                      <div className="appt-head">
-                        <div className="identity">
-                          <div className="avatar">{initials}</div>
-                          <div className="identity-text">
-                            <div
-                              className="student-name"
-                              title={a.studentName || ""}
-                            >
-                              {a.studentName || "Student name unavailable"}
+              {/* Content */}
+              {loading ? (
+                <div className="alert alert-info">Loading appointments…</div>
+              ) : loadError ? (
+                <div className="alert alert-danger">
+                  {loadError}
+                  <div className="small mt-2">
+                    Ensure <code>GET /appointments</code> returns an array of{" "}
+                    <code>{`{ _id, parentEmail, slotISO }`}</code>.
+                  </div>
+                </div>
+              ) : filtered.length === 0 ? (
+                <div className="alert alert-warning">No appointments found.</div>
+              ) : (
+                <div className="row gy-4 gx-4">
+                  {filtered.map((a) => {
+                    const d = new Date(a.slotISO);
+                    const past = d < now;
+                    const sending = sendingIds.has(a._id);
+                    const deleting = deletingIds.has(a._id);
+                    const okPhones = sendOk[a._id];
+                    const errMsg = sendErr[a._id];
+                    const alreadySent = Boolean(a.waSentAt) || sentKeys.has(a._id);
+                    const isSelected = selectedIds.has(a._id);
+                    const alreadyCustom = customSent.has(a._id);
+                    const initials =
+                      (a.studentName ?? "")
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((s) => s.charAt(0).toUpperCase())
+                        .join("") || "U";
+
+                    return (
+                      <div key={a._id} className="col-12 col-lg-6 col-xxl-4 d-flex">
+                        <div
+                          className={`card appt-card shadow-sm border-0 h-100 mx-auto ${past ? "is-past" : "is-upcoming"
+                            } ${isSelected ? "selected" : ""}`}
+                          style={{ maxWidth: 560, width: "100%" }}
+                        >
+                          {/* Select checkbox */}
+                          <div className="select-box">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              checked={isSelected}
+                              onChange={() => toggleSelected(a._id)}
+                              aria-label="Select appointment"
+                            />
+                          </div>
+
+                          {/* Header */}
+                          <div className="appt-head">
+                            <div className="identity">
+                              <div className="avatar">{initials}</div>
+                              <div className="identity-text">
+                                <div
+                                  className="student-name"
+                                  title={a.studentName || ""}
+                                >
+                                  {a.studentName || "Student name unavailable"}
+                                </div>
+                                <div className="email-wrap">
+                                  <i className="bi bi-envelope-fill me-2"></i>
+                                  {a.parentEmail}
+                                </div>
+                                {a.studentGrade && (
+                                  <div className="small text-muted">
+                                    <i className="bi bi-mortarboard-fill me-2" />
+                                    Grade: {a.studentGrade}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div className="email-wrap">
-                              <i className="bi bi-envelope-fill me-2"></i>
-                              {a.parentEmail}
+                            <div className="date-stack text-end">
+                              <div className="pill">
+                                <i className="bi bi-calendar-event me-1"></i>
+                                {fmtDate(a.slotISO)}
+                              </div>
+                              <div className="pill">
+                                <i className="bi bi-clock me-1"></i>
+                                {fmtTime(a.slotISO)}
+                              </div>
                             </div>
-                            {a.studentGrade && (
-                              <div className="small text-muted">
-                                <i className="bi bi-mortarboard-fill me-2" />
-                                Grade: {a.studentGrade}
+                          </div>
+
+                          <div className="card-body p-4">
+                            {(alreadyCustom || alreadySent) && (
+                              <div className="mb-3 d-flex flex-wrap gap-2">
+                                {alreadySent && (
+                                  <span className="badge bg-success d-inline-flex align-items-center gap-1">
+                                    <i className="bi bi-check-circle-fill" />
+                                    Assessment message sent
+                                  </span>
+                                )}
+                                {alreadyCustom && (
+                                  <span className="badge bg-info d-inline-flex align-items-center gap-1">
+                                    <i className="bi bi-chat-left-quote-fill" />
+                                    Custom message sent
+                                  </span>
+                                )}
                               </div>
                             )}
-                          </div>
-                        </div>
-                        <div className="date-stack text-end">
-                          <div className="pill">
-                            <i className="bi bi-calendar-event me-1"></i>
-                            {fmtDate(a.slotISO)}
-                          </div>
-                          <div className="pill">
-                            <i className="bi bi-clock me-1"></i>
-                            {fmtTime(a.slotISO)}
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="card-body p-4">
-                        {/* Status badges */}
-                        {(alreadyCustom || alreadySent) && (
-                          <div className="mb-3 d-flex flex-wrap gap-2">
-                            {alreadySent && (
-                              <span className="badge bg-success d-inline-flex align-items-center gap-1">
-                                <i className="bi bi-check-circle-fill" />
-                                Assessment message sent
-                              </span>
+                            {!!okPhones?.length && !alreadySent && (
+                              <div className="mb-3">
+                                <span className="badge bg-success-subtle text-success-emphasis border border-success-subtle">
+                                  Sent to {okPhones.length} recipient
+                                  {okPhones.length === 1 ? "" : "s"}
+                                </span>
+                                <div className="small text-muted mt-1">
+                                  {okPhones.join(", ")}
+                                </div>
+                              </div>
                             )}
-                            {alreadyCustom && (
-                              <span className="badge bg-info d-inline-flex align-items-center gap-1">
-                                <i className="bi bi-chat-left-quote-fill" />
-                                Custom message sent
-                              </span>
-                            )}
-                          </div>
-                        )}
 
-                        {/* Local-session success (before refresh) */}
-                        {!!okPhones?.length && !alreadySent && (
-                          <div className="mb-3">
-                            <span className="badge bg-success-subtle text-success-emphasis border border-success-subtle">
-                              Sent to {okPhones.length} recipient
-                              {okPhones.length === 1 ? "" : "s"}
-                            </span>
-                            <div className="small text-muted mt-1">
-                              {okPhones.join(", ")}
+                            {errMsg && (
+                              <div className="alert alert-danger py-2 px-3 mb-3">
+                                <strong>Send failed:</strong> {errMsg}
+                              </div>
+                            )}
+
+                            <div className="d-flex gap-2">
+                              <button
+                                type="button"
+                                className={`btn ${alreadySent
+                                  ? "btn-outline-secondary"
+                                  : "btn-success"
+                                  } btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
+                                onClick={() =>
+                                  !alreadySent &&
+                                  sendWa({ ...a, appointmentId: a._id } as Appt)
+                                }
+                                title={
+                                  alreadySent
+                                    ? "Message already sent for this appointment"
+                                    : "Send WhatsApp confirmation"
+                                }
+                                disabled={sending || alreadySent}
+                                aria-disabled={sending || alreadySent}
+                              >
+                                {sending ? (
+                                  <>
+                                    <span
+                                      className="spinner-border spinner-border-sm"
+                                      role="status"
+                                      aria-hidden="true"
+                                    />
+                                    Sending…
+                                  </>
+                                ) : alreadySent ? (
+                                  <>
+                                    <i className="bi bi-check-circle-fill fs-5"></i>
+                                    Sent
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="bi bi-whatsapp fs-5"></i>
+                                    Send WhatsApp
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                className="btn btn-outline-danger btn-lg flex-fill d-flex align-items-center justify-content-center gap-2"
+                                onClick={() => handleDelete(a)}
+                                disabled={deleting}
+                                title="Delete this appointment"
+                              >
+                                {deleting ? (
+                                  <>
+                                    <span
+                                      className="spinner-border spinner-border-sm"
+                                      role="status"
+                                      aria-hidden="true"
+                                    />
+                                    Deleting…
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="bi bi-trash3"></i>
+                                    Delete
+                                  </>
+                                )}
+                              </button>
                             </div>
                           </div>
-                        )}
-
-                        {/* Error */}
-                        {errMsg && (
-                          <div className="alert alert-danger py-2 px-3 mb-3">
-                            <strong>Send failed:</strong> {errMsg}
-                          </div>
-                        )}
-
-                        <div className="d-flex gap-2">
-                          {/* Assessment send button (once per appointment) */}
-                          <button
-                            type="button"
-                            className={`btn ${alreadySent
-                              ? "btn-outline-secondary"
-                              : "btn-success"
-                              } btn-lg whatsapp-btn flex-fill d-flex align-items-center justify-content-center gap-2`}
-                            onClick={() =>
-                              !alreadySent &&
-                              sendWa({ ...a, appointmentId: a._id } as Appt)
-                            }
-
-                            title={
-                              alreadySent
-                                ? "Message already sent for this appointment"
-                                : "Send WhatsApp confirmation"
-                            }
-                            disabled={sending || alreadySent}
-                            aria-disabled={sending || alreadySent}
-                          >
-                            {sending ? (
-                              <>
-                                <span
-                                  className="spinner-border spinner-border-sm"
-                                  role="status"
-                                  aria-hidden="true"
-                                />
-                                Sending…
-                              </>
-                            ) : alreadySent ? (
-                              <>
-                                <i className="bi bi-check-circle-fill fs-5"></i>
-                                Sent
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-whatsapp fs-5"></i>
-                                Send WhatsApp
-                              </>
-                            )}
-                          </button>
-
-                          {/* Delete */}
-                          <button
-                            type="button"
-                            className="btn btn-outline-danger btn-lg flex-fill d-flex align-items-center justify-content-center gap-2"
-                            onClick={() => handleDelete(a)}
-                            disabled={deleting}
-                            title="Delete this appointment"
-                          >
-                            {deleting ? (
-                              <>
-                                <span
-                                  className="spinner-border spinner-border-sm"
-                                  role="status"
-                                  aria-hidden="true"
-                                />
-                                Deleting…
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-trash3"></i>
-                                Delete
-                              </>
-                            )}
-                          </button>
                         </div>
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )} {/* END PAID TAB */}
+
+          {/* === SLOT MANAGEMENT TAB === */}
+          {activeTab === "slots" && (
+            <div className="card shadow-sm border-0 mt-4">
+              <div className="card-body">
+                <h4 className="mb-3">
+                  <i className="bi bi-lock-fill me-2"></i>
+                  Close or Reopen Appointment Slots
+                </h4>
+
+                {loadingClosed ? (
+                  <div>Loading closed slots…</div>
+                ) : (
+                  <div className="table-responsive w-100" style={{ overflowX: "auto" }}>
+                    <table className="table table-bordered align-middle" style={{ width: "100%", tableLayout: "fixed" }}>
+                      <thead className="table-light">
+                        <tr>
+                          <th style={{ width: "140px" }}>Date</th>
+                          {dailySlots.map((t) => (
+                            <th key={t} className="text-center">
+                              {t}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[...Array(14)].map((_, i) => {
+                          const dateObj = new Date();
+                          dateObj.setDate(dateObj.getDate() + i);
+                          const date = fmtLocalYMD(dateObj);
+                          const isWeekend = [5, 6].includes(dateObj.getDay());
+                          if (isWeekend) return null;
+
+                          return (
+                            <tr key={date}>
+                              <td>
+                                <strong>{date}</strong>
+                              </td>
+                              {dailySlots.map((timeStr) => {
+                                const dateStr = fmtLocalYMD(dateObj); // ensure we always use fresh string
+                                const closed = closedSlots[dateStr]?.includes(timeStr);
+
+                                return (
+                                  <td key={timeStr} className="text-center">
+                                    <button
+                                      className={`btn btn-sm ${closed ? "btn-danger" : "btn-outline-success"}`}
+                                      disabled={savingClosed}
+                                      onClick={() => {
+                                        if (closed) {
+                                          handleReopenSlot(dateStr, timeStr);
+                                        } else {
+                                          handleCloseSlot(dateStr, timeStr);
+                                        }
+                                      }}
+                                    >
+                                      {closed ? "Closed" : "Open"}
+                                    </button>
+                                  </td>
+                                );
+
+                              })}
+
+
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                );
-              })}
+                )}
+              </div>
             </div>
           )}
 

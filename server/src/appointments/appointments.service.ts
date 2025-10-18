@@ -26,6 +26,8 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
+import { ClosedSlot } from '../Schemas/closedSlot.schema';
+
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -37,6 +39,7 @@ const MAX_PER_SLOT = 2; // <= 2 bookings per slot
 @Injectable()
 export class AppointmentsService {
   private readonly logger = new Logger(AppointmentsService.name);
+  private closedSlots: Record<string, string[]> = {};
 
   private readonly fromEmail: string;
   private readonly fromName: string;
@@ -49,6 +52,9 @@ export class AppointmentsService {
     @InjectModel('WaSend')
     private readonly waSendModel: Model<any>,
 
+    @InjectModel(ClosedSlot.name)
+    private readonly closedSlotModel: Model<ClosedSlot>,
+
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
     private readonly http: HttpService,
@@ -56,7 +62,63 @@ export class AppointmentsService {
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
-  ) {}
+  ) { }
+
+  // --- Closed Slots ---
+// --- Closed Slots ---
+async closeSlot(dto: { date: string; time: string; reason?: string }) {
+  try {
+    if (!dto.date || !dto.time) {
+      throw new BadRequestException('Date and time are required');
+    }
+
+    this.logger.log(`🔒 Attempting to close slot: ${dto.date} at ${dto.time}`);
+
+    // check if the model is defined
+    if (!this.closedSlotModel) {
+      throw new Error('ClosedSlot model is not initialized');
+    }
+
+    const exists = await this.closedSlotModel.findOne({
+      date: dto.date,
+      time: dto.time,
+    });
+
+    if (exists) {
+      throw new BadRequestException('Slot already closed');
+    }
+
+    const saved = await this.closedSlotModel.create({
+      date: dto.date.trim(),
+      time: dto.time.trim(),
+      reason: dto.reason ?? '',
+      createdBy: 'admin',
+    });
+
+    this.logger.log(`✅ Slot closed successfully: ${JSON.stringify(saved)}`);
+    return { ok: true, closed: saved };
+  } catch (err: any) {
+    this.logger.error(`❌ Failed to close slot: ${err.message}`, err.stack);
+    throw new BadRequestException(err.message || 'Could not close slot');
+  }
+}
+
+
+
+  async reopenSlot(dto: { date: string; time: string }) {
+    const res = await this.closedSlotModel
+      .deleteOne({ date: dto.date, time: dto.time })
+      .exec();
+    if (!res.deletedCount)
+      throw new BadRequestException('Slot not found or already open');
+    return { ok: true };
+  }
+
+  async getClosedSlots(date?: string) {
+    const filter = date ? { date } : {};
+    const docs = await this.closedSlotModel.find(filter).lean();
+    return docs;
+  }
 
   // ------------------------ Utils ------------------------
 
@@ -274,7 +336,6 @@ export class AppointmentsService {
     if (!application) throw new BadRequestException('Application not found');
 
     // Business rules
-    // 1) No Fri/Sat
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
     if (dow === 5 || dow === 6) {
       throw new BadRequestException(
@@ -282,7 +343,7 @@ export class AppointmentsService {
       );
     }
 
-    // 2) Within two weeks from application createdAt (compare date-only)
+    // Within two weeks from application createdAt
     const submitted = application.createdAt
       ? new Date(application.createdAt)
       : new Date();
@@ -334,10 +395,13 @@ export class AppointmentsService {
           throw new BadRequestException('This slot is full');
         }
 
+        // ✅ FIX: Save the appointmentCode if available; fallback to _id for old data
+        const idToSave = application.appointmentCode || String(application._id);
+
         const [doc] = await this.apptModel.create(
           [
             {
-              applicationId: application._id as Types.ObjectId,
+              applicationId: idToSave, // ✅ no longer forced ObjectId
               parentEmail,
               slotISO: slotUtcISO,
             },
@@ -353,11 +417,14 @@ export class AppointmentsService {
         );
       });
 
-      // ❗️No emails here. Emails are sent only after payment success in the redirect handler.
+      // ✅ Log to confirm what got saved
+      this.logger.log(
+        `🎯 Appointment saved with applicationId=${dto.applicationId}`,
+      );
 
       return {
         _id: created!.id,
-        applicationId: (application._id as Types.ObjectId).toString(),
+        applicationId: application.appointmentCode || String(application._id),
         slotISO: created!.slotISO,
       };
     } catch (err: any) {
@@ -382,17 +449,27 @@ export class AppointmentsService {
       .lean()
       .exec();
 
-    // Collect ids safely
+    // Collect appointment & application identifiers
     const apptIds: Types.ObjectId[] = [];
-    const appIds: Types.ObjectId[] = [];
+    const appObjectIds: Types.ObjectId[] = [];
+    const appCodes: string[] = [];
+
     for (const d of docs) {
+      // appointment ObjectId
       try {
         apptIds.push(new Types.ObjectId(String(d._id)));
-      } catch {}
+      } catch { }
+
+      // application reference (can be ObjectId or code)
       if (d.applicationId) {
-        try {
-          appIds.push(new Types.ObjectId(String(d.applicationId)));
-        } catch {}
+        const val = String(d.applicationId);
+        if (/^[0-9a-fA-F]{24}$/.test(val)) {
+          // looks like ObjectId
+          appObjectIds.push(new Types.ObjectId(val));
+        } else {
+          // treat as appointmentCode
+          appCodes.push(val);
+        }
       }
     }
 
@@ -400,29 +477,34 @@ export class AppointmentsService {
     const template = process.env.WA_TEMPLATE_NAME ?? 'post_message';
     const sends = apptIds.length
       ? await this.waSendModel
-          .find({ apptId: { $in: apptIds }, template })
-          .select({ apptId: 1, sentAt: 1 })
-          .lean()
+        .find({ apptId: { $in: apptIds }, template })
+        .select({ apptId: 1, sentAt: 1 })
+        .lean()
       : [];
     const sentByAppt = new Map<string, Date | null>(
       sends.map((s) => [String(s.apptId), s.sentAt ?? null]),
     );
 
-    // Map: application -> studentName + studentGrade (from flexible data fields)
-    const apps = appIds.length
+    // --- Fetch related applications ---
+    const orConditions: Record<string, unknown>[] = [];
+    if (appObjectIds.length) orConditions.push({ _id: { $in: appObjectIds } });
+    if (appCodes.length)
+      orConditions.push({ appointmentCode: { $in: appCodes } });
+
+    const apps = orConditions.length
       ? await this.appModel
-          .find({ _id: { $in: appIds } })
-          .select({ _id: 1, data: 1, student_name: 1 })
-          .lean()
+        .find({ $or: orConditions })
+        .select({ _id: 1, appointmentCode: 1, data: 1, student_name: 1 })
+        .lean()
       : [];
 
+    // --- Map application ID/code → name & grade ---
     const nameByApp = new Map<string, string>();
     const gradeByApp = new Map<string, string>();
 
     for (const a of apps) {
       const data: any = a?.data || {};
 
-      // --- name (existing logic) ---
       const sn =
         typeof data.student_name === 'string' && data.student_name.trim()
           ? data.student_name.trim()
@@ -431,9 +513,11 @@ export class AppointmentsService {
             : typeof data.child_name === 'string' && data.child_name.trim()
               ? data.child_name.trim()
               : '';
-      if (sn) nameByApp.set(String(a._id), sn);
+      if (sn) {
+        nameByApp.set(String(a._id), sn);
+        if (a.appointmentCode) nameByApp.set(String(a.appointmentCode), sn);
+      }
 
-      // --- grade (NEW) ---
       const asText = (v: any) =>
         typeof v === 'string'
           ? v.trim()
@@ -447,13 +531,16 @@ export class AppointmentsService {
         data.target_grade,
         data.desired_grade,
         data.entry_grade,
-        data.grade, // generic fallback
+        data.grade,
       ];
       const sg = gradeCandidates.map(asText).find((x) => x);
-      if (sg) gradeByApp.set(String(a._id), sg);
+      if (sg) {
+        gradeByApp.set(String(a._id), sg);
+        if (a.appointmentCode) gradeByApp.set(String(a.appointmentCode), sg);
+      }
     }
 
-    // Shape response for UI
+    // --- Build final response ---
     return docs.map((d) => ({
       _id: String(d._id),
       parentEmail: d.parentEmail,
@@ -464,7 +551,7 @@ export class AppointmentsService {
         : undefined,
       studentGrade: d.applicationId
         ? gradeByApp.get(String(d.applicationId)) || undefined
-        : undefined, // ← NEW field
+        : undefined,
       createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : undefined,
       waSentAt: sentByAppt.get(String(d._id)) ?? null,
     }));
@@ -481,32 +568,36 @@ export class AppointmentsService {
   }
 
   /** Return only available HH:mm strings for the given local day (hides full slots). */
+  /** Return only available HH:mm strings for the given local day (hides full slots and closed slots). */
   async availableTimesForDate(dateISO: string, offsetMin: number) {
     const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
 
+    // 1️⃣ Find existing appointments in that day
     const docs = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
 
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(
-        a.slotISO as unknown as string,
-        offsetMin,
-      );
+      const t = this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin);
       counts.set(t, (counts.get(t) || 0) + 1);
     }
 
+    // 2️⃣ Generate all potential slots
     const all = this.generateSlots();
+
+    // 3️⃣ Filter out full slots (>= MAX_PER_SLOT)
     let available = all.filter((t) => (counts.get(t) || 0) < MAX_PER_SLOT);
 
-    // Cut off past times for "today"
+    // 4️⃣ 🧩 NEW: Remove admin-closed slots
+    const closed = await this.closedSlotModel.find({ date: dateISO }).lean();
+    const closedTimes = new Set(closed.map((c) => c.time));
+    available = available.filter((t) => !closedTimes.has(t));
+
+    // 5️⃣ Remove past times if the date is today
     const nowUtcMs = Date.now();
     const nowLocal = new Date(nowUtcMs - offsetMin * 60_000);
-    const todayLocalY = nowLocal.getFullYear();
-    const todayLocalM = String(nowLocal.getMonth() + 1).padStart(2, '0');
-    const todayLocalD = String(nowLocal.getDate()).padStart(2, '0');
-    const todayLocalYmd = `${todayLocalY}-${todayLocalM}-${todayLocalD}`;
+    const todayLocalYmd = nowLocal.toISOString().substring(0, 10);
 
     if (dateISO === todayLocalYmd) {
       const cutoff = this.nextHalfHourHHmm(nowLocal);
@@ -515,6 +606,7 @@ export class AppointmentsService {
 
     return { times: available };
   }
+
 
   async getTakenTimesForDate(
     dateISO: string,
@@ -533,7 +625,7 @@ export class AppointmentsService {
 
   async startPayment(dto: CreateAppointmentDto) {
     const { applicationId, slotISO } = dto;
-
+    console.log('💰 Application called with:', applicationId);
     // Config
     const secretKey = this.config.get<string>('PAYMOB_SECRET_KEY');
     const publicKey = this.config.get<string>('PAYMOB_PUBLIC_KEY');
@@ -911,6 +1003,75 @@ export class AppointmentsService {
   private async delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+  private async sendParentPaymentConfirmationEmail(
+    extras: any,
+    cairoDate: Date,
+  ) {
+    console.log('📧 Preparing parent confirmation email:', extras);
+
+    const { student_name, fatherName, parentEmail, slotISO } = extras;
+
+    const dateStr = cairoDate.toLocaleDateString('en-GB');
+    const timeStr = cairoDate.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const html = `
+  <div style="font-family: Arial, sans-serif; color:#333; background:#f7f9fc; padding:30px; max-width:700px; margin:auto; border-radius:8px; border:1px solid #e0e0e0;">
+    <h2 style="background:#004080; color:white; padding:15px; text-align:center; border-radius:4px;">
+      🎉 Payment Confirmation & Appointment Details
+    </h2>
+    <p style="font-size:16px;">Dear <strong>${fatherName || 'Parent'}</strong>,</p>
+    <p style="font-size:15px; line-height:1.6;">
+      We are pleased to confirm that your payment has been successfully received for your child’s assessment appointment.
+    </p>
+    <h3 style="color:#004080;">📅 Appointment Details</h3>
+    <table style="width:100%; border-collapse:collapse;">
+      <tr>
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Student Name</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${student_name || 'N/A'}</td>
+      </tr>
+      <tr style="background:#e9eff7;">
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Date</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${dateStr}</td>
+      </tr>
+      <tr>
+        <td style="padding:8px; border:1px solid #ccc;"><strong>Time</strong></td>
+        <td style="padding:8px; border:1px solid #ccc;">${timeStr}</td>
+      </tr>
+    </table>
+    <p style="margin-top:20px; font-size:15px;">
+      Kindly make sure to arrive 10–15 minutes before the scheduled time.  
+      Our admissions team looks forward to meeting you and your child.
+    </p>
+    <p style="margin-top:30px; color:#555; font-style:italic;">
+      This is an automated message confirming your booking.  
+    </p>
+  </div>
+  `;
+
+    const parentEmailMsg = {
+      to: parentEmail,
+      from: {
+        email: 'admission@leadersintcollege.com',
+        name: 'Leaders International College Admissions',
+      },
+      subject: `✅ Payment Confirmation - Assessment Appointment for ${student_name || 'Student'}`,
+      html,
+    };
+
+    try {
+      await sgMail.send(parentEmailMsg);
+      console.log('✅ Parent confirmation email sent successfully');
+    } catch (err) {
+      console.error(
+        '❌ Failed to send parent email:',
+        err?.response?.body || err,
+      );
+    }
+  }
+
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -964,7 +1125,7 @@ export class AppointmentsService {
       console.log('👉 Extracted extras (raw):', extras);
       // 🔹 Support both appointmentCode (new) and applicationId (old)
       const code = extras?.appointmentCode || null;
-
+      console.log('👉 Using appointmentCode:', code);
       if (code && extras?.parentEmail && extras?.slotISO) {
         console.log('✅ Required extras found:', {
           appointmentCode: code,
@@ -1038,7 +1199,7 @@ export class AppointmentsService {
           // await this.sendIntroPdfMessage(
           //   extras.fatherPhone || extras.motherPhone,
           // );
-          await this.delay(10000);
+          // await this.delay(10000);
           // === NEW: Ask for reply to unlock video ===
           // await this.sendVideoOptInMessage(
           //   extras.fatherPhone || extras.motherPhone,
@@ -1052,6 +1213,7 @@ export class AppointmentsService {
 
           // ✅ Send HR Email as well
           await this.sendHrAppointmentEmail(extras, cairoDate);
+          await this.sendParentPaymentConfirmationEmail(extras, cairoDate);
         } catch (waErr) {
           console.error('⚠️ Failed to send WhatsApp message:', waErr);
         }
