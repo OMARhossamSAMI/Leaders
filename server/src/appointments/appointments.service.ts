@@ -331,9 +331,19 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
       throw new BadRequestException('This time has already passed');
     }
 
-    // Application lookup
-    const application = await this.findApplication(applicationId, parentEmail);
-    if (!application) throw new BadRequestException('Application not found');
+    // ✅ NEW CODE — force matching by applicationId first
+    if (!applicationId) {
+      throw new BadRequestException(
+        'applicationId is required to create an appointment for a specific child',
+      );
+    }
+
+    const application = await this.appModel.findById(applicationId).lean();
+    if (!application) {
+      throw new BadRequestException(
+        'Application not found for the provided ID',
+      );
+    }
 
     // Business rules
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
