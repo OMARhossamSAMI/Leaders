@@ -331,19 +331,29 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
       throw new BadRequestException('This time has already passed');
     }
 
-    // ✅ NEW CODE — force matching by applicationId first
     if (!applicationId) {
-      throw new BadRequestException(
-        'applicationId is required to create an appointment for a specific child',
-      );
-    }
+    throw new BadRequestException(
+      'applicationId is required to create an appointment for a specific child',
+    );
+  }
 
-    const application = await this.appModel.findById(applicationId).lean();
-    if (!application) {
-      throw new BadRequestException(
-        'Application not found for the provided ID',
-      );
-    }
+  // ✅ NEW: Try both _id and appointmentCode
+  let application = null;
+  if (Types.ObjectId.isValid(applicationId)) {
+    application = await this.appModel.findById(applicationId).lean();
+  }
+  if (!application) {
+    application = await this.appModel
+      .findOne({ appointmentCode: applicationId })
+      .lean();
+  }
+
+  if (!application) {
+    throw new BadRequestException(
+      'Application not found for the provided ID or appointment code',
+    );
+  }
+
 
     // Business rules
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
