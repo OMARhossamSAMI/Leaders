@@ -28,7 +28,6 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
 import { ClosedSlot } from '../Schemas/closedSlot.schema';
 
-
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
 const CLOSE_HOUR = 12; // window closes at 12:30 (last start 12:00)
@@ -62,48 +61,48 @@ export class AppointmentsService {
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
-  ) { }
+  ) {}
 
   // --- Closed Slots ---
-// --- Closed Slots ---
-async closeSlot(dto: { date: string; time: string; reason?: string }) {
-  try {
-    if (!dto.date || !dto.time) {
-      throw new BadRequestException('Date and time are required');
+  // --- Closed Slots ---
+  async closeSlot(dto: { date: string; time: string; reason?: string }) {
+    try {
+      if (!dto.date || !dto.time) {
+        throw new BadRequestException('Date and time are required');
+      }
+
+      this.logger.log(
+        `🔒 Attempting to close slot: ${dto.date} at ${dto.time}`,
+      );
+
+      // check if the model is defined
+      if (!this.closedSlotModel) {
+        throw new Error('ClosedSlot model is not initialized');
+      }
+
+      const exists = await this.closedSlotModel.findOne({
+        date: dto.date,
+        time: dto.time,
+      });
+
+      if (exists) {
+        throw new BadRequestException('Slot already closed');
+      }
+
+      const saved = await this.closedSlotModel.create({
+        date: dto.date.trim(),
+        time: dto.time.trim(),
+        reason: dto.reason ?? '',
+        createdBy: 'admin',
+      });
+
+      this.logger.log(`✅ Slot closed successfully: ${JSON.stringify(saved)}`);
+      return { ok: true, closed: saved };
+    } catch (err: any) {
+      this.logger.error(`❌ Failed to close slot: ${err.message}`, err.stack);
+      throw new BadRequestException(err.message || 'Could not close slot');
     }
-
-    this.logger.log(`🔒 Attempting to close slot: ${dto.date} at ${dto.time}`);
-
-    // check if the model is defined
-    if (!this.closedSlotModel) {
-      throw new Error('ClosedSlot model is not initialized');
-    }
-
-    const exists = await this.closedSlotModel.findOne({
-      date: dto.date,
-      time: dto.time,
-    });
-
-    if (exists) {
-      throw new BadRequestException('Slot already closed');
-    }
-
-    const saved = await this.closedSlotModel.create({
-      date: dto.date.trim(),
-      time: dto.time.trim(),
-      reason: dto.reason ?? '',
-      createdBy: 'admin',
-    });
-
-    this.logger.log(`✅ Slot closed successfully: ${JSON.stringify(saved)}`);
-    return { ok: true, closed: saved };
-  } catch (err: any) {
-    this.logger.error(`❌ Failed to close slot: ${err.message}`, err.stack);
-    throw new BadRequestException(err.message || 'Could not close slot');
   }
-}
-
-
 
   async reopenSlot(dto: { date: string; time: string }) {
     const res = await this.closedSlotModel
@@ -332,28 +331,28 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
     }
 
     if (!applicationId) {
-    throw new BadRequestException(
-      'applicationId is required to create an appointment for a specific child',
-    );
-  }
+      throw new BadRequestException(
+        'applicationId is required to create an appointment for a specific child',
+      );
+    }
 
-  // ✅ NEW: Try both _id and appointmentCode
-  let application = null;
-  if (Types.ObjectId.isValid(applicationId)) {
-    application = await this.appModel.findById(applicationId).lean();
-  }
-  if (!application) {
-    application = await this.appModel
-      .findOne({ appointmentCode: applicationId })
-      .lean();
-  }
+    // ✅ NEW: Try both _id and appointmentCode
+    let application: Record<string, any> | null = null;
 
-  if (!application) {
-    throw new BadRequestException(
-      'Application not found for the provided ID or appointment code',
-    );
-  }
+    if (Types.ObjectId.isValid(applicationId)) {
+      application = await this.appModel.findById(applicationId).lean();
+    }
+    if (!application) {
+      application = await this.appModel
+        .findOne({ appointmentCode: applicationId })
+        .lean();
+    }
 
+    if (!application) {
+      throw new BadRequestException(
+        'Application not found for the provided ID or appointment code',
+      );
+    }
 
     // Business rules
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
@@ -478,7 +477,7 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
       // appointment ObjectId
       try {
         apptIds.push(new Types.ObjectId(String(d._id)));
-      } catch { }
+      } catch {}
 
       // application reference (can be ObjectId or code)
       if (d.applicationId) {
@@ -497,9 +496,9 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
     const template = process.env.WA_TEMPLATE_NAME ?? 'post_message';
     const sends = apptIds.length
       ? await this.waSendModel
-        .find({ apptId: { $in: apptIds }, template })
-        .select({ apptId: 1, sentAt: 1 })
-        .lean()
+          .find({ apptId: { $in: apptIds }, template })
+          .select({ apptId: 1, sentAt: 1 })
+          .lean()
       : [];
     const sentByAppt = new Map<string, Date | null>(
       sends.map((s) => [String(s.apptId), s.sentAt ?? null]),
@@ -513,9 +512,9 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
 
     const apps = orConditions.length
       ? await this.appModel
-        .find({ $or: orConditions })
-        .select({ _id: 1, appointmentCode: 1, data: 1, student_name: 1 })
-        .lean()
+          .find({ $or: orConditions })
+          .select({ _id: 1, appointmentCode: 1, data: 1, student_name: 1 })
+          .lean()
       : [];
 
     // --- Map application ID/code → name & grade ---
@@ -599,7 +598,10 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
 
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin);
+      const t = this.utcIsoToLocalHHmm(
+        a.slotISO as unknown as string,
+        offsetMin,
+      );
       counts.set(t, (counts.get(t) || 0) + 1);
     }
 
@@ -626,7 +628,6 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
 
     return { times: available };
   }
-
 
   async getTakenTimesForDate(
     dateISO: string,
@@ -1099,53 +1100,52 @@ async closeSlot(dto: { date: string; time: string; reason?: string }) {
       console.log('👉 Redirect query received:', query);
 
       // ⚠️ Do NOT trust query.success anymore
-const orderId = query?.order;
-console.log('👉 Order ID from query:', orderId);
+      const orderId = query?.order;
+      console.log('👉 Order ID from query:', orderId);
 
-if (!orderId) {
-  console.error('❌ No order id in redirect query');
-  return res.redirect(
-    'http://localhost:3001/admissions/appointments/Declined',
-  );
-}
+      if (!orderId) {
+        console.error('❌ No order id in redirect query');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
 
-// === STEP 1: Authenticate to get auth token ===
-const apiKey = this.config.get<string>('PAYMOB_API_KEY');
-const base = this.config.get<string>('PAYMOB_BASE');
+      // === STEP 1: Authenticate to get auth token ===
+      const apiKey = this.config.get<string>('PAYMOB_API_KEY');
+      const base = this.config.get<string>('PAYMOB_BASE');
 
-const authRes = await firstValueFrom(
-  this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
-);
-const authToken = authRes?.data?.token;
-console.log('🔑 Auth token received:', !!authToken);
+      const authRes = await firstValueFrom(
+        this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
+      );
+      const authToken = authRes?.data?.token;
+      console.log('🔑 Auth token received:', !!authToken);
 
-// === STEP 2: Call transaction inquiry with order_id ===
-const trxRes = await firstValueFrom(
-  this.http.post(
-    `${base}/api/ecommerce/orders/transaction_inquiry`,
-    { order_id: orderId },
-    { headers: { Authorization: `Bearer ${authToken}` } },
-  ),
-);
+      // === STEP 2: Call transaction inquiry with order_id ===
+      const trxRes = await firstValueFrom(
+        this.http.post(
+          `${base}/api/ecommerce/orders/transaction_inquiry`,
+          { order_id: orderId },
+          { headers: { Authorization: `Bearer ${authToken}` } },
+        ),
+      );
 
-console.log('📦 Transaction inquiry response:', trxRes.data);
+      console.log('📦 Transaction inquiry response:', trxRes.data);
 
-// ✅ New: Check actual payment status
-const trxData = Array.isArray(trxRes.data) ? trxRes.data[0] : trxRes.data;
-const realStatus =
-  trxData?.success === true ||
-  trxData?.is_paid === true ||
-  trxData?.pending === false;
+      // ✅ New: Check actual payment status
+      const trxData = Array.isArray(trxRes.data) ? trxRes.data[0] : trxRes.data;
+      const realStatus =
+        trxData?.success === true ||
+        trxData?.is_paid === true ||
+        trxData?.pending === false;
 
-console.log('✅ Verified real payment status:', realStatus);
+      console.log('✅ Verified real payment status:', realStatus);
 
-if (!realStatus) {
-  console.warn('❌ Transaction not confirmed as paid by Paymob');
-  return res.redirect(
-    'http://localhost:3001/admissions/appointments/Declined',
-  );
-}
-
+      if (!realStatus) {
+        console.warn('❌ Transaction not confirmed as paid by Paymob');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
 
       // === STEP 3: Extract extras from payment_key_claims.extra ===
       const extras = trxRes.data?.payment_key_claims?.extra;
