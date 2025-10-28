@@ -267,57 +267,42 @@ export default function AppointmentPage() {
     setSavedId(null);
 
     try {
-      // ✅ 1. Parse selected date & time
-      
+      // Parse date/time numbers
+      const [year, month, day] = selectedDate.split("-").map(Number);
+      const [hour, minute] = selectedTime.split(":").map(Number);
 
-      // ✅ 2. Build a Cairo-local datetime string (2025-10-30T12:00:00)
-      const localCairoString = `${selectedDate}T${selectedTime}:00`;
+      // --- Step 1: Ask Intl API for Cairo's timeZoneName string (e.g. "GMT+2" or "GMT+3") ---
+      const tz = "Africa/Cairo";
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "short",
+      }).formatToParts(Date.UTC(year, month - 1, day, hour, minute));
 
-      // ✅ 3. Create a Date object *interpreted as Cairo time*
-      // We use Intl API to get Cairo's offset at that date (DST-aware)
-      const formatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Africa/Cairo",
-        hour12: false,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
+      const tzName =
+        parts.find((p) => p.type === "timeZoneName")?.value || "GMT+2";
 
-      const parts = formatter.formatToParts(
-        new Date(`${selectedDate}T${selectedTime}:00Z`)
+      // --- Step 2: Extract numeric offset directly from that string ---
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default to +2 if unknown
+
+      // --- Step 3: Use that offset, purely mathematical ---
+      const cairoUtcMillis = Date.UTC(
+        year,
+        month - 1,
+        day,
+        hour - offsetHours,
+        minute,
+        0
       );
+      const slotISO = `${new Date(cairoUtcMillis).toISOString()}`;
 
-      const get = (type: string) =>
-        parts.find((p) => p.type === type)?.value || "00";
-
-      // Construct a UTC date manually that corresponds to Cairo local time
-      const cairoYear = Number(get("year"));
-      const cairoMonth = Number(get("month")) - 1;
-      const cairoDay = Number(get("day"));
-      const cairoHour = Number(get("hour"));
-      const cairoMinute = Number(get("minute"));
-      const cairoSecond = Number(get("second"));
-
-      // Create the date in Cairo local
-      const cairoDate = new Date(
-        Date.UTC(
-          cairoYear,
-          cairoMonth,
-          cairoDay,
-          cairoHour,
-          cairoMinute,
-          cairoSecond
-        )
+      console.log("🌍 tzName:", tzName);
+      console.log("🕒 Cairo offset hours:", offsetHours);
+      console.log(
+        "🕒 Cairo time chosen:",
+        `${selectedDate}T${selectedTime}:00`
       );
-
-      // ✅ 4. Convert that Cairo local date to a proper UTC ISO string
-      const slotISO = cairoDate.toISOString();
-
-      console.log("🕒 Cairo-local selected:", localCairoString);
-      console.log("🕒 Sending UTC slotISO:", slotISO);
+      console.log("🕒 Sent UTC to backend:", slotISO);
 
       // ✅ 5. Prepare payload
       const payload: Appointment = {

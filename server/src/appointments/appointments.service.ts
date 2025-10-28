@@ -1171,16 +1171,57 @@ export class AppointmentsService {
           console.log('📞 Mother Phone:', extras.motherPhone);
         if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
-        // ✅ Correct conversion: interpret the stored UTC time in Cairo zone
+        // ✅ Dynamic Cairo conversion (DST-aware, same as testConversion)
         const utcDate = new Date(extras.slotISO);
 
-        // Convert to Cairo local time automatically (DST-aware)
-        const cairoString = utcDate.toLocaleString('en-US', {
+        const formatter = new Intl.DateTimeFormat('en-US', {
           timeZone: 'Africa/Cairo',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
         });
-        const cairoDate = new Date(cairoString);
 
-        console.log('🕒 Correct Cairo time:', cairoDate);
+        const parts = formatter.formatToParts(utcDate);
+        const get = (type: string) =>
+          parts.find((p) => p.type === type)?.value || '00';
+        const tzName = get('timeZoneName');
+        const match = tzName.match(/GMT([+-]\d+)/);
+        const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+        const cairoY = parseInt(get('year'), 10);
+        const cairoM = parseInt(get('month'), 10);
+        const cairoD = parseInt(get('day'), 10);
+        const cairoH = parseInt(get('hour'), 10);
+        const cairoMin = parseInt(get('minute'), 10);
+        const cairoSec = parseInt(get('second'), 10);
+
+        // Build a readable Cairo ISO string (for logs or emails)
+        const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+          cairoD,
+        ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+          cairoMin,
+        ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+        // ✅ Create a proper Date object representing Cairo local time
+        const cairoDate = new Date(
+          cairoY,
+          cairoM - 1,
+          cairoD,
+          cairoH,
+          cairoMin,
+          cairoSec,
+        );
+
+        console.log('🌍 tzName:', tzName);
+        console.log('🕒 Cairo offset hours:', offsetHours);
+        console.log('🌍 UTC Date:', utcDate.toISOString());
+        console.log('🇪🇬 Cairo Local (string):', cairoISO);
+        console.log('🕒 Cairo Date object:', cairoDate);
 
         // ✅ Create appointment
         const dto: CreateAppointmentDto = {
@@ -1361,21 +1402,55 @@ export class AppointmentsService {
     try {
       console.log('🧪 Testing slotISO:', slotISO);
 
-      // 🕒 Convert Paymob UTC ISO → Cairo local (DST-aware)
+      // 1️⃣ Parse UTC from Paymob
       const utcDate = new Date(slotISO);
-      const cairoString = utcDate.toLocaleString('en-US', {
-        timeZone: 'Africa/Cairo',
-      });
-      const cairoDate = new Date(cairoString);
 
+      // 2️⃣ Get Cairo-local parts using Intl (no re-parsing)
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Africa/Cairo',
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
+      });
+
+      const parts = formatter.formatToParts(utcDate);
+      const get = (type: string) =>
+        parts.find((p) => p.type === type)?.value || '00';
+      const tzName = get('timeZoneName');
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+      const cairoY = parseInt(get('year'), 10);
+      const cairoM = parseInt(get('month'), 10);
+      const cairoD = parseInt(get('day'), 10);
+      const cairoH = parseInt(get('hour'), 10);
+      const cairoMin = parseInt(get('minute'), 10);
+      const cairoSec = parseInt(get('second'), 10);
+
+      // 3️⃣ Build a proper Cairo ISO string manually (for inspection only)
+      const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+        cairoD,
+      ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+        cairoMin,
+      ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+      console.log('🌍 tzName:', tzName);
+      console.log('🕒 Cairo offset hours:', offsetHours);
       console.log('🌍 UTC Date:', utcDate.toISOString());
-      console.log('🇪🇬 Cairo Date:', cairoDate.toString());
-      console.log('🕒 Hours Cairo:', cairoDate.getHours());
+      console.log('🇪🇬 Cairo Local (string):', cairoISO);
+      console.log('🕒 Cairo hour:', cairoH);
 
       return {
         utc: utcDate.toISOString(),
-        cairo: cairoDate.toISOString(),
-        hourCairo: cairoDate.getHours(),
+        cairo: cairoISO,
+        gmt: tzName,
+        offsetHours,
+        hourCairo: cairoH,
       };
     } catch (err) {
       console.error('❌ Conversion error:', err);
