@@ -28,7 +28,9 @@ export class AppointmentsController {
     if (offset == null) return 0;
     const n = Number(offset);
     if (!Number.isFinite(n)) {
-      throw new BadRequestException('offset must be a number (UTC - local minutes)');
+      throw new BadRequestException(
+        'offset must be a number (UTC - local minutes)',
+      );
     }
     return Math.trunc(n);
   }
@@ -38,21 +40,21 @@ export class AppointmentsController {
   // ------------------------------------------------------------
 
   /** POST /appointments/closed — close a slot */
- @Post('closed')
-async closeSlot(@Body() body: { date: string; time: string }) {
-  if (!body.date || !body.time) {
-    throw new BadRequestException('Date and time are required');
+  @Post('closed')
+  async closeSlot(@Body() body: { date: string; time: string }) {
+    if (!body.date || !body.time) {
+      throw new BadRequestException('Date and time are required');
+    }
+    return this.service.closeSlot(body);
   }
-  return this.service.closeSlot(body);
-}
 
-@Delete('closed')
-async reopenSlot(@Body() body: { date: string; time: string }) {
-  if (!body.date || !body.time) {
-    throw new BadRequestException('Date and time are required');
+  @Delete('closed')
+  async reopenSlot(@Body() body: { date: string; time: string }) {
+    if (!body.date || !body.time) {
+      throw new BadRequestException('Date and time are required');
+    }
+    return this.service.reopenSlot(body);
   }
-  return this.service.reopenSlot(body);
-}
 
   /** GET /appointments/closed?date=YYYY-MM-DD — list closed slots */
   @Get('closed')
@@ -90,13 +92,19 @@ async reopenSlot(@Body() body: { date: string; time: string }) {
   }
 
   @Get('admin-list')
-  async adminList(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
+  async adminList(
+    @Query('upcoming') upcoming?: string,
+    @Query('q') q?: string,
+  ) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
 
   @Get('available')
-  async available(@Query('date') date: string, @Query('offset') offset?: string) {
+  async available(
+    @Query('date') date: string,
+    @Query('offset') offset?: string,
+  ) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
       throw new BadRequestException('date must be YYYY-MM-DD');
     const off = this.parseOffset(offset);
@@ -104,7 +112,10 @@ async reopenSlot(@Body() body: { date: string; time: string }) {
   }
 
   @Get('available-for-date')
-  async availableForDate(@Query('date') date: string, @Query('offset') offset?: string) {
+  async availableForDate(
+    @Query('date') date: string,
+    @Query('offset') offset?: string,
+  ) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
       throw new BadRequestException('date must be YYYY-MM-DD');
     const off = this.parseOffset(offset);
@@ -167,5 +178,9 @@ async reopenSlot(@Body() body: { date: string; time: string }) {
       console.error('❌ Error handling WA webhook:', err);
       return res.sendStatus(500);
     }
+  }
+  @Get('test-conversion')
+  async testConversion(@Query('slotISO') slotISO: string) {
+    return this.service.testConversion(slotISO);
   }
 }
