@@ -588,41 +588,84 @@ export class AppointmentsService {
 
   /** Return only available HH:mm strings for the given local day (hides full slots). */
   /** Return only available HH:mm strings for the given local day (hides full slots and closed slots). */
-  async availableTimesForDate(dateISO: string, offsetMin: number) {
-    const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
+  async availableTimesForDate(dateISO: string, _offsetMinIgnored: number) {
+    const tz = 'Africa/Cairo';
+    const MAX_PER_SLOT = 2;
 
-    // 1️⃣ Find existing appointments in that day
+    // --- Step 1️⃣: Compute Cairo day's UTC start/end ---
+    // Build Cairo-local start (00:00) and end (23:59) for that date
+    const cairoStart = new Date(`${dateISO}T00:00:00`);
+    const cairoEnd = new Date(`${dateISO}T23:59:59`);
+
+    // Convert these to the equivalent UTC instants (DST-aware)
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    const parseToUTC = (local: Date): string => {
+      const parts = formatter.formatToParts(local);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value || '00';
+      const cairoY = +get('year');
+      const cairoM = +get('month');
+      const cairoD = +get('day');
+      const cairoH = +get('hour');
+      const cairoMin = +get('minute');
+      const cairoSec = +get('second');
+      const utc = Date.UTC(
+        cairoY,
+        cairoM - 1,
+        cairoD,
+        cairoH - 0,
+        cairoMin,
+        cairoSec,
+      ); // DST auto-handled
+      return new Date(utc).toISOString();
+    };
+
+    const startISO = parseToUTC(cairoStart);
+    const endISO = parseToUTC(cairoEnd);
+
+    // --- Step 2️⃣: Query Mongo for bookings within that Cairo day ---
     const docs = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
 
+    // --- Step 3️⃣: Count bookings per time (Cairo-local HH:mm) ---
+    const fmtHHmm = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(
-        a.slotISO as unknown as string,
-        offsetMin,
-      );
-      counts.set(t, (counts.get(t) || 0) + 1);
+      const hhmm = fmtHHmm.format(new Date(a.slotISO));
+      counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
     }
 
-    // 2️⃣ Generate all potential slots
-    const all = this.generateSlots();
-
-    // 3️⃣ Filter out full slots (>= MAX_PER_SLOT)
+    // --- Step 4️⃣: Generate all potential slots ---
+    const all = this.generateSlots(); // ["09:00", "09:30", ...]
     let available = all.filter((t) => (counts.get(t) || 0) < MAX_PER_SLOT);
 
-    // 4️⃣ 🧩 NEW: Remove admin-closed slots
+    // --- Step 5️⃣: Remove admin-closed slots ---
     const closed = await this.closedSlotModel.find({ date: dateISO }).lean();
     const closedTimes = new Set(closed.map((c) => c.time));
     available = available.filter((t) => !closedTimes.has(t));
 
-    // 5️⃣ Remove past times if the date is today
-    const nowUtcMs = Date.now();
-    const nowLocal = new Date(nowUtcMs - offsetMin * 60_000);
-    const todayLocalYmd = nowLocal.toISOString().substring(0, 10);
-
-    if (dateISO === todayLocalYmd) {
-      const cutoff = this.nextHalfHourHHmm(nowLocal);
+    // --- Step 6️⃣: Remove past times (today only, Cairo-aware) ---
+    const now = new Date();
+    const nowCairo = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const todayCairo = nowCairo.toISOString().substring(0, 10);
+    if (dateISO === todayCairo) {
+      const cutoff = this.nextHalfHourHHmm(nowCairo);
       available = available.filter((t) => t >= cutoff);
     }
 
