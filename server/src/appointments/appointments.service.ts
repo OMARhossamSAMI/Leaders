@@ -1171,13 +1171,16 @@ export class AppointmentsService {
           console.log('📞 Mother Phone:', extras.motherPhone);
         if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
-        // Convert Paymob UTC ISO → Cairo local
+        // ✅ Correct conversion: interpret the stored UTC time in Cairo zone
         const utcDate = new Date(extras.slotISO);
-        const cairoOffsetMinutes = 3 * 60; // UTC+3
-        const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
-        const cairoDate = new Date(localMs);
 
-        console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
+        // Convert to Cairo local time automatically (DST-aware)
+        const cairoString = utcDate.toLocaleString('en-US', {
+          timeZone: 'Africa/Cairo',
+        });
+        const cairoDate = new Date(cairoString);
+
+        console.log('🕒 Correct Cairo time:', cairoDate);
 
         // ✅ Create appointment
         const dto: CreateAppointmentDto = {
@@ -1352,6 +1355,31 @@ export class AppointmentsService {
           err?.response?.data || err,
         );
       }
+    }
+  }
+  async testConversion(slotISO: string) {
+    try {
+      console.log('🧪 Testing slotISO:', slotISO);
+
+      // 🕒 Convert Paymob UTC ISO → Cairo local (DST-aware)
+      const utcDate = new Date(slotISO);
+      const cairoString = utcDate.toLocaleString('en-US', {
+        timeZone: 'Africa/Cairo',
+      });
+      const cairoDate = new Date(cairoString);
+
+      console.log('🌍 UTC Date:', utcDate.toISOString());
+      console.log('🇪🇬 Cairo Date:', cairoDate.toString());
+      console.log('🕒 Hours Cairo:', cairoDate.getHours());
+
+      return {
+        utc: utcDate.toISOString(),
+        cairo: cairoDate.toISOString(),
+        hourCairo: cairoDate.getHours(),
+      };
+    } catch (err) {
+      console.error('❌ Conversion error:', err);
+      throw err;
     }
   }
 }

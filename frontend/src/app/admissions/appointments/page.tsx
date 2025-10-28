@@ -120,12 +120,12 @@ export default function AppointmentPage() {
           ? await res.json()
           : { times: [] };
         if (!cancelled) {
-const times = Array.isArray(data?.times) ? data.times : [];
-// Remove any closed slots for the selected date
-const filtered = closedSlots[selectedDate]
-  ? times.filter((t) => !closedSlots[selectedDate].includes(t))
-  : times;
-setAvailableTimes(filtered);
+          const times = Array.isArray(data?.times) ? data.times : [];
+          // Remove any closed slots for the selected date
+          const filtered = closedSlots[selectedDate]
+            ? times.filter((t) => !closedSlots[selectedDate].includes(t))
+            : times;
+          setAvailableTimes(filtered);
         }
       } catch {
         if (!cancelled) setAvailableTimes([]);
@@ -166,34 +166,32 @@ setAvailableTimes(filtered);
     })();
   }, []);
 
-useEffect(() => {
-  (async () => {
-    try {
-const res = await fetch(`${API}/appointments/closed`);
-      if (res.ok) {
-        const data = await res.json();
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API}/appointments/closed`);
+        if (res.ok) {
+          const data = await res.json();
 
-        // 🔹 Normalize array [{date,time}] → grouped object { date: [times] }
-        const grouped: Record<string, string[]> = {};
-        if (Array.isArray(data)) {
-          for (const item of data) {
-            if (item.date && item.time) {
-              if (!grouped[item.date]) grouped[item.date] = [];
-              grouped[item.date].push(item.time);
+          // 🔹 Normalize array [{date,time}] → grouped object { date: [times] }
+          const grouped: Record<string, string[]> = {};
+          if (Array.isArray(data)) {
+            for (const item of data) {
+              if (item.date && item.time) {
+                if (!grouped[item.date]) grouped[item.date] = [];
+                grouped[item.date].push(item.time);
+              }
             }
           }
+
+          setClosedSlots(grouped);
+          console.log("✅ Closed slots loaded:", grouped);
         }
-
-        setClosedSlots(grouped);
-        console.log("✅ Closed slots loaded:", grouped);
+      } catch (err) {
+        console.warn("Could not load closed slots", err);
       }
-    } catch (err) {
-      console.warn("Could not load closed slots", err);
-    }
-  })();
-}, []);
-
-
+    })();
+  }, []);
 
   // -------- Actions --------
   const onLookup = async (e: React.FormEvent) => {
@@ -595,79 +593,81 @@ const res = await fetch(`${API}/appointments/closed`);
                     ) : (
                       <div className="row g-2">
                         {dailySlots.map((t) => {
-  const active = selectedTime === t;
-  const isAvailable = availableTimes.includes(t);
+                          const active = selectedTime === t;
+                          const isAvailable = availableTimes.includes(t);
 
-  // 🔹 New: check if the slot is closed for that date
-  const isClosed =
-    closedSlots[selectedDate]?.includes(t) ?? false;
+                          // 🔹 New: check if the slot is closed for that date
+                          const isClosed =
+                            closedSlots[selectedDate]?.includes(t) ?? false;
 
-  // 🔹 Disable both closed + unavailable
-  const disabled =
-    timesLoading || !selectedDate || !isAvailable || isClosed;
+                          // 🔹 Disable both closed + unavailable
+                          const disabled =
+                            timesLoading ||
+                            !selectedDate ||
+                            !isAvailable ||
+                            isClosed;
 
-  return (
-    <div key={t} className="col-6 col-md-3 col-lg-2">
-      <button
-        type="button"
-        className={`btn w-100 d-flex flex-column justify-content-center align-items-center ${
-          active ? "text-white" : ""
-        }`}
-        onClick={() => !disabled && setSelectedTime(t)}
-        disabled={disabled}
-        style={{
-          background: isClosed
-            ? "#f1f1f1" // grey background for closed
-            : active
-            ? ACCENT
-            : "#ffffff",
-          color: isClosed
-            ? "#999"
-            : isAvailable
-            ? active
-              ? "#fff"
-              : DARK
-            : "#999",
-          border: "1px solid #e5e7eb",
-          borderRadius: 12,
-          fontWeight: 600,
-          opacity: disabled ? 0.7 : 1,
-          cursor: disabled ? "not-allowed" : "pointer",
-          minHeight: 60,
-        }}
-        title={
-          isClosed
-            ? "Closed by administration"
-            : isAvailable
-            ? ""
-            : "Fully booked"
-        }
-      >
-        <span>{t}</span>
-        {isClosed ? (
-          <small
-            style={{
-              fontSize: "0.75rem",
-              color: "#777",
-            }}
-          >
-            Closed
-          </small>
-        ) : !isAvailable ? (
-          <small
-            style={{
-              fontSize: "0.75rem",
-              color: "#c00",
-            }}
-          >
-            Fully booked
-          </small>
-        ) : null}
-      </button>
-    </div>
-  );
-})}
-
+                          return (
+                            <div key={t} className="col-6 col-md-3 col-lg-2">
+                              <button
+                                type="button"
+                                className={`btn w-100 d-flex flex-column justify-content-center align-items-center ${
+                                  active ? "text-white" : ""
+                                }`}
+                                onClick={() => !disabled && setSelectedTime(t)}
+                                disabled={disabled}
+                                style={{
+                                  background: isClosed
+                                    ? "#f1f1f1" // grey background for closed
+                                    : active
+                                    ? ACCENT
+                                    : "#ffffff",
+                                  color: isClosed
+                                    ? "#999"
+                                    : isAvailable
+                                    ? active
+                                      ? "#fff"
+                                      : DARK
+                                    : "#999",
+                                  border: "1px solid #e5e7eb",
+                                  borderRadius: 12,
+                                  fontWeight: 600,
+                                  opacity: disabled ? 0.7 : 1,
+                                  cursor: disabled ? "not-allowed" : "pointer",
+                                  minHeight: 60,
+                                }}
+                                title={
+                                  isClosed
+                                    ? "Closed by administration"
+                                    : isAvailable
+                                    ? ""
+                                    : "Fully booked"
+                                }
+                              >
+                                <span>{t}</span>
+                                {isClosed ? (
+                                  <small
+                                    style={{
+                                      fontSize: "0.75rem",
+                                      color: "#777",
+                                    }}
+                                  >
+                                    Closed
+                                  </small>
+                                ) : !isAvailable ? (
+                                  <small
+                                    style={{
+                                      fontSize: "0.75rem",
+                                      color: "#c00",
+                                    }}
+                                  >
+                                    Fully booked
+                                  </small>
+                                ) : null}
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
