@@ -266,17 +266,67 @@ export default function AppointmentPage() {
     setSaving(true);
     setSavedId(null);
 
-    // Build ISO datetime in local time, then convert to ISO
-    const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-    const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
-    const local = new Date(y, m - 1, d, hh, mm, 0, 0);
-
-    const payload: Appointment = {
-      applicationId: app._id,
-      slotISO: local.toISOString(),
-    };
-
     try {
+      // ✅ 1. Parse selected date & time
+      const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
+      const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
+
+      // ✅ 2. Build a Cairo-local datetime string (2025-10-30T12:00:00)
+      const localCairoString = `${selectedDate}T${selectedTime}:00`;
+
+      // ✅ 3. Create a Date object *interpreted as Cairo time*
+      // We use Intl API to get Cairo's offset at that date (DST-aware)
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Africa/Cairo",
+        hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+
+      const parts = formatter.formatToParts(
+        new Date(`${selectedDate}T${selectedTime}:00Z`)
+      );
+
+      const get = (type: string) =>
+        parts.find((p) => p.type === type)?.value || "00";
+
+      // Construct a UTC date manually that corresponds to Cairo local time
+      const cairoYear = Number(get("year"));
+      const cairoMonth = Number(get("month")) - 1;
+      const cairoDay = Number(get("day"));
+      const cairoHour = Number(get("hour"));
+      const cairoMinute = Number(get("minute"));
+      const cairoSecond = Number(get("second"));
+
+      // Create the date in Cairo local
+      const cairoDate = new Date(
+        Date.UTC(
+          cairoYear,
+          cairoMonth,
+          cairoDay,
+          cairoHour,
+          cairoMinute,
+          cairoSecond
+        )
+      );
+
+      // ✅ 4. Convert that Cairo local date to a proper UTC ISO string
+      const slotISO = cairoDate.toISOString();
+
+      console.log("🕒 Cairo-local selected:", localCairoString);
+      console.log("🕒 Sending UTC slotISO:", slotISO);
+
+      // ✅ 5. Prepare payload
+      const payload: Appointment = {
+        applicationId: app._id,
+        slotISO,
+      };
+
+      // ✅ 6. Proceed as before
       const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -333,10 +383,10 @@ export default function AppointmentPage() {
           : null;
       setSavedId(newId || "OK");
 
-      // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setSaveError("Network error. Please try again.");
     } finally {
       setSaving(false);
