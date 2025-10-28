@@ -268,8 +268,7 @@ export default function AppointmentPage() {
 
     try {
       // ✅ 1. Parse selected date & time
-      const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-      const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
+      
 
       // ✅ 2. Build a Cairo-local datetime string (2025-10-30T12:00:00)
       const localCairoString = `${selectedDate}T${selectedTime}:00`;
