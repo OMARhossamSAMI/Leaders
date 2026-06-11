@@ -231,6 +231,13 @@ export class StudentApplicationService {
 
 const studentName = formData.student_name || 'Student';
 
+// ✅ Detect if selected grade is waiting list
+const selectedGrade = formData.grade_applying_for || '';
+
+const isWaitingList =
+  typeof selectedGrade === 'string' &&
+  selectedGrade.toLowerCase().includes('waiting list');
+
 // ✅ Collect both emails (if provided)
 const fatherEmail = formData.father_email?.trim();
 const motherEmail = formData.mother_email?.trim();
@@ -309,13 +316,43 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
  const userConfirmationEmail =
   parentEmails.length > 0
     ? {
-        to: parentEmails, // 👈 send to both parents if available
+        to: parentEmails,
         from: {
           email: 'Admission@leadersintcollege.com',
           name: 'Leaders International College',
         },
-        subject: `✅ We've received your child's application, Parent of ${studentName}`,
-        html: `
+        subject: isWaitingList
+          ? `Application received - Waiting List for ${studentName}`
+          : `✅ We've received your child's application, Parent of ${studentName}`,
+        html: isWaitingList
+          ? `
+<div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
+  <h2 style="background-color: #004080; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+    Application Received - Waiting List
+  </h2>
+
+  <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
+
+  <p style="font-size: 15px;">
+    Thank you for submitting your child’s application to Leaders International College.
+    We’re pleased to confirm that the application for <strong>${studentName}</strong> has been successfully received.
+  </p>
+
+  <p style="font-size: 15px;">
+    Please note that the selected grade, <strong>${selectedGrade}</strong>, is currently on a waiting list.
+  </p>
+
+  <p style="font-size: 15px;">
+    Our Admissions Team will keep your child’s application on record and will contact you once a place becomes available.
+  </p>
+
+  <p style="margin-top: 30px;">
+    Warm regards, <br/>
+    <strong>Leaders International College – Admissions Department</strong>
+  </p>
+</div>
+`
+          : `
 <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
   <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
     Application Received
@@ -348,10 +385,12 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
       await Promise.all(tasks);
 
       return {
-        message:
-          '✅ Application saved and emails sent to both student and admissions.',
-        applicationId, // 👈 also return booking code in API response
-      };
+      message: isWaitingList
+        ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
+        : '✅ Application saved and emails sent to both student and admissions.',
+      applicationId,
+      isWaitingList,
+    };
     } catch (err) {
       console.error(
         '❌ SendGrid Email Error:',
