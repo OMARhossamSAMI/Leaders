@@ -278,3 +278,62 @@
 .stats-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.applications-scroll-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.applications-scroll-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.applications-scroll-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.applications-scroll-header span {
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.applications-scroll-content {
+  max-height: 620px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.applications-scroll-content .card {
+  margin-bottom: 14px;
+}
+
+.applications-scroll-content .card:last-child {
+  margin-bottom: 0;
+}
+
+.applications-scroll-content::-webkit-scrollbar {
+  width: 7px;
+}
+
+.applications-scroll-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.applications-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
