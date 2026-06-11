@@ -315,14 +315,22 @@
   max-height: 620px;
   overflow-y: auto;
   padding-right: 8px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
 }
 
 .applications-scroll-content .card {
-  margin-bottom: 14px;
+  margin-bottom: 0;
+  width: 100%;
 }
 
-.applications-scroll-content .card:last-child {
-  margin-bottom: 0;
+@media (max-width: 900px) {
+  .applications-scroll-content {
+    grid-template-columns: 1fr;
+  }
 }
 
 .applications-scroll-content::-webkit-scrollbar {
