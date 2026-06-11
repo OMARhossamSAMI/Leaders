@@ -346,6 +346,10 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
     Our Admissions Team will keep your child’s application on record and will contact you once a place becomes available.
   </p>
 
+  <p style="font-size: 15px;">
+    No assessment booking code is required at this stage.
+  </p>
+
   <p style="margin-top: 30px;">
     Warm regards, <br/>
     <strong>Leaders International College – Admissions Department</strong>
@@ -385,12 +389,12 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
       await Promise.all(tasks);
 
       return {
-      message: isWaitingList
-        ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
-        : '✅ Application saved and emails sent to both student and admissions.',
-      applicationId,
-      isWaitingList,
-    };
+        message: isWaitingList
+          ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
+          : '✅ Application saved and emails sent to both student and admissions.',
+        applicationId,
+        isWaitingList,
+      };
     } catch (err) {
       console.error(
         '❌ SendGrid Email Error:',
