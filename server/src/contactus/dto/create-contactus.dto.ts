@@ -4,14 +4,19 @@ import {
   IsOptional,
   IsString,
   IsBoolean,
+  Length,
 } from 'class-validator';
+import { IsEmailDomainReachable } from '../../common/validators/is-email-domain-reachable.validator';
+import { IsRealText } from '../../common/validators/is-real-text.validator';
 
 export class CreateContactUsDto {
   @IsString()
   @IsNotEmpty()
+  @Length(2, 150)
   fullName: string;
 
   @IsEmail()
+  @IsEmailDomainReachable()
   email: string;
 
   @IsString()
@@ -28,10 +33,12 @@ export class CreateContactUsDto {
 
   @IsString()
   @IsNotEmpty()
+  @Length(2, 150)
   subject: string;
 
   @IsString()
-  @IsNotEmpty()
+  @Length(10, 3000)
+  @IsRealText()
   message: string;
   @IsOptional()
   @IsBoolean()

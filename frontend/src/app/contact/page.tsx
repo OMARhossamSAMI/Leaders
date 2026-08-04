@@ -53,9 +53,29 @@ export default function ContactPage() {
         setSubmitted(false);
       }, 4000);
       form.reset();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Submission failed:", error);
-      alert("Something went wrong. Please try again later.");
+
+      let message = "Something went wrong. Please try again later.";
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as Record<string, unknown>).response === "object"
+      ) {
+        const response = (
+          error as { response?: { data?: { message?: unknown } } }
+        ).response;
+
+        const rawMessage = response?.data?.message;
+        if (typeof rawMessage === "string") {
+          message = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          message = rawMessage.join(" \n ");
+        }
+      }
+
+      alert(message);
     } finally {
       setLoading(false); // ✅ Stop loading
     }
@@ -222,6 +242,7 @@ export default function ContactPage() {
                                 name="message"
                                 placeholder="Write Message..."
                                 style={{ height: "180px" }}
+                                minLength={10}
                                 required
                               />
                             </div>
