@@ -168,7 +168,7 @@ export default function ContactUsAdminPage() {
                 currentMessages.map((msg) => (
                   <div key={msg._id} className="contact-card">
                     <div className="card-header">
-                      <div>
+                      <div className="card-header-name">
                         <h3 className="card-name">
                           <i className="bi bi-person-circle"></i> {msg.fullName}
                         </h3>
