@@ -44,6 +44,15 @@ body {
   gap: 2rem;
 }
 
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
 .contact-card {
   background: #fff;
   border-radius: 15px;
@@ -63,8 +72,15 @@ body {
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.card-header-name {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .card-header h3 {
@@ -72,6 +88,8 @@ body {
   color: #2c7be5;
   margin: 0;
   text-transform: capitalize;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .role-tag {
@@ -88,6 +106,7 @@ body {
   font-size: 0.75rem;
   color: #777;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .card-content p {

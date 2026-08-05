@@ -7,7 +7,8 @@ import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 import "./page.css";
 import Image from "next/image";
-import { createPortal } from "react-dom";
+import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
+import { extractErrorMessage } from "../../utils/errors";
 
 interface FormField {
   field_name: string;
@@ -36,12 +37,10 @@ type Slot = {
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const router = useRouter(); // ⬅️ NEW
-  const [showBookedPopup, setShowBookedPopup] = useState(false);
-  const [bookedTimer, setBookedTimer] = useState<number | null>(null);
+  const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(null);
   const [fields, setFields] = useState<FormField[]>([]);
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
 
   // ---- Your existing selectedSlot (kept for UI text). We’ll also track slotId internally.
@@ -72,18 +71,6 @@ export default function AdmissionsPage() {
 
   const [gradeApplyingFor, setGradeApplyingFor] = useState("");
 
-  const [bookedPopup, setBookedPopup] = useState<{
-    title: string;
-    message: string;
-    kind: "success" | "error";
-  } | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (bookedTimer !== null) window.clearTimeout(bookedTimer);
-    };
-  }, [bookedTimer]);
-
   const handleBookingSubmit = async () => {
     setBookingErr(null);
     setBookingOk(null);
@@ -106,14 +93,7 @@ export default function AdmissionsPage() {
     if (missing.length) {
       const msg = `Please fill ${list(missing)}.`;
       setBookingErr(msg);
-      setBookedPopup({
-        title: "Missing information",
-        message: msg,
-        kind: "error",
-      });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
-      setBookedTimer(t);
+      setStatusPopup({ title: "Missing Information", message: msg, kind: "error" });
       return; // don't call the API
     }
 
@@ -153,14 +133,11 @@ export default function AdmissionsPage() {
       );
       setOpen(false); // close big modal
 
-      setBookedPopup({
-        title: "Successfully booked!",
+      setStatusPopup({
+        title: "Successfully Booked!",
         message: successMsg,
         kind: "success",
       });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3500);
-      setBookedTimer(t);
 
       // clear fields
       setStudentName("");
@@ -184,10 +161,7 @@ export default function AdmissionsPage() {
       const error = err as Error;
       const msg = error.message || "Booking failed";
       setBookingErr(msg);
-      setBookedPopup({ title: "Booking failed", message: msg, kind: "error" });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
-      setBookedTimer(t);
+      setStatusPopup({ title: "Booking Failed", message: msg, kind: "error" });
     } finally {
       setBookingLoading(false);
     }
@@ -271,12 +245,23 @@ export default function AdmissionsPage() {
         setRedirectTimer(t);
       } else {
         setIsSubmitting(false);
-        setErrorMessage("❌ " + (result.message || "Submission failed."));
+        setStatusPopup({
+          kind: "error",
+          title: "Submission Failed",
+          message: extractErrorMessage(result, "Submission failed."),
+        });
       }
     } catch (error) {
       console.error("Submission Error:", error);
       setIsSubmitting(false);
-      alert("❌ An error occurred while submitting the form.");
+      setStatusPopup({
+        kind: "error",
+        title: "Submission Failed",
+        message: extractErrorMessage(
+          error,
+          "An error occurred while submitting the form."
+        ),
+      });
     }
   };
 
@@ -1343,14 +1328,6 @@ export default function AdmissionsPage() {
                                 ✅ Application submitted successfully!
                               </div>
                             )}
-                            {errorMessage && (
-                              <div
-                                className="alert alert-danger text-center"
-                                role="alert"
-                              >
-                                {errorMessage}
-                              </div>
-                            )}
 
                             <div className="text-center mt-4">
                               <button
@@ -1494,56 +1471,14 @@ export default function AdmissionsPage() {
         </div>
       )}
 
-      {showBookedPopup &&
-        bookedPopup &&
-        createPortal(
-          <div
-            className="booked-popup-backdrop"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="bookedTitle"
-          >
-            <div className="booked-popup-card">
-              <div
-                className="booked-popup-icon"
-                aria-hidden
-                style={{
-                  background:
-                    bookedPopup.kind === "success" ? "#e8f8ff" : "#ffeaea",
-                  color: bookedPopup.kind === "success" ? "#0aa2d1" : "#c32626",
-                }}
-              >
-                {bookedPopup.kind === "success" ? "✓" : "!"}
-              </div>
-              <h4 id="bookedTitle" style={{ margin: 0 }}>
-                {bookedPopup.title}
-              </h4>
-              <p className="mb-3" style={{ textAlign: "center" }}>
-                {bookedPopup.message}
-              </p>
-              <button
-                className="btn"
-                style={{
-                  backgroundColor:
-                    bookedPopup.kind === "success"
-                      ? "var(--accent-color)"
-                      : "#c32626",
-                  color: "#fff",
-                  borderRadius: 8,
-                  padding: "10px 18px",
-                  fontWeight: 600,
-                }}
-                onClick={() => {
-                  if (bookedTimer !== null) window.clearTimeout(bookedTimer);
-                  setShowBookedPopup(false);
-                }}
-              >
-                OK
-              </button>
-            </div>
-          </div>,
-          document.body
-        )}
+      <StatusPopup
+        open={!!statusPopup}
+        kind={statusPopup?.kind ?? "error"}
+        title={statusPopup?.title ?? ""}
+        message={statusPopup?.message ?? ""}
+        onClose={() => setStatusPopup(null)}
+        autoDismissMs={statusPopup?.kind === "success" ? 3500 : undefined}
+      />
 
       <style jsx>{`
         .custom-tab {

@@ -559,141 +559,149 @@ export default function JobManagementPage() {
                 📥 Export as CSV
               </button>
 
-              <div className="application-stats mt-4">
-                <h4>📊 Applications Submitted Per Day</h4>
-                <ul>
+             <div className="application-stats mt-4">
+                <div className="stats-header">
+                  <h4>📊 Applications Submitted Per Day</h4>
+                  <span>{Object.keys(applicationCounts).length} days</span>
+                </div>
+
+                <div className="stats-scroll">
                   {Object.entries(applicationCounts).map(([date, count]) => (
-                    <li key={date}>
-                      <strong>{date}:</strong> {count} application
-                      {count > 1 ? "s" : ""}
-                    </li>
+                    <div key={date} className="stats-row">
+                      <span className="stats-date">{date}</span>
+                      <span className="stats-count">
+                        {count} application{count > 1 ? "s" : ""}
+                      </span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
-              <div className="scroll-grid mt-4">
-                {applications.map((app) => (
-                  <div key={app._id} className="card">
-                    <h5>
-                      {app.data?.full_name
-                        ? String(app.data?.full_name)
-                        : "Untitled Applicant"}
-                    </h5>
-                    <p>
-                      <strong>Email:</strong>{" "}
-                      {typeof app.data?.email === "string"
-                        ? app.data.email
-                        : "N/A"}
-                      <br />
-                      <strong>Submitted:</strong>{" "}
-                      {new Date(app.createdAt).toLocaleString()}
-                    </p>
+              <div className="applications-scroll-box mt-4">
+                <div className="applications-scroll-header">
+                  <h4>Applications</h4>
+                  <span>{applications.length} applicants</span>
+                </div>
 
-                    <div className="btn-group mt-2">
-                      <button
-                        className="btn-primary btn-sm"
-                        onClick={() => toggleView(app._id)}
-                      >
-                        <Eye size={16} className="me-1" />{" "}
-                        {app.expanded ? "Hide" : "View"}
-                      </button>
-                      <button
-                        className="btn-danger btn-sm"
-                        onClick={() => handleDeleteApplication(app._id)}
-                      >
-                        <Trash2 size={16} className="me-1" /> Delete
-                      </button>
-                    </div>
+                <div className="applications-scroll-content">
+                  {applications.map((app) => (
+                    <div key={app._id} className="card">
+                      <h5>
+                        {app.data?.full_name
+                          ? String(app.data?.full_name)
+                          : "Untitled Applicant"}
+                      </h5>
 
-                    {app.expanded && (
-                      <div className="application-details mt-3">
-                        {Object.entries(app.data).map(([key, value]) => (
-                          <p key={key}>
-                            <strong>{key}:</strong>{" "}
-                            {Array.isArray(value) &&
+                      <p>
+                        <strong>Email:</strong>{" "}
+                        {typeof app.data?.email === "string" ? app.data.email : "N/A"}
+                        <br />
+                        <strong>Submitted:</strong>{" "}
+                        {new Date(app.createdAt).toLocaleString()}
+                      </p>
+
+                      <div className="btn-group mt-2">
+                        <button
+                          className="btn-primary btn-sm"
+                          onClick={() => toggleView(app._id)}
+                        >
+                          <Eye size={16} className="me-1" />{" "}
+                          {app.expanded ? "Hide" : "View"}
+                        </button>
+
+                        <button
+                          className="btn-danger btn-sm"
+                          onClick={() => handleDeleteApplication(app._id)}
+                        >
+                          <Trash2 size={16} className="me-1" /> Delete
+                        </button>
+                      </div>
+
+                      {app.expanded && (
+                        <div className="application-details mt-3">
+                          {Object.entries(app.data).map(([key, value]) => (
+                            <p key={key}>
+                              <strong>{key}:</strong>{" "}
+                              {Array.isArray(value) &&
                               value.every(
                                 (v) =>
                                   typeof v === "object" &&
                                   v !== null &&
                                   "path" in v
                               ) ? (
-                              (
-                                value as {
-                                  path: string;
-                                  originalname?: string;
-                                }[]
-                              ).map((fileObj, idx) => {
-                                const filePath = fileObj.path.startsWith(
-                                  "uploads/"
-                                )
-                                  ? fileObj.path
-                                  : `uploads/${fileObj.path.replace(
-                                    /^\/+/,
-                                    ""
-                                  )}`;
-                                return (
-                                  <span key={idx}>
-                                    <a
-                                      href={`${process.env.NEXT_PUBLIC_API_URL}/${filePath}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      download
-                                      className="text-blue-600 underline"
-                                    >
-                                      📎{" "}
-                                      {fileObj.originalname ||
-                                        `View File ${idx + 1}`}
-                                    </a>
-                                    {idx < value.length - 1 && ", "}
-                                  </span>
-                                );
-                              })
-                            ) : typeof value === "string" &&
-                              /\.(pdf|docx?|png|jpe?g)$/i.test(value) ? (
-                              <a
-                                href={
-                                  value.startsWith("http")
-                                    ? value
-                                    : `${process.env.NEXT_PUBLIC_API_URL
-                                    }/uploads/${value.replace(/^\/+/, "")}`
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                download
-                                className="text-blue-600 underline"
-                              >
-                                📎 View File
-                              </a>
-                            ) : (
-                              <span>{value?.toString()}</span>
-                            )}
-                          </p>
-                        ))}
+                                (
+                                  value as {
+                                    path: string;
+                                    originalname?: string;
+                                  }[]
+                                ).map((fileObj, idx) => {
+                                  const filePath = fileObj.path.startsWith("uploads/")
+                                    ? fileObj.path
+                                    : `uploads/${fileObj.path.replace(/^\/+/, "")}`;
 
-                        {/* Display standalone uploaded files from app.files */}
-                        {(app.files?.length ?? 0) > 0 && (
-                          <div className="mt-3">
-                            <strong>Uploaded Files:</strong>{" "}
-                            {app.files?.map((file, idx) => (
-                              <span key={idx}>
+                                  return (
+                                    <span key={idx}>
+                                      <a
+                                        href={`${process.env.NEXT_PUBLIC_API_URL}/${filePath}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="text-blue-600 underline"
+                                      >
+                                        📎 {fileObj.originalname || `View File ${idx + 1}`}
+                                      </a>
+                                      {idx < value.length - 1 && ", "}
+                                    </span>
+                                  );
+                                })
+                              ) : typeof value === "string" &&
+                                /\.(pdf|docx?|png|jpe?g)$/i.test(value) ? (
                                 <a
-                                  href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+                                  href={
+                                    value.startsWith("http")
+                                      ? value
+                                      : `${process.env.NEXT_PUBLIC_API_URL}/uploads/${value.replace(
+                                          /^\/+/,
+                                          ""
+                                        )}`
+                                  }
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   download
                                   className="text-blue-600 underline"
                                 >
-                                  📎 {file.originalname || `File ${idx + 1}`}
+                                  📎 View File
                                 </a>
-                                {idx < (app.files?.length ?? 0) - 1 && ", "}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                              ) : (
+                                <span>{value?.toString()}</span>
+                              )}
+                            </p>
+                          ))}
+
+                          {(app.files?.length ?? 0) > 0 && (
+                            <div className="mt-3">
+                              <strong>Uploaded Files:</strong>{" "}
+                              {app.files?.map((file, idx) => (
+                                <span key={idx}>
+                                  <a
+                                    href={`${process.env.NEXT_PUBLIC_API_URL}/${file.path}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    download
+                                    className="text-blue-600 underline"
+                                  >
+                                    📎 {file.originalname || `File ${idx + 1}`}
+                                  </a>
+                                  {idx < (app.files?.length ?? 0) - 1 && ", "}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}
