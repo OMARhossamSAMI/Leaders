@@ -7,6 +7,7 @@ import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
 import "./internship.css";
+import { getPaginationRange } from "@/utils/pagination";
 
 interface InternshipApplication {
   _id: string;
@@ -32,8 +33,18 @@ export default function InternshipApplicationsPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingApplications, setLoadingApplications] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const applicationsPerPage = 10;
 
   const router = useRouter();
+
+  const totalPages = Math.ceil(applications.length / applicationsPerPage);
+  const indexOfLastApplication = currentPage * applicationsPerPage;
+  const indexOfFirstApplication = indexOfLastApplication - applicationsPerPage;
+  const currentApplications = applications.slice(
+    indexOfFirstApplication,
+    indexOfLastApplication
+  );
 
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
@@ -196,7 +207,7 @@ export default function InternshipApplicationsPage() {
             <p>No internship applications submitted yet.</p>
           ) : (
             <div className="row g-4">
-              {applications.map((app) => (
+              {currentApplications.map((app) => (
                 <div key={app._id} className="col-md-4">
                   <div className="card h-100">
                     <h5 className="accent-text">
@@ -204,9 +215,12 @@ export default function InternshipApplicationsPage() {
                     </h5>
                     <p>
                       <strong>University:</strong> {app.university}
-                      <br />
-                      <strong>Date:</strong>{" "}
-                      {new Date(app.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>Submitted:</strong>{" "}
+                      {app.createdAt
+                        ? new Date(String(app.createdAt)).toLocaleDateString()
+                        : "N/A"}
                     </p>
 
                     {/* Buttons */}
@@ -323,6 +337,83 @@ export default function InternshipApplicationsPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {!loadingApplications && applications.length > 0 && totalPages > 1 && (
+            <div className="pagination-wrapper">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{
+                  backgroundColor: currentPage === 1 ? "#f5f5f5" : "#fff",
+                  border: `1px solid var(--accent-color)`,
+                  color: currentPage === 1 ? "#999" : "var(--accent-color)",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                }}
+              >
+                ⬅ Prev
+              </button>
+
+              {getPaginationRange(currentPage, totalPages).map((item, index) => {
+                if (item === "ellipsis") {
+                  return (
+                    <span
+                      key={`ellipsis-${index}`}
+                      style={{
+                        padding: "4px 10px",
+                        fontSize: "0.875rem",
+                        color: "#999",
+                      }}
+                    >
+                      …
+                    </span>
+                  );
+                }
+                const page = item;
+                const isActive = currentPage === page;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    style={{
+                      backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                      border: `1px solid var(--accent-color)`,
+                      color: isActive ? "#fff" : "var(--accent-color)",
+                      borderRadius: "6px",
+                      padding: "4px 10px",
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                style={{
+                  backgroundColor:
+                    currentPage === totalPages ? "#f5f5f5" : "#fff",
+                  border: `1px solid var(--accent-color)`,
+                  color: currentPage === totalPages ? "#999" : "var(--accent-color)",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                }}
+              >
+                Next ➡
+              </button>
             </div>
           )}
         </div>
