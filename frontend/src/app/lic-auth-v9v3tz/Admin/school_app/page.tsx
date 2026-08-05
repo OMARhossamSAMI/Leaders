@@ -13,6 +13,7 @@ import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
+import { getPaginationRange } from "@/utils/pagination";
 
 type FieldValue = string | number | boolean | string[] | File | null;
 
@@ -787,7 +788,7 @@ export default function ApplicationsPage() {
 
                       {/* Pagination Controls */}
                       {totalPages > 1 && (
-                        <div className="pagination mt-4 d-flex justify-content-center gap-2">
+                        <div className="pagination-wrapper">
                           <button
                               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                               disabled={currentPage === 1}
@@ -805,8 +806,22 @@ export default function ApplicationsPage() {
                               ⬅ Prev
                             </button>
 
-                            {[...Array(totalPages)].map((_, i) => {
-                              const page = i + 1;
+                            {getPaginationRange(currentPage, totalPages).map((item, index) => {
+                              if (item === "ellipsis") {
+                                return (
+                                  <span
+                                    key={`ellipsis-${index}`}
+                                    style={{
+                                      padding: "4px 10px",
+                                      fontSize: "0.875rem",
+                                      color: "#999",
+                                    }}
+                                  >
+                                    …
+                                  </span>
+                                );
+                              }
+                              const page = item;
                               const isActive = currentPage === page;
                               return (
                                 <button

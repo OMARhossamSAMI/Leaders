@@ -5,6 +5,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
+import { extractErrorMessage } from "../../utils/errors";
 
 interface ContactUsForm {
   fullName: string;
@@ -19,6 +21,7 @@ interface ContactUsForm {
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(null);
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -55,27 +58,14 @@ export default function ContactPage() {
       form.reset();
     } catch (error: unknown) {
       console.error("Submission failed:", error);
-
-      let message = "Something went wrong. Please try again later.";
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error &&
-        typeof (error as Record<string, unknown>).response === "object"
-      ) {
-        const response = (
-          error as { response?: { data?: { message?: unknown } } }
-        ).response;
-
-        const rawMessage = response?.data?.message;
-        if (typeof rawMessage === "string") {
-          message = rawMessage;
-        } else if (Array.isArray(rawMessage)) {
-          message = rawMessage.join(" \n ");
-        }
-      }
-
-      alert(message);
+      setStatusPopup({
+        kind: "error",
+        title: "Submission Failed",
+        message: extractErrorMessage(
+          error,
+          "Something went wrong. Please try again later."
+        ),
+      });
     } finally {
       setLoading(false); // ✅ Stop loading
     }
@@ -486,6 +476,13 @@ export default function ContactPage() {
         {/* Vendor JS Files */}
         {/* Main JS File */}
       </div>
+      <StatusPopup
+        open={!!statusPopup}
+        kind={statusPopup?.kind ?? "error"}
+        title={statusPopup?.title ?? ""}
+        message={statusPopup?.message ?? ""}
+        onClose={() => setStatusPopup(null)}
+      />
     </>
   );
 }

@@ -4,6 +4,8 @@ import {
   StudentApplication,
   StudentApplicationDocument,
 } from '../Schemas/studentApplication.schema';
+import { FormField, FormFieldDocument } from '../Schemas/form-field.schema';
+import { validateDynamicFormSubmission } from '../common/utils/dynamic-form.util';
 import { Model } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
 import { join } from 'path';
@@ -42,6 +44,8 @@ export class StudentApplicationService {
     @InjectModel(StudentApplication.name)
     private appModel: Model<StudentApplicationDocument>,
     @InjectModel('Appointment') private readonly apptModel: Model<any>, // <-- add
+    @InjectModel(FormField.name)
+    private readonly formFieldModel: Model<FormFieldDocument>,
   ) {}
 
   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
@@ -182,6 +186,15 @@ export class StudentApplicationService {
     files?: Express.Multer.File[],
   ): Promise<any> {
     console.log('📥 Incoming application data:', formData);
+
+    const formFields = await this.formFieldModel.find().sort({ order: 1 }).lean();
+    // type:'file' fields are intentionally not checked here — every file input on this
+    // form shares name="files" client-side, so the backend can't map a file back to a
+    // specific admin-defined field. Required uploads remain enforced via HTML5 `required` only.
+    const errors = validateDynamicFormSubmission(formData, formFields);
+    if (errors.length) {
+      throw new BadRequestException(errors);
+    }
 
     // ✅ Generate unique appointment code
     const appointmentCode = await this.generateUniqueCode();

@@ -10,34 +10,34 @@ import { IsEmailDomainReachable } from '../../common/validators/is-email-domain-
 import { IsRealText } from '../../common/validators/is-real-text.validator';
 
 export class CreateContactUsDto {
-  @IsString()
-  @IsNotEmpty()
-  @Length(2, 150)
+  @IsString({ message: 'Please enter your full name.' })
+  @IsNotEmpty({ message: 'Please enter your full name.' })
+  @Length(2, 150, { message: 'Full name must be between 2 and 150 characters.' })
   fullName: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Please enter a valid email address.' })
   @IsEmailDomainReachable()
   email: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'Please enter your phone number.' })
+  @IsNotEmpty({ message: 'Please enter your phone number.' })
   phone: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'Please select who you are.' })
+  @IsNotEmpty({ message: 'Please select who you are.' })
   role: string;
 
   @IsOptional()
   @IsString()
   grade?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @Length(2, 150)
+  @IsString({ message: 'Please select a subject.' })
+  @IsNotEmpty({ message: 'Please select a subject.' })
+  @Length(2, 150, { message: 'Subject must be between 2 and 150 characters.' })
   subject: string;
 
-  @IsString()
-  @Length(10, 3000)
+  @IsString({ message: 'Please enter your message.' })
+  @Length(10, 3000, { message: 'Your message must be between 10 and 3000 characters.' })
   @IsRealText()
   message: string;
   @IsOptional()
