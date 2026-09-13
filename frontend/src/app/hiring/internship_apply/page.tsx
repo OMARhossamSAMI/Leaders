@@ -5,26 +5,24 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./page.css";
 import { Send } from "lucide-react";
+import StatusPopup, {
+  type StatusPopupState,
+} from "../../components/StatusPopup";
+import { extractErrorMessage } from "../../../utils/errors";
 
 export default function InternshipApplyPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(
+    null
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const plainData: Record<string, FormDataEntryValue> = {};
-    formData.forEach((value, key) => {
-      plainData[key] = value;
-    });
-
     setIsLoading(true);
     try {
-      form.querySelector(".loading")?.classList.add("d-block");
-      form.querySelector(".error-message")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.remove("d-block");
-
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/internship`,
         formData,
@@ -35,17 +33,19 @@ export default function InternshipApplyPage() {
         }
       );
 
-      form.querySelector(".loading")?.classList.remove("d-block");
-      form.querySelector(".sent-message")?.classList.add("d-block");
+      setStatusPopup({
+        kind: "success",
+        title: "Application Received",
+        message: "Your application has been sent. Thank you!",
+      });
       form.reset();
     } catch (error: unknown) {
       console.error("Submission error:", error);
-      form.querySelector(".loading")?.classList.remove("d-block");
-      const errEl = form.querySelector(".error-message");
-      if (errEl) {
-        errEl.innerHTML = "Submission failed. Please try again.";
-        errEl.classList.add("d-block");
-      }
+      setStatusPopup({
+        kind: "error",
+        title: "Submission Failed",
+        message: extractErrorMessage(error, "Submission failed. Please try again."),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -95,20 +95,6 @@ export default function InternshipApplyPage() {
                   onSubmit={handleSubmit}
                   encType="multipart/form-data"
                 >
-                  <div className="loading" style={{ display: "none" }}>
-                    Loading
-                  </div>
-                  <div
-                    className="error-message"
-                    style={{ display: "none", color: "red" }}
-                  ></div>
-                  <div
-                    className="sent-message"
-                    style={{ display: "none", color: "green" }}
-                  >
-                    Your application has been sent. Thank you!
-                  </div>
-
                   <div className="row">
                     {/* Full Name */}
                     <div className="col-md-6 mb-3">
@@ -285,6 +271,14 @@ export default function InternshipApplyPage() {
           </div>
         </section>
       </main>
+      <StatusPopup
+        open={!!statusPopup}
+        kind={statusPopup?.kind ?? "error"}
+        title={statusPopup?.title ?? ""}
+        message={statusPopup?.message ?? ""}
+        onClose={() => setStatusPopup(null)}
+        autoDismissMs={statusPopup?.kind === "success" ? 3500 : undefined}
+      />
     </>
   );
 }

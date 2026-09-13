@@ -6,6 +6,7 @@ import "./page.css";
 import AdminHeader from "../../../components/AdminHeader"; // ✅ Add AdminHeader
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
+import { getPaginationRange } from "@/utils/pagination";
 
 interface ContactUsEntry {
   _id: string;
@@ -27,8 +28,18 @@ export default function ContactUsAdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const messagesPerPage = 10;
 
   const router = useRouter();
+
+  const totalPages = Math.ceil(messages.length / messagesPerPage);
+  const indexOfLastMessage = currentPage * messagesPerPage;
+  const indexOfFirstMessage = indexOfLastMessage - messagesPerPage;
+  const currentMessages = messages.slice(
+    indexOfFirstMessage,
+    indexOfLastMessage
+  );
 
   const fetchMessages = async () => {
     try {
@@ -154,10 +165,10 @@ export default function ContactUsAdminPage() {
                   No contact us messages yet.
                 </p>
               ) : (
-                messages.map((msg) => (
+                currentMessages.map((msg) => (
                   <div key={msg._id} className="contact-card">
                     <div className="card-header">
-                      <div>
+                      <div className="card-header-name">
                         <h3 className="card-name">
                           <i className="bi bi-person-circle"></i> {msg.fullName}
                         </h3>
@@ -238,6 +249,83 @@ export default function ContactUsAdminPage() {
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {!loadingMessages && messages.length > 0 && totalPages > 1 && (
+            <div className="pagination-wrapper">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{
+                  backgroundColor: currentPage === 1 ? "#f5f5f5" : "#fff",
+                  border: `1px solid var(--accent-color)`,
+                  color: currentPage === 1 ? "#999" : "var(--accent-color)",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                }}
+              >
+                ⬅ Prev
+              </button>
+
+              {getPaginationRange(currentPage, totalPages).map((item, index) => {
+                if (item === "ellipsis") {
+                  return (
+                    <span
+                      key={`ellipsis-${index}`}
+                      style={{
+                        padding: "4px 10px",
+                        fontSize: "0.875rem",
+                        color: "#999",
+                      }}
+                    >
+                      …
+                    </span>
+                  );
+                }
+                const page = item;
+                const isActive = currentPage === page;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    style={{
+                      backgroundColor: isActive ? "var(--accent-color)" : "#fff",
+                      border: `1px solid var(--accent-color)`,
+                      color: isActive ? "#fff" : "var(--accent-color)",
+                      borderRadius: "6px",
+                      padding: "4px 10px",
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                style={{
+                  backgroundColor:
+                    currentPage === totalPages ? "#f5f5f5" : "#fff",
+                  border: `1px solid var(--accent-color)`,
+                  color: currentPage === totalPages ? "#999" : "var(--accent-color)",
+                  borderRadius: "6px",
+                  padding: "4px 10px",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                }}
+              >
+                Next ➡
+              </button>
             </div>
           )}
         </div>

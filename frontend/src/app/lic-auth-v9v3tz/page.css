@@ -262,3 +262,27 @@ body {
   color: white;
 }
 
+
+/* Slot management table styling */
+.table th,
+.table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table td button {
+  min-width: 90px;
+  width: 100%;
+}
+
+.table {
+  border-color: #dee2e6;
+}
+
+.card-body {
+  overflow-x: auto;
+}
+
+.card.shadow-sm.border-0.mt-4 {
+  width: 100%;
+}

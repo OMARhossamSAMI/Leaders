@@ -11,12 +11,14 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { AppointmentSchema } from 'src/Schemas/appointment.schema';
+import { FormField, FormFieldSchema } from '../Schemas/form-field.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: StudentApplication.name, schema: StudentApplicationSchema },
       { name: 'Appointment', schema: AppointmentSchema },
+      { name: FormField.name, schema: FormFieldSchema },
     ]),
     MulterModule.register({
       storage: diskStorage({

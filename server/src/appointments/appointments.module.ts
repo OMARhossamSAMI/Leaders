@@ -1,4 +1,4 @@
-// appointments.module.ts
+// src/appointments/appointments.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppointmentsController } from './appointments.controller';
@@ -8,16 +8,17 @@ import { Appointment, AppointmentSchema } from '../Schemas/appointment.schema';
 import {
   StudentApplication,
   StudentApplicationSchema,
-} from '../Schemas/studentApplication.schema'; // <-- correct path & model
-import { HttpModule } from '@nestjs/axios'; // 👈 import HttpModule
+} from '../Schemas/studentApplication.schema';
+import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-import { StudentApplicationModule } from '../student-application/student-application.module'; // 👈 add this
-import { AcceptedStudentModule } from '../accepted-student/accepted-student.module'; // 👈 import it
+import { StudentApplicationModule } from '../student-application/student-application.module';
+import { AcceptedStudentModule } from '../accepted-student/accepted-student.module';
+import { ClosedSlot, ClosedSlotSchema } from '../Schemas/closedSlot.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Appointment.name, schema: AppointmentSchema },
-      // Bind the student applications collection explicitly
       {
         name: StudentApplication.name,
         schema: StudentApplicationSchema,
@@ -26,13 +27,14 @@ import { AcceptedStudentModule } from '../accepted-student/accepted-student.modu
       {
         name: 'WaSend',
         schema: require('../Schemas/wa-send.schema').WaSendSchema,
-      }, // 👈 add WaSend schema
+      },
+      { name: ClosedSlot.name, schema: ClosedSlotSchema },
     ]),
-    HttpModule, // 👈 add this
-    ConfigModule, // 👈 make sure ConfigModule is available
+    HttpModule,
+    ConfigModule,
     StudentApplicationModule,
-    AcceptedStudentModule, // 👈 added here
-    SettingsModule, // 👈 make available here
+    AcceptedStudentModule,
+    SettingsModule,
   ],
   controllers: [AppointmentsController],
   providers: [AppointmentsService],

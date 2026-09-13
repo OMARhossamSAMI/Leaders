@@ -41,7 +41,7 @@ import { BookTourModule } from './booktour/booktour.module';
       envFilePath: ['.env.local', '.env'], // load local first, then .env
     }),
     MongooseModule.forRoot(
-      'mongodb://Behz92:Behz9204@ac-o8nt2z7-shard-00-00.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-01.icdejxj.mongodb.net:27017,ac-o8nt2z7-shard-00-02.icdejxj.mongodb.net:27017/?replicaSet=atlas-12nls9-shard-0&ssl=true&authSource=admin',
+      'mongodb://youssefsahhar2406_db_user:MiVXMDHQ2jwp7ntN@ac-zxmohbk-shard-00-00.3zvekkv.mongodb.net:27017/?replicaSet=atlas-q52x6y-shard-0&ssl=true&authSource=admin',
     ),
     ScheduleModule.forRoot(),
     TestimonialsModule,

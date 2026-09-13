@@ -9146,9 +9146,7 @@ section,
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
-.starter-section {
-  /* Add your styles here */
-}
+
 /* /<!-- Day In LIC -->--/ */
 .students-life .dayinlic-cards {
   display: grid;
@@ -9419,4 +9417,11 @@ section,
 
 .program-item.character .program-type {
   color: #6f42c1;
+}
+
+/* Override Bootstrap .card width only for Admin Slot Management */
+.card.shadow-sm.border-0.mt-4 {
+  width: 1200px !important;
+  max-width: 100% !important;
+  margin: 0 auto; /* center it */
 }
