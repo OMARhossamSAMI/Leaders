@@ -34,6 +34,14 @@ type Slot = {
   bookedCount: number;
 };
 
+function getCurrentAcademicYear(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0 = Jan ... 8 = Sep
+  const startYear = month >= 8 ? year : year - 1;
+  return `${startYear}/${startYear + 1}`;
+}
+
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const router = useRouter(); // ⬅️ NEW
@@ -42,6 +50,8 @@ export default function AdmissionsPage() {
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const [admissionClosed, setAdmissionClosed] = useState(false);
+  const [loadingAdmissionSetting, setLoadingAdmissionSetting] = useState(true);
 
   // ---- Your existing selectedSlot (kept for UI text). We’ll also track slotId internally.
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null); // display text
@@ -186,7 +196,21 @@ export default function AdmissionsPage() {
         console.error("Failed to fetch form fields", error);
       }
     };
+    const fetchAdmissionSetting = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`
+        );
+        const data = await res.json();
+        setAdmissionClosed(Boolean(data.admissionClosed));
+      } catch (error) {
+        console.error("Failed to fetch admission-closed setting", error);
+      } finally {
+        setLoadingAdmissionSetting(false);
+      }
+    };
     fetchFields();
+    fetchAdmissionSetting();
   }, []);
 
   useEffect(() => {
@@ -1154,34 +1178,51 @@ export default function AdmissionsPage() {
 
                 {activeSection === "form" && (
                   <div className="col-lg-12">
-                    <div className="cta-wrapper mt-5">
-                      <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
-                        <i className="bi bi-file-earmark-check" />
-                        <h3>Ready to Apply?</h3>
-                        <p>
-                          Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="form-wrapper mt-5">
-                      <div className="card w-100">
-                        <div className="card-body">
-                          <h2 className="card-title">
-                            Admission Application Form
-                          </h2>
+                    {loadingAdmissionSetting ? null : admissionClosed ? (
+                      <div className="cta-wrapper mt-5">
+                        <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100 text-center">
+                          <i className="bi bi-exclamation-circle" />
+                          <h3>
+                            Admission is closed now for{" "}
+                            {getCurrentAcademicYear()}
+                          </h3>
                           <p>
-                            Please complete the form below to apply for
-                            admission at Leaders International College.
+                            Stay tuned, the new admission will be announced
+                            soon.
                           </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="cta-wrapper mt-5">
+                          <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
+                            <i className="bi bi-file-earmark-check" />
+                            <h3>Ready to Apply?</h3>
+                            <p>
+                              Please carefully provide the information
+                              requested below. Once submitted, our admissions
+                              team will review your application and contact
+                              you to arrange interviews for both the student
+                              and parents.
+                            </p>
+                          </div>
+                        </div>
 
-                          <form
-                            id="applicationForm"
-                            className="php-email-form mt-4"
-                            onSubmit={handleSubmit}
+                        <div className="form-wrapper mt-5">
+                          <div className="card w-100">
+                            <div className="card-body">
+                              <h2 className="card-title">
+                                Admission Application Form
+                              </h2>
+                              <p>
+                                Please complete the form below to apply for
+                                admission at Leaders International College.
+                              </p>
+
+                              <form
+                                id="applicationForm"
+                                className="php-email-form mt-4"
+                                onSubmit={handleSubmit}
                           >
                             <h5>Applicant Details</h5>
 
@@ -1354,6 +1395,8 @@ export default function AdmissionsPage() {
                         </div>
                       </div>
                     </div>
+                      </>
+                    )}
                   </div>
                 )}
                 {activeSection === "reserve" && (

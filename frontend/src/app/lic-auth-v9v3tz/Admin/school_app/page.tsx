@@ -45,6 +45,9 @@ export default function ApplicationsPage() {
   const [editingFormStructure, setEditingFormStructure] = useState(false);
   const [formStructureDraft, setFormStructureDraft] = useState<FormField[]>([]);
 
+  const [admissionClosed, setAdmissionClosed] = useState(false);
+  const [loadingAdmissionSetting, setLoadingAdmissionSetting] = useState(true);
+
   const [activeTab, setActiveTab] = useState<"applications" | "form">(
     "applications"
   );
@@ -107,6 +110,18 @@ export default function ApplicationsPage() {
       .finally(() => setLoadingApplications(false));
   }, [source]);
 
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`)
+      .then((res) => res.json())
+      .then((data: { admissionClosed: boolean }) =>
+        setAdmissionClosed(data.admissionClosed)
+      )
+      .catch((err) =>
+        console.error("Failed to fetch admission-closed setting", err)
+      )
+      .finally(() => setLoadingAdmissionSetting(false));
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -201,6 +216,24 @@ export default function ApplicationsPage() {
     setFormStructureDraft([...formFields]);
     setEditingFormStructure(true);
     setActiveTab("form");
+  };
+
+  const handleToggleAdmissionClosed = async () => {
+    const updated = !admissionClosed;
+    setAdmissionClosed(updated);
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ admissionClosed: updated }),
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update admission-closed setting:", error);
+      setAdmissionClosed(!updated);
+    }
   };
 
   const handleFieldChange = (
@@ -879,6 +912,35 @@ export default function ApplicationsPage() {
               }}
             >
               <h3>Edit Form Structure</h3>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginBottom: "1.5rem",
+                  paddingBottom: "1rem",
+                  borderBottom: "1px solid #ddd",
+                }}
+              >
+                <label className="styled-switch">
+                  <input
+                    type="checkbox"
+                    checked={admissionClosed}
+                    onChange={handleToggleAdmissionClosed}
+                    disabled={loadingAdmissionSetting}
+                  />
+                  <span className="slider" />
+                  <span className="switch-label">
+                    {admissionClosed ? "Admission Closed" : "Admission Open"}
+                  </span>
+                </label>
+                <span style={{ color: "#666", fontSize: "0.85rem" }}>
+                  When closed, visitors see a closed message instead of the
+                  application form on the public Admissions page.
+                </span>
+              </div>
+
               {formStructureDraft.map((field, index) => {
                 const isLocked =
                   field.field_name === "father_email" ||

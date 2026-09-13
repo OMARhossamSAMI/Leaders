@@ -521,3 +521,45 @@ h3 {
 .stats-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* Styled switch */
+.styled-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.styled-switch input {
+  display: none;
+}
+.styled-switch .slider {
+  width: 50px;
+  height: 26px;
+  background-color: #ccc;
+  border-radius: 30px;
+  position: relative;
+  transition: background-color 0.3s;
+}
+.styled-switch .slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+.styled-switch input:checked + .slider {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+.styled-switch input:checked + .slider::before {
+  transform: translateX(24px);
+}
+.styled-switch .switch-label {
+  color: var(--accent-color);
+}
