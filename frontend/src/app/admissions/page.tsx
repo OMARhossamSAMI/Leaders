@@ -34,12 +34,12 @@ type Slot = {
   bookedCount: number;
 };
 
-function getCurrentAcademicYear(): string {
+function getAcademicYearLabel(offset: number = 0): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth(); // 0 = Jan ... 8 = Sep
-  const startYear = month >= 8 ? year : year - 1;
-  return `${startYear}/${startYear + 1}`;
+  const startYear = (month >= 8 ? year : year - 1) + offset;
+  return `${startYear}–${startYear + 1}`;
 }
 
 export default function AdmissionsPage() {
@@ -1183,12 +1183,14 @@ export default function AdmissionsPage() {
                         <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100 text-center">
                           <i className="bi bi-exclamation-circle" />
                           <h3>
-                            Admission is closed now for{" "}
-                            {getCurrentAcademicYear()}
+                            Admissions for the Academic Year{" "}
+                            {getAcademicYearLabel()} are now closed.
                           </h3>
                           <p>
-                            Stay tuned, the new admission will be announced
-                            soon.
+                            Stay tuned! Applications for the Academic Year{" "}
+                            {getAcademicYearLabel(1)} will open soon. Further
+                            details and application dates will be announced
+                            shortly.
                           </p>
                         </div>
                       </div>
