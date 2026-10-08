@@ -40,9 +40,17 @@ import { BookTourModule } from './booktour/booktour.module';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'], // load local first, then .env
     }),
-    MongooseModule.forRoot(
-      'mongodb://youssefsahhar2406_db_user:MiVXMDHQ2jwp7ntN@ac-zxmohbk-shard-00-00.3zvekkv.mongodb.net:27017/?replicaSet=atlas-q52x6y-shard-0&ssl=true&authSource=admin',
-    ),
+    // The connection string lives only in the environment (Render, or the
+    // git-ignored .env locally), never in the code.
+    MongooseModule.forRootAsync({
+      useFactory: () => {
+        const uri = process.env.MONGO_URI;
+        if (!uri) {
+          throw new Error('MONGO_URI is not set (see server/.env.example)');
+        }
+        return { uri };
+      },
+    }),
     ScheduleModule.forRoot(),
     TestimonialsModule,
     EventsModule,
