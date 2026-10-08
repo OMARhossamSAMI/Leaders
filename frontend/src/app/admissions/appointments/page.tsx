@@ -19,6 +19,7 @@ type Appointment = {
 };
 
 const API = "https://leaders-bf42.onrender.com";
+// const API = "http://localhost:3000";
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -32,6 +33,7 @@ export default function AppointmentPage() {
   const [searching, setSearching] = useState(false);
   const [app, setApp] = useState<Application | null>(null);
   const [lookupError, setLookupError] = useState("");
+  const [closedSlots, setClosedSlots] = useState<Record<string, string[]>>({});
 
   // Step 2 — choose date/time
   const [selectedDate, setSelectedDate] = useState<string>(""); // YYYY-MM-DD (local)
@@ -118,7 +120,12 @@ export default function AppointmentPage() {
           ? await res.json()
           : { times: [] };
         if (!cancelled) {
-          setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
+          const times = Array.isArray(data?.times) ? data.times : [];
+          // Remove any closed slots for the selected date
+          const filtered = closedSlots[selectedDate]
+            ? times.filter((t) => !closedSlots[selectedDate].includes(t))
+            : times;
+          setAvailableTimes(filtered);
         }
       } catch {
         if (!cancelled) setAvailableTimes([]);
@@ -155,6 +162,33 @@ export default function AppointmentPage() {
         setShowAppointments(true);
       } finally {
         setSettingsLoading(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API}/appointments/closed`);
+        if (res.ok) {
+          const data = await res.json();
+
+          // 🔹 Normalize array [{date,time}] → grouped object { date: [times] }
+          const grouped: Record<string, string[]> = {};
+          if (Array.isArray(data)) {
+            for (const item of data) {
+              if (item.date && item.time) {
+                if (!grouped[item.date]) grouped[item.date] = [];
+                grouped[item.date].push(item.time);
+              }
+            }
+          }
+
+          setClosedSlots(grouped);
+          console.log("✅ Closed slots loaded:", grouped);
+        }
+      } catch (err) {
+        console.warn("Could not load closed slots", err);
       }
     })();
   }, []);
@@ -232,17 +266,51 @@ export default function AppointmentPage() {
     setSaving(true);
     setSavedId(null);
 
-    // Build ISO datetime in local time, then convert to ISO
-    const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-    const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
-    const local = new Date(y, m - 1, d, hh, mm, 0, 0);
-
-    const payload: Appointment = {
-      applicationId: app._id,
-      slotISO: local.toISOString(),
-    };
-
     try {
+      // Parse date/time numbers
+      const [year, month, day] = selectedDate.split("-").map(Number);
+      const [hour, minute] = selectedTime.split(":").map(Number);
+
+      // --- Step 1: Ask Intl API for Cairo's timeZoneName string (e.g. "GMT+2" or "GMT+3") ---
+      const tz = "Africa/Cairo";
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "short",
+      }).formatToParts(Date.UTC(year, month - 1, day, hour, minute));
+
+      const tzName =
+        parts.find((p) => p.type === "timeZoneName")?.value || "GMT+2";
+
+      // --- Step 2: Extract numeric offset directly from that string ---
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default to +2 if unknown
+
+      // --- Step 3: Use that offset, purely mathematical ---
+      const cairoUtcMillis = Date.UTC(
+        year,
+        month - 1,
+        day,
+        hour - offsetHours,
+        minute,
+        0
+      );
+      const slotISO = `${new Date(cairoUtcMillis).toISOString()}`;
+
+      console.log("🌍 tzName:", tzName);
+      console.log("🕒 Cairo offset hours:", offsetHours);
+      console.log(
+        "🕒 Cairo time chosen:",
+        `${selectedDate}T${selectedTime}:00`
+      );
+      console.log("🕒 Sent UTC to backend:", slotISO);
+
+      // ✅ 5. Prepare payload
+      const payload: Appointment = {
+        applicationId: app._id,
+        slotISO,
+      };
+
+      // ✅ 6. Proceed as before
       const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -299,10 +367,10 @@ export default function AppointmentPage() {
           : null;
       setSavedId(newId || "OK");
 
-      // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setSaveError("Network error. Please try again.");
     } finally {
       setSaving(false);
@@ -413,7 +481,7 @@ export default function AppointmentPage() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter the code sent to your email (e.g. 6899a093b70c9c3f1564a7c5)"
+                placeholder="Enter the code sent to your email (e.g. XXXXXX)"
                 value={appId}
                 onChange={(e) => setAppId(e.target.value)}
                 required
@@ -561,8 +629,17 @@ export default function AppointmentPage() {
                         {dailySlots.map((t) => {
                           const active = selectedTime === t;
                           const isAvailable = availableTimes.includes(t);
+
+                          // 🔹 New: check if the slot is closed for that date
+                          const isClosed =
+                            closedSlots[selectedDate]?.includes(t) ?? false;
+
+                          // 🔹 Disable both closed + unavailable
                           const disabled =
-                            timesLoading || !selectedDate || !isAvailable;
+                            timesLoading ||
+                            !selectedDate ||
+                            !isAvailable ||
+                            isClosed;
 
                           return (
                             <div key={t} className="col-6 col-md-3 col-lg-2">
@@ -574,8 +651,14 @@ export default function AppointmentPage() {
                                 onClick={() => !disabled && setSelectedTime(t)}
                                 disabled={disabled}
                                 style={{
-                                  background: active ? ACCENT : "#ffffff",
-                                  color: isAvailable
+                                  background: isClosed
+                                    ? "#f1f1f1" // grey background for closed
+                                    : active
+                                    ? ACCENT
+                                    : "#ffffff",
+                                  color: isClosed
+                                    ? "#999"
+                                    : isAvailable
                                     ? active
                                       ? "#fff"
                                       : DARK
@@ -584,15 +667,28 @@ export default function AppointmentPage() {
                                   borderRadius: 12,
                                   fontWeight: 600,
                                   opacity: disabled ? 0.7 : 1,
-                                  cursor: isAvailable
-                                    ? "pointer"
-                                    : "not-allowed",
-                                  minHeight: 60, // ✅ makes all buttons equal height
+                                  cursor: disabled ? "not-allowed" : "pointer",
+                                  minHeight: 60,
                                 }}
-                                title={isAvailable ? "" : "Fully booked"}
+                                title={
+                                  isClosed
+                                    ? "Closed by administration"
+                                    : isAvailable
+                                    ? ""
+                                    : "Fully booked"
+                                }
                               >
                                 <span>{t}</span>
-                                {!isAvailable && (
+                                {isClosed ? (
+                                  <small
+                                    style={{
+                                      fontSize: "0.75rem",
+                                      color: "#777",
+                                    }}
+                                  >
+                                    Closed
+                                  </small>
+                                ) : !isAvailable ? (
                                   <small
                                     style={{
                                       fontSize: "0.75rem",
@@ -601,7 +697,7 @@ export default function AppointmentPage() {
                                   >
                                     Fully booked
                                   </small>
-                                )}
+                                ) : null}
                               </button>
                             </div>
                           );

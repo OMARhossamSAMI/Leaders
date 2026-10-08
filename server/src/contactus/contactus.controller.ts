@@ -6,12 +6,15 @@ import {
   Param,
   Patch,
   Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ContactUsService } from './contactus.service';
 import { CreateContactUsDto } from './dto/create-contactus.dto';
 import { UpdateContactUsDto } from './dto/update-contactus.dto';
 
 @Controller('contactus')
+@UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
 export class ContactUsController {
   constructor(private readonly contactUsService: ContactUsService) {}
 

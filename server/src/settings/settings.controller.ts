@@ -44,4 +44,16 @@ export class SettingsController {
   updateAmount(@Body() body: { amount: number }) {
     return this.settingsService.updateAmount(body.amount);
   }
+
+  // ---- ADMISSION ----
+  @Get('admission-closed')
+  async getAdmissionClosed() {
+    const settings = await this.settingsService.getSettings();
+    return { admissionClosed: settings.admissionClosed };
+  }
+
+  @Put('admission-closed')
+  updateAdmissionClosed(@Body() body: { admissionClosed: boolean }) {
+    return this.settingsService.updateAdmissionClosed(body.admissionClosed);
+  }
 }

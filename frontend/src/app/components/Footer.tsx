@@ -55,6 +55,9 @@ export default function Footer() {
                 <p>
                   <i className="bi bi-telephone me-2"></i> 02 26410641
                 </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i> 01272924777
+                </p>
               </div>
               
               <div className="col-12 col-sm-6 col-lg-4">

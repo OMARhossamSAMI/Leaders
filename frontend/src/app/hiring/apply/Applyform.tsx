@@ -7,6 +7,10 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import "./page.css";
 import { Send } from "lucide-react";
+import StatusPopup, {
+  type StatusPopupState,
+} from "../../components/StatusPopup";
+import { extractErrorMessage } from "../../../utils/errors";
 
 interface EmploymentFormField {
   _id: string;
@@ -26,6 +30,9 @@ export default function ApplyForm() {
   const searchParams = useSearchParams();
   const [academicYearFromURL, setAcademicYearFromURL] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(
+    null
+  );
 
   useEffect(() => {
     const job = searchParams.get("position");
@@ -68,16 +75,12 @@ export default function ApplyForm() {
     setIsLoading(true);
 
     try {
-      form.querySelector(".loading")?.classList.add("d-block");
-      form.querySelector(".error-message")?.classList.remove("d-block");
-
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/vacancy`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      form.querySelector(".loading")?.classList.remove("d-block");
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
@@ -85,12 +88,11 @@ export default function ApplyForm() {
       form.reset();
     } catch (error: unknown) {
       console.error("Submission error:", error);
-      form.querySelector(".loading")?.classList.remove("d-block");
-      const errEl = form.querySelector(".error-message");
-      if (errEl) {
-        errEl.innerHTML = "Submission failed. Please try again.";
-        errEl.classList.add("d-block");
-      }
+      setStatusPopup({
+        kind: "error",
+        title: "Submission Failed",
+        message: extractErrorMessage(error, "Submission failed. Please try again."),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -289,10 +291,6 @@ export default function ApplyForm() {
                   </div>
 
                   <div className="event-action mt-4 text-center">
-                    <div
-                      className="error-message"
-                      style={{ display: "none", color: "red" }}
-                    ></div>
                     {showSuccess && (
                       <div
                         className="alert alert-success text-center"
@@ -341,6 +339,13 @@ export default function ApplyForm() {
           </div>
         </section>
       </main>
+      <StatusPopup
+        open={!!statusPopup}
+        kind={statusPopup?.kind ?? "error"}
+        title={statusPopup?.title ?? ""}
+        message={statusPopup?.message ?? ""}
+        onClose={() => setStatusPopup(null)}
+      />
     </>
   );
 }

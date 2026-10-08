@@ -9,6 +9,8 @@ import {
   Get,
   Param,
   Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { InternshipService } from './internship.service';
@@ -32,6 +34,7 @@ export class InternshipController {
   constructor(private readonly internshipService: InternshipService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -64,45 +67,10 @@ export class InternshipController {
       cv_file?: Express.Multer.File[];
       cover_letter?: Express.Multer.File[];
     },
-    @Body() body: any,
+    @Body() body: CreateInternshipDto,
   ): Promise<Internship> {
-    const {
-      full_name,
-      email,
-      phone,
-      university,
-      degree,
-      year_of_study,
-      start_date,
-      duration,
-      motivation,
-      desired_position,
-    } = body;
-
-    if (
-      !full_name ||
-      !email ||
-      !phone ||
-      !university ||
-      !degree ||
-      !year_of_study ||
-      !start_date ||
-      !duration
-    ) {
-      throw new BadRequestException('Missing required fields.');
-    }
-
     const dto: CreateInternshipDto = {
-      full_name,
-      email,
-      phone,
-      university,
-      degree,
-      year_of_study: Number(year_of_study),
-      start_date: new Date(start_date),
-      duration,
-      desired_position: desired_position || '',
-      motivation,
+      ...body,
       cv_file_url: files.cv_file?.[0]
         ? `/uploads/${files.cv_file[0].filename}`
         : '',

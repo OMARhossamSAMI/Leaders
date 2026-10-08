@@ -9,6 +9,7 @@ import "../school_app/page.css";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
+import { getPaginationRange } from "@/utils/pagination";
 
 type FieldValue = string | number | boolean | string[] | File | null;
 
@@ -605,7 +606,7 @@ export default function AcceptedStudentsPage() {
 
                       {/* Pagination Controls */}
                       {totalPages > 1 && (
-                        <div className="pagination mt-4 d-flex justify-content-center gap-2">
+                        <div className="pagination-wrapper">
                           <button
                             onClick={() =>
                               setCurrentPage((prev) => Math.max(prev - 1, 1))
@@ -616,19 +617,29 @@ export default function AcceptedStudentsPage() {
                             ⬅ Prev
                           </button>
 
-                          {[...Array(totalPages)].map((_, i) => (
-                            <button
-                              key={i + 1}
-                              onClick={() => setCurrentPage(i + 1)}
-                              className={`btn btn-sm ${
-                                currentPage === i + 1
-                                  ? "btn-primary"
-                                  : "btn-outline-secondary"
-                              }`}
-                            >
-                              {i + 1}
-                            </button>
-                          ))}
+                          {getPaginationRange(currentPage, totalPages).map((item, index) =>
+                            item === "ellipsis" ? (
+                              <span
+                                key={`ellipsis-${index}`}
+                                className="btn btn-sm"
+                                style={{ cursor: "default", pointerEvents: "none" }}
+                              >
+                                …
+                              </span>
+                            ) : (
+                              <button
+                                key={item}
+                                onClick={() => setCurrentPage(item)}
+                                className={`btn btn-sm ${
+                                  currentPage === item
+                                    ? "btn-primary"
+                                    : "btn-outline-secondary"
+                                }`}
+                              >
+                                {item}
+                              </button>
+                            )
+                          )}
 
                           <button
                             onClick={() =>

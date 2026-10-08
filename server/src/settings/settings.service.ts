@@ -44,4 +44,15 @@ export class SettingsService {
       { new: true, upsert: true },
     );
   }
+
+  // ---- ADMISSION ----
+  async updateAdmissionClosed(value: boolean) {
+    const existing = await this.model.findOne();
+    if (existing) {
+      existing.admissionClosed = value;
+      return existing.save();
+    } else {
+      return this.model.create({ admissionClosed: value });
+    }
+  }
 }

@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Vacancy } from '../Schemas/vacancy.schema';
+import {
+  EmploymentFormField,
+  EmploymentFormFieldDocument,
+} from '../Schemas/employment-form-field.schema';
+import { validateDynamicFormSubmission } from '../common/utils/dynamic-form.util';
 import * as sgMail from '@sendgrid/mail';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
@@ -13,13 +18,56 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 export class VacancyService {
   constructor(
     @InjectModel('Vacancy') private readonly vacancyModel: Model<Vacancy>,
-    @InjectModel('FormField') private readonly formFieldModel: Model<any>, // Adjust the type as needed
+    @InjectModel('FormField') private readonly formFieldModel: Model<any>, // Adjust the type as needed — CSV export only, distinct from employmentFormFieldModel below
+    @InjectModel(EmploymentFormField.name)
+    private readonly employmentFormFieldModel: Model<EmploymentFormFieldDocument>,
   ) {}
 
   async create(
     data: Record<string, any>,
     files: Record<string, Express.Multer.File[]>,
   ): Promise<Vacancy> {
+    const employmentFields = await this.employmentFormFieldModel
+      .find()
+      .sort({ order: 1 })
+      .lean();
+
+    const filePresenceByField: Record<string, boolean> = {};
+    for (const key of Object.keys(files)) {
+      filePresenceByField[key] = files[key].length > 0;
+    }
+
+    // employment_type / academic_year only render on the frontend when the applicant
+    // picked "Other" as their position — mirror that so we don't reject the vast
+    // majority of applications that arrive via a specific job link and never see them.
+    const skipFieldNames =
+      data['position'] === 'Other' ? [] : ['employment_type', 'academic_year'];
+
+    const errors = validateDynamicFormSubmission(data, employmentFields, {
+      skipFieldNames,
+      filePresenceByField,
+    });
+
+    // Baseline: the backend personalizes confirmation emails off these two hardcoded
+    // keys regardless of admin config. Reuse the admin's own label text (when the field
+    // exists) so a missing name doesn't produce two near-identical bullets.
+    const fullNameField = employmentFields.find((f) => f.field_name === 'full_name');
+    if (!String(data['full_name'] ?? '').trim()) {
+      errors.push(`${fullNameField?.label || 'Full name'} is required.`);
+    }
+    const emailField = employmentFields.find((f) => f.field_name === 'email');
+    const emailValue = String(data['email'] ?? '').trim();
+    if (!emailValue) {
+      errors.push(`${emailField?.label || 'Email'} is required.`);
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      errors.push('Please enter a valid email address.');
+    }
+
+    const uniqueErrors = Array.from(new Set(errors));
+    if (uniqueErrors.length) {
+      throw new BadRequestException(uniqueErrors);
+    }
+
     const savedFiles: { originalname: string; path: string }[] = [];
     const attachments: {
       content: string;

@@ -26,6 +26,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
+import { ClosedSlot } from '../Schemas/closedSlot.schema';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -37,6 +38,7 @@ const MAX_PER_SLOT = 2; // <= 2 bookings per slot
 @Injectable()
 export class AppointmentsService {
   private readonly logger = new Logger(AppointmentsService.name);
+  private closedSlots: Record<string, string[]> = {};
 
   private readonly fromEmail: string;
   private readonly fromName: string;
@@ -49,6 +51,9 @@ export class AppointmentsService {
     @InjectModel('WaSend')
     private readonly waSendModel: Model<any>,
 
+    @InjectModel(ClosedSlot.name)
+    private readonly closedSlotModel: Model<ClosedSlot>,
+
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
     private readonly http: HttpService,
@@ -57,6 +62,62 @@ export class AppointmentsService {
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
   ) {}
+
+  // --- Closed Slots ---
+  // --- Closed Slots ---
+  async closeSlot(dto: { date: string; time: string; reason?: string }) {
+    try {
+      if (!dto.date || !dto.time) {
+        throw new BadRequestException('Date and time are required');
+      }
+
+      this.logger.log(
+        `🔒 Attempting to close slot: ${dto.date} at ${dto.time}`,
+      );
+
+      // check if the model is defined
+      if (!this.closedSlotModel) {
+        throw new Error('ClosedSlot model is not initialized');
+      }
+
+      const exists = await this.closedSlotModel.findOne({
+        date: dto.date,
+        time: dto.time,
+      });
+
+      if (exists) {
+        throw new BadRequestException('Slot already closed');
+      }
+
+      const saved = await this.closedSlotModel.create({
+        date: dto.date.trim(),
+        time: dto.time.trim(),
+        reason: dto.reason ?? '',
+        createdBy: 'admin',
+      });
+
+      this.logger.log(`✅ Slot closed successfully: ${JSON.stringify(saved)}`);
+      return { ok: true, closed: saved };
+    } catch (err: any) {
+      this.logger.error(`❌ Failed to close slot: ${err.message}`, err.stack);
+      throw new BadRequestException(err.message || 'Could not close slot');
+    }
+  }
+
+  async reopenSlot(dto: { date: string; time: string }) {
+    const res = await this.closedSlotModel
+      .deleteOne({ date: dto.date, time: dto.time })
+      .exec();
+    if (!res.deletedCount)
+      throw new BadRequestException('Slot not found or already open');
+    return { ok: true };
+  }
+
+  async getClosedSlots(date?: string) {
+    const filter = date ? { date } : {};
+    const docs = await this.closedSlotModel.find(filter).lean();
+    return docs;
+  }
 
   // ------------------------ Utils ------------------------
 
@@ -269,9 +330,29 @@ export class AppointmentsService {
       throw new BadRequestException('This time has already passed');
     }
 
-    // Application lookup
-    const application = await this.findApplication(applicationId, parentEmail);
-    if (!application) throw new BadRequestException('Application not found');
+    if (!applicationId) {
+      throw new BadRequestException(
+        'applicationId is required to create an appointment for a specific child',
+      );
+    }
+
+    // ✅ NEW: Try both _id and appointmentCode
+    let application: Record<string, any> | null = null;
+
+    if (Types.ObjectId.isValid(applicationId)) {
+      application = await this.appModel.findById(applicationId).lean();
+    }
+    if (!application) {
+      application = await this.appModel
+        .findOne({ appointmentCode: applicationId })
+        .lean();
+    }
+
+    if (!application) {
+      throw new BadRequestException(
+        'Application not found for the provided ID or appointment code',
+      );
+    }
 
     // Business rules
     const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
@@ -334,7 +415,7 @@ export class AppointmentsService {
         }
 
         // ✅ FIX: Save the appointmentCode if available; fallback to _id for old data
-        const idToSave = application.appointmentCode || String(application._id);
+        const idToSave = String(application._id);
 
         const [doc] = await this.apptModel.create(
           [
@@ -506,35 +587,85 @@ export class AppointmentsService {
   }
 
   /** Return only available HH:mm strings for the given local day (hides full slots). */
-  async availableTimesForDate(dateISO: string, offsetMin: number) {
-    const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
+  /** Return only available HH:mm strings for the given local day (hides full slots and closed slots). */
+  async availableTimesForDate(dateISO: string, _offsetMinIgnored: number) {
+    const tz = 'Africa/Cairo';
+    const MAX_PER_SLOT = 2;
 
+    // --- Step 1️⃣: Compute Cairo day's UTC start/end ---
+    // Build Cairo-local start (00:00) and end (23:59) for that date
+    const cairoStart = new Date(`${dateISO}T00:00:00`);
+    const cairoEnd = new Date(`${dateISO}T23:59:59`);
+
+    // Convert these to the equivalent UTC instants (DST-aware)
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    const parseToUTC = (local: Date): string => {
+      const parts = formatter.formatToParts(local);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value || '00';
+      const cairoY = +get('year');
+      const cairoM = +get('month');
+      const cairoD = +get('day');
+      const cairoH = +get('hour');
+      const cairoMin = +get('minute');
+      const cairoSec = +get('second');
+      const utc = Date.UTC(
+        cairoY,
+        cairoM - 1,
+        cairoD,
+        cairoH - 0,
+        cairoMin,
+        cairoSec,
+      ); // DST auto-handled
+      return new Date(utc).toISOString();
+    };
+
+    const startISO = parseToUTC(cairoStart);
+    const endISO = parseToUTC(cairoEnd);
+
+    // --- Step 2️⃣: Query Mongo for bookings within that Cairo day ---
     const docs = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
 
+    // --- Step 3️⃣: Count bookings per time (Cairo-local HH:mm) ---
+    const fmtHHmm = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(
-        a.slotISO as unknown as string,
-        offsetMin,
-      );
-      counts.set(t, (counts.get(t) || 0) + 1);
+      const hhmm = fmtHHmm.format(new Date(a.slotISO));
+      counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
     }
 
-    const all = this.generateSlots();
+    // --- Step 4️⃣: Generate all potential slots ---
+    const all = this.generateSlots(); // ["09:00", "09:30", ...]
     let available = all.filter((t) => (counts.get(t) || 0) < MAX_PER_SLOT);
 
-    // Cut off past times for "today"
-    const nowUtcMs = Date.now();
-    const nowLocal = new Date(nowUtcMs - offsetMin * 60_000);
-    const todayLocalY = nowLocal.getFullYear();
-    const todayLocalM = String(nowLocal.getMonth() + 1).padStart(2, '0');
-    const todayLocalD = String(nowLocal.getDate()).padStart(2, '0');
-    const todayLocalYmd = `${todayLocalY}-${todayLocalM}-${todayLocalD}`;
+    // --- Step 5️⃣: Remove admin-closed slots ---
+    const closed = await this.closedSlotModel.find({ date: dateISO }).lean();
+    const closedTimes = new Set(closed.map((c) => c.time));
+    available = available.filter((t) => !closedTimes.has(t));
 
-    if (dateISO === todayLocalYmd) {
-      const cutoff = this.nextHalfHourHHmm(nowLocal);
+    // --- Step 6️⃣: Remove past times (today only, Cairo-aware) ---
+    const now = new Date();
+    const nowCairo = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const todayCairo = nowCairo.toISOString().substring(0, 10);
+    if (dateISO === todayCairo) {
+      const cutoff = this.nextHalfHourHHmm(nowCairo);
       available = available.filter((t) => t >= cutoff);
     }
 
@@ -1011,17 +1142,7 @@ export class AppointmentsService {
     try {
       console.log('👉 Redirect query received:', query);
 
-      const isPaid = query?.success === 'true';
-      console.log('✅ Success flag:', isPaid);
-
-      if (!isPaid) {
-        console.warn('❌ Payment marked as failed in query');
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
-      }
-
-      // Get the order ID from redirect params
+      // ⚠️ Do NOT trust query.success anymore
       const orderId = query?.order;
       console.log('👉 Order ID from query:', orderId);
 
@@ -1053,6 +1174,22 @@ export class AppointmentsService {
 
       console.log('📦 Transaction inquiry response:', trxRes.data);
 
+      // ✅ New: Check actual payment status
+      const trxData = Array.isArray(trxRes.data) ? trxRes.data[0] : trxRes.data;
+      const realStatus =
+        trxData?.success === true ||
+        trxData?.is_paid === true ||
+        trxData?.pending === false;
+
+      console.log('✅ Verified real payment status:', realStatus);
+
+      if (!realStatus) {
+        console.warn('❌ Transaction not confirmed as paid by Paymob');
+        return res.redirect(
+          'http://localhost:3001/admissions/appointments/Declined',
+        );
+      }
+
       // === STEP 3: Extract extras from payment_key_claims.extra ===
       const extras = trxRes.data?.payment_key_claims?.extra;
       console.log('👉 Extracted extras (raw):', extras);
@@ -1077,13 +1214,57 @@ export class AppointmentsService {
           console.log('📞 Mother Phone:', extras.motherPhone);
         if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
-        // Convert Paymob UTC ISO → Cairo local
+        // ✅ Dynamic Cairo conversion (DST-aware, same as testConversion)
         const utcDate = new Date(extras.slotISO);
-        const cairoOffsetMinutes = 3 * 60; // UTC+3
-        const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
-        const cairoDate = new Date(localMs);
 
-        console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Africa/Cairo',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
+        });
+
+        const parts = formatter.formatToParts(utcDate);
+        const get = (type: string) =>
+          parts.find((p) => p.type === type)?.value || '00';
+        const tzName = get('timeZoneName');
+        const match = tzName.match(/GMT([+-]\d+)/);
+        const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+        const cairoY = parseInt(get('year'), 10);
+        const cairoM = parseInt(get('month'), 10);
+        const cairoD = parseInt(get('day'), 10);
+        const cairoH = parseInt(get('hour'), 10);
+        const cairoMin = parseInt(get('minute'), 10);
+        const cairoSec = parseInt(get('second'), 10);
+
+        // Build a readable Cairo ISO string (for logs or emails)
+        const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+          cairoD,
+        ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+          cairoMin,
+        ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+        // ✅ Create a proper Date object representing Cairo local time
+        const cairoDate = new Date(
+          cairoY,
+          cairoM - 1,
+          cairoD,
+          cairoH,
+          cairoMin,
+          cairoSec,
+        );
+
+        console.log('🌍 tzName:', tzName);
+        console.log('🕒 Cairo offset hours:', offsetHours);
+        console.log('🌍 UTC Date:', utcDate.toISOString());
+        console.log('🇪🇬 Cairo Local (string):', cairoISO);
+        console.log('🕒 Cairo Date object:', cairoDate);
 
         // ✅ Create appointment
         const dto: CreateAppointmentDto = {
@@ -1258,6 +1439,65 @@ export class AppointmentsService {
           err?.response?.data || err,
         );
       }
+    }
+  }
+  async testConversion(slotISO: string) {
+    try {
+      console.log('🧪 Testing slotISO:', slotISO);
+
+      // 1️⃣ Parse UTC from Paymob
+      const utcDate = new Date(slotISO);
+
+      // 2️⃣ Get Cairo-local parts using Intl (no re-parsing)
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Africa/Cairo',
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
+      });
+
+      const parts = formatter.formatToParts(utcDate);
+      const get = (type: string) =>
+        parts.find((p) => p.type === type)?.value || '00';
+      const tzName = get('timeZoneName');
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+      const cairoY = parseInt(get('year'), 10);
+      const cairoM = parseInt(get('month'), 10);
+      const cairoD = parseInt(get('day'), 10);
+      const cairoH = parseInt(get('hour'), 10);
+      const cairoMin = parseInt(get('minute'), 10);
+      const cairoSec = parseInt(get('second'), 10);
+
+      // 3️⃣ Build a proper Cairo ISO string manually (for inspection only)
+      const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+        cairoD,
+      ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+        cairoMin,
+      ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+      console.log('🌍 tzName:', tzName);
+      console.log('🕒 Cairo offset hours:', offsetHours);
+      console.log('🌍 UTC Date:', utcDate.toISOString());
+      console.log('🇪🇬 Cairo Local (string):', cairoISO);
+      console.log('🕒 Cairo hour:', cairoH);
+
+      return {
+        utc: utcDate.toISOString(),
+        cairo: cairoISO,
+        gmt: tzName,
+        offsetHours,
+        hourCairo: cairoH,
+      };
+    } catch (err) {
+      console.error('❌ Conversion error:', err);
+      throw err;
     }
   }
 }
