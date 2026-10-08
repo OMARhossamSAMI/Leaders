@@ -14,8 +14,8 @@ import { BookTourService } from './booktour.service';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { UpdateSlotDto } from './dto/update-slot.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
-// import { UseGuards } from '@nestjs/common';
-// import { JwtAuthGuard } from '../auth/jwt.guard';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('booktour')
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
@@ -28,7 +28,7 @@ export class BookTourController {
   }
 
   // ---------- Admin — slots ----------
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('admin/slots')
   createSlot(@Body() dto: CreateSlotDto) {
     return this.svc.createSlot(dto);
@@ -41,13 +41,13 @@ export class BookTourController {
     return this.svc.listSlots({ active: parsed as any });
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('admin/slots/:id')
   updateSlot(@Param('id') id: string, @Body() dto: UpdateSlotDto) {
     return this.svc.updateSlot(id, dto);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('admin/slots/:id')
   deleteSlot(@Param('id') id: string) {
     return this.svc.deleteSlot(id);
@@ -55,18 +55,21 @@ export class BookTourController {
 
   // ---------- Admin — bookings ----------
   // Bookings for a specific slot
+  @UseGuards(JwtAuthGuard)
   @Get('admin/slots/:id/bookings')
   listBookings(@Param('id') slotId: string) {
     return this.svc.listBookingsForSlot(slotId);
   }
 
   // All bookings (global)
+  @UseGuards(JwtAuthGuard)
   @Get('admin/bookings')
   listAllBookings() {
     return this.svc.listAllBookings();
   }
 
-    @Delete('admin/bookings/:id')
+  @UseGuards(JwtAuthGuard)
+  @Delete('admin/bookings/:id')
   deleteBooking(@Param('id') id: string) {
     return this.svc.deleteBooking(id);
   }

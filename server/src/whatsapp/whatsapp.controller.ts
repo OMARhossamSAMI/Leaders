@@ -1,4 +1,6 @@
 // src/whatsapp/whatsapp.controller.ts
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   BadRequestException,
   Body,
@@ -34,6 +36,7 @@ export class WhatsappController {
   /**
    * Simple readiness/debug endpoint (no secrets).
    */
+  @UseGuards(JwtAuthGuard)
   @Get('health')
   @HttpCode(200)
   health() {
@@ -81,6 +84,7 @@ export class WhatsappController {
   }
 
   // --- send assessment confirmation message
+  @UseGuards(JwtAuthGuard)
   @Post('assessment-confirmation')
   @HttpCode(202)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
@@ -115,6 +119,7 @@ export class WhatsappController {
 
 
 // Custom message to multiple appointments
+  @UseGuards(JwtAuthGuard)
   @Post('custom')
   async sendCustom(@Body() dto: { appointmentIds: string[]; message: string }) {
     if (!dto?.message?.trim()) {

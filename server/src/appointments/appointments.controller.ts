@@ -1,4 +1,6 @@
 // src/appointments/appointments.controller.ts
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   BadRequestException,
   Body,
@@ -40,6 +42,7 @@ export class AppointmentsController {
   // ------------------------------------------------------------
 
   /** POST /appointments/closed — close a slot */
+  @UseGuards(JwtAuthGuard)
   @Post('closed')
   async closeSlot(@Body() body: { date: string; time: string }) {
     if (!body.date || !body.time) {
@@ -48,6 +51,7 @@ export class AppointmentsController {
     return this.service.closeSlot(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('closed')
   async reopenSlot(@Body() body: { date: string; time: string }) {
     if (!body.date || !body.time) {
@@ -75,22 +79,26 @@ export class AppointmentsController {
     return { times };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() dto: CreateAppointmentDto) {
     return this.service.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async list(@Query('upcoming') upcoming?: string, @Query('q') q?: string) {
     const onlyUpcoming = upcoming === '1' || upcoming === 'true';
     return this.service.listAll({ upcoming: onlyUpcoming, q });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('all')
   async listAllAlias() {
     return this.service.listAll({});
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('admin-list')
   async adminList(
     @Query('upcoming') upcoming?: string,
@@ -132,6 +140,7 @@ export class AppointmentsController {
     return this.service.handlePaymobRedirect(query, res);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const ok = await this.service.removeById(id);

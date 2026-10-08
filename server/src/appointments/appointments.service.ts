@@ -27,6 +27,7 @@ import { AcceptedStudentService } from '../accepted-student/accepted-student.ser
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
 import { ClosedSlot } from '../Schemas/closedSlot.schema';
+import { firstTransaction, isPaidTransaction } from './paymob';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -1136,6 +1137,22 @@ export class AppointmentsService {
     }
   }
 
+  /** True when this application already has an appointment at this slot. */
+  private async isAlreadyBooked(code: string, slotISO: string) {
+    const slot = new Date(slotISO);
+    if (isNaN(slot.getTime())) return false;
+    const application = await this.appModel
+      .findOne({ appointmentCode: code })
+      .select({ _id: 1 })
+      .lean();
+    if (!application) return false;
+    const existing = await this.apptModel.exists({
+      applicationId: String(application._id),
+      slotISO: slot.toISOString(),
+    });
+    return !!existing;
+  }
+
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
@@ -1149,7 +1166,7 @@ export class AppointmentsService {
       if (!orderId) {
         console.error('❌ No order id in redirect query');
         return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
+          'https://leadersintcollege.com/admissions/appointments/Declined',
         );
       }
 
@@ -1174,29 +1191,35 @@ export class AppointmentsService {
 
       console.log('📦 Transaction inquiry response:', trxRes.data);
 
-      // ✅ New: Check actual payment status
-      const trxData = Array.isArray(trxRes.data) ? trxRes.data[0] : trxRes.data;
-      const realStatus =
-        trxData?.success === true ||
-        trxData?.is_paid === true ||
-        trxData?.pending === false;
+      // ✅ Check actual payment status (a declined card is not pending either)
+      const trxData = firstTransaction(trxRes.data);
+      const realStatus = isPaidTransaction(trxData);
 
       console.log('✅ Verified real payment status:', realStatus);
 
       if (!realStatus) {
         console.warn('❌ Transaction not confirmed as paid by Paymob');
         return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
+          'https://leadersintcollege.com/admissions/appointments/Declined',
         );
       }
 
       // === STEP 3: Extract extras from payment_key_claims.extra ===
-      const extras = trxRes.data?.payment_key_claims?.extra;
+      const extras = trxData?.payment_key_claims?.extra;
       console.log('👉 Extracted extras (raw):', extras);
       // 🔹 Support both appointmentCode (new) and applicationId (old)
       const code = extras?.appointmentCode || null;
       console.log('👉 Using appointmentCode:', code);
       if (code && extras?.parentEmail && extras?.slotISO) {
+        // Opening the same payment link again (refresh, back button) must
+        // not book the slot twice or re-send the emails.
+        if (await this.isAlreadyBooked(code, extras.slotISO)) {
+          console.log('ℹ️ This slot is already booked for this application');
+          return res.redirect(
+            'https://leadersintcollege.com/admissions/appointments/Thankyou',
+          );
+        }
+
         console.log('✅ Required extras found:', {
           appointmentCode: code,
           parentEmail: extras.parentEmail,

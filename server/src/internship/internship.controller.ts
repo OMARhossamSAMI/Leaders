@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   Controller,
   Post,
@@ -82,6 +84,7 @@ export class InternshipController {
     return this.internshipService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('export')
 async exportToExcel(@Res() res: Response) {
   const hostUrl = 'http://localhost:3000'; // Replace with your actual host in production
@@ -156,16 +159,19 @@ async exportToExcel(@Res() res: Response) {
 }
 
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<Internship[]> {
     return this.internshipService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Internship | null> {
     return this.internshipService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return this.internshipService.delete(id);

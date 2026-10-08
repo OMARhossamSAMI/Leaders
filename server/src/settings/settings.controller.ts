@@ -1,4 +1,6 @@
 // src/settings/settings.controller.ts
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Controller, Get, Put, Body } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 
@@ -17,6 +19,7 @@ export class SettingsController {
     return this.settingsService.getSettings();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('show-events')
   updateShowEvents(@Body() body: { showEvents: boolean }) {
     return this.settingsService.updateShowEvents(body.showEvents);
@@ -29,6 +32,7 @@ export class SettingsController {
     return { showAppointments: settings.showAppointments };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('show-appointments')
   updateShowAppointments(@Body() body: { showAppointments: boolean }) {
     return this.settingsService.updateShowAppointments(body.showAppointments);
@@ -40,6 +44,7 @@ export class SettingsController {
     return { amount: settings.amount };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('amount')
   updateAmount(@Body() body: { amount: number }) {
     return this.settingsService.updateAmount(body.amount);
@@ -52,6 +57,7 @@ export class SettingsController {
     return { admissionClosed: settings.admissionClosed };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('admission-closed')
   updateAdmissionClosed(@Body() body: { admissionClosed: boolean }) {
     return this.settingsService.updateAdmissionClosed(body.admissionClosed);
