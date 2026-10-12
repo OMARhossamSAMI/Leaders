@@ -1,6 +1,5 @@
+/* The whole application form shows on the page (no scrolling inside a box). */
 .form-wrapper {
-  max-height: 600px;
-  overflow-y: auto;
   padding-right: 10px;
 }
 .btn-submit-application {

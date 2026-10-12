@@ -1207,10 +1207,9 @@ export default function AdmissionsPage() {
                             </p>
                             <p>
                               Please carefully provide the information
-                              requested below. Once submitted, our admissions
-                              team will review your application and contact
-                              you to arrange interviews for both the student
-                              and parents.
+                              requested below. Once you submit your
+                              application, you will receive a confirmation
+                              email.
                             </p>
                           </div>
                         </div>
