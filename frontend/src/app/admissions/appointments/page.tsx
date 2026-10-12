@@ -18,8 +18,29 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = "https://leaders-bf42.onrender.com";
-// const API = "http://localhost:3000";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://leaders-bf42.onrender.com";
+
+/** A time held for this child while the parent pays (from the server). */
+type Hold = { slotISO: string; expiresAt: string; checkoutUrl: string | null };
+
+/** "Wednesday, 14 October · 10:00" in Cairo time. */
+const cairoDayTime = (iso: string) => {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString("en-GB", {
+    timeZone: "Africa/Cairo",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return `${day} · ${cairoClock(iso)}`;
+};
+const cairoClock = (iso: string) =>
+  new Date(iso).toLocaleTimeString("en-GB", {
+    timeZone: "Africa/Cairo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -52,6 +73,18 @@ export default function AppointmentPage() {
   );
 
   const [, setSettingsLoading] = useState(true);
+
+  // The time held while paying, and a clock for its countdown
+  const [hold, setHold] = useState<Hold | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [timesRefresh, setTimesRefresh] = useState(0);
+  useEffect(() => {
+    if (!hold) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [hold]);
+  const holdLeftMs = hold ? new Date(hold.expiresAt).getTime() - now : 0;
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
@@ -142,7 +175,7 @@ export default function AppointmentPage() {
       cancelled = true;
       clearInterval(id);
     };
-  }, [selectedDate, app?._id]);
+  }, [selectedDate, app?._id, timesRefresh]);
   useEffect(() => {
     (async () => {
       try {
@@ -247,6 +280,20 @@ export default function AppointmentPage() {
 
       setApp(normalized);
       setScheduleWindow(data.window);
+
+      // A time already held for this child (they came back from the payment page)?
+      setHold(null);
+      try {
+        const h = await fetch(
+          `${API}/appointments/hold/${encodeURIComponent(normalized._id)}`
+        );
+        if (h.ok) {
+          const hd = await h.json();
+          if (hd?.hold?.expiresAt) setHold(hd.hold as Hold);
+        }
+      } catch {
+        // no hold information: the page works as before
+      }
     } catch (err) {
       console.error(err);
       setLookupError("Something went wrong. Please try again.");
@@ -255,7 +302,7 @@ export default function AppointmentPage() {
     }
   };
   type PayResponse =
-    | { checkout_url: string }
+    | { checkout_url: string; holdExpiresAt?: string; slotISO?: string }
     | { message?: string; _id?: string; id?: string }
     | Record<string, unknown>;
 
@@ -349,6 +396,26 @@ export default function AppointmentPage() {
           rawText,
         });
         setSaveError(msg || "Unable to start payment. Please try again.");
+        if (res.status === 409) {
+          // Someone else just took this time: show fresh times to choose from.
+          setSelectedTime("");
+          setTimesRefresh((n) => n + 1);
+        }
+        return;
+      }
+
+      // 🔹 The time is held for this child: show the timer before going to pay.
+      const held = data as { checkout_url?: unknown; holdExpiresAt?: unknown; slotISO?: unknown } | null;
+      if (
+        held &&
+        typeof held.holdExpiresAt === "string" &&
+        typeof held.checkout_url === "string"
+      ) {
+        setHold({
+          slotISO: String(held.slotISO),
+          expiresAt: held.holdExpiresAt,
+          checkoutUrl: held.checkout_url,
+        });
         return;
       }
 
@@ -376,6 +443,28 @@ export default function AppointmentPage() {
       setSaving(false);
     }
   };
+
+  // Give the held time back and show the times again
+  const chooseAnotherTime = async () => {
+    if (app?._id && holdLeftMs > 0) {
+      try {
+        await fetch(
+          `${API}/appointments/hold/${encodeURIComponent(app._id)}/release`,
+          { method: "POST" }
+        );
+      } catch {
+        // the hold simply runs out by itself
+      }
+    }
+    setHold(null);
+    setSelectedTime("");
+    setSaveError("");
+    setTimesRefresh((n) => n + 1);
+  };
+
+  const holdClock = `${String(Math.floor(Math.max(0, holdLeftMs) / 60000)).padStart(2, "0")}:${String(
+    Math.floor((Math.max(0, holdLeftMs) % 60000) / 1000)
+  ).padStart(2, "0")}`;
 
   // Fixed daily slots
   const dailySlots = [
@@ -549,7 +638,85 @@ export default function AppointmentPage() {
                 </span>
               </div>
 
-              {allowedDates.length === 0 ? (
+              {hold ? (
+                holdLeftMs > 0 ? (
+                  <div
+                    className="p-4 text-center"
+                    style={{ background: ACCENT_LIGHT, borderRadius: 16 }}
+                    role="status"
+                  >
+                    <h5 className="fw-bold mb-1" style={{ color: DARK }}>
+                      Your time is held for you
+                    </h5>
+                    <p className="mb-3" style={{ fontSize: 17 }}>
+                      {cairoDayTime(hold.slotISO)}{" "}
+                      <span className="text-muted">(Cairo time)</span>
+                    </p>
+                    <div
+                      className="fw-bold mb-2"
+                      aria-label={`${holdClock} left to pay`}
+                      style={{
+                        fontSize: 46,
+                        lineHeight: 1,
+                        fontVariantNumeric: "tabular-nums",
+                        color: holdLeftMs < 5 * 60_000 ? "#e8590c" : ACCENT,
+                      }}
+                    >
+                      {holdClock}
+                    </div>
+                    <p className="mb-1">
+                      Please complete the payment before{" "}
+                      <strong>{cairoClock(hold.expiresAt)}</strong>.
+                    </p>
+                    <p className="text-muted mb-4" style={{ fontSize: 14 }}>
+                      After that, this time may be booked by another family and
+                      you’ll need to choose a new time.
+                    </p>
+                    <div className="d-flex flex-wrap justify-content-center gap-2">
+                      <button
+                        type="button"
+                        className="btn"
+                        style={{
+                          background: ACCENT,
+                          color: "white",
+                          fontWeight: 700,
+                          borderRadius: 12,
+                          padding: "10px 18px",
+                        }}
+                        disabled={!hold.checkoutUrl}
+                        onClick={() => {
+                          if (hold.checkoutUrl) window.location.href = hold.checkoutUrl;
+                        }}
+                      >
+                        Continue to payment
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        style={{ borderRadius: 12, padding: "10px 18px" }}
+                        onClick={chooseAnotherTime}
+                      >
+                        Choose another time
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="alert alert-warning mb-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <span>
+                      <strong>Time’s up.</strong> This time is no longer held
+                      for you. Please choose a time again.
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      style={{ background: ACCENT, color: "white", fontWeight: 700, borderRadius: 10 }}
+                      onClick={chooseAnotherTime}
+                    >
+                      Choose a time
+                    </button>
+                  </div>
+                )
+              ) : allowedDates.length === 0 ? (
                 <div className="alert alert-warning mb-0">
                   We couldn’t find a valid scheduling window. Please contact
                   admissions.
