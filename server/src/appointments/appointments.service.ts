@@ -1,6 +1,7 @@
 // src/appointments/appointments.service.ts
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   Inject,
@@ -11,7 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import type { Response } from 'express';
-import { Model, Types } from 'mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
 import { StudentApplicationService } from '../student-application/student-application.service';
 import {
@@ -28,6 +29,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
 import { ClosedSlot } from '../Schemas/closedSlot.schema';
 import { firstTransaction, isPaidTransaction } from './paymob';
+import { cairoParts, holdMinutes, slotProblem } from './slot-rules';
+import {
+  PaymentIssue,
+  SlotHold,
+  SlotLock,
+} from '../Schemas/slotHold.schema';
+
+const SITE = 'https://leadersintcollege.com/admissions/appointments';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -57,12 +66,112 @@ export class AppointmentsService {
 
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
+    @InjectModel(SlotHold.name)
+    private readonly holdModel: Model<SlotHold>,
+    @InjectModel(SlotLock.name)
+    private readonly lockModel: Model<SlotLock>,
+    @InjectModel(PaymentIssue.name)
+    private readonly issueModel: Model<PaymentIssue>,
     private readonly http: HttpService,
     private readonly config: ConfigService,
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
   ) {}
+
+  // ------------------------ Slot holds (while a parent pays) ------------------------
+
+  /** Admin-closed times ("HH:mm") on the slot's Cairo date. */
+  private async closedTimesFor(slot: Date): Promise<Set<string>> {
+    const closed = await this.closedSlotModel
+      .find({ date: cairoParts(slot).date })
+      .lean();
+    return new Set(closed.map((c) => c.time));
+  }
+
+  /** Runs `fn` in a transaction that first writes this slot's lock document,
+   *  so two bookings or holds for the same slot never count at the same time. */
+  private async withSlotLock<T>(
+    slotISO: string,
+    fn: (session: ClientSession) => Promise<T>,
+  ): Promise<T> {
+    for (let attempt = 0; ; attempt++) {
+      const session = await this.apptModel.db.startSession();
+      try {
+        let out!: T;
+        await session.withTransaction(async () => {
+          await this.lockModel.updateOne(
+            { _id: slotISO },
+            { $inc: { v: 1 } },
+            { upsert: true, session },
+          );
+          out = await fn(session);
+        });
+        return out;
+      } catch (err: any) {
+        // Two first-ever writes to the same lock can collide on insert; retry.
+        if (err?.code === 11000 && attempt < 3) continue;
+        throw err;
+      } finally {
+        await session.endSession();
+      }
+    }
+  }
+
+  /** Places taken in a slot: bookings plus other children's live holds. */
+  private async takenPlaces(
+    slotISO: string,
+    exceptCode: string | null,
+    session: ClientSession,
+  ): Promise<number> {
+    const booked = await this.apptModel
+      .countDocuments({ slotISO })
+      .session(session);
+    if (!holdMinutes()) return booked;
+    const held = await this.holdModel
+      .countDocuments({
+        slotISO,
+        expiresAt: { $gt: new Date() },
+        ...(exceptCode ? { appointmentCode: { $ne: exceptCode } } : {}),
+      })
+      .session(session);
+    return booked + held;
+  }
+
+  /** Live holds per Cairo "HH:mm" between two UTC ISO instants (none when holds are off). */
+  private async heldTimes(startISO: string, endISO: string): Promise<string[]> {
+    if (!holdMinutes()) return [];
+    const holds = await this.holdModel
+      .find({
+        slotISO: { $gte: startISO, $lte: endISO },
+        expiresAt: { $gt: new Date() },
+      })
+      .lean();
+    return holds.map((h) => cairoParts(new Date(h.slotISO)).hhmm);
+  }
+
+  /** The child's live hold, for the booking page to resume its timer. */
+  async getHold(code: string) {
+    if (!holdMinutes() || !code) return { hold: null };
+    const h = await this.holdModel
+      .findOne({ appointmentCode: code, expiresAt: { $gt: new Date() } })
+      .lean();
+    return {
+      hold: h
+        ? {
+            slotISO: h.slotISO,
+            expiresAt: new Date(h.expiresAt).toISOString(),
+            checkoutUrl: h.checkoutUrl,
+          }
+        : null,
+    };
+  }
+
+  /** Frees the child's held slot (they chose another time, or the payment failed). */
+  async releaseHold(code: string) {
+    if (code) await this.holdModel.deleteOne({ appointmentCode: code });
+    return { ok: true };
+  }
 
   // --- Closed Slots ---
   // --- Closed Slots ---
@@ -355,62 +464,19 @@ export class AppointmentsService {
       );
     }
 
-    // Business rules
-    const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
-    if (dow === 5 || dow === 6) {
-      throw new BadRequestException(
-        'Appointments are not available on Friday or Saturday',
-      );
-    }
+    // Business rules (Sun–Thu, 09:00–12:00 on the half hour in Cairo, within
+    // 14 days from today) — the same check the payment page passed before paying.
+    const problem = slotProblem(slot, new Date());
+    if (problem) throw new BadRequestException(problem);
 
-    // Within two weeks from application createdAt
-    const submitted = application.createdAt
-      ? new Date(application.createdAt)
-      : new Date();
-    const winStart = new Date(
-      submitted.getFullYear(),
-      submitted.getMonth(),
-      submitted.getDate(),
-    );
-    const winEnd = new Date(winStart);
-    winEnd.setDate(winEnd.getDate() + 14);
-    if (slot < winStart || slot > winEnd) {
-      throw new BadRequestException(
-        'Selected slot is outside the allowed scheduling window',
-      );
-    }
-
-    // interpret slot in Cairo local time
-    const cairo = new Date(
-      slot.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }),
-    );
-
-    const hh = cairo.getHours();
-    const mm = cairo.getMinutes();
-
-    this.logger.log(`🕒 Business rule check (Cairo): hh=${hh}, mm=${mm}`);
-
-    const totalMin = hh * 60 + mm;
-    const openMin = START_HOUR * 60; // 540
-    const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN; // 750
-    const lastStartMin = closeMin - SLOT_MINUTES; // 720 (12:00)
-
-    if (mm % SLOT_MINUTES !== 0) {
-      throw new BadRequestException('Slots must align to 30-minute intervals');
-    }
-    if (totalMin < openMin || totalMin > lastStartMin) {
-      throw new BadRequestException('Slots must start between 09:00 and 12:00');
-    }
-
-    // 4) Capacity check (max 2 per exact slot) — transaction
-    const session = await this.apptModel.db.startSession();
+    // Capacity (max 2 per exact slot, counting other families' live holds),
+    // under the slot lock so two bookings can't take the last place at once.
+    const code: string | null = application.appointmentCode || null;
     try {
       let created: AppointmentDocument | null = null;
 
-      await session.withTransaction(async () => {
-        const count = await this.apptModel
-          .countDocuments({ slotISO: slotUtcISO })
-          .session(session);
+      await this.withSlotLock(slotUtcISO, async (session) => {
+        const count = await this.takenPlaces(slotUtcISO, code, session);
         if (count >= MAX_PER_SLOT) {
           throw new BadRequestException('This slot is full');
         }
@@ -435,6 +501,11 @@ export class AppointmentsService {
           { $set: { state: 'waiting_for_assessment' } },
           { session },
         );
+
+        // The child is booked, so their hold (if any) is no longer needed.
+        if (code) {
+          await this.holdModel.deleteOne({ appointmentCode: code }, { session });
+        }
       });
 
       // ✅ Log to confirm what got saved
@@ -452,8 +523,6 @@ export class AppointmentsService {
         throw new BadRequestException('This slot is full');
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -651,6 +720,10 @@ export class AppointmentsService {
       const hhmm = fmtHHmm.format(new Date(a.slotISO));
       counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
     }
+    // A time held for another family while they pay counts like a booking.
+    for (const hhmm of await this.heldTimes(startISO, endISO)) {
+      counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
+    }
 
     // --- Step 4️⃣: Generate all potential slots ---
     const all = this.generateSlots(); // ["09:00", "09:30", ...]
@@ -681,7 +754,15 @@ export class AppointmentsService {
     const sameDay = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
-    return sameDay.map((a) =>
+    const held = holdMinutes()
+      ? await this.holdModel
+          .find({
+            slotISO: { $gte: startISO, $lte: endISO },
+            expiresAt: { $gt: new Date() },
+          })
+          .lean()
+      : [];
+    return [...sameDay, ...held].map((a) =>
       this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin),
     );
   }
@@ -741,6 +822,44 @@ export class AppointmentsService {
     ].filter(Boolean);
     const primaryPhone = allPhones[0] || '+201000000000';
 
+    // Check the chosen time BEFORE any money is taken, with the same rules the
+    // booking uses after payment (plus admin-closed times).
+    const slot = new Date(slotISO);
+    if (isNaN(slot.getTime())) {
+      throw new BadRequestException('Invalid slot date/time');
+    }
+    const problem = slotProblem(slot, new Date(), await this.closedTimesFor(slot));
+    if (problem) throw new BadRequestException(problem);
+    const slotUtcISO = slot.toISOString();
+
+    // Hold the time for this child while their parent pays, if holds are on.
+    const minutes = holdMinutes();
+    let holdExpiresAt: Date | null = null;
+    if (minutes) {
+      const expiresAt = new Date(Date.now() + minutes * 60_000);
+      await this.withSlotLock(slotUtcISO, async (session) => {
+        const taken = await this.takenPlaces(slotUtcISO, applicationId, session);
+        if (taken >= MAX_PER_SLOT) {
+          throw new ConflictException(
+            'This time was just booked by another family. Please choose another time.',
+          );
+        }
+        await this.holdModel.updateOne(
+          { appointmentCode: applicationId },
+          {
+            $set: {
+              applicationId: String(appDoc._id),
+              slotISO: slotUtcISO,
+              expiresAt,
+              checkoutUrl: null,
+            },
+          },
+          { upsert: true, session },
+        );
+      });
+      holdExpiresAt = expiresAt;
+    }
+
     // === STEP 1: Create Intention ===
     const intentionRes = await firstValueFrom(
       this.http.post(
@@ -790,13 +909,31 @@ export class AppointmentsService {
         },
         { headers: { Authorization: `Token ${secretKey}` } },
       ),
-    );
+    ).catch(async (err) => {
+      // Paymob didn't start the payment: free the time straight away.
+      if (holdExpiresAt) await this.releaseHold(applicationId);
+      throw err;
+    });
 
     const clientSecret: string | undefined = intentionRes?.data?.client_secret;
-    if (!clientSecret)
+    if (!clientSecret) {
+      if (holdExpiresAt) await this.releaseHold(applicationId);
       throw new BadRequestException('Failed to create payment intention');
+    }
 
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
+    if (holdExpiresAt) {
+      // Kept so the booking page can resume the same payment if the parent comes back.
+      await this.holdModel.updateOne(
+        { appointmentCode: applicationId, slotISO: slotUtcISO },
+        { $set: { checkoutUrl } },
+      );
+      return {
+        checkout_url: checkoutUrl,
+        holdExpiresAt: holdExpiresAt.toISOString(),
+        slotISO: slotUtcISO,
+      };
+    }
     return { checkout_url: checkoutUrl };
   }
 
@@ -1137,12 +1274,78 @@ export class AppointmentsService {
     }
   }
 
+  /** Finds an application by its appointment code, or by its id (older payments carried the id). */
+  private appFilter(code: string) {
+    return Types.ObjectId.isValid(code)
+      ? { $or: [{ appointmentCode: code }, { _id: new Types.ObjectId(code) }] }
+      : { appointmentCode: code };
+  }
+
+  /**
+   * A payment that went through (or couldn't be confirmed) but isn't booked:
+   * record it once per order and email Admissions so the family is contacted.
+   */
+  private async reportPaymentIssue(
+    kind: 'paid-not-booked' | 'unconfirmed' | 'paid-no-details',
+    info: { orderId?: string; code?: string | null; slotISO?: string; reason?: string; extras?: any },
+  ) {
+    const orderId = info.orderId ? String(info.orderId) : null;
+    try {
+      if (orderId && (await this.issueModel.exists({ orderId, kind }))) return;
+      await this.issueModel.create({
+        kind,
+        orderId,
+        appointmentCode: info.code ?? null,
+        slotISO: info.slotISO ?? null,
+        reason: info.reason ?? '',
+      });
+    } catch (err) {
+      console.error('⚠️ Could not record payment issue:', err);
+    }
+
+    if (!this.canSendMail()) return;
+    const ex = info.extras || {};
+    const what = {
+      'paid-not-booked': 'The parent PAID, but the chosen time could not be booked.',
+      'paid-no-details': 'The parent PAID, but the payment carried no booking details.',
+      unconfirmed: 'The parent returned from Paymob, but Paymob could not be reached to confirm the payment.',
+    }[kind];
+    const slot = info.slotISO ? new Date(info.slotISO) : null;
+    const slotText =
+      slot && !isNaN(slot.getTime())
+        ? slot.toLocaleString('en-GB', { timeZone: 'Africa/Cairo', dateStyle: 'full', timeStyle: 'short' })
+        : '—';
+    const row = (k: string, v: unknown) =>
+      `<tr><td style="padding:6px;border:1px solid #ccc"><strong>${k}</strong></td><td style="padding:6px;border:1px solid #ccc">${this.s(v, '—')}</td></tr>`;
+    try {
+      await sgMail.send({
+        to: 'Admission@leadersintcollege.com',
+        from: { email: 'admission@leadersintcollege.com', name: 'Admissions Appointments' },
+        subject: `⚠️ Assessment payment needs follow-up – ${ex.student_name || info.code || 'order ' + (orderId || '?')}`,
+        html: `<div style="font-family:Arial,sans-serif;font-size:14px">
+          <p><strong>${what}</strong></p>
+          <p>Please check this order in Paymob and contact the family to confirm an assessment time.</p>
+          <table style="border-collapse:collapse">
+            ${row('Paymob order', orderId)}
+            ${row('Appointment code', info.code)}
+            ${row('Student', ex.student_name)}
+            ${row('Parent email', ex.parentEmail)}
+            ${row('Phones', Array.isArray(ex.allPhones) ? ex.allPhones.join(', ') : ex.fatherPhone || ex.motherPhone)}
+            ${row('Chosen time (Cairo)', slotText)}
+            ${row('Reason', info.reason)}
+          </table></div>`,
+      } as sgMail.MailDataRequired);
+    } catch (err: any) {
+      console.error('⚠️ Could not email Admissions about a payment issue:', err?.response?.body || err);
+    }
+  }
+
   /** True when this application already has an appointment at this slot. */
   private async isAlreadyBooked(code: string, slotISO: string) {
     const slot = new Date(slotISO);
     if (isNaN(slot.getTime())) return false;
     const application = await this.appModel
-      .findOne({ appointmentCode: code })
+      .findOne(this.appFilter(code))
       .select({ _id: 1 })
       .lean();
     if (!application) return false;
@@ -1156,11 +1359,14 @@ export class AppointmentsService {
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
+    // Once Paymob confirms the money was taken, the parent must never see "Declined".
+    let paid = false;
+    let extras: any = null;
+    const orderId = query?.order;
     try {
       console.log('👉 Redirect query received:', query);
 
       // ⚠️ Do NOT trust query.success anymore
-      const orderId = query?.order;
       console.log('👉 Order ID from query:', orderId);
 
       if (!orderId) {
@@ -1170,24 +1376,46 @@ export class AppointmentsService {
         );
       }
 
-      // === STEP 1: Authenticate to get auth token ===
-      const apiKey = this.config.get<string>('PAYMOB_API_KEY');
-      const base = this.config.get<string>('PAYMOB_BASE');
+      // === STEP 1 + 2: ask Paymob how this order went ===
+      // If Paymob can't be reached we don't know yet — that is NOT a decline.
+      let trxRes: any;
+      try {
+        const apiKey = this.config.get<string>('PAYMOB_API_KEY');
+        const base = this.config.get<string>('PAYMOB_BASE');
 
-      const authRes = await firstValueFrom(
-        this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
-      );
-      const authToken = authRes?.data?.token;
-      console.log('🔑 Auth token received:', !!authToken);
+        const authRes = await firstValueFrom(
+          this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
+        );
+        const authToken = authRes?.data?.token;
+        console.log('🔑 Auth token received:', !!authToken);
 
-      // === STEP 2: Call transaction inquiry with order_id ===
-      const trxRes = await firstValueFrom(
-        this.http.post(
-          `${base}/api/ecommerce/orders/transaction_inquiry`,
-          { order_id: orderId },
-          { headers: { Authorization: `Bearer ${authToken}` } },
-        ),
-      );
+        trxRes = await firstValueFrom(
+          this.http.post(
+            `${base}/api/ecommerce/orders/transaction_inquiry`,
+            { order_id: orderId },
+            { headers: { Authorization: `Bearer ${authToken}` } },
+          ),
+        );
+      } catch (err: any) {
+        const status: number | undefined = err?.response?.status;
+        console.error(
+          '⚠️ Could not confirm the payment with Paymob:',
+          status || err?.message || err,
+        );
+        // Paymob answered that the order doesn't exist / the request is invalid:
+        // that's not a payment, so it stays a decline (as before).
+        if (status && status >= 400 && status < 500 && ![401, 403, 408, 429].includes(status)) {
+          return res.redirect(
+            'https://leadersintcollege.com/admissions/appointments/Declined',
+          );
+        }
+        // Paymob down, overloaded or refusing us: we don't know yet — not a decline.
+        await this.reportPaymentIssue('unconfirmed', {
+          orderId,
+          reason: `Paymob could not be reached (${err?.response?.status || err?.message || 'error'})`,
+        });
+        return res.redirect(`${SITE}/Received?status=checking`);
+      }
 
       console.log('📦 Transaction inquiry response:', trxRes.data);
 
@@ -1199,16 +1427,21 @@ export class AppointmentsService {
 
       if (!realStatus) {
         console.warn('❌ Transaction not confirmed as paid by Paymob');
+        // Free the held time straight away so another family can take it.
+        const ex = trxData?.payment_key_claims?.extra;
+        const heldFor = ex?.appointmentCode || ex?.applicationId;
+        if (heldFor) await this.releaseHold(String(heldFor)).catch(() => undefined);
         return res.redirect(
           'https://leadersintcollege.com/admissions/appointments/Declined',
         );
       }
+      paid = true;
 
       // === STEP 3: Extract extras from payment_key_claims.extra ===
-      const extras = trxData?.payment_key_claims?.extra;
+      extras = trxData?.payment_key_claims?.extra;
       console.log('👉 Extracted extras (raw):', extras);
       // 🔹 Support both appointmentCode (new) and applicationId (old)
-      const code = extras?.appointmentCode || null;
+      const code = extras?.appointmentCode || extras?.applicationId || null;
       console.log('👉 Using appointmentCode:', code);
       if (code && extras?.parentEmail && extras?.slotISO) {
         // Opening the same payment link again (refresh, back button) must
@@ -1296,11 +1529,25 @@ export class AppointmentsService {
           slotISO: extras.slotISO, // <-- pass as-is
         };
 
-        await this.create(dto);
+        try {
+          await this.create(dto);
+        } catch (err: any) {
+          // Paid, but the time can't be booked any more (taken while paying, or
+          // no longer valid): never show "Declined" — Admissions confirms a time.
+          console.error('⚠️ Paid but could not book:', err?.message || err);
+          await this.reportPaymentIssue('paid-not-booked', {
+            orderId,
+            code,
+            slotISO: extras.slotISO,
+            reason: err?.message || 'Booking failed',
+            extras,
+          });
+          return res.redirect(`${SITE}/Received`);
+        }
         console.log('🎉 Appointment created successfully');
 
         await this.appModel.findOneAndUpdate(
-          { appointmentCode: code },
+          this.appFilter(code),
           { hasBookedAppointment: true },
           { new: true },
         );
@@ -1358,14 +1605,33 @@ export class AppointmentsService {
         console.warn(
           '⚠️ Extras not found or incomplete in transaction inquiry',
         );
+        // Paid, but there is nothing to book from: Admissions follows up.
+        await this.reportPaymentIssue('paid-no-details', {
+          orderId,
+          code,
+          slotISO: extras?.slotISO,
+          reason: 'The payment carried no booking details',
+          extras,
+        });
+        return res.redirect(`${SITE}/Received`);
       }
 
       // ✅ Redirect to success page
       return res.redirect(
         'https://leadersintcollege.com/admissions/appointments/Thankyou',
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('🔥 Redirect error:', err?.response?.data || err);
+      if (paid) {
+        await this.reportPaymentIssue('paid-not-booked', {
+          orderId,
+          code: extras?.appointmentCode || extras?.applicationId || null,
+          slotISO: extras?.slotISO,
+          reason: err?.message || 'Unexpected error after payment',
+          extras,
+        }).catch(() => undefined);
+        return res.redirect(`${SITE}/Received`);
+      }
       return res.redirect(
         'https://leadersintcollege.com/admissions/appointments/Declined',
       );

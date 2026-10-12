@@ -45,6 +45,8 @@ const PUBLIC: Route[] = [
   { method: 'GET', path: '/appointments/available-for-date', url: '/appointments/available-for-date?date=2030-01-06' },
   { method: 'GET', path: '/appointments/test-conversion', url: '/appointments/test-conversion?slotISO=2030-01-06T08:00:00.000Z' },
   { method: 'POST', path: '/appointments/pay', body: {} },
+  { method: 'GET', path: '/appointments/hold/:code' },
+  { method: 'POST', path: '/appointments/hold/:code/release' },
   { method: 'GET', path: '/appointments/callback' },
   { method: 'GET', path: '/appointments/webhook', url: '/appointments/webhook?hub.mode=subscribe&hub.verify_token=test-verify&hub.challenge=42' },
   { method: 'POST', path: '/appointments/webhook', body: {} },
@@ -124,7 +126,11 @@ const ADMIN: Route[] = [
 ];
 
 const urlOf = (r: Route) =>
-  r.url ?? r.path.replace(':id', ID).replace(':title', 'no-such-event');
+  r.url ??
+  r.path
+    .replace(':id', ID)
+    .replace(':title', 'no-such-event')
+    .replace(':code', 'NO-SUCH-CODE');
 
 function call(app: INestApplication, r: Route, token?: string) {
   const agent = request(app.getHttpServer());

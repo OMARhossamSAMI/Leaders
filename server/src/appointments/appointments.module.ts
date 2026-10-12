@@ -14,6 +14,14 @@ import { ConfigModule } from '@nestjs/config';
 import { StudentApplicationModule } from '../student-application/student-application.module';
 import { AcceptedStudentModule } from '../accepted-student/accepted-student.module';
 import { ClosedSlot, ClosedSlotSchema } from '../Schemas/closedSlot.schema';
+import {
+  PaymentIssue,
+  PaymentIssueSchema,
+  SlotHold,
+  SlotHoldSchema,
+  SlotLock,
+  SlotLockSchema,
+} from '../Schemas/slotHold.schema';
 
 @Module({
   imports: [
@@ -29,6 +37,9 @@ import { ClosedSlot, ClosedSlotSchema } from '../Schemas/closedSlot.schema';
         schema: require('../Schemas/wa-send.schema').WaSendSchema,
       },
       { name: ClosedSlot.name, schema: ClosedSlotSchema },
+      { name: SlotHold.name, schema: SlotHoldSchema },
+      { name: SlotLock.name, schema: SlotLockSchema },
+      { name: PaymentIssue.name, schema: PaymentIssueSchema },
     ]),
     HttpModule,
     ConfigModule,

@@ -135,6 +135,18 @@ export class AppointmentsController {
     return this.service.startPayment(dto);
   }
 
+  /** The child's live hold (time, expiry, payment link), so the booking page can resume its timer. */
+  @Get('hold/:code')
+  async getHold(@Param('code') code: string) {
+    return this.service.getHold(code);
+  }
+
+  /** Frees the child's held time (they chose another time). */
+  @Post('hold/:code/release')
+  async releaseHold(@Param('code') code: string) {
+    return this.service.releaseHold(code);
+  }
+
   @Get('callback')
   async paymobRedirect(@Query() query: any, @Res() res: Response) {
     return this.service.handlePaymobRedirect(query, res);
