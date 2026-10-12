@@ -34,12 +34,15 @@ type Slot = {
   bookedCount: number;
 };
 
-function getAcademicYearLabel(offset: number = 0): string {
-  const now = new Date();
+/**
+ * The school year admissions are for: from September the school admits for
+ * the NEXT school year (Oct 2026 and Mar 2027 → "2027/2028").
+ */
+function getAdmissionsYearLabel(now: Date = new Date()): string {
   const year = now.getFullYear();
   const month = now.getMonth(); // 0 = Jan ... 8 = Sep
-  const startYear = (month >= 8 ? year : year - 1) + offset;
-  return `${startYear}–${startYear + 1}`;
+  const startYear = month >= 8 ? year + 1 : year;
+  return `${startYear}/${startYear + 1}`;
 }
 
 export default function AdmissionsPage() {
@@ -1184,13 +1187,11 @@ export default function AdmissionsPage() {
                           <i className="bi bi-exclamation-circle" />
                           <h3>
                             Admissions for the Academic Year{" "}
-                            {getAcademicYearLabel()} are now closed.
+                            {getAdmissionsYearLabel()} are currently closed.
                           </h3>
                           <p>
-                            Stay tuned! Applications for the Academic Year{" "}
-                            {getAcademicYearLabel(1)} will open soon. Further
-                            details and application dates will be announced
-                            shortly.
+                            Stay tuned! Further details and application dates
+                            will be announced shortly.
                           </p>
                         </div>
                       </div>
@@ -1200,6 +1201,10 @@ export default function AdmissionsPage() {
                           <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
                             <i className="bi bi-file-earmark-check" />
                             <h3>Ready to Apply?</h3>
+                            <p className="fw-semibold">
+                              Applications are now open for the Academic Year{" "}
+                              {getAdmissionsYearLabel()}.
+                            </p>
                             <p>
                               Please carefully provide the information
                               requested below. Once submitted, our admissions
