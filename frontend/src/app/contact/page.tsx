@@ -336,9 +336,6 @@ export default function ContactPage() {
                         <i className="bi bi-envelope-fill me-1" />{" "}
                         careers@leadersintcollege.com
                       </li>
-                      <li>
-                        <i className="bi bi-telephone-fill me-1" /> 02 26410050
-                      </li>
                     </div>
                   </div>
                 </div>

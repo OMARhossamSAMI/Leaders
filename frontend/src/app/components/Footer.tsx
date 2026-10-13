@@ -66,9 +66,6 @@ export default function Footer() {
                   <i className="bi bi-envelope me-2"></i>{" "}
                   careers@leadersintcollege.com
                 </p>
-                <p>
-                  <i className="bi bi-telephone me-2"></i> 02 26410050
-                </p>
               </div>
 
               {/* <div className="col-12 col-sm-6 col-lg-4">
