@@ -466,12 +466,10 @@ export default function AdmissionsPage() {
                           Please carefully provide the information requested
                           below. Once you submit your application, you will
                           receive a confirmation email with your booking code.
-                          The whole process is online: our admissions team will
-                          not call you to arrange an appointment. Instead, use
-                          your booking code to choose the date of your
-                          child&apos;s assessment and the parents&apos;
-                          interview, then pay the application fees online to
-                          confirm your booking. We look forward to getting to
+                          The whole process is online: use your booking code to
+                          choose the date of your child&apos;s assessment and
+                          the parents&apos; interview, then pay the application
+                          fees online to confirm your booking. We look forward to getting to
                           know your family and exploring how LIC can support
                           your child&apos;s educational journey.
                         </p>
