@@ -464,21 +464,25 @@ export default function AdmissionsPage() {
                         <h2>Begin Your Academic Journey Today</h2>
                         <p>
                           Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents. We are here to
-                          answer all your questions and guide you through each
-                          step of the admissions process. We look forward to
-                          getting to know your family and exploring how LIC can
-                          support your child&apos;s educational journey.
+                          below. Once you submit your application, you will
+                          receive a confirmation email with your booking code.
+                          The whole process is online: our admissions team will
+                          not call you to arrange an appointment. Instead, use
+                          your booking code to choose the date of your
+                          child&apos;s assessment and the parents&apos;
+                          interview, then pay the application fees online to
+                          confirm your booking. We look forward to getting to
+                          know your family and exploring how LIC can support
+                          your child&apos;s educational journey.
                         </p>
                         <div className="admissions-steps mt-5">
                           <h3>How to Apply</h3>
                           <p>
                             Applying at LIC is an exciting journey for your
-                            family, and we strive to make the admissions process
-                            as smooth as possible. Here are the steps
-                            you&apos;ll need to follow to apply to our school:
+                            family, and the whole process is online, so you can
+                            complete each step at your own pace. Here are the
+                            steps you&apos;ll need to follow to apply to our
+                            school:
                           </p>
                           <div className="steps-wrapper mt-4">
                             <div className="step-item">
