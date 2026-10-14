@@ -8,6 +8,10 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { FormFieldService } from 'src/form-field/form-field.service';
 import { FormFieldSchema } from 'src/Schemas/form-field.schema';
+import {
+  EmploymentFormField,
+  EmploymentFormFieldSchema,
+} from '../Schemas/employment-form-field.schema';
 
 @Module({
   imports: [
@@ -22,6 +26,9 @@ import { FormFieldSchema } from 'src/Schemas/form-field.schema';
     }),
     MongooseModule.forFeature([{ name: 'Vacancy', schema: VacancySchema }]),
     MongooseModule.forFeature([{ name: 'FormField', schema: FormFieldSchema }]), // Adjust the schema import as needed
+    MongooseModule.forFeature([
+      { name: EmploymentFormField.name, schema: EmploymentFormFieldSchema },
+    ]),
   ],
   controllers: [VacancyController],
   providers: [VacancyService,FormFieldService],

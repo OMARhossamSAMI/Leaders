@@ -141,3 +141,10 @@ body {
 .program-tabs::-webkit-scrollbar {
   display: none !important; /* Chrome, Safari */
 }
+
+/* Override Bootstrap .card width only for Admin Slot Management */
+.card.shadow-sm.border-0.mt-4 {
+  width: 1200px !important;
+  max-width: 100% !important;
+  margin: 0 auto; /* center it */
+}

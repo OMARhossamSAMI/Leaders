@@ -4,6 +4,8 @@ import {
   StudentApplication,
   StudentApplicationDocument,
 } from '../Schemas/studentApplication.schema';
+import { FormField, FormFieldDocument } from '../Schemas/form-field.schema';
+import { validateDynamicFormSubmission } from '../common/utils/dynamic-form.util';
 import { Model } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
 import { join } from 'path';
@@ -42,6 +44,8 @@ export class StudentApplicationService {
     @InjectModel(StudentApplication.name)
     private appModel: Model<StudentApplicationDocument>,
     @InjectModel('Appointment') private readonly apptModel: Model<any>, // <-- add
+    @InjectModel(FormField.name)
+    private readonly formFieldModel: Model<FormFieldDocument>,
   ) {}
 
   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
@@ -183,6 +187,15 @@ export class StudentApplicationService {
   ): Promise<any> {
     console.log('📥 Incoming application data:', formData);
 
+    const formFields = await this.formFieldModel.find().sort({ order: 1 }).lean();
+    // type:'file' fields are intentionally not checked here — every file input on this
+    // form shares name="files" client-side, so the backend can't map a file back to a
+    // specific admin-defined field. Required uploads remain enforced via HTML5 `required` only.
+    const errors = validateDynamicFormSubmission(formData, formFields);
+    if (errors.length) {
+      throw new BadRequestException(errors);
+    }
+
     // ✅ Generate unique appointment code
     const appointmentCode = await this.generateUniqueCode();
 
@@ -229,9 +242,29 @@ export class StudentApplicationService {
 
     await createdApp.save();
 
-    const studentName = formData.student_name || 'Student';
-    const studentEmail = formData.father_email;
-    const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
+const studentName = formData.student_name || 'Student';
+
+// ✅ Detect if selected grade is waiting list
+const selectedGrade = formData.grade_applying_for || '';
+
+const isWaitingList =
+  typeof selectedGrade === 'string' &&
+  selectedGrade.toLowerCase().includes('waiting list');
+
+// ✅ Collect both emails (if provided)
+const fatherEmail = formData.father_email?.trim();
+const motherEmail = formData.mother_email?.trim();
+
+// ✅ Combine both into one array (SendGrid supports multiple recipients)
+const parentEmails = [...new Set(
+  [fatherEmail, motherEmail].filter(
+    (e) => typeof e === "string" && e.trim().length > 0
+  )
+)];
+
+
+const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking code
+
 
     // Build table for admissions email
     const tableRows = Object.entries(formData)
@@ -293,24 +326,59 @@ export class StudentApplicationService {
     // ========================
     // ✅ Email to Student
     // ========================
-    const userConfirmationEmail = studentEmail
-      ? {
-          to: studentEmail,
-          from: {
-            email: 'Admission@leadersintcollege.com',
-            name: 'Leaders International College',
-          },
-          subject: `✅ We've received your child's application, Parent of ${studentName}`,
-          html: `
+ const userConfirmationEmail =
+  parentEmails.length > 0
+    ? {
+        to: parentEmails,
+        from: {
+          email: 'Admission@leadersintcollege.com',
+          name: 'Leaders International College',
+        },
+        subject: isWaitingList
+          ? `Application received - Waiting List for ${studentName}`
+          : `✅ We've received your child's application, Parent of ${studentName}`,
+        html: isWaitingList
+          ? `
+<div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
+  <h2 style="background-color: #004080; color: white; padding: 16px; text-align: center; border-radius: 6px;">
+    Application Received - Waiting List
+  </h2>
+
+  <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
+
+  <p style="font-size: 15px;">
+    Thank you for submitting your child’s application to Leaders International College.
+    We’re pleased to confirm that the application for <strong>${studentName}</strong> has been successfully received.
+  </p>
+
+  <p style="font-size: 15px;">
+    Please note that the selected grade, <strong>${selectedGrade}</strong>, is currently on a waiting list.
+  </p>
+
+  <p style="font-size: 15px;">
+    Our Admissions Team will keep your child’s application on record and will contact you once a place becomes available.
+  </p>
+
+  <p style="font-size: 15px;">
+    No assessment booking code is required at this stage.
+  </p>
+
+  <p style="margin-top: 30px;">
+    Warm regards, <br/>
+    <strong>Leaders International College – Admissions Department</strong>
+  </p>
+</div>
+`
+          : `
 <div style="font-family: Arial, sans-serif; background-color: #f7fafd; padding: 30px; max-width: 700px; margin: auto; border-radius: 8px; border: 1px solid #ccddee;">
   <h2 style="background-color: #007bff; color: white; padding: 16px; text-align: center; border-radius: 6px;">
     Application Received
   </h2>
   <p style="font-size: 15px;">Dear Parent of <strong>${studentName}</strong>,</p>
   <p style="font-size: 15px;">Thank you for submitting your child’s application to Leaders International College. We’re pleased to inform you that the application for <strong>${studentName}</strong> has been successfully received.</p>
-  
+
   <p style="font-size: 16px; color: #d32f2f; font-weight: bold; margin-top: 20px;">
-    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>  
+    📌 IMPORTANT: Your booking code is <strong style="font-size: 18px; color: #000;">${appointmentCode}</strong>
   </p>
   <p style="font-size: 15px;">
     Please keep this code safe. You will need to enter it in order to book your child’s assessment appointment.
@@ -320,8 +388,9 @@ export class StudentApplicationService {
   <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong></p>
 </div>
 `,
-        }
-      : null;
+      }
+    : null;
+
 
     // ========================
     // ✅ Send Both Emails
@@ -333,9 +402,11 @@ export class StudentApplicationService {
       await Promise.all(tasks);
 
       return {
-        message:
-          '✅ Application saved and emails sent to both student and admissions.',
-        applicationId, // 👈 also return booking code in API response
+        message: isWaitingList
+          ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
+          : '✅ Application saved and emails sent to both student and admissions.',
+        applicationId,
+        isWaitingList,
       };
     } catch (err) {
       console.error(

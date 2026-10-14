@@ -7,7 +7,8 @@ import { useTabs } from "../components/TabsContext";
 import Link from "next/link";
 import "./page.css";
 import Image from "next/image";
-import { createPortal } from "react-dom";
+import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
+import { extractErrorMessage } from "../../utils/errors";
 
 interface FormField {
   field_name: string;
@@ -33,16 +34,27 @@ type Slot = {
   bookedCount: number;
 };
 
+/**
+ * The school year admissions are for: from September the school admits for
+ * the NEXT school year (Oct 2026 and Mar 2027 → "2027/2028").
+ */
+function getAdmissionsYearLabel(now: Date = new Date()): string {
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0 = Jan ... 8 = Sep
+  const startYear = month >= 8 ? year + 1 : year;
+  return `${startYear}/${startYear + 1}`;
+}
+
 export default function AdmissionsPage() {
   const { activeSection, setActiveSection } = useTabs();
   const router = useRouter(); // ⬅️ NEW
-  const [showBookedPopup, setShowBookedPopup] = useState(false);
-  const [bookedTimer, setBookedTimer] = useState<number | null>(null);
+  const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(null);
   const [fields, setFields] = useState<FormField[]>([]);
   const [successMessage, setSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
+  const [admissionClosed, setAdmissionClosed] = useState(false);
+  const [loadingAdmissionSetting, setLoadingAdmissionSetting] = useState(true);
 
   // ---- Your existing selectedSlot (kept for UI text). We’ll also track slotId internally.
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null); // display text
@@ -72,18 +84,6 @@ export default function AdmissionsPage() {
 
   const [gradeApplyingFor, setGradeApplyingFor] = useState("");
 
-  const [bookedPopup, setBookedPopup] = useState<{
-    title: string;
-    message: string;
-    kind: "success" | "error";
-  } | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (bookedTimer !== null) window.clearTimeout(bookedTimer);
-    };
-  }, [bookedTimer]);
-
   const handleBookingSubmit = async () => {
     setBookingErr(null);
     setBookingOk(null);
@@ -106,14 +106,7 @@ export default function AdmissionsPage() {
     if (missing.length) {
       const msg = `Please fill ${list(missing)}.`;
       setBookingErr(msg);
-      setBookedPopup({
-        title: "Missing information",
-        message: msg,
-        kind: "error",
-      });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
-      setBookedTimer(t);
+      setStatusPopup({ title: "Missing Information", message: msg, kind: "error" });
       return; // don't call the API
     }
 
@@ -153,14 +146,11 @@ export default function AdmissionsPage() {
       );
       setOpen(false); // close big modal
 
-      setBookedPopup({
-        title: "Successfully booked!",
+      setStatusPopup({
+        title: "Successfully Booked!",
         message: successMsg,
         kind: "success",
       });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3500);
-      setBookedTimer(t);
 
       // clear fields
       setStudentName("");
@@ -184,10 +174,7 @@ export default function AdmissionsPage() {
       const error = err as Error;
       const msg = error.message || "Booking failed";
       setBookingErr(msg);
-      setBookedPopup({ title: "Booking failed", message: msg, kind: "error" });
-      setShowBookedPopup(true);
-      const t = window.setTimeout(() => setShowBookedPopup(false), 3000);
-      setBookedTimer(t);
+      setStatusPopup({ title: "Booking Failed", message: msg, kind: "error" });
     } finally {
       setBookingLoading(false);
     }
@@ -212,7 +199,21 @@ export default function AdmissionsPage() {
         console.error("Failed to fetch form fields", error);
       }
     };
+    const fetchAdmissionSetting = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`
+        );
+        const data = await res.json();
+        setAdmissionClosed(Boolean(data.admissionClosed));
+      } catch (error) {
+        console.error("Failed to fetch admission-closed setting", error);
+      } finally {
+        setLoadingAdmissionSetting(false);
+      }
+    };
     fetchFields();
+    fetchAdmissionSetting();
   }, []);
 
   useEffect(() => {
@@ -271,12 +272,23 @@ export default function AdmissionsPage() {
         setRedirectTimer(t);
       } else {
         setIsSubmitting(false);
-        setErrorMessage("❌ " + (result.message || "Submission failed."));
+        setStatusPopup({
+          kind: "error",
+          title: "Submission Failed",
+          message: extractErrorMessage(result, "Submission failed."),
+        });
       }
     } catch (error) {
       console.error("Submission Error:", error);
       setIsSubmitting(false);
-      alert("❌ An error occurred while submitting the form.");
+      setStatusPopup({
+        kind: "error",
+        title: "Submission Failed",
+        message: extractErrorMessage(
+          error,
+          "An error occurred while submitting the form."
+        ),
+      });
     }
   };
 
@@ -452,21 +464,23 @@ export default function AdmissionsPage() {
                         <h2>Begin Your Academic Journey Today</h2>
                         <p>
                           Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents. We are here to
-                          answer all your questions and guide you through each
-                          step of the admissions process. We look forward to
-                          getting to know your family and exploring how LIC can
-                          support your child&apos;s educational journey.
+                          below. Once you submit your application, you will
+                          receive a confirmation email with your booking code.
+                          The whole process is online: use your booking code to
+                          choose the date of your child&apos;s assessment and
+                          the parents&apos; interview, then pay the application
+                          fees online to confirm your booking. We look forward to getting to
+                          know your family and exploring how LIC can support
+                          your child&apos;s educational journey.
                         </p>
                         <div className="admissions-steps mt-5">
                           <h3>How to Apply</h3>
                           <p>
                             Applying at LIC is an exciting journey for your
-                            family, and we strive to make the admissions process
-                            as smooth as possible. Here are the steps
-                            you&apos;ll need to follow to apply to our school:
+                            family, and the whole process is online, so you can
+                            complete each step at your own pace. Here are the
+                            steps you&apos;ll need to follow to apply to our
+                            school:
                           </p>
                           <div className="steps-wrapper mt-4">
                             <div className="step-item">
@@ -1169,34 +1183,54 @@ export default function AdmissionsPage() {
 
                 {activeSection === "form" && (
                   <div className="col-lg-12">
-                    <div className="cta-wrapper mt-5">
-                      <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
-                        <i className="bi bi-file-earmark-check" />
-                        <h3>Ready to Apply?</h3>
-                        <p>
-                          Please carefully provide the information requested
-                          below. Once submitted, our admissions team will review
-                          your application and contact you to arrange interviews
-                          for both the student and parents.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="form-wrapper mt-5">
-                      <div className="card w-100">
-                        <div className="card-body">
-                          <h2 className="card-title">
-                            Admission Application Form
-                          </h2>
+                    {loadingAdmissionSetting ? null : admissionClosed ? (
+                      <div className="cta-wrapper mt-5">
+                        <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100 text-center">
+                          <i className="bi bi-exclamation-circle" />
+                          <h3>
+                            Admissions for the Academic Year{" "}
+                            {getAdmissionsYearLabel()} are currently closed.
+                          </h3>
                           <p>
-                            Please complete the form below to apply for
-                            admission at Leaders International College.
+                            Stay tuned! Further details and application dates
+                            will be announced shortly.
                           </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="cta-wrapper mt-5">
+                          <div className="cta-item apply p-4 border rounded shadow-sm bg-light w-100">
+                            <i className="bi bi-file-earmark-check" />
+                            <h3>Ready to Apply?</h3>
+                            <p className="fw-semibold">
+                              Applications are now open for the Academic Year{" "}
+                              {getAdmissionsYearLabel()}.
+                            </p>
+                            <p>
+                              Please carefully provide the information
+                              requested below. Once you submit your
+                              application, you will receive a confirmation
+                              email.
+                            </p>
+                          </div>
+                        </div>
 
-                          <form
-                            id="applicationForm"
-                            className="php-email-form mt-4"
-                            onSubmit={handleSubmit}
+                        <div className="form-wrapper mt-5">
+                          <div className="card w-100">
+                            <div className="card-body">
+                              <h2 className="card-title">
+                                Admission Application Form
+                              </h2>
+                              <p>
+                                Please complete the form below to apply for
+                                admission at Leaders International College.
+                              </p>
+
+                              <form
+                                id="applicationForm"
+                                className="php-email-form mt-4"
+                                onSubmit={handleSubmit}
                           >
                             <h5>Applicant Details</h5>
 
@@ -1343,14 +1377,6 @@ export default function AdmissionsPage() {
                                 ✅ Application submitted successfully!
                               </div>
                             )}
-                            {errorMessage && (
-                              <div
-                                className="alert alert-danger text-center"
-                                role="alert"
-                              >
-                                {errorMessage}
-                              </div>
-                            )}
 
                             <div className="text-center mt-4">
                               <button
@@ -1377,6 +1403,8 @@ export default function AdmissionsPage() {
                         </div>
                       </div>
                     </div>
+                      </>
+                    )}
                   </div>
                 )}
                 {activeSection === "reserve" && (
@@ -1494,56 +1522,14 @@ export default function AdmissionsPage() {
         </div>
       )}
 
-      {showBookedPopup &&
-        bookedPopup &&
-        createPortal(
-          <div
-            className="booked-popup-backdrop"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="bookedTitle"
-          >
-            <div className="booked-popup-card">
-              <div
-                className="booked-popup-icon"
-                aria-hidden
-                style={{
-                  background:
-                    bookedPopup.kind === "success" ? "#e8f8ff" : "#ffeaea",
-                  color: bookedPopup.kind === "success" ? "#0aa2d1" : "#c32626",
-                }}
-              >
-                {bookedPopup.kind === "success" ? "✓" : "!"}
-              </div>
-              <h4 id="bookedTitle" style={{ margin: 0 }}>
-                {bookedPopup.title}
-              </h4>
-              <p className="mb-3" style={{ textAlign: "center" }}>
-                {bookedPopup.message}
-              </p>
-              <button
-                className="btn"
-                style={{
-                  backgroundColor:
-                    bookedPopup.kind === "success"
-                      ? "var(--accent-color)"
-                      : "#c32626",
-                  color: "#fff",
-                  borderRadius: 8,
-                  padding: "10px 18px",
-                  fontWeight: 600,
-                }}
-                onClick={() => {
-                  if (bookedTimer !== null) window.clearTimeout(bookedTimer);
-                  setShowBookedPopup(false);
-                }}
-              >
-                OK
-              </button>
-            </div>
-          </div>,
-          document.body
-        )}
+      <StatusPopup
+        open={!!statusPopup}
+        kind={statusPopup?.kind ?? "error"}
+        title={statusPopup?.title ?? ""}
+        message={statusPopup?.message ?? ""}
+        onClose={() => setStatusPopup(null)}
+        autoDismissMs={statusPopup?.kind === "success" ? 3500 : undefined}
+      />
 
       <style jsx>{`
         .custom-tab {

@@ -19,6 +19,15 @@
   margin: 0 auto;
 }
 
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
 /* === Section Title === */
 .section-title {
   text-align: center;
