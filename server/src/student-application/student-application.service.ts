@@ -384,7 +384,11 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
     Please keep this code safe. You will need to enter it in order to book your child’s assessment appointment.
   </p>
 
-  <p style="font-size: 15px;">Our Admissions Team will review your application and guide you through the next steps.</p>
+  <p style="font-size: 15px;">
+    <strong>Next step:</strong> book your child’s assessment date online at
+    <a href="https://leadersintcollege.com/admissions/appointments">leadersintcollege.com/admissions/appointments</a>
+    using this code, and pay the assessment fee during the booking. Your booking is then confirmed automatically, and you will receive a confirmation email with the appointment details.
+  </p>
   <p style="margin-top: 30px;">Warm regards, <br/><strong>Leaders International College – Admissions Department</strong></p>
 </div>
 `,

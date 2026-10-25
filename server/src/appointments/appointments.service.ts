@@ -1247,6 +1247,16 @@ export class AppointmentsService {
       Kindly make sure to arrive 10–15 minutes before the scheduled time.  
       Our admissions team looks forward to meeting you and your child.
     </p>
+    <h3 style="color:#004080;">📌 Important information for parents</h3>
+    <ul style="font-size:15px; line-height:1.6; padding-left:20px;">
+      <li>Both parents are required to attend the appointment, as a parent interview will also take place on the same day.</li>
+      <li>Kindly bring the following documents with you:
+        <ul style="padding-left:20px;">
+          <li>The student’s birth certificate (original and copy)</li>
+          <li>A copy of both parents’ IDs</li>
+        </ul>
+      </li>
+    </ul>
     <p style="margin-top:30px; color:#555; font-style:italic;">
       This is an automated message confirming your booking.  
     </p>

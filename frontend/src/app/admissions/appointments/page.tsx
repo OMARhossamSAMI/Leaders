@@ -543,9 +543,9 @@ export default function AppointmentPage() {
 
               <p>
                 Once these steps are completed, your child’s assessment and the
-                parents’ interview will be officially confirmed. Our admissions
-                team will then promptly share all the necessary details to help
-                you prepare for the assessment day.
+                parents’ interview will be officially confirmed. You will
+                receive a confirmation email right away with the date, time and
+                everything you need to prepare for the assessment day.
               </p>
             </div>
 

@@ -1422,11 +1422,12 @@ export default function AdmissionsPage() {
                                 assessment appointment online without the need
                                 for phone calls or in-person visits. Simply
                                 select a suitable date and time within two weeks
-                                of submitting your application. Once your
-                                reservation is complete, our admissions team
-                                will promptly confirm the booking and provide
-                                you with all the necessary details to prepare
-                                for the assessment day.
+                                of submitting your application, and pay the
+                                assessment fee online. Your booking is then
+                                confirmed automatically, and you will receive a
+                                confirmation email right away with the date,
+                                time and everything you need to prepare for the
+                                assessment day.
                               </p>
 
                               <Link
