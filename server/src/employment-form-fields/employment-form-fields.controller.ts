@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Controller, Get, Put, Body, Post, Delete } from '@nestjs/common';
 import { EmploymentFormFieldsService } from './employment-form-fields.service';
 import { EmploymentFormField } from '../Schemas/employment-form-field.schema';
@@ -11,6 +13,7 @@ export class EmploymentFormFieldsController {
     return this.service.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put()
 async replaceAll(@Body() fields: EmploymentFormField[]) {
   return this.service.replaceAll(fields);
@@ -18,11 +21,13 @@ async replaceAll(@Body() fields: EmploymentFormField[]) {
 
 
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() field: EmploymentFormField) {
     return this.service.create(field);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete()
   async deleteAll() {
     return this.service.deleteAll();

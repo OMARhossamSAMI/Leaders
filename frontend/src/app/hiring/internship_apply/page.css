@@ -91,20 +91,3 @@ label.form-label {
 .btn-register:hover {
   background-color: #008fbf;
 }
-
-/* Feedback messages */
-.loading,
-.error-message,
-.sent-message {
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.error-message {
-  color: red;
-}
-
-.sent-message {
-  color: green;
-}

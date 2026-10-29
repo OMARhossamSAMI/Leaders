@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() dto: CreateEventDto) {
     return this.eventsService.create(dto);
@@ -43,12 +43,12 @@ export class EventsController {
     return this.eventsService.findByTitle(title);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put(':title')
   updateByTitle(@Param('title') title: string, @Body() dto: UpdateEventDto) {
     return this.eventsService.updateByTitle(title, dto);
   }
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':title')
   removeByTitle(@Param('title') title: string) {
     return this.eventsService.removeByTitle(title);

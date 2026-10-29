@@ -18,7 +18,29 @@ type Appointment = {
   slotISO: string; // ISO datetime
 };
 
-const API = "https://leaders-bf42.onrender.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://leaders-bf42.onrender.com";
+
+/** A time held for this child while the parent pays (from the server). */
+type Hold = { slotISO: string; expiresAt: string; checkoutUrl: string | null };
+
+/** "Wednesday, 14 October · 10:00" in Cairo time. */
+const cairoDayTime = (iso: string) => {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString("en-GB", {
+    timeZone: "Africa/Cairo",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return `${day} · ${cairoClock(iso)}`;
+};
+const cairoClock = (iso: string) =>
+  new Date(iso).toLocaleTimeString("en-GB", {
+    timeZone: "Africa/Cairo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
 const ACCENT = "#25c6f2";
 const ACCENT_LIGHT = "#def2f6";
@@ -32,6 +54,7 @@ export default function AppointmentPage() {
   const [searching, setSearching] = useState(false);
   const [app, setApp] = useState<Application | null>(null);
   const [lookupError, setLookupError] = useState("");
+  const [closedSlots, setClosedSlots] = useState<Record<string, string[]>>({});
 
   // Step 2 — choose date/time
   const [selectedDate, setSelectedDate] = useState<string>(""); // YYYY-MM-DD (local)
@@ -50,6 +73,18 @@ export default function AppointmentPage() {
   );
 
   const [, setSettingsLoading] = useState(true);
+
+  // The time held while paying, and a clock for its countdown
+  const [hold, setHold] = useState<Hold | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const [timesRefresh, setTimesRefresh] = useState(0);
+  useEffect(() => {
+    if (!hold) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [hold]);
+  const holdLeftMs = hold ? new Date(hold.expiresAt).getTime() - now : 0;
 
   // ---- Helpers ----
   // Local YYYY-MM-DD (no timezone issues)
@@ -118,7 +153,12 @@ export default function AppointmentPage() {
           ? await res.json()
           : { times: [] };
         if (!cancelled) {
-          setAvailableTimes(Array.isArray(data?.times) ? data.times : []);
+          const times = Array.isArray(data?.times) ? data.times : [];
+          // Remove any closed slots for the selected date
+          const filtered = closedSlots[selectedDate]
+            ? times.filter((t) => !closedSlots[selectedDate].includes(t))
+            : times;
+          setAvailableTimes(filtered);
         }
       } catch {
         if (!cancelled) setAvailableTimes([]);
@@ -135,7 +175,7 @@ export default function AppointmentPage() {
       cancelled = true;
       clearInterval(id);
     };
-  }, [selectedDate, app?._id]);
+  }, [selectedDate, app?._id, timesRefresh]);
   useEffect(() => {
     (async () => {
       try {
@@ -155,6 +195,33 @@ export default function AppointmentPage() {
         setShowAppointments(true);
       } finally {
         setSettingsLoading(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API}/appointments/closed`);
+        if (res.ok) {
+          const data = await res.json();
+
+          // 🔹 Normalize array [{date,time}] → grouped object { date: [times] }
+          const grouped: Record<string, string[]> = {};
+          if (Array.isArray(data)) {
+            for (const item of data) {
+              if (item.date && item.time) {
+                if (!grouped[item.date]) grouped[item.date] = [];
+                grouped[item.date].push(item.time);
+              }
+            }
+          }
+
+          setClosedSlots(grouped);
+          console.log("✅ Closed slots loaded:", grouped);
+        }
+      } catch (err) {
+        console.warn("Could not load closed slots", err);
       }
     })();
   }, []);
@@ -213,6 +280,20 @@ export default function AppointmentPage() {
 
       setApp(normalized);
       setScheduleWindow(data.window);
+
+      // A time already held for this child (they came back from the payment page)?
+      setHold(null);
+      try {
+        const h = await fetch(
+          `${API}/appointments/hold/${encodeURIComponent(normalized._id)}`
+        );
+        if (h.ok) {
+          const hd = await h.json();
+          if (hd?.hold?.expiresAt) setHold(hd.hold as Hold);
+        }
+      } catch {
+        // no hold information: the page works as before
+      }
     } catch (err) {
       console.error(err);
       setLookupError("Something went wrong. Please try again.");
@@ -221,7 +302,7 @@ export default function AppointmentPage() {
     }
   };
   type PayResponse =
-    | { checkout_url: string }
+    | { checkout_url: string; holdExpiresAt?: string; slotISO?: string }
     | { message?: string; _id?: string; id?: string }
     | Record<string, unknown>;
 
@@ -232,17 +313,51 @@ export default function AppointmentPage() {
     setSaving(true);
     setSavedId(null);
 
-    // Build ISO datetime in local time, then convert to ISO
-    const [hh, mm] = selectedTime.split(":").map((n) => parseInt(n, 10));
-    const [y, m, d] = selectedDate.split("-").map((n) => parseInt(n, 10));
-    const local = new Date(y, m - 1, d, hh, mm, 0, 0);
-
-    const payload: Appointment = {
-      applicationId: app._id,
-      slotISO: local.toISOString(),
-    };
-
     try {
+      // Parse date/time numbers
+      const [year, month, day] = selectedDate.split("-").map(Number);
+      const [hour, minute] = selectedTime.split(":").map(Number);
+
+      // --- Step 1: Ask Intl API for Cairo's timeZoneName string (e.g. "GMT+2" or "GMT+3") ---
+      const tz = "Africa/Cairo";
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "short",
+      }).formatToParts(Date.UTC(year, month - 1, day, hour, minute));
+
+      const tzName =
+        parts.find((p) => p.type === "timeZoneName")?.value || "GMT+2";
+
+      // --- Step 2: Extract numeric offset directly from that string ---
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default to +2 if unknown
+
+      // --- Step 3: Use that offset, purely mathematical ---
+      const cairoUtcMillis = Date.UTC(
+        year,
+        month - 1,
+        day,
+        hour - offsetHours,
+        minute,
+        0
+      );
+      const slotISO = `${new Date(cairoUtcMillis).toISOString()}`;
+
+      console.log("🌍 tzName:", tzName);
+      console.log("🕒 Cairo offset hours:", offsetHours);
+      console.log(
+        "🕒 Cairo time chosen:",
+        `${selectedDate}T${selectedTime}:00`
+      );
+      console.log("🕒 Sent UTC to backend:", slotISO);
+
+      // ✅ 5. Prepare payload
+      const payload: Appointment = {
+        applicationId: app._id,
+        slotISO,
+      };
+
+      // ✅ 6. Proceed as before
       const res = await fetch(`${API}/appointments/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -281,6 +396,26 @@ export default function AppointmentPage() {
           rawText,
         });
         setSaveError(msg || "Unable to start payment. Please try again.");
+        if (res.status === 409) {
+          // Someone else just took this time: show fresh times to choose from.
+          setSelectedTime("");
+          setTimesRefresh((n) => n + 1);
+        }
+        return;
+      }
+
+      // 🔹 The time is held for this child: show the timer before going to pay.
+      const held = data as { checkout_url?: unknown; holdExpiresAt?: unknown; slotISO?: unknown } | null;
+      if (
+        held &&
+        typeof held.holdExpiresAt === "string" &&
+        typeof held.checkout_url === "string"
+      ) {
+        setHold({
+          slotISO: String(held.slotISO),
+          expiresAt: held.holdExpiresAt,
+          checkoutUrl: held.checkout_url,
+        });
         return;
       }
 
@@ -299,15 +434,37 @@ export default function AppointmentPage() {
           : null;
       setSavedId(newId || "OK");
 
-      // Optionally remove the time from this user's list to prevent double-submission
       setAvailableTimes((prev) => prev.filter((t) => t !== selectedTime));
       setSelectedTime("");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setSaveError("Network error. Please try again.");
     } finally {
       setSaving(false);
     }
   };
+
+  // Give the held time back and show the times again
+  const chooseAnotherTime = async () => {
+    if (app?._id && holdLeftMs > 0) {
+      try {
+        await fetch(
+          `${API}/appointments/hold/${encodeURIComponent(app._id)}/release`,
+          { method: "POST" }
+        );
+      } catch {
+        // the hold simply runs out by itself
+      }
+    }
+    setHold(null);
+    setSelectedTime("");
+    setSaveError("");
+    setTimesRefresh((n) => n + 1);
+  };
+
+  const holdClock = `${String(Math.floor(Math.max(0, holdLeftMs) / 60000)).padStart(2, "0")}:${String(
+    Math.floor((Math.max(0, holdLeftMs) % 60000) / 1000)
+  ).padStart(2, "0")}`;
 
   // Fixed daily slots
   const dailySlots = [
@@ -386,9 +543,9 @@ export default function AppointmentPage() {
 
               <p>
                 Once these steps are completed, your child’s assessment and the
-                parents’ interview will be officially confirmed. Our admissions
-                team will then promptly share all the necessary details to help
-                you prepare for the assessment day.
+                parents’ interview will be officially confirmed. You will
+                receive a confirmation email right away with the date, time and
+                everything you need to prepare for the assessment day.
               </p>
             </div>
 
@@ -413,7 +570,7 @@ export default function AppointmentPage() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter the code sent to your email (e.g. 6899a093b70c9c3f1564a7c5)"
+                placeholder="Enter the code sent to your email (e.g. XXXXXX)"
                 value={appId}
                 onChange={(e) => setAppId(e.target.value)}
                 required
@@ -481,7 +638,85 @@ export default function AppointmentPage() {
                 </span>
               </div>
 
-              {allowedDates.length === 0 ? (
+              {hold ? (
+                holdLeftMs > 0 ? (
+                  <div
+                    className="p-4 text-center"
+                    style={{ background: ACCENT_LIGHT, borderRadius: 16 }}
+                    role="status"
+                  >
+                    <h5 className="fw-bold mb-1" style={{ color: DARK }}>
+                      Your time is held for you
+                    </h5>
+                    <p className="mb-3" style={{ fontSize: 17 }}>
+                      {cairoDayTime(hold.slotISO)}{" "}
+                      <span className="text-muted">(Cairo time)</span>
+                    </p>
+                    <div
+                      className="fw-bold mb-2"
+                      aria-label={`${holdClock} left to pay`}
+                      style={{
+                        fontSize: 46,
+                        lineHeight: 1,
+                        fontVariantNumeric: "tabular-nums",
+                        color: holdLeftMs < 5 * 60_000 ? "#e8590c" : ACCENT,
+                      }}
+                    >
+                      {holdClock}
+                    </div>
+                    <p className="mb-1">
+                      Please complete the payment before{" "}
+                      <strong>{cairoClock(hold.expiresAt)}</strong>.
+                    </p>
+                    <p className="text-muted mb-4" style={{ fontSize: 14 }}>
+                      After that, this time may be booked by another family and
+                      you’ll need to choose a new time.
+                    </p>
+                    <div className="d-flex flex-wrap justify-content-center gap-2">
+                      <button
+                        type="button"
+                        className="btn"
+                        style={{
+                          background: ACCENT,
+                          color: "white",
+                          fontWeight: 700,
+                          borderRadius: 12,
+                          padding: "10px 18px",
+                        }}
+                        disabled={!hold.checkoutUrl}
+                        onClick={() => {
+                          if (hold.checkoutUrl) window.location.href = hold.checkoutUrl;
+                        }}
+                      >
+                        Continue to payment
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        style={{ borderRadius: 12, padding: "10px 18px" }}
+                        onClick={chooseAnotherTime}
+                      >
+                        Choose another time
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="alert alert-warning mb-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <span>
+                      <strong>Time’s up.</strong> This time is no longer held
+                      for you. Please choose a time again.
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      style={{ background: ACCENT, color: "white", fontWeight: 700, borderRadius: 10 }}
+                      onClick={chooseAnotherTime}
+                    >
+                      Choose a time
+                    </button>
+                  </div>
+                )
+              ) : allowedDates.length === 0 ? (
                 <div className="alert alert-warning mb-0">
                   We couldn’t find a valid scheduling window. Please contact
                   admissions.
@@ -561,8 +796,17 @@ export default function AppointmentPage() {
                         {dailySlots.map((t) => {
                           const active = selectedTime === t;
                           const isAvailable = availableTimes.includes(t);
+
+                          // 🔹 New: check if the slot is closed for that date
+                          const isClosed =
+                            closedSlots[selectedDate]?.includes(t) ?? false;
+
+                          // 🔹 Disable both closed + unavailable
                           const disabled =
-                            timesLoading || !selectedDate || !isAvailable;
+                            timesLoading ||
+                            !selectedDate ||
+                            !isAvailable ||
+                            isClosed;
 
                           return (
                             <div key={t} className="col-6 col-md-3 col-lg-2">
@@ -574,8 +818,14 @@ export default function AppointmentPage() {
                                 onClick={() => !disabled && setSelectedTime(t)}
                                 disabled={disabled}
                                 style={{
-                                  background: active ? ACCENT : "#ffffff",
-                                  color: isAvailable
+                                  background: isClosed
+                                    ? "#f1f1f1" // grey background for closed
+                                    : active
+                                    ? ACCENT
+                                    : "#ffffff",
+                                  color: isClosed
+                                    ? "#999"
+                                    : isAvailable
                                     ? active
                                       ? "#fff"
                                       : DARK
@@ -584,15 +834,28 @@ export default function AppointmentPage() {
                                   borderRadius: 12,
                                   fontWeight: 600,
                                   opacity: disabled ? 0.7 : 1,
-                                  cursor: isAvailable
-                                    ? "pointer"
-                                    : "not-allowed",
-                                  minHeight: 60, // ✅ makes all buttons equal height
+                                  cursor: disabled ? "not-allowed" : "pointer",
+                                  minHeight: 60,
                                 }}
-                                title={isAvailable ? "" : "Fully booked"}
+                                title={
+                                  isClosed
+                                    ? "Closed by administration"
+                                    : isAvailable
+                                    ? ""
+                                    : "Fully booked"
+                                }
                               >
                                 <span>{t}</span>
-                                {!isAvailable && (
+                                {isClosed ? (
+                                  <small
+                                    style={{
+                                      fontSize: "0.75rem",
+                                      color: "#777",
+                                    }}
+                                  >
+                                    Closed
+                                  </small>
+                                ) : !isAvailable ? (
                                   <small
                                     style={{
                                       fontSize: "0.75rem",
@@ -601,7 +864,7 @@ export default function AppointmentPage() {
                                   >
                                     Fully booked
                                   </small>
-                                )}
+                                ) : null}
                               </button>
                             </div>
                           );

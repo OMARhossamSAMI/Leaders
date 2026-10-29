@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   BadRequestException,
   Body,
@@ -33,6 +35,7 @@ export class StudentApplicationController {
   }
 
   // GET /applications
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllApplications() {
     return this.appService.getAllApplications();
@@ -40,6 +43,7 @@ export class StudentApplicationController {
 
   // ✅ static route BEFORE any :id routes
   // GET /applications/by-parent-email?email=...
+  @UseGuards(JwtAuthGuard)
   @Get('by-parent-email')
   async byParentEmail(@Query('email') email?: string) {
     const clean = (email ?? '').trim();
@@ -75,6 +79,7 @@ export class StudentApplicationController {
   }
 
   // GET /applications/unbooked?unpaid=1
+  @UseGuards(JwtAuthGuard)
   @Get('unbooked')
   async listUnbooked(@Query('unpaid') unpaid?: string) {
     const unpaidOnly = unpaid === '1' || unpaid === 'true';
@@ -82,12 +87,14 @@ export class StudentApplicationController {
   }
 
   // DELETE /applications/:id
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteApplication(@Param('id', MongoIdPipe) id: string) {
     return this.appService.deleteApplication(id);
   }
 
   // PATCH /applications/:id
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateApplication(
     @Param('id', MongoIdPipe) id: string,
@@ -97,6 +104,7 @@ export class StudentApplicationController {
   }
 
   // GET /applications/:id
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getApplicationById(@Param('id', MongoIdPipe) id: string) {
     return this.appService.getApplicationById(id);

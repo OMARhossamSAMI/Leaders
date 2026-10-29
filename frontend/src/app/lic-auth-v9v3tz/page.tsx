@@ -1,7 +1,7 @@
 "use client";
 
 import "./page.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 export default function LoginPage() {
@@ -10,6 +10,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // Set by utils/adminAuth.ts when the server says the login has ended
+  useEffect(() => {
+    if (sessionStorage.getItem("admin_session_ended")) {
+      sessionStorage.removeItem("admin_session_ended");
+      setError("Your session has ended. Please sign in again.");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   Controller,
   Post,
@@ -35,11 +37,13 @@ export class VacancyController {
     return this.vacancyService.create(body, filesMap);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.vacancyService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('export')
 @Header('Content-Type', 'text/csv')
 @Header('Content-Disposition', 'attachment; filename="vacancy_applications.csv"')
@@ -48,6 +52,7 @@ async exportCSV(): Promise<string> {
 }
 
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -56,6 +61,7 @@ async exportCSV(): Promise<string> {
     return this.vacancyService.update(id, body.data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.vacancyService.delete(id);
