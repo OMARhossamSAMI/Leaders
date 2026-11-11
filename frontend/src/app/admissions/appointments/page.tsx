@@ -488,7 +488,7 @@ export default function AppointmentPage() {
       <div
         className="page-title dark-background"
         style={{
-          backgroundImage: "url(assets/img/education/Background_school.JPG)",
+          backgroundImage: "url(/assets/img/education/Background_school.JPG)",
         }}
       >
         <div className="container position-relative">
