@@ -280,7 +280,7 @@ export default function CampusFacilitiesPage() {
                               }}
                             >
                               <Image
-                                src="/assets/img/education/Lib.png"
+                                src="/assets/img/education/Lib.webp"
                                 alt="Library"
                                 className="img-fluid rounded"
                                 layout="fill"
@@ -332,7 +332,7 @@ export default function CampusFacilitiesPage() {
                           <div className="facility-slider">
                             <div className="facility-slide">
                               <Image
-                                src="/assets/img/education/Play.png"
+                                src="/assets/img/education/Play.webp"
                                 alt="Athletic Center"
                                 className="img-fluid rounded"
                                 width={1200}
@@ -443,7 +443,7 @@ export default function CampusFacilitiesPage() {
                               }}
                             >
                               <Image
-                                src="/assets/img/education/Bas.png"
+                                src="/assets/img/education/Bas.webp"
                                 alt="Library"
                                 className="img-fluid rounded"
                                 layout="fill"
@@ -537,7 +537,7 @@ export default function CampusFacilitiesPage() {
                               }}
                             >
                               <Image
-                                src="/assets/img/education/Tech3.png"
+                                src="/assets/img/education/Tech3.webp"
                                 alt="Library"
                                 className="img-fluid rounded"
                                 layout="fill"
@@ -740,7 +740,7 @@ export default function CampusFacilitiesPage() {
                     data-aos-delay={300}
                   >
                     <Image
-                      src="/assets/img/education/Takleed.png"
+                      src="/assets/img/education/Takleed.webp"
                       alt="Dormitory"
                       className="img-fluid"
                       width={1200}
@@ -757,7 +757,7 @@ export default function CampusFacilitiesPage() {
                     data-aos-delay={400}
                   >
                     <Image
-                      src="/assets/img/education/Court.png"
+                      src="/assets/img/education/Court.webp"
                       alt="Study Areas"
                       className="img-fluid"
                       width={1200}
@@ -775,7 +775,7 @@ export default function CampusFacilitiesPage() {
                     data-aos-delay={500}
                   >
                     <Image
-                      src="/assets/img/education/Stage.png"
+                      src="/assets/img/education/Stage.webp"
                       alt="Sports Complex"
                       className="img-fluid"
                       width={1200}

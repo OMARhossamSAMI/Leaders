@@ -308,7 +308,7 @@ export default function StudentsLifePage() {
 
                         <div className="sport-card">
                           <Image
-                            src="/assets/img/education/FOOTBALL.png"
+                            src="/assets/img/education/FOOTBALL.webp"
                             className="img-fluid"
                             alt="Football"
                             width={800}
@@ -334,7 +334,7 @@ export default function StudentsLifePage() {
 
                         <div className="sport-card">
                           <Image
-                            src="/assets/img/education/Volleyball.png"
+                            src="/assets/img/education/Volleyball.webp"
                             className="img-fluid"
                             alt="Volleyball"
                             width={800}
@@ -414,7 +414,7 @@ export default function StudentsLifePage() {
 
                           {/* Image below Engaging Environment */}
                           <Image
-                            src="/assets/img/education/Engage.png"
+                            src="/assets/img/education/Engage.webp"
                             alt="Engaging Environment"
                             className="img-fluid rounded mt-3"
                             width={800}
@@ -559,7 +559,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card shift-image-down">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/morning-arrival.png"
+                              src="/assets/img/education/morning-arrival.webp"
                               alt="Morning Arrival"
                               width={800}
                               height={600}
@@ -656,7 +656,7 @@ export default function StudentsLifePage() {
                         <article className="dayinlic-card">
                           <div className="card-image">
                             <Image
-                              src="/assets/img/education/EXTR.png"
+                              src="/assets/img/education/EXTR.webp"
                               alt="Clubs and Extracurricular Activities"
                               width={800}
                               height={600}
@@ -928,7 +928,7 @@ export default function StudentsLifePage() {
                           <div className="col-12 col-md-6 col-lg-4">
                             <div className="club-card text-center shadow-sm p-3 rounded h-100">
                               <img
-                                src="/assets/img/education/shagarha.png"
+                                src="/assets/img/education/shagarha.webp"
                                 alt="Eco Club"
                                 style={{
                                   width: "100%",
@@ -951,7 +951,7 @@ export default function StudentsLifePage() {
                               <div className="col-12 col-md-6">
                                 <div className="club-card text-center shadow-sm p-3 rounded h-100">
                                   <img
-                                    src="/assets/img/education/CHESS5.png"
+                                    src="/assets/img/education/CHESS5.webp"
                                     alt="Chess Club"
                                     style={{
                                       width: "100%",
@@ -1075,7 +1075,7 @@ export default function StudentsLifePage() {
 
                         <div className="trip-card">
                           <Image
-                            src="/assets/img/education/Egypt.png"
+                            src="/assets/img/education/Egypt.webp"
                             alt="Exploring Egypt"
                             width={800}
                             height={500}
@@ -1162,7 +1162,7 @@ export default function StudentsLifePage() {
                             }}
                           >
                             <Image
-                              src="/assets/img/education/Voice.png"
+                              src="/assets/img/education/Voice.webp"
                               alt="Voice of the Students"
                               width={800}
                               height={500}
@@ -1184,7 +1184,7 @@ export default function StudentsLifePage() {
                             }}
                           >
                             <Image
-                              src="/assets/img/education/EventP.png"
+                              src="/assets/img/education/EventP.webp"
                               alt="Event Planning"
                               width={800}
                               height={500}
@@ -1309,7 +1309,7 @@ export default function StudentsLifePage() {
 
                         <div className="arts-card">
                           <Image
-                            src="/assets/img/education/EX2.png"
+                            src="/assets/img/education/EX2.webp"
                             alt="Annual Art Competition"
                             width={800}
                             height={500}
@@ -1478,7 +1478,7 @@ export default function StudentsLifePage() {
                             }}
                           >
                             <Image
-                              src="/assets/img/education/CAS.png"
+                              src="/assets/img/education/CAS.webp"
                               alt="CAS Exhibition"
                               className="img-fluid rounded mb-3"
                               width={800}
@@ -1691,7 +1691,7 @@ export default function StudentsLifePage() {
 
                       <div className="transport-card">
                         <Image
-                          src="/assets/img/education/Trans.png"
+                          src="/assets/img/education/Trans.webp"
                           alt="School Transportation"
                           className="img-fluid rounded"
                           width={1920}

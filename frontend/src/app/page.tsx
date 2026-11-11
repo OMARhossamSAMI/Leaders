@@ -790,7 +790,7 @@ export default function Home() {
               >
                 <div className="students-life-img position-relative">
                   <Image
-                    src="/assets/img/education/SL3.png"
+                    src="/assets/img/education/SL3.webp"
                     alt="Students Life"
                     className="img-fluid rounded-4 shadow-sm"
                     width={600}

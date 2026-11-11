@@ -596,7 +596,7 @@ export default function WeAreHiringPage() {
                     <div className="col-lg-5">
                       <div className="impact-image">
                         <Image
-                          src="/assets/img/education/Intern.png"
+                          src="/assets/img/education/Intern.webp"
                           alt="Internship Program"
                           className="img-fluid"
                           width={1200} // ✅ Replace with actual width

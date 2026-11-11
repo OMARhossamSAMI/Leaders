@@ -1111,7 +1111,7 @@ export default function AboutPage() {
                               style={{ position: "relative", height: "700px" }}
                             >
                               <Image
-                                src="/assets/img/education/Rec.png"
+                                src="/assets/img/education/Rec.webp"
                                 alt="Campus & Location"
                                 className="img-fluid rounded"
                                 layout="fill"
@@ -1272,7 +1272,7 @@ export default function AboutPage() {
                                 }}
                               >
                                 <Image
-                                  src="/assets/img/education/Rec.png"
+                                  src="/assets/img/education/Rec.webp"
                                   alt="Campus & Location"
                                   className="img-fluid rounded"
                                   layout="fill"
