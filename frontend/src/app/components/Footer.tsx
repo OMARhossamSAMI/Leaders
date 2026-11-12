@@ -139,6 +139,7 @@ export default function Footer() {
             { label: "Students Life", path: "/students-life" },
             { label: "We Are Hiring", path: "/hiring" },
             { label: "Contact Us", path: "/contact" },
+            { label: "Privacy Policy", path: "/privacy" },
           ].map((item, idx, arr) => (
             <span key={item.label}>
               <Link href={item.path} className="footer-link">
