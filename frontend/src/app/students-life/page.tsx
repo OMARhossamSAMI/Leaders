@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import "./page.css";
 import { useStudentsLifeTabs } from "../components/StudentsLifeTabsContext";
 import Link from "next/link";
+import { track } from "@/utils/analytics";
 // Import the CSS file for this page
 
 export default function StudentsLifePage() {
@@ -504,6 +505,7 @@ export default function StudentsLifePage() {
                           </div>
                           <Link
                             href="/admissions"
+                            onClick={() => track("apply_now", { location: "students_life" })}
                             className="btn btn-explore mt-3"
                             style={{
                               display: "inline-block",
@@ -1834,7 +1836,11 @@ export default function StudentsLifePage() {
                       data-aos-delay={400}
                     >
                       <div className="cta-buttons">
-                        <Link href="/admissions" className="btn btn-primary">
+                        <Link
+                          href="/admissions"
+                          className="btn btn-primary"
+                          onClick={() => track("apply_now", { location: "students_life_cta" })}
+                        >
                           Apply Now
                         </Link>
                       </div>

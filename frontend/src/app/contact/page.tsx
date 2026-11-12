@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
 import { extractErrorMessage } from "../../utils/errors";
+import ContactLink from "../components/ContactLink";
+import { track } from "../../utils/analytics";
 
 interface ContactUsForm {
   fullName: string;
@@ -56,6 +58,7 @@ export default function ContactPage() {
         setSubmitted(false);
       }, 4000);
       form.reset();
+      track("contact", { method: "form" });
     } catch (error: unknown) {
       console.error("Submission failed:", error);
       setStatusPopup({
@@ -334,7 +337,9 @@ export default function ContactPage() {
                       <h4>HR Department:</h4>
                       <li>
                         <i className="bi bi-envelope-fill me-1" />{" "}
-                        careers@leadersintcollege.com
+                        <ContactLink kind="email" to="careers@leadersintcollege.com">
+                          careers@leadersintcollege.com
+                        </ContactLink>
                       </li>
                     </div>
                   </div>
@@ -352,10 +357,13 @@ export default function ContactPage() {
                       <h4>Admission Department:</h4>
                       <li>
                         <i className="bi bi-envelope-fill me-1" />{" "}
-                        admission@leadersintcollege.com
+                        <ContactLink kind="email" to="admission@leadersintcollege.com">
+                          admission@leadersintcollege.com
+                        </ContactLink>
                       </li>
                       <li>
-                        <i className="bi bi-telephone-fill me-1" /> 02 26410641
+                        <i className="bi bi-telephone-fill me-1" />{" "}
+                        <ContactLink kind="phone" to="+20226410641">02 26410641</ContactLink>
                       </li>
                     </div>
                   </div>
@@ -374,13 +382,17 @@ export default function ContactPage() {
                       <li>
                         <i className="bi bi-envelope-fill me-1" />
                         <span style={{ wordBreak: "break-word" }}>
-                          schoolcounselorpyp1_pyp8@leadersintcollege.com
+                          <ContactLink kind="email" to="schoolcounselorpyp1_pyp8@leadersintcollege.com">
+                            schoolcounselorpyp1_pyp8@leadersintcollege.com
+                          </ContactLink>
                         </span>
                       </li>
                       <li>
                         <i className="bi bi-envelope-fill me-1" />
                         <span style={{ wordBreak: "break-word" }}>
-                          schoolcounselormyp_dp@leadersintcollege.com
+                          <ContactLink kind="email" to="schoolcounselormyp_dp@leadersintcollege.com">
+                            schoolcounselormyp_dp@leadersintcollege.com
+                          </ContactLink>
                         </span>
                       </li>
                       {/* <p>02 26410003</p> */}
@@ -430,7 +442,9 @@ export default function ContactPage() {
                       <h4>For other inquiries:</h4>
                       <li>
                         <i className="bi bi-envelope-fill me-1" />{" "}
-                        info@leadersintcollege.com
+                        <ContactLink kind="email" to="info@leadersintcollege.com">
+                          info@leadersintcollege.com
+                        </ContactLink>
                       </li>
                     </div>
                   </div>

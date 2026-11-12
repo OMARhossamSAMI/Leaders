@@ -1,10 +1,12 @@
 import Link from "next/link";
 import "./page.css";
+import TrackOnView from "../../../components/TrackOnView";
 
 export default function ThankYouPage() {
   return (
     <div className="thankyou-container">
       <div className="thankyou-card">
+        <TrackOnView event="assessment_paid" />
         {/* School Logo inside the card */}
         <img
           src="/assets/img/Whatapp_LIC.png"

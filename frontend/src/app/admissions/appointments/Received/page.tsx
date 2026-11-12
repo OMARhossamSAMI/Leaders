@@ -1,5 +1,6 @@
 import Link from "next/link";
 import "./page.css";
+import TrackOnView from "../../../components/TrackOnView";
 
 // Shown when a parent paid but the time couldn't be booked automatically
 // (it was taken while they paid), or when the payment couldn't be confirmed
@@ -15,6 +16,8 @@ export default async function ReceivedPage({
   return (
     <div className="received-container">
       <div className="received-card">
+        {/* paid (not while the payment is still being checked) */}
+        {!checking && <TrackOnView event="assessment_paid" />}
         <img
           src="/assets/img/Whatapp_LIC.png"
           alt="School Logo"

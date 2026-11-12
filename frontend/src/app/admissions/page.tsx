@@ -9,6 +9,7 @@ import "./page.css";
 import Image from "next/image";
 import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
 import { extractErrorMessage } from "../../utils/errors";
+import { track } from "../../utils/analytics";
 
 interface FormField {
   field_name: string;
@@ -265,6 +266,7 @@ export default function AdmissionsPage() {
         form.reset();
         setSuccessMessage(true);
         setIsSubmitting(false);
+        track("submit_application");
 
         // ⬅️ Show popup and auto-redirect after 2.5s
         setShowReserveModal(true);
@@ -420,7 +422,10 @@ export default function AdmissionsPage() {
                 type="button"
                 className={`admission-tab-btn ${activeSection === "form" ? "active" : ""
                   }`}
-                onClick={() => setActiveSection("form")}
+                onClick={() => {
+                  track("apply_now", { location: "admissions_tab" });
+                  setActiveSection("form");
+                }}
               >
                 <i className="bi bi-file-earmark-text"></i> Apply Now
               </button>
@@ -1432,6 +1437,9 @@ export default function AdmissionsPage() {
 
                               <Link
                                 href="/admissions/appointments"
+                                onClick={() =>
+                                  track("go_to_reservation", { location: "reserve_tab" })
+                                }
                                 className="btn mt-2"
                                 style={{
                                   backgroundColor: "var(--accent-color)",
@@ -1498,6 +1506,7 @@ export default function AdmissionsPage() {
               <button
                 className="btn btn-primary"
                 onClick={() => {
+                  track("go_to_reservation", { location: "after_application" });
                   if (redirectTimer !== null)
                     window.clearTimeout(redirectTimer);
                   router.push(reserveHref);

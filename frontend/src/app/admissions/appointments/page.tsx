@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { track } from "../../../utils/analytics";
 
 type Application = {
   _id: string;
@@ -416,11 +417,14 @@ export default function AppointmentPage() {
           expiresAt: held.holdExpiresAt,
           checkoutUrl: held.checkout_url,
         });
+        track("submit_reservation");
         return;
       }
 
       // 🔹 Step 2: Redirect user to Paymob Unified Checkout
       if (data && "checkout_url" in data && data.checkout_url) {
+        track("submit_reservation");
+        track("begin_checkout");
         window.location.href = (data as { checkout_url: string }).checkout_url;
         return;
       }
@@ -685,7 +689,10 @@ export default function AppointmentPage() {
                         }}
                         disabled={!hold.checkoutUrl}
                         onClick={() => {
-                          if (hold.checkoutUrl) window.location.href = hold.checkoutUrl;
+                          if (hold.checkoutUrl) {
+                            track("begin_checkout");
+                            window.location.href = hold.checkoutUrl;
+                          }
                         }}
                       >
                         Continue to payment
