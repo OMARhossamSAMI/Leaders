@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import {
   Controller,
   Post,
@@ -38,6 +40,7 @@ export class PopupController {
       }),
     }),
   )
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createPopup(
     @Body() rawBody: Record<string, any>,
@@ -68,6 +71,7 @@ export class PopupController {
     return this.popupService.getPopupById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -103,11 +107,13 @@ export class PopupController {
     return this.popupService.updatePopup(id, dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deletePopup(@Param('id') id: string) {
     return this.popupService.deletePopup(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('toggle/:id')
   async togglePopupStatus(@Param('id') id: string) {
     return this.popupService.togglePopupStatus(id);

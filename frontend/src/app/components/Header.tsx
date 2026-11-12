@@ -9,6 +9,7 @@ import { useAboutTabs } from "./AboutTabsContext";
 import { useCampusTabs } from "./CampusTabsContext";
 import Link from "next/link";
 import Image from "next/image";
+import { track } from "@/utils/analytics";
 
 export default function Header() {
   const pathname = usePathname();
@@ -197,7 +198,10 @@ export default function Header() {
                 <li>
                   <Link
                     href="/admissions"
-                    onClick={() => handleAdmissionTab("form")}
+                    onClick={() => {
+                      track("apply_now", { location: "navbar" });
+                      handleAdmissionTab("form");
+                    }}
                   >
                     Apply Now
                   </Link>

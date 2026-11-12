@@ -10,7 +10,7 @@ import { join } from 'path';
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
 
-console.log('✅ Loaded SENDGRID API KEY:', process.env.SENDGRID_API_KEY);
+console.log('✅ SendGrid API key loaded:', !!process.env.SENDGRID_API_KEY);
 
 async function bootstrap() {
   // ⬇️ create an EXPRESS app explicitly

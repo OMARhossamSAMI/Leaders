@@ -1,6 +1,7 @@
 // src/appointments/appointments.service.ts
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   Inject,
@@ -11,7 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import type { Response } from 'express';
-import { Model, Types } from 'mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
 import { StudentApplicationService } from '../student-application/student-application.service';
 import {
@@ -26,6 +27,16 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AcceptedStudentService } from '../accepted-student/accepted-student.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SettingsService } from '../settings/settings.service';
+import { ClosedSlot } from '../Schemas/closedSlot.schema';
+import { firstTransaction, isPaidTransaction } from './paymob';
+import { cairoParts, holdMinutes, slotProblem } from './slot-rules';
+import {
+  PaymentIssue,
+  SlotHold,
+  SlotLock,
+} from '../Schemas/slotHold.schema';
+
+const SITE = 'https://leadersintcollege.com/admissions/appointments';
 
 // --- Scheduling window & capacity (30-min slots) ---
 const START_HOUR = 9; // 09:00
@@ -37,6 +48,7 @@ const MAX_PER_SLOT = 2; // <= 2 bookings per slot
 @Injectable()
 export class AppointmentsService {
   private readonly logger = new Logger(AppointmentsService.name);
+  private closedSlots: Record<string, string[]> = {};
 
   private readonly fromEmail: string;
   private readonly fromName: string;
@@ -49,14 +61,173 @@ export class AppointmentsService {
     @InjectModel('WaSend')
     private readonly waSendModel: Model<any>,
 
+    @InjectModel(ClosedSlot.name)
+    private readonly closedSlotModel: Model<ClosedSlot>,
+
     @InjectModel(StudentApplication.name)
     private readonly appModel: Model<StudentApplicationDocument>,
+    @InjectModel(SlotHold.name)
+    private readonly holdModel: Model<SlotHold>,
+    @InjectModel(SlotLock.name)
+    private readonly lockModel: Model<SlotLock>,
+    @InjectModel(PaymentIssue.name)
+    private readonly issueModel: Model<PaymentIssue>,
     private readonly http: HttpService,
     private readonly config: ConfigService,
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
   ) {}
+
+  // ------------------------ Slot holds (while a parent pays) ------------------------
+
+  /** Admin-closed times ("HH:mm") on the slot's Cairo date. */
+  private async closedTimesFor(slot: Date): Promise<Set<string>> {
+    const closed = await this.closedSlotModel
+      .find({ date: cairoParts(slot).date })
+      .lean();
+    return new Set(closed.map((c) => c.time));
+  }
+
+  /** Runs `fn` in a transaction that first writes this slot's lock document,
+   *  so two bookings or holds for the same slot never count at the same time. */
+  private async withSlotLock<T>(
+    slotISO: string,
+    fn: (session: ClientSession) => Promise<T>,
+  ): Promise<T> {
+    for (let attempt = 0; ; attempt++) {
+      const session = await this.apptModel.db.startSession();
+      try {
+        let out!: T;
+        await session.withTransaction(async () => {
+          await this.lockModel.updateOne(
+            { _id: slotISO },
+            { $inc: { v: 1 } },
+            { upsert: true, session },
+          );
+          out = await fn(session);
+        });
+        return out;
+      } catch (err: any) {
+        // Two first-ever writes to the same lock can collide on insert; retry.
+        if (err?.code === 11000 && attempt < 3) continue;
+        throw err;
+      } finally {
+        await session.endSession();
+      }
+    }
+  }
+
+  /** Places taken in a slot: bookings plus other children's live holds. */
+  private async takenPlaces(
+    slotISO: string,
+    exceptCode: string | null,
+    session: ClientSession,
+  ): Promise<number> {
+    const booked = await this.apptModel
+      .countDocuments({ slotISO })
+      .session(session);
+    if (!holdMinutes()) return booked;
+    const held = await this.holdModel
+      .countDocuments({
+        slotISO,
+        expiresAt: { $gt: new Date() },
+        ...(exceptCode ? { appointmentCode: { $ne: exceptCode } } : {}),
+      })
+      .session(session);
+    return booked + held;
+  }
+
+  /** Live holds per Cairo "HH:mm" between two UTC ISO instants (none when holds are off). */
+  private async heldTimes(startISO: string, endISO: string): Promise<string[]> {
+    if (!holdMinutes()) return [];
+    const holds = await this.holdModel
+      .find({
+        slotISO: { $gte: startISO, $lte: endISO },
+        expiresAt: { $gt: new Date() },
+      })
+      .lean();
+    return holds.map((h) => cairoParts(new Date(h.slotISO)).hhmm);
+  }
+
+  /** The child's live hold, for the booking page to resume its timer. */
+  async getHold(code: string) {
+    if (!holdMinutes() || !code) return { hold: null };
+    const h = await this.holdModel
+      .findOne({ appointmentCode: code, expiresAt: { $gt: new Date() } })
+      .lean();
+    return {
+      hold: h
+        ? {
+            slotISO: h.slotISO,
+            expiresAt: new Date(h.expiresAt).toISOString(),
+            checkoutUrl: h.checkoutUrl,
+          }
+        : null,
+    };
+  }
+
+  /** Frees the child's held slot (they chose another time, or the payment failed). */
+  async releaseHold(code: string) {
+    if (code) await this.holdModel.deleteOne({ appointmentCode: code });
+    return { ok: true };
+  }
+
+  // --- Closed Slots ---
+  // --- Closed Slots ---
+  async closeSlot(dto: { date: string; time: string; reason?: string }) {
+    try {
+      if (!dto.date || !dto.time) {
+        throw new BadRequestException('Date and time are required');
+      }
+
+      this.logger.log(
+        `🔒 Attempting to close slot: ${dto.date} at ${dto.time}`,
+      );
+
+      // check if the model is defined
+      if (!this.closedSlotModel) {
+        throw new Error('ClosedSlot model is not initialized');
+      }
+
+      const exists = await this.closedSlotModel.findOne({
+        date: dto.date,
+        time: dto.time,
+      });
+
+      if (exists) {
+        throw new BadRequestException('Slot already closed');
+      }
+
+      const saved = await this.closedSlotModel.create({
+        date: dto.date.trim(),
+        time: dto.time.trim(),
+        reason: dto.reason ?? '',
+        createdBy: 'admin',
+      });
+
+      this.logger.log(`✅ Slot closed successfully: ${JSON.stringify(saved)}`);
+      return { ok: true, closed: saved };
+    } catch (err: any) {
+      this.logger.error(`❌ Failed to close slot: ${err.message}`, err.stack);
+      throw new BadRequestException(err.message || 'Could not close slot');
+    }
+  }
+
+  async reopenSlot(dto: { date: string; time: string }) {
+    const res = await this.closedSlotModel
+      .deleteOne({ date: dto.date, time: dto.time })
+      .exec();
+    if (!res.deletedCount)
+      throw new BadRequestException('Slot not found or already open');
+    return { ok: true };
+  }
+
+  async getClosedSlots(date?: string) {
+    const filter = date ? { date } : {};
+    const docs = await this.closedSlotModel.find(filter).lean();
+    return docs;
+  }
 
   // ------------------------ Utils ------------------------
 
@@ -269,72 +440,49 @@ export class AppointmentsService {
       throw new BadRequestException('This time has already passed');
     }
 
-    // Application lookup
-    const application = await this.findApplication(applicationId, parentEmail);
-    if (!application) throw new BadRequestException('Application not found');
-
-    // Business rules
-    const dow = slot.getDay(); // 0=Sun, 5=Fri, 6=Sat
-    if (dow === 5 || dow === 6) {
+    if (!applicationId) {
       throw new BadRequestException(
-        'Appointments are not available on Friday or Saturday',
+        'applicationId is required to create an appointment for a specific child',
       );
     }
 
-    // Within two weeks from application createdAt
-    const submitted = application.createdAt
-      ? new Date(application.createdAt)
-      : new Date();
-    const winStart = new Date(
-      submitted.getFullYear(),
-      submitted.getMonth(),
-      submitted.getDate(),
-    );
-    const winEnd = new Date(winStart);
-    winEnd.setDate(winEnd.getDate() + 14);
-    if (slot < winStart || slot > winEnd) {
+    // ✅ NEW: Try both _id and appointmentCode
+    let application: Record<string, any> | null = null;
+
+    if (Types.ObjectId.isValid(applicationId)) {
+      application = await this.appModel.findById(applicationId).lean();
+    }
+    if (!application) {
+      application = await this.appModel
+        .findOne({ appointmentCode: applicationId })
+        .lean();
+    }
+
+    if (!application) {
       throw new BadRequestException(
-        'Selected slot is outside the allowed scheduling window',
+        'Application not found for the provided ID or appointment code',
       );
     }
 
-    // interpret slot in Cairo local time
-    const cairo = new Date(
-      slot.toLocaleString('en-US', { timeZone: 'Africa/Cairo' }),
-    );
+    // Business rules (Sun–Thu, 09:00–12:00 on the half hour in Cairo, within
+    // 14 days from today) — the same check the payment page passed before paying.
+    const problem = slotProblem(slot, new Date());
+    if (problem) throw new BadRequestException(problem);
 
-    const hh = cairo.getHours();
-    const mm = cairo.getMinutes();
-
-    this.logger.log(`🕒 Business rule check (Cairo): hh=${hh}, mm=${mm}`);
-
-    const totalMin = hh * 60 + mm;
-    const openMin = START_HOUR * 60; // 540
-    const closeMin = CLOSE_HOUR * 60 + CLOSE_MIN; // 750
-    const lastStartMin = closeMin - SLOT_MINUTES; // 720 (12:00)
-
-    if (mm % SLOT_MINUTES !== 0) {
-      throw new BadRequestException('Slots must align to 30-minute intervals');
-    }
-    if (totalMin < openMin || totalMin > lastStartMin) {
-      throw new BadRequestException('Slots must start between 09:00 and 12:00');
-    }
-
-    // 4) Capacity check (max 2 per exact slot) — transaction
-    const session = await this.apptModel.db.startSession();
+    // Capacity (max 2 per exact slot, counting other families' live holds),
+    // under the slot lock so two bookings can't take the last place at once.
+    const code: string | null = application.appointmentCode || null;
     try {
       let created: AppointmentDocument | null = null;
 
-      await session.withTransaction(async () => {
-        const count = await this.apptModel
-          .countDocuments({ slotISO: slotUtcISO })
-          .session(session);
+      await this.withSlotLock(slotUtcISO, async (session) => {
+        const count = await this.takenPlaces(slotUtcISO, code, session);
         if (count >= MAX_PER_SLOT) {
           throw new BadRequestException('This slot is full');
         }
 
         // ✅ FIX: Save the appointmentCode if available; fallback to _id for old data
-        const idToSave = application.appointmentCode || String(application._id);
+        const idToSave = String(application._id);
 
         const [doc] = await this.apptModel.create(
           [
@@ -353,6 +501,11 @@ export class AppointmentsService {
           { $set: { state: 'waiting_for_assessment' } },
           { session },
         );
+
+        // The child is booked, so their hold (if any) is no longer needed.
+        if (code) {
+          await this.holdModel.deleteOne({ appointmentCode: code }, { session });
+        }
       });
 
       // ✅ Log to confirm what got saved
@@ -370,8 +523,6 @@ export class AppointmentsService {
         throw new BadRequestException('This slot is full');
       }
       throw err;
-    } finally {
-      await session.endSession();
     }
   }
 
@@ -506,35 +657,89 @@ export class AppointmentsService {
   }
 
   /** Return only available HH:mm strings for the given local day (hides full slots). */
-  async availableTimesForDate(dateISO: string, offsetMin: number) {
-    const { startISO, endISO } = this.utcRangeFromLocalYmd(dateISO, offsetMin);
+  /** Return only available HH:mm strings for the given local day (hides full slots and closed slots). */
+  async availableTimesForDate(dateISO: string, _offsetMinIgnored: number) {
+    const tz = 'Africa/Cairo';
+    const MAX_PER_SLOT = 2;
 
+    // --- Step 1️⃣: Compute Cairo day's UTC start/end ---
+    // Build Cairo-local start (00:00) and end (23:59) for that date
+    const cairoStart = new Date(`${dateISO}T00:00:00`);
+    const cairoEnd = new Date(`${dateISO}T23:59:59`);
+
+    // Convert these to the equivalent UTC instants (DST-aware)
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    const parseToUTC = (local: Date): string => {
+      const parts = formatter.formatToParts(local);
+      const get = (t: string) => parts.find((p) => p.type === t)?.value || '00';
+      const cairoY = +get('year');
+      const cairoM = +get('month');
+      const cairoD = +get('day');
+      const cairoH = +get('hour');
+      const cairoMin = +get('minute');
+      const cairoSec = +get('second');
+      const utc = Date.UTC(
+        cairoY,
+        cairoM - 1,
+        cairoD,
+        cairoH - 0,
+        cairoMin,
+        cairoSec,
+      ); // DST auto-handled
+      return new Date(utc).toISOString();
+    };
+
+    const startISO = parseToUTC(cairoStart);
+    const endISO = parseToUTC(cairoEnd);
+
+    // --- Step 2️⃣: Query Mongo for bookings within that Cairo day ---
     const docs = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
 
+    // --- Step 3️⃣: Count bookings per time (Cairo-local HH:mm) ---
+    const fmtHHmm = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     const counts = new Map<string, number>();
     for (const a of docs) {
-      const t = this.utcIsoToLocalHHmm(
-        a.slotISO as unknown as string,
-        offsetMin,
-      );
-      counts.set(t, (counts.get(t) || 0) + 1);
+      const hhmm = fmtHHmm.format(new Date(a.slotISO));
+      counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
+    }
+    // A time held for another family while they pay counts like a booking.
+    for (const hhmm of await this.heldTimes(startISO, endISO)) {
+      counts.set(hhmm, (counts.get(hhmm) || 0) + 1);
     }
 
-    const all = this.generateSlots();
+    // --- Step 4️⃣: Generate all potential slots ---
+    const all = this.generateSlots(); // ["09:00", "09:30", ...]
     let available = all.filter((t) => (counts.get(t) || 0) < MAX_PER_SLOT);
 
-    // Cut off past times for "today"
-    const nowUtcMs = Date.now();
-    const nowLocal = new Date(nowUtcMs - offsetMin * 60_000);
-    const todayLocalY = nowLocal.getFullYear();
-    const todayLocalM = String(nowLocal.getMonth() + 1).padStart(2, '0');
-    const todayLocalD = String(nowLocal.getDate()).padStart(2, '0');
-    const todayLocalYmd = `${todayLocalY}-${todayLocalM}-${todayLocalD}`;
+    // --- Step 5️⃣: Remove admin-closed slots ---
+    const closed = await this.closedSlotModel.find({ date: dateISO }).lean();
+    const closedTimes = new Set(closed.map((c) => c.time));
+    available = available.filter((t) => !closedTimes.has(t));
 
-    if (dateISO === todayLocalYmd) {
-      const cutoff = this.nextHalfHourHHmm(nowLocal);
+    // --- Step 6️⃣: Remove past times (today only, Cairo-aware) ---
+    const now = new Date();
+    const nowCairo = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const todayCairo = nowCairo.toISOString().substring(0, 10);
+    if (dateISO === todayCairo) {
+      const cutoff = this.nextHalfHourHHmm(nowCairo);
       available = available.filter((t) => t >= cutoff);
     }
 
@@ -549,7 +754,15 @@ export class AppointmentsService {
     const sameDay = await this.apptModel
       .find({ slotISO: { $gte: startISO, $lte: endISO } })
       .lean();
-    return sameDay.map((a) =>
+    const held = holdMinutes()
+      ? await this.holdModel
+          .find({
+            slotISO: { $gte: startISO, $lte: endISO },
+            expiresAt: { $gt: new Date() },
+          })
+          .lean()
+      : [];
+    return [...sameDay, ...held].map((a) =>
       this.utcIsoToLocalHHmm(a.slotISO as unknown as string, offsetMin),
     );
   }
@@ -609,6 +822,44 @@ export class AppointmentsService {
     ].filter(Boolean);
     const primaryPhone = allPhones[0] || '+201000000000';
 
+    // Check the chosen time BEFORE any money is taken, with the same rules the
+    // booking uses after payment (plus admin-closed times).
+    const slot = new Date(slotISO);
+    if (isNaN(slot.getTime())) {
+      throw new BadRequestException('Invalid slot date/time');
+    }
+    const problem = slotProblem(slot, new Date(), await this.closedTimesFor(slot));
+    if (problem) throw new BadRequestException(problem);
+    const slotUtcISO = slot.toISOString();
+
+    // Hold the time for this child while their parent pays, if holds are on.
+    const minutes = holdMinutes();
+    let holdExpiresAt: Date | null = null;
+    if (minutes) {
+      const expiresAt = new Date(Date.now() + minutes * 60_000);
+      await this.withSlotLock(slotUtcISO, async (session) => {
+        const taken = await this.takenPlaces(slotUtcISO, applicationId, session);
+        if (taken >= MAX_PER_SLOT) {
+          throw new ConflictException(
+            'This time was just booked by another family. Please choose another time.',
+          );
+        }
+        await this.holdModel.updateOne(
+          { appointmentCode: applicationId },
+          {
+            $set: {
+              applicationId: String(appDoc._id),
+              slotISO: slotUtcISO,
+              expiresAt,
+              checkoutUrl: null,
+            },
+          },
+          { upsert: true, session },
+        );
+      });
+      holdExpiresAt = expiresAt;
+    }
+
     // === STEP 1: Create Intention ===
     const intentionRes = await firstValueFrom(
       this.http.post(
@@ -658,13 +909,31 @@ export class AppointmentsService {
         },
         { headers: { Authorization: `Token ${secretKey}` } },
       ),
-    );
+    ).catch(async (err) => {
+      // Paymob didn't start the payment: free the time straight away.
+      if (holdExpiresAt) await this.releaseHold(applicationId);
+      throw err;
+    });
 
     const clientSecret: string | undefined = intentionRes?.data?.client_secret;
-    if (!clientSecret)
+    if (!clientSecret) {
+      if (holdExpiresAt) await this.releaseHold(applicationId);
       throw new BadRequestException('Failed to create payment intention');
+    }
 
     const checkoutUrl = `${base}/unifiedcheckout/?publicKey=${publicKey}&clientSecret=${clientSecret}`;
+    if (holdExpiresAt) {
+      // Kept so the booking page can resume the same payment if the parent comes back.
+      await this.holdModel.updateOne(
+        { appointmentCode: applicationId, slotISO: slotUtcISO },
+        { $set: { checkoutUrl } },
+      );
+      return {
+        checkout_url: checkoutUrl,
+        holdExpiresAt: holdExpiresAt.toISOString(),
+        slotISO: slotUtcISO,
+      };
+    }
     return { checkout_url: checkoutUrl };
   }
 
@@ -978,6 +1247,16 @@ export class AppointmentsService {
       Kindly make sure to arrive 10–15 minutes before the scheduled time.  
       Our admissions team looks forward to meeting you and your child.
     </p>
+    <h3 style="color:#004080;">📌 Important information for parents</h3>
+    <ul style="font-size:15px; line-height:1.6; padding-left:20px;">
+      <li>Both parents are required to attend the appointment, as a parent interview will also take place on the same day.</li>
+      <li>Kindly bring the following documents with you:
+        <ul style="padding-left:20px;">
+          <li>The student’s birth certificate (original and copy)</li>
+          <li>A copy of both parents’ IDs</li>
+        </ul>
+      </li>
+    </ul>
     <p style="margin-top:30px; color:#555; font-style:italic;">
       This is an automated message confirming your booking.  
     </p>
@@ -1005,61 +1284,185 @@ export class AppointmentsService {
     }
   }
 
+  /** Finds an application by its appointment code, or by its id (older payments carried the id). */
+  private appFilter(code: string) {
+    return Types.ObjectId.isValid(code)
+      ? { $or: [{ appointmentCode: code }, { _id: new Types.ObjectId(code) }] }
+      : { appointmentCode: code };
+  }
+
+  /**
+   * A payment that went through (or couldn't be confirmed) but isn't booked:
+   * record it once per order and email Admissions so the family is contacted.
+   */
+  private async reportPaymentIssue(
+    kind: 'paid-not-booked' | 'unconfirmed' | 'paid-no-details',
+    info: { orderId?: string; code?: string | null; slotISO?: string; reason?: string; extras?: any },
+  ) {
+    const orderId = info.orderId ? String(info.orderId) : null;
+    try {
+      if (orderId && (await this.issueModel.exists({ orderId, kind }))) return;
+      await this.issueModel.create({
+        kind,
+        orderId,
+        appointmentCode: info.code ?? null,
+        slotISO: info.slotISO ?? null,
+        reason: info.reason ?? '',
+      });
+    } catch (err) {
+      console.error('⚠️ Could not record payment issue:', err);
+    }
+
+    if (!this.canSendMail()) return;
+    const ex = info.extras || {};
+    const what = {
+      'paid-not-booked': 'The parent PAID, but the chosen time could not be booked.',
+      'paid-no-details': 'The parent PAID, but the payment carried no booking details.',
+      unconfirmed: 'The parent returned from Paymob, but Paymob could not be reached to confirm the payment.',
+    }[kind];
+    const slot = info.slotISO ? new Date(info.slotISO) : null;
+    const slotText =
+      slot && !isNaN(slot.getTime())
+        ? slot.toLocaleString('en-GB', { timeZone: 'Africa/Cairo', dateStyle: 'full', timeStyle: 'short' })
+        : '—';
+    const row = (k: string, v: unknown) =>
+      `<tr><td style="padding:6px;border:1px solid #ccc"><strong>${k}</strong></td><td style="padding:6px;border:1px solid #ccc">${this.s(v, '—')}</td></tr>`;
+    try {
+      await sgMail.send({
+        to: 'Admission@leadersintcollege.com',
+        from: { email: 'admission@leadersintcollege.com', name: 'Admissions Appointments' },
+        subject: `⚠️ Assessment payment needs follow-up – ${ex.student_name || info.code || 'order ' + (orderId || '?')}`,
+        html: `<div style="font-family:Arial,sans-serif;font-size:14px">
+          <p><strong>${what}</strong></p>
+          <p>Please check this order in Paymob and contact the family to confirm an assessment time.</p>
+          <table style="border-collapse:collapse">
+            ${row('Paymob order', orderId)}
+            ${row('Appointment code', info.code)}
+            ${row('Student', ex.student_name)}
+            ${row('Parent email', ex.parentEmail)}
+            ${row('Phones', Array.isArray(ex.allPhones) ? ex.allPhones.join(', ') : ex.fatherPhone || ex.motherPhone)}
+            ${row('Chosen time (Cairo)', slotText)}
+            ${row('Reason', info.reason)}
+          </table></div>`,
+      } as sgMail.MailDataRequired);
+    } catch (err: any) {
+      console.error('⚠️ Could not email Admissions about a payment issue:', err?.response?.body || err);
+    }
+  }
+
+  /** True when this application already has an appointment at this slot. */
+  private async isAlreadyBooked(code: string, slotISO: string) {
+    const slot = new Date(slotISO);
+    if (isNaN(slot.getTime())) return false;
+    const application = await this.appModel
+      .findOne(this.appFilter(code))
+      .select({ _id: 1 })
+      .lean();
+    if (!application) return false;
+    const existing = await this.apptModel.exists({
+      applicationId: String(application._id),
+      slotISO: slot.toISOString(),
+    });
+    return !!existing;
+  }
+
   // ------------------------ Paymob: Redirect Handler ------------------------
 
   async handlePaymobRedirect(query: any, res: Response) {
+    // Once Paymob confirms the money was taken, the parent must never see "Declined".
+    let paid = false;
+    let extras: any = null;
+    const orderId = query?.order;
     try {
       console.log('👉 Redirect query received:', query);
 
-      const isPaid = query?.success === 'true';
-      console.log('✅ Success flag:', isPaid);
-
-      if (!isPaid) {
-        console.warn('❌ Payment marked as failed in query');
-        return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
-        );
-      }
-
-      // Get the order ID from redirect params
-      const orderId = query?.order;
+      // ⚠️ Do NOT trust query.success anymore
       console.log('👉 Order ID from query:', orderId);
 
       if (!orderId) {
         console.error('❌ No order id in redirect query');
         return res.redirect(
-          'http://localhost:3001/admissions/appointments/Declined',
+          'https://leadersintcollege.com/admissions/appointments/Declined',
         );
       }
 
-      // === STEP 1: Authenticate to get auth token ===
-      const apiKey = this.config.get<string>('PAYMOB_API_KEY');
-      const base = this.config.get<string>('PAYMOB_BASE');
+      // === STEP 1 + 2: ask Paymob how this order went ===
+      // If Paymob can't be reached we don't know yet — that is NOT a decline.
+      let trxRes: any;
+      try {
+        const apiKey = this.config.get<string>('PAYMOB_API_KEY');
+        const base = this.config.get<string>('PAYMOB_BASE');
 
-      const authRes = await firstValueFrom(
-        this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
-      );
-      const authToken = authRes?.data?.token;
-      console.log('🔑 Auth token received:', !!authToken);
+        const authRes = await firstValueFrom(
+          this.http.post(`${base}/api/auth/tokens`, { api_key: apiKey }),
+        );
+        const authToken = authRes?.data?.token;
+        console.log('🔑 Auth token received:', !!authToken);
 
-      // === STEP 2: Call transaction inquiry with order_id ===
-      const trxRes = await firstValueFrom(
-        this.http.post(
-          `${base}/api/ecommerce/orders/transaction_inquiry`,
-          { order_id: orderId },
-          { headers: { Authorization: `Bearer ${authToken}` } },
-        ),
-      );
+        trxRes = await firstValueFrom(
+          this.http.post(
+            `${base}/api/ecommerce/orders/transaction_inquiry`,
+            { order_id: orderId },
+            { headers: { Authorization: `Bearer ${authToken}` } },
+          ),
+        );
+      } catch (err: any) {
+        const status: number | undefined = err?.response?.status;
+        console.error(
+          '⚠️ Could not confirm the payment with Paymob:',
+          status || err?.message || err,
+        );
+        // Paymob answered that the order doesn't exist / the request is invalid:
+        // that's not a payment, so it stays a decline (as before).
+        if (status && status >= 400 && status < 500 && ![401, 403, 408, 429].includes(status)) {
+          return res.redirect(
+            'https://leadersintcollege.com/admissions/appointments/Declined',
+          );
+        }
+        // Paymob down, overloaded or refusing us: we don't know yet — not a decline.
+        await this.reportPaymentIssue('unconfirmed', {
+          orderId,
+          reason: `Paymob could not be reached (${err?.response?.status || err?.message || 'error'})`,
+        });
+        return res.redirect(`${SITE}/Received?status=checking`);
+      }
 
       console.log('📦 Transaction inquiry response:', trxRes.data);
 
+      // ✅ Check actual payment status (a declined card is not pending either)
+      const trxData = firstTransaction(trxRes.data);
+      const realStatus = isPaidTransaction(trxData);
+
+      console.log('✅ Verified real payment status:', realStatus);
+
+      if (!realStatus) {
+        console.warn('❌ Transaction not confirmed as paid by Paymob');
+        // Free the held time straight away so another family can take it.
+        const ex = trxData?.payment_key_claims?.extra;
+        const heldFor = ex?.appointmentCode || ex?.applicationId;
+        if (heldFor) await this.releaseHold(String(heldFor)).catch(() => undefined);
+        return res.redirect(
+          'https://leadersintcollege.com/admissions/appointments/Declined',
+        );
+      }
+      paid = true;
+
       // === STEP 3: Extract extras from payment_key_claims.extra ===
-      const extras = trxRes.data?.payment_key_claims?.extra;
+      extras = trxData?.payment_key_claims?.extra;
       console.log('👉 Extracted extras (raw):', extras);
       // 🔹 Support both appointmentCode (new) and applicationId (old)
-      const code = extras?.appointmentCode || null;
+      const code = extras?.appointmentCode || extras?.applicationId || null;
       console.log('👉 Using appointmentCode:', code);
       if (code && extras?.parentEmail && extras?.slotISO) {
+        // Opening the same payment link again (refresh, back button) must
+        // not book the slot twice or re-send the emails.
+        if (await this.isAlreadyBooked(code, extras.slotISO)) {
+          console.log('ℹ️ This slot is already booked for this application');
+          return res.redirect(
+            'https://leadersintcollege.com/admissions/appointments/Thankyou',
+          );
+        }
+
         console.log('✅ Required extras found:', {
           appointmentCode: code,
           parentEmail: extras.parentEmail,
@@ -1077,13 +1480,57 @@ export class AppointmentsService {
           console.log('📞 Mother Phone:', extras.motherPhone);
         if (extras.allPhones) console.log('📱 All Phones:', extras.allPhones);
 
-        // Convert Paymob UTC ISO → Cairo local
+        // ✅ Dynamic Cairo conversion (DST-aware, same as testConversion)
         const utcDate = new Date(extras.slotISO);
-        const cairoOffsetMinutes = 3 * 60; // UTC+3
-        const localMs = utcDate.getTime() + cairoOffsetMinutes * 60_000;
-        const cairoDate = new Date(localMs);
 
-        console.log('🕒 Converted Cairo time:', cairoDate.toISOString());
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Africa/Cairo',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
+        });
+
+        const parts = formatter.formatToParts(utcDate);
+        const get = (type: string) =>
+          parts.find((p) => p.type === type)?.value || '00';
+        const tzName = get('timeZoneName');
+        const match = tzName.match(/GMT([+-]\d+)/);
+        const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+        const cairoY = parseInt(get('year'), 10);
+        const cairoM = parseInt(get('month'), 10);
+        const cairoD = parseInt(get('day'), 10);
+        const cairoH = parseInt(get('hour'), 10);
+        const cairoMin = parseInt(get('minute'), 10);
+        const cairoSec = parseInt(get('second'), 10);
+
+        // Build a readable Cairo ISO string (for logs or emails)
+        const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+          cairoD,
+        ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+          cairoMin,
+        ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+        // ✅ Create a proper Date object representing Cairo local time
+        const cairoDate = new Date(
+          cairoY,
+          cairoM - 1,
+          cairoD,
+          cairoH,
+          cairoMin,
+          cairoSec,
+        );
+
+        console.log('🌍 tzName:', tzName);
+        console.log('🕒 Cairo offset hours:', offsetHours);
+        console.log('🌍 UTC Date:', utcDate.toISOString());
+        console.log('🇪🇬 Cairo Local (string):', cairoISO);
+        console.log('🕒 Cairo Date object:', cairoDate);
 
         // ✅ Create appointment
         const dto: CreateAppointmentDto = {
@@ -1092,11 +1539,25 @@ export class AppointmentsService {
           slotISO: extras.slotISO, // <-- pass as-is
         };
 
-        await this.create(dto);
+        try {
+          await this.create(dto);
+        } catch (err: any) {
+          // Paid, but the time can't be booked any more (taken while paying, or
+          // no longer valid): never show "Declined" — Admissions confirms a time.
+          console.error('⚠️ Paid but could not book:', err?.message || err);
+          await this.reportPaymentIssue('paid-not-booked', {
+            orderId,
+            code,
+            slotISO: extras.slotISO,
+            reason: err?.message || 'Booking failed',
+            extras,
+          });
+          return res.redirect(`${SITE}/Received`);
+        }
         console.log('🎉 Appointment created successfully');
 
         await this.appModel.findOneAndUpdate(
-          { appointmentCode: code },
+          this.appFilter(code),
           { hasBookedAppointment: true },
           { new: true },
         );
@@ -1154,14 +1615,33 @@ export class AppointmentsService {
         console.warn(
           '⚠️ Extras not found or incomplete in transaction inquiry',
         );
+        // Paid, but there is nothing to book from: Admissions follows up.
+        await this.reportPaymentIssue('paid-no-details', {
+          orderId,
+          code,
+          slotISO: extras?.slotISO,
+          reason: 'The payment carried no booking details',
+          extras,
+        });
+        return res.redirect(`${SITE}/Received`);
       }
 
       // ✅ Redirect to success page
       return res.redirect(
         'https://leadersintcollege.com/admissions/appointments/Thankyou',
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('🔥 Redirect error:', err?.response?.data || err);
+      if (paid) {
+        await this.reportPaymentIssue('paid-not-booked', {
+          orderId,
+          code: extras?.appointmentCode || extras?.applicationId || null,
+          slotISO: extras?.slotISO,
+          reason: err?.message || 'Unexpected error after payment',
+          extras,
+        }).catch(() => undefined);
+        return res.redirect(`${SITE}/Received`);
+      }
       return res.redirect(
         'https://leadersintcollege.com/admissions/appointments/Declined',
       );
@@ -1258,6 +1738,65 @@ export class AppointmentsService {
           err?.response?.data || err,
         );
       }
+    }
+  }
+  async testConversion(slotISO: string) {
+    try {
+      console.log('🧪 Testing slotISO:', slotISO);
+
+      // 1️⃣ Parse UTC from Paymob
+      const utcDate = new Date(slotISO);
+
+      // 2️⃣ Get Cairo-local parts using Intl (no re-parsing)
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Africa/Cairo',
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short', // gives "GMT+3" or "GMT+2"
+      });
+
+      const parts = formatter.formatToParts(utcDate);
+      const get = (type: string) =>
+        parts.find((p) => p.type === type)?.value || '00';
+      const tzName = get('timeZoneName');
+      const match = tzName.match(/GMT([+-]\d+)/);
+      const offsetHours = match ? parseInt(match[1], 10) : 2; // default +2
+
+      const cairoY = parseInt(get('year'), 10);
+      const cairoM = parseInt(get('month'), 10);
+      const cairoD = parseInt(get('day'), 10);
+      const cairoH = parseInt(get('hour'), 10);
+      const cairoMin = parseInt(get('minute'), 10);
+      const cairoSec = parseInt(get('second'), 10);
+
+      // 3️⃣ Build a proper Cairo ISO string manually (for inspection only)
+      const cairoISO = `${cairoY}-${String(cairoM).padStart(2, '0')}-${String(
+        cairoD,
+      ).padStart(2, '0')}T${String(cairoH).padStart(2, '0')}:${String(
+        cairoMin,
+      ).padStart(2, '0')}:${String(cairoSec).padStart(2, '0')}`;
+
+      console.log('🌍 tzName:', tzName);
+      console.log('🕒 Cairo offset hours:', offsetHours);
+      console.log('🌍 UTC Date:', utcDate.toISOString());
+      console.log('🇪🇬 Cairo Local (string):', cairoISO);
+      console.log('🕒 Cairo hour:', cairoH);
+
+      return {
+        utc: utcDate.toISOString(),
+        cairo: cairoISO,
+        gmt: tzName,
+        offsetHours,
+        hourCairo: cairoH,
+      };
+    } catch (err) {
+      console.error('❌ Conversion error:', err);
+      throw err;
     }
   }
 }

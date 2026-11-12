@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { track } from "@/utils/analytics";
 import {
   X,
   GraduationCap,
@@ -232,7 +233,11 @@ export default function Home() {
                       and the vibrant community that shapes our future leaders.
                     </p>
                     <div className="cta-buttons">
-                      <Link href="/admissions" className="btn-primary">
+                      <Link
+                        href="/admissions"
+                        className="btn-primary"
+                        onClick={() => track("apply_now", { location: "home_hero" })}
+                      >
                         Start Your Journey
                       </Link>
                       <Link href="/curriculum" className="btn-secondary">
@@ -320,6 +325,7 @@ export default function Home() {
                 </p>
                 <Link
                   href="/admissions"
+                  onClick={() => track("apply_now", { location: "home_about" })}
                   className="btn"
                   style={{
                     backgroundColor: "hsl(193, 75%, 54%)",
@@ -790,7 +796,7 @@ export default function Home() {
               >
                 <div className="students-life-img position-relative">
                   <Image
-                    src="/assets/img/education/SL3.png"
+                    src="/assets/img/education/SL3.webp"
                     alt="Students Life"
                     className="img-fluid rounded-4 shadow-sm"
                     width={600}

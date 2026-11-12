@@ -1,5 +1,6 @@
 import Link from "next/link";
 import "./Footer.css";
+import ContactLink from "./ContactLink";
 
 export default function Footer() {
   return (
@@ -50,10 +51,17 @@ export default function Footer() {
                 <h5 className="mb-2">Admission Department</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
-                  admission@leadersintcollege.com
+                  <ContactLink kind="email" to="admission@leadersintcollege.com">
+                    admission@leadersintcollege.com
+                  </ContactLink>
                 </p>
                 <p>
-                  <i className="bi bi-telephone me-2"></i> 02 26410641
+                  <i className="bi bi-telephone me-2"></i>{" "}
+                  <ContactLink kind="phone" to="+20226410641">02 26410641</ContactLink>
+                </p>
+                <p>
+                  <i className="bi bi-telephone me-2"></i>{" "}
+                  <ContactLink kind="phone" to="+201272924777">01272924777</ContactLink>
                 </p>
               </div>
               
@@ -61,10 +69,9 @@ export default function Footer() {
                 <h5 className="mb-2">HR Department</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
-                  careers@leadersintcollege.com
-                </p>
-                <p>
-                  <i className="bi bi-telephone me-2"></i> 02 26410050
+                  <ContactLink kind="email" to="careers@leadersintcollege.com">
+                    careers@leadersintcollege.com
+                  </ContactLink>
                 </p>
               </div>
 
@@ -89,13 +96,17 @@ export default function Footer() {
                 <h5 className="mb-2">For other inquiries</h5>
                 <p>
                   <i className="bi bi-envelope me-2"></i>{" "}
-                  info@leadersintcollege.com
+                  <ContactLink kind="email" to="info@leadersintcollege.com">
+                    info@leadersintcollege.com
+                  </ContactLink>
                 </p>
                 <p>
-                  <i className="bi bi-telephone me-2"></i> 01201117506
+                  <i className="bi bi-telephone me-2"></i>{" "}
+                  <ContactLink kind="phone" to="+201201117506">01201117506</ContactLink>
                 </p>
                 <p>
-                  <i className="bi bi-telephone me-2"></i> 01201117509
+                  <i className="bi bi-telephone me-2"></i>{" "}
+                  <ContactLink kind="phone" to="+201201117509">01201117509</ContactLink>
                 </p>
               </div>
               {/* 
@@ -128,6 +139,7 @@ export default function Footer() {
             { label: "Students Life", path: "/students-life" },
             { label: "We Are Hiring", path: "/hiring" },
             { label: "Contact Us", path: "/contact" },
+            { label: "Privacy Policy", path: "/privacy" },
           ].map((item, idx, arr) => (
             <span key={item.label}>
               <Link href={item.path} className="footer-link">

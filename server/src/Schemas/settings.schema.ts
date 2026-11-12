@@ -13,6 +13,8 @@ export class Settings {
   showAppointments: boolean;
   @Prop({ type: Number, default: 0 }) // float value
   amount: number;
+  @Prop({ default: false })
+  admissionClosed: boolean;
 }
 
 export const SettingsSchema = SchemaFactory.createForClass(Settings);

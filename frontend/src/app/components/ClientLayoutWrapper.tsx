@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
+import Analytics from "./Analytics";
 import { ReactNode } from "react";
 
 type Props = {
@@ -25,6 +26,7 @@ export default function ClientLayoutWrapper({ children }: Props) {
 
   return (
     <>
+      <Analytics />
       {!isAdminPage &&
         !isLogin &&
         !isTestimonials &&

@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 @Controller('testimonials')
 export class TestimonialsController {
   constructor(private readonly testimonialsService: TestimonialsService) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() dto: CreateTestimonialDto) {
     return this.testimonialsService.create(dto);
@@ -38,17 +38,17 @@ export class TestimonialsController {
   getById(@Param('id') id: string) {
     return this.testimonialsService.findById(id);
   }
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateTestimonialDto) {
     return this.testimonialsService.updateById(id, dto);
   }
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.testimonialsService.deleteById(id);
   }
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('id/:id/toggle')
   toggle(@Param('id') id: string, @Body('on') on: boolean) {
     return this.testimonialsService.updateVisibilityById(id, on);

@@ -13,6 +13,7 @@ import "./page.css";
 import AdminHeader from "../../../components/AdminHeader";
 import AdminFooter from "../../../components/AdminFooter";
 import { useRouter } from "next/navigation";
+import { getPaginationRange } from "@/utils/pagination";
 
 type FieldValue = string | number | boolean | string[] | File | null;
 
@@ -43,6 +44,9 @@ export default function ApplicationsPage() {
 
   const [editingFormStructure, setEditingFormStructure] = useState(false);
   const [formStructureDraft, setFormStructureDraft] = useState<FormField[]>([]);
+
+  const [admissionClosed, setAdmissionClosed] = useState(false);
+  const [loadingAdmissionSetting, setLoadingAdmissionSetting] = useState(true);
 
   const [activeTab, setActiveTab] = useState<"applications" | "form">(
     "applications"
@@ -106,6 +110,18 @@ export default function ApplicationsPage() {
       .finally(() => setLoadingApplications(false));
   }, [source]);
 
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`)
+      .then((res) => res.json())
+      .then((data: { admissionClosed: boolean }) =>
+        setAdmissionClosed(data.admissionClosed)
+      )
+      .catch((err) =>
+        console.error("Failed to fetch admission-closed setting", err)
+      )
+      .finally(() => setLoadingAdmissionSetting(false));
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -200,6 +216,24 @@ export default function ApplicationsPage() {
     setFormStructureDraft([...formFields]);
     setEditingFormStructure(true);
     setActiveTab("form");
+  };
+
+  const handleToggleAdmissionClosed = async () => {
+    const updated = !admissionClosed;
+    setAdmissionClosed(updated);
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/settings/admission-closed`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ admissionClosed: updated }),
+        }
+      );
+    } catch (error) {
+      console.error("Failed to update admission-closed setting:", error);
+      setAdmissionClosed(!updated);
+    }
   };
 
   const handleFieldChange = (
@@ -521,17 +555,28 @@ export default function ApplicationsPage() {
 
 
                       <div className="application-stats mt-4">
-                        <h4>📊 Applications Submitted Per Day</h4>
-                        <ul>
-                          {Object.entries(applicationCounts).map(
-                            ([date, count]) => (
-                              <li key={date}>
-                                <strong>{date}:</strong> {count} application
-                                {count > 1 ? "s" : ""}
-                              </li>
-                            )
-                          )}
-                        </ul>
+                        <div className="stats-header">
+                          <h4>📊 Applications Submitted Per Day</h4>
+                          <span>{Object.keys(applicationCounts).length} days</span>
+                        </div>
+
+                        <div className="stats-scroll">
+                          {Object.entries(applicationCounts).map(([date, count]) => (
+                            <div key={date} className="stats-row">
+                              <span className="stats-date">
+                                {new Date(date).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </span>
+
+                              <span className="stats-count">
+                                {count} application{count > 1 ? "s" : ""}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       <div
@@ -776,7 +821,7 @@ export default function ApplicationsPage() {
 
                       {/* Pagination Controls */}
                       {totalPages > 1 && (
-                        <div className="pagination mt-4 d-flex justify-content-center gap-2">
+                        <div className="pagination-wrapper">
                           <button
                               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                               disabled={currentPage === 1}
@@ -794,8 +839,22 @@ export default function ApplicationsPage() {
                               ⬅ Prev
                             </button>
 
-                            {[...Array(totalPages)].map((_, i) => {
-                              const page = i + 1;
+                            {getPaginationRange(currentPage, totalPages).map((item, index) => {
+                              if (item === "ellipsis") {
+                                return (
+                                  <span
+                                    key={`ellipsis-${index}`}
+                                    style={{
+                                      padding: "4px 10px",
+                                      fontSize: "0.875rem",
+                                      color: "#999",
+                                    }}
+                                  >
+                                    …
+                                  </span>
+                                );
+                              }
+                              const page = item;
                               const isActive = currentPage === page;
                               return (
                                 <button
@@ -853,6 +912,35 @@ export default function ApplicationsPage() {
               }}
             >
               <h3>Edit Form Structure</h3>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginBottom: "1.5rem",
+                  paddingBottom: "1rem",
+                  borderBottom: "1px solid #ddd",
+                }}
+              >
+                <label className="styled-switch">
+                  <input
+                    type="checkbox"
+                    checked={admissionClosed}
+                    onChange={handleToggleAdmissionClosed}
+                    disabled={loadingAdmissionSetting}
+                  />
+                  <span className="slider" />
+                  <span className="switch-label">
+                    {admissionClosed ? "Admission Closed" : "Admission Open"}
+                  </span>
+                </label>
+                <span style={{ color: "#666", fontSize: "0.85rem" }}>
+                  When closed, visitors see a closed message instead of the
+                  application form on the public Admissions page.
+                </span>
+              </div>
+
               {formStructureDraft.map((field, index) => {
                 const isLocked =
                   field.field_name === "father_email" ||

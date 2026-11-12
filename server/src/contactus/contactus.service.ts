@@ -110,7 +110,7 @@ export class ContactUsService {
   }
 
   async findAll(): Promise<ContactUs[]> {
-    return this.contactUsModel.find().sort({ createdAt: 1 }).exec();
+    return this.contactUsModel.find().sort({ createdAt: -1 }).exec();
   }
 
   async findOne(id: string): Promise<ContactUs | null> {
