@@ -3,7 +3,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import StatusPopup, { type StatusPopupState } from "../components/StatusPopup";
 import { extractErrorMessage } from "../../utils/errors";
@@ -18,12 +18,17 @@ interface ContactUsForm {
   grade?: string;
   subject: string;
   message: string;
+  // Bot check: a hidden field people never fill, and how long the form was open
+  hp_check: string;
+  form_ms: number;
 }
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [statusPopup, setStatusPopup] = useState<StatusPopupState | null>(null);
+  // When the form was opened. Bots send it within a few seconds.
+  const openedAt = useRef<number>(Date.now());
 
   useEffect(() => {
     const preloader = document.getElementById("preloader");
@@ -49,6 +54,8 @@ export default function ContactPage() {
       subject: formData.get("subject") as string,
 
       message: formData.get("message") as string,
+      hp_check: (formData.get("hp_check") as string) || "",
+      form_ms: Date.now() - openedAt.current,
     };
     setLoading(true); // ⏳ Start loading
     try {
@@ -58,6 +65,7 @@ export default function ContactPage() {
         setSubmitted(false);
       }, 4000);
       form.reset();
+      openedAt.current = Date.now();
       track("contact", { method: "form" });
     } catch (error: unknown) {
       console.error("Submission failed:", error);
@@ -141,6 +149,28 @@ export default function ContactPage() {
                         method="post"
                         className="php-email-form"
                       >
+                        {/* Bot trap: hidden from people and screen readers. Leave empty. */}
+                        <div
+                          aria-hidden="true"
+                          style={{
+                            position: "absolute",
+                            left: "-10000px",
+                            width: 1,
+                            height: 1,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <label>
+                            Leave this field empty
+                            <input
+                              type="text"
+                              name="hp_check"
+                              tabIndex={-1}
+                              autoComplete="off"
+                              defaultValue=""
+                            />
+                          </label>
+                        </div>
                         <div className="row g-3">
                           <div className="col-md-6">
                             <div className="form-group input-with-icon">

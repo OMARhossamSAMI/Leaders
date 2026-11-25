@@ -23,6 +23,81 @@ interface Application {
   updatedAt: string; // ✅ Add this to fix the error
   data: Record<string, FieldValue>; // all dynamic fields stored here
   files?: { originalname: string; path: string }[];
+  appointmentCode?: string;
+  // Emails about this application that weren't delivered (set by the server)
+  emailIssues?: EmailIssue[];
+}
+
+interface EmailIssue {
+  kind: "admissions" | "parent";
+  to: string;
+  reason: string;
+  at: string;
+  resolved: boolean;
+  retrying: boolean;
+}
+
+/** The receiving server's reason, in a few plain words. */
+function shortReason(reason: string): string {
+  if (/5\.1\.1|does not exist|user unknown|not found|mailbox unavailable|invalid address|valid address/i.test(reason))
+    return "this address doesn't exist";
+  if (/spam|block|refused|denied/i.test(reason))
+    return "their email provider refused it";
+  if (/out of storage|quota|full/i.test(reason)) return "their inbox is full";
+  return reason.length > 90 ? reason.slice(0, 90) + "…" : reason;
+}
+
+/** Warnings for emails that didn't arrive: shown on the application card. */
+function EmailIssues({ app }: { app: Application }) {
+  const open = (app.emailIssues || []).filter((i) => !i.resolved);
+  if (!open.length) return null;
+  return (
+    <div
+      role="status"
+      style={{
+        background: "#fff7ed",
+        border: "1px solid #fdba74",
+        color: "#9a3412",
+        borderRadius: 8,
+        padding: "8px 12px",
+        margin: "4px 0 12px",
+        fontSize: 13,
+        lineHeight: 1.45,
+      }}
+    >
+      {open.map((i, idx) => (
+        <div key={idx} style={{ marginTop: idx ? 6 : 0 }}>
+          {i.kind === "admissions" ? (
+            i.retrying ? (
+              <>
+                ⚠️ <strong>The email to Admissions wasn&apos;t delivered.</strong>{" "}
+                It is being sent again automatically. All the details and files
+                are here.
+              </>
+            ) : (
+              <>
+                ⚠️ <strong>The email to Admissions couldn&apos;t be delivered.</strong>{" "}
+                All the details and files are here.
+              </>
+            )
+          ) : (
+            <>
+              ⚠️ <strong>The parent never got the confirmation email</strong>{" "}
+              (<span dir="ltr">{i.to}</span>: {shortReason(i.reason)}).
+              Please call the parent
+              {app.appointmentCode ? (
+                <>
+                  {" "}and give them their booking code{" "}
+                  <strong dir="ltr">{app.appointmentCode}</strong>
+                </>
+              ) : null}
+              .
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 interface FormField {
@@ -670,6 +745,8 @@ export default function ApplicationsPage() {
                                     ).toLocaleDateString()
                                     : "N/A"}
                                 </p>
+
+                                <EmailIssues app={app} />
 
                                 {/* Files */}
                                 {Array.isArray(app.files) &&
