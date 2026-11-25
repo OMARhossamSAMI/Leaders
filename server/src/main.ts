@@ -9,6 +9,8 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
+import { getConnectionToken } from '@nestjs/mongoose';
+import { restoreUploads } from './common/restore-uploads';
 
 console.log('✅ SendGrid API key loaded:', !!process.env.SENDGRID_API_KEY);
 
@@ -50,6 +52,23 @@ async function bootstrap() {
 
   // optional global validation
   // app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // On Render a deploy starts without the uploaded files. Copy the missing
+  // ones from the old server, which answers until this one opens its port.
+  // RENDER_EXTERNAL_URL is set by Render only, so this never runs locally.
+  const restoreFrom =
+    process.env.UPLOADS_RESTORE_FROM || process.env.RENDER_EXTERNAL_URL;
+  if (restoreFrom && process.env.UPLOADS_RESTORE !== 'off') {
+    try {
+      await restoreUploads({
+        db: app.get(getConnectionToken()),
+        dir: join(__dirname, '..', 'uploads'),
+        baseUrl: restoreFrom,
+      });
+    } catch (err) {
+      console.error('⚠️ Could not restore uploads:', err);
+    }
+  }
 
   const port = Number(process.env.PORT) || 3000;  // ⬅️ fallback for local dev
   await app.listen(port, () => {
