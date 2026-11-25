@@ -16,13 +16,22 @@ async function bootstrap() {
   // ⬇️ create an EXPRESS app explicitly
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+    rawBody: true,
   });
 
   // Serve uploads
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.use('/static',  express.static(join(__dirname, '..', 'public'))); // ⬅️ add this
 
-  app.use(bodyParser.json({ limit: '2000mb' }));
+  // Keep the raw bytes too: SendGrid's webhook signature is checked on them.
+  app.use(
+    bodyParser.json({
+      limit: '2000mb',
+      verify: (req: any, _res, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
   app.use(bodyParser.urlencoded({ limit: '2000mb', extended: true }));
 
   app.enableCors({

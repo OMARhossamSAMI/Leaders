@@ -1,3 +1,4 @@
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Internship, InternshipDocument } from '../Schemas/internship.schema';
@@ -15,6 +16,7 @@ export class InternshipService {
   constructor(
     @InjectModel(Internship.name)
     private internshipModel: Model<InternshipDocument>,
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
   async create(createInternshipDto: CreateInternshipDto): Promise<Internship> {
@@ -154,24 +156,45 @@ export class InternshipService {
       ];
     }
 
-    try {
-      await Promise.all([
-        sgMail.send(applicantConfirmation),
-        sgMail.send(hrNotification),
-      ]);
+    // The files, by their name in uploads/, to attach again on a re-send.
+    const fromUploads = (url?: string, filename?: string) =>
+      url && url.includes('/uploads/') && filename
+        ? [{ file: url.split('/uploads/').pop()!, filename, type: 'application/pdf' }]
+        : [];
+    const attachmentFiles = cvAttachment
+      ? [
+          ...fromUploads(cv_file_url, cvAttachment.filename),
+          ...(coverLetterAttachment
+            ? fromUploads(cover_letter_url, coverLetterAttachment.filename)
+            : []),
+        ]
+      : [];
 
-      return savedApplication;
-    } catch (error) {
-      console.error('❌ Failed to send internship emails:', error);
-
-      if (error?.response?.body) {
-        console.error('SendGrid error response:', error.response.body);
-      }
-
+    // The email to Careers@ is recorded and sent again automatically if
+    // Microsoft refuses it; only the applicant's email can fail the request.
+    const [applicantOk] = await Promise.all([
+      sgMail.send(applicantConfirmation).then(
+        () => true,
+        (error: any) => {
+          console.error('❌ Failed to send internship emails:', error);
+          if (error?.response?.body) {
+            console.error('SendGrid error response:', error.response.body);
+          }
+          return false;
+        },
+      ),
+      this.schoolMail.send(hrNotification, {
+        kind: 'internship',
+        refId: String(savedApplication._id),
+        attachmentFiles,
+      }),
+    ]);
+    if (!applicantOk) {
       throw new Error(
         'Internship application saved, but failed to send emails.',
       );
     }
+    return savedApplication;
   }
 
   async findAll(): Promise<Internship[]> {

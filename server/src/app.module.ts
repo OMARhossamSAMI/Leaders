@@ -24,6 +24,7 @@ import { AcceptedStudentModule } from './accepted-student/accepted-student.modul
 import { AppointmentsModule } from './appointments/appointments.module';
 import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { BookTourModule } from './booktour/booktour.module';
+import { MailLogModule } from './mail-log/mail-log.module';
 @Module({
   imports: [
     MulterModule.register({
@@ -52,6 +53,7 @@ import { BookTourModule } from './booktour/booktour.module';
       },
     }),
     ScheduleModule.forRoot(),
+    MailLogModule,
     TestimonialsModule,
     EventsModule,
     SettingsModule,

@@ -1,4 +1,5 @@
 // src/appointments/appointments.service.ts
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import {
   BadRequestException,
   ConflictException,
@@ -77,6 +78,7 @@ export class AppointmentsService {
     private readonly studentAppService: StudentApplicationService, // <-- add this
     private readonly acceptedStudentService: AcceptedStudentService,
     private readonly settingsService: SettingsService,
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
   // ------------------------ Slot holds (while a parent pays) ------------------------
@@ -1029,12 +1031,8 @@ export class AppointmentsService {
       html: hrHtml,
     };
 
-    try {
-      await sgMail.send(hrNotification);
-      console.log('✅ HR email sent successfully');
-    } catch (err) {
-      console.error('❌ Failed to send HR email:', err?.response?.body || err);
-    }
+    // Recorded and sent again automatically if Microsoft refuses it.
+    await this.schoolMail.send(hrNotification, { kind: 'appointment' });
   }
   private async sendIntroPdfMessage(phoneNumber: string) {
     const normalizedPhone = this.normalizePhoneNumber(phoneNumber);
@@ -1327,27 +1325,24 @@ export class AppointmentsService {
         : '—';
     const row = (k: string, v: unknown) =>
       `<tr><td style="padding:6px;border:1px solid #ccc"><strong>${k}</strong></td><td style="padding:6px;border:1px solid #ccc">${this.s(v, '—')}</td></tr>`;
-    try {
-      await sgMail.send({
-        to: 'Admission@leadersintcollege.com',
-        from: { email: 'admission@leadersintcollege.com', name: 'Admissions Appointments' },
-        subject: `⚠️ Assessment payment needs follow-up – ${ex.student_name || info.code || 'order ' + (orderId || '?')}`,
-        html: `<div style="font-family:Arial,sans-serif;font-size:14px">
-          <p><strong>${what}</strong></p>
-          <p>Please check this order in Paymob and contact the family to confirm an assessment time.</p>
-          <table style="border-collapse:collapse">
-            ${row('Paymob order', orderId)}
-            ${row('Appointment code', info.code)}
-            ${row('Student', ex.student_name)}
-            ${row('Parent email', ex.parentEmail)}
-            ${row('Phones', Array.isArray(ex.allPhones) ? ex.allPhones.join(', ') : ex.fatherPhone || ex.motherPhone)}
-            ${row('Chosen time (Cairo)', slotText)}
-            ${row('Reason', info.reason)}
-          </table></div>`,
-      } as sgMail.MailDataRequired);
-    } catch (err: any) {
-      console.error('⚠️ Could not email Admissions about a payment issue:', err?.response?.body || err);
-    }
+    // Recorded and sent again automatically if Microsoft refuses it.
+    await this.schoolMail.send({
+      to: 'Admission@leadersintcollege.com',
+      from: { email: 'admission@leadersintcollege.com', name: 'Admissions Appointments' },
+      subject: `⚠️ Assessment payment needs follow-up – ${ex.student_name || info.code || 'order ' + (orderId || '?')}`,
+      html: `<div style="font-family:Arial,sans-serif;font-size:14px">
+        <p><strong>${what}</strong></p>
+        <p>Please check this order in Paymob and contact the family to confirm an assessment time.</p>
+        <table style="border-collapse:collapse">
+          ${row('Paymob order', orderId)}
+          ${row('Appointment code', info.code)}
+          ${row('Student', ex.student_name)}
+          ${row('Parent email', ex.parentEmail)}
+          ${row('Phones', Array.isArray(ex.allPhones) ? ex.allPhones.join(', ') : ex.fatherPhone || ex.motherPhone)}
+          ${row('Chosen time (Cairo)', slotText)}
+          ${row('Reason', info.reason)}
+        </table></div>`,
+    }, { kind: 'payment-issue', refId: orderId });
   }
 
   /** True when this application already has an appointment at this slot. */

@@ -8,7 +8,8 @@ import { FormField, FormFieldDocument } from '../Schemas/form-field.schema';
 import { validateDynamicFormSubmission } from '../common/utils/dynamic-form.util';
 import { Model } from 'mongoose';
 import * as sgMail from '@sendgrid/mail';
-import { join } from 'path';
+import { basename, join } from 'path';
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import { unlink } from 'fs/promises';
 import * as fs from 'fs';
 import {
@@ -46,6 +47,7 @@ export class StudentApplicationService {
     @InjectModel('Appointment') private readonly apptModel: Model<any>, // <-- add
     @InjectModel(FormField.name)
     private readonly formFieldModel: Model<FormFieldDocument>,
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
   // ⬇️ NEW: find an application by father/mother email (nested under data.*), case-insensitive
@@ -399,28 +401,42 @@ const applicationId = String(createdApp._id); // 👈 Mongo ObjectId as booking 
     // ========================
     // ✅ Send Both Emails
     // ========================
-    try {
-      const tasks = [sgMail.send(admissionsEmail)];
-      if (userConfirmationEmail) tasks.push(sgMail.send(userConfirmationEmail));
+    // The application is already saved, so an email problem must never tell
+    // the parent "Submission failed" (that made parents submit again). Each
+    // email is recorded: the one to Admission@ is sent again automatically if
+    // it isn't delivered, and a parent email that fails shows a warning on
+    // the application in the admin.
+    const attachmentFiles = Array.isArray(files)
+      ? files
+          .filter((f) => f?.path)
+          .map((f) => ({
+            file: basename(f.path),
+            filename: f.originalname,
+            type: f.mimetype || 'application/octet-stream',
+          }))
+      : [];
+    await Promise.all([
+      this.schoolMail.send(admissionsEmail, {
+        kind: 'application',
+        refId: applicationId,
+        attachmentFiles,
+      }),
+      userConfirmationEmail
+        ? this.schoolMail.send(userConfirmationEmail, {
+            kind: 'application-parent',
+            refId: applicationId,
+            retry: false,
+          })
+        : null,
+    ]);
 
-      await Promise.all(tasks);
-
-      return {
-        message: isWaitingList
-          ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
-          : '✅ Application saved and emails sent to both student and admissions.',
-        applicationId,
-        isWaitingList,
-      };
-    } catch (err) {
-      console.error(
-        '❌ SendGrid Email Error:',
-        err.response?.body || err.message,
-      );
-      throw new Error(
-        'Application saved, but failed to send confirmation email.',
-      );
-    }
+    return {
+      message: isWaitingList
+        ? '✅ Application saved. Waiting list email sent to parents and admissions email sent.'
+        : '✅ Application saved and emails sent to both student and admissions.',
+      applicationId,
+      isWaitingList,
+    };
   }
 
   // ⬇️ NEW: list applications with no appointments (optionally unpaid only)

@@ -1,3 +1,4 @@
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import {
   BadRequestException,
   Injectable,
@@ -49,6 +50,7 @@ export class BookTourService {
     private slotModel: Model<BookTourSlotDocument>,
     @InjectModel(BookTourBooking.name)
     private bookingModel: Model<BookTourBookingDocument>,
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
   // ------- CRON JOBS -------
@@ -280,15 +282,24 @@ export class BookTourService {
         }
       : null;
 
-    try {
-      const tasks: Promise<any>[] = [sgMail.send(admissionsEmail)];
-      if (parentEmailMsg) tasks.push(sgMail.send(parentEmailMsg));
-      await Promise.all(tasks);
-    } catch (err: any) {
-      console.error(
-        '❌ SendGrid Email Error (BookTour):',
-        err?.response?.body || err?.message || err,
-      );
+    // The email to Admission@ is recorded and sent again automatically if
+    // Microsoft refuses it; it never fails the booking.
+    const [, parentOk] = await Promise.all([
+      this.schoolMail.send(admissionsEmail, { kind: 'tour', refId: bookingCode }),
+      parentEmailMsg
+        ? sgMail.send(parentEmailMsg).then(
+            () => true,
+            (err: any) => {
+              console.error(
+                '❌ SendGrid Email Error (BookTour):',
+                err?.response?.body || err?.message || err,
+              );
+              return false;
+            },
+          )
+        : true,
+    ]);
+    if (!parentOk) {
       // We mimic the student app behavior: booking saved but emails failed.
       throw new Error(
         'Booking saved, but failed to send confirmation email(s).',

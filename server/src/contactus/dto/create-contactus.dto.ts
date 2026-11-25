@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsBoolean,
+  IsNumber,
   Length,
 } from 'class-validator';
 import { IsEmailDomainReachable } from '../../common/validators/is-email-domain-reachable.validator';
@@ -43,4 +44,14 @@ export class CreateContactUsDto {
   @IsOptional()
   @IsBoolean()
   reviewed?: boolean; // ✅ Add this
+
+  /** Hidden "leave empty" field on the form: people never see it, bots fill it. */
+  @IsOptional()
+  @IsString()
+  hp_check?: string;
+
+  /** How long the form was open before it was sent, in ms (measured in the browser). */
+  @IsOptional()
+  @IsNumber()
+  form_ms?: number;
 }

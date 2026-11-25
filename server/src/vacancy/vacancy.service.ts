@@ -1,3 +1,4 @@
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -21,6 +22,7 @@ export class VacancyService {
     @InjectModel('FormField') private readonly formFieldModel: Model<any>, // Adjust the type as needed — CSV export only, distinct from employmentFormFieldModel below
     @InjectModel(EmploymentFormField.name)
     private readonly employmentFormFieldModel: Model<EmploymentFormFieldDocument>,
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
   async create(
@@ -75,6 +77,8 @@ export class VacancyService {
       type: string;
       disposition: string;
     }[] = [];
+    // The same PDFs, by their name in uploads/, to attach again on a re-send.
+    const attachmentFiles: { file: string; filename: string; type: string }[] = [];
 
     // ✅ Process files: save metadata & create attachments
     for (const key in files) {
@@ -97,6 +101,11 @@ export class VacancyService {
               filename: file.originalname,
               type: file.mimetype,
               disposition: 'attachment',
+            });
+            attachmentFiles.push({
+              file: file.filename,
+              filename: file.originalname,
+              type: file.mimetype,
             });
           } catch (err) {
             console.error(`❌ Error reading file ${file.originalname}`, err);
@@ -187,17 +196,23 @@ export class VacancyService {
       : null;
 
     // ✅ Send Emails
-    try {
-      const tasks = [sgMail.send(hrEmail)];
-      if (userEmailObj) tasks.push(sgMail.send(userEmailObj));
-      await Promise.all(tasks);
-      console.log('✅ Vacancy emails sent');
-    } catch (err) {
-      console.error(
-        '❌ Vacancy Email Error:',
-        err.response?.body || err.message,
-      );
-    }
+    // The email to Careers@ is recorded and sent again automatically if
+    // Microsoft refuses it.
+    await Promise.all([
+      this.schoolMail.send(hrEmail, {
+        kind: 'vacancy',
+        refId: String(created._id),
+        attachmentFiles,
+      }),
+      userEmailObj
+        ? sgMail.send(userEmailObj).catch((err) =>
+            console.error(
+              '❌ Vacancy Email Error:',
+              err.response?.body || err.message,
+            ),
+          )
+        : null,
+    ]);
 
     return created;
   }

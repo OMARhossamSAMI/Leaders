@@ -59,6 +59,11 @@ const PUBLIC: Route[] = [
   { method: 'POST', path: '/internship', body: {} },
 ];
 
+// Routes that only accept a signed request (SendGrid's Event Webhook).
+const SIGNED: Route[] = [
+  { method: 'POST', path: '/sendgrid/events', body: [] },
+];
+
 // Every route the admin pages use, and the ones nobody outside should call.
 const ADMIN: Route[] = [
   { method: 'GET', path: '/applications' },
@@ -165,7 +170,7 @@ describe('Admin login on the server', () => {
       }
     }
     const listed = new Set(
-      [...PUBLIC, ...ADMIN].map((r) => `${r.method} ${r.path}`),
+      [...PUBLIC, ...ADMIN, ...SIGNED].map((r) => `${r.method} ${r.path}`),
     );
     expect([...live].filter((x) => !listed.has(x)).sort()).toEqual([]);
     expect([...listed].filter((x) => !live.has(x)).sort()).toEqual([]);
@@ -176,6 +181,14 @@ describe('Admin login on the server', () => {
     async (_name, r) => {
       const res = await call(app, r);
       expect([401, 403]).not.toContain(res.status);
+    },
+  );
+
+  it.each(SIGNED.map((r) => [`${r.method} ${r.path}`, r] as const))(
+    'signed: %s refuses a request without a valid signature',
+    async (_name, r) => {
+      const res = await call(app, r);
+      expect(res.status).toBe(403);
     },
   );
 

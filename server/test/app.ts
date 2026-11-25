@@ -18,7 +18,7 @@ export async function bootApp(): Promise<INestApplication> {
     .overrideProvider(HttpService)
     .useValue(fakeHttp)
     .compile();
-  const app = moduleRef.createNestApplication();
+  const app = moduleRef.createNestApplication({ rawBody: true });
   await app.init();
 
   // Start every file from an empty local test database.

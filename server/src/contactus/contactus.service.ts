@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { SchoolMailService } from '../mail-log/school-mail.service';
 import { ContactUs, ContactUsDocument } from '../Schemas/contactus.schema';
 import { CreateContactUsDto } from './dto/create-contactus.dto';
 import { UpdateContactUsDto } from './dto/update-contactus.dto';
@@ -14,10 +15,33 @@ export class ContactUsService {
     @InjectModel(ContactUs.name)
     private contactUsModel: Model<ContactUsDocument>,
     private readonly mailService: MailService, // 👈 Inject
+    private readonly schoolMail: SchoolMailService,
   ) {}
 
+  /** A person fills the form in more than 3 seconds; this is the shortest we accept. */
+  static readonly MIN_FORM_MS = 3000;
+
+  /**
+   * Bots fill the hidden field, post straight to the API (so the form's timer
+   * is missing) or send within a few seconds. Since 23 Nov 2026 bots have been
+   * sending random names with strangers' addresses, and the site then emailed
+   * those strangers "We've received your message".
+   */
+  static looksLikeBot(dto: CreateContactUsDto): boolean {
+    if (typeof dto.hp_check === 'string' && dto.hp_check.trim() !== '') return true;
+    const ms = Number(dto.form_ms);
+    return !Number.isFinite(ms) || ms < ContactUsService.MIN_FORM_MS;
+  }
+
   async create(createDto: CreateContactUsDto): Promise<ContactUs> {
-    const created = new this.contactUsModel(createDto);
+    const { hp_check, form_ms, ...fields } = createDto;
+    if (ContactUsService.looksLikeBot(createDto)) {
+      // Answer exactly like a real submission, but keep and send nothing.
+      console.warn('🤖 Contact form: ignored a bot submission');
+      return { ...fields, _id: new Types.ObjectId() } as unknown as ContactUs;
+    }
+
+    const created = new this.contactUsModel(fields);
     const saved = await created.save();
 
     const {
@@ -94,19 +118,28 @@ export class ContactUsService {
       html: htmlForUser,
     };
 
-    try {
-      await Promise.all([
-        sgMail.send(itNotification),
-        sgMail.send(userConfirmation),
-      ]);
-      return saved;
-    } catch (error) {
-      console.error('❌ Failed to send contact form emails:', error);
-      if (error?.response?.body) {
-        console.error('SendGrid error:', error.response.body);
-      }
+    // The email to Info@ is recorded and sent again automatically if
+    // Microsoft refuses it; only the sender's own copy can fail the request.
+    const [, userOk] = await Promise.all([
+      this.schoolMail.send(itNotification, {
+        kind: 'contact',
+        refId: String(saved._id),
+      }),
+      sgMail.send(userConfirmation).then(
+        () => true,
+        (error: any) => {
+          console.error('❌ Failed to send contact form emails:', error);
+          if (error?.response?.body) {
+            console.error('SendGrid error:', error.response.body);
+          }
+          return false;
+        },
+      ),
+    ]);
+    if (!userOk) {
       throw new Error('Message saved but failed to send confirmation email.');
     }
+    return saved;
   }
 
   async findAll(): Promise<ContactUs[]> {

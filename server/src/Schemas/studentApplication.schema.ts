@@ -50,6 +50,34 @@ export class StudentApplication {
     default: [],
   })
   files?: { originalname: string; path: string }[];
+
+  /**
+   * Emails about this application that weren't delivered, shown in the admin:
+   * `admissions` = the email to Admission@ (sent again automatically),
+   * `parent` = the parent's confirmation with the booking code (the address
+   * is usually mistyped, so the school should call the parent).
+   */
+  @Prop({
+    type: [
+      {
+        kind: { type: String },
+        to: { type: String },
+        reason: { type: String },
+        at: { type: Date },
+        resolved: { type: Boolean, default: false },
+        retrying: { type: Boolean, default: false },
+      },
+    ],
+    default: undefined,
+  })
+  emailIssues?: {
+    kind: 'admissions' | 'parent';
+    to: string;
+    reason: string;
+    at: Date;
+    resolved: boolean;
+    retrying: boolean;
+  }[];
 }
 
 export const StudentApplicationSchema =
